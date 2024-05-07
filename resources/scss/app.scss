@@ -276,4 +276,83 @@
 }
 
 
-//new css
+//****************** new css *************
+*{
+    transition: all .3s ease-in-out;
+}
+
+
+$bg-p-p : rgba(111, 152, 246, 0.548);
+$c-delete : rgb(228, 70, 42);
+$c-update : rgb(246, 214, 73);
+$c-new : rgb(84, 13, 227);
+
+
+.d{
+    background-color: $c-delete;
+}
+.m{
+    background-color: $c-update;
+}
+.add{
+    background-color: $c-new;
+}
+
+
+
+
+.obj{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .8rem;
+
+    border-radius: 20px;
+    background-color: $bg-p-p;
+    .card{
+        padding: .8rem;
+
+        display: flex;
+        justify-content: center;
+        gap: .8rem;
+        img{
+            border-radius: 18px;
+            width: clamp(120px, 100%, 240px);
+            background-size: cover;
+            background-position: center;
+        }
+        .info{
+            display: flex;
+            flex-direction: column;
+            gap: .8rem;
+            section{
+                display: flex;
+                flex-direction: column;
+                gap: .6rem;
+            }
+            .split_i{
+                display: flex;
+                justify-content: space-between;
+                .price{
+                    font-size: clamp(17px, 3.1vw, 23px);
+                    font-weight: bolder ;
+                }
+            }
+        }
+    }
+    .actions, .allergiens{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        div, a{
+            border-radius: 15px;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.256);
+        }
+       
+    }
+
+}

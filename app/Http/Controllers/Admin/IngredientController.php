@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Date;
-use App\Models\Month;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-class MonthController extends Controller
+class IngredientController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +14,7 @@ class MonthController extends Controller
      */
     public function index()
     {
-        $months = Month::paginate(100);
-
-        return view('admin.months.index', compact('months'));
+        //
     }
 
     /**
@@ -50,18 +46,7 @@ class MonthController extends Controller
      */
     public function show($id)
     {
-        $month = Month::where('id', $id)->firstOrFail();
-        $dates = Date::all();
-
-        $selectedDate=[];
-        
-        foreach ($dates as $date){
-            if($date->month == $month->n && $date->year == $month->y){
-                array_push($selectedDate, $date);
-            }
-        }
-
-        return view('admin.months.show', compact('month', 'selectedDate'));
+        //
     }
 
     /**
