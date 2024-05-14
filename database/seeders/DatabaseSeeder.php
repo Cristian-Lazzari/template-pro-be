@@ -4,29 +4,23 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\TagsTableSeeder;
-use Database\Seeders\SlotsTableSeeder;
-use Database\Seeders\UsersTableSeeder;
-use Database\Seeders\ProjectsTableSeeder;
-use Database\Seeders\SettingsTableSeeder;
 use Database\Seeders\DatesTableSeeder;
+use Database\Seeders\UsersTableSeeder;
+use Database\Seeders\SettingsTableSeeder;
+use Database\Seeders\IngredientsTableSeeder;
 
 
 class DatabaseSeeder extends Seeder
 {
-   
     public function run()
     {
      
 
         $this->call([
             UsersTableSeeder::class,
-            //CategoriesTableSeeder::class,
-            //TagsTableSeeder::class,
-            //ProjectsTableSeeder::class,
+            IngredientsTableSeeder::class,
+            CategoriesTableSeeder::class,
             //SettingsTableSeeder::class,
-            
-            //DatesTableSeeder::class,
         ]);
     }
 }

@@ -24,18 +24,22 @@ Route::middleware(['auth', 'verified'])
         Route::get('/setting',                               [AdminPageController::class, 'setting'])->name('setting');
    
         // Rotte Resource
+        
+        Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');
+        Route::post('products/filter',  [ProductController::class, 'filter'])->name('products.filter');
+        Route::post('products/status', [ProductController::class, 'status'])->name('products.status');
+        
+        // Rotte Date 
+        
+        Route::post('/dates/updatestatus/v}',               [DateController::class, 'updatestatus'])->name('dates.updatestatus');      
+        Route::post('/dates/updateMax',                     [DateController::class, 'updateMax'])->name('dates.updateMax');
+        Route::post('/dates/runSeeder',                     [DateController::class, 'runSeeder'])->name('dates.runSeeder');
+
+        
         Route::resource('dates',        DateController::class);
         Route::resource('products',     ProductController::class);
         Route::resource('ingredients',  IngredientController::class);
         Route::resource('categories',   CategoryController::class);
-        
-        Route::post('products/special', [ProductController::class, 'special']);
-
-        // Rotte Date 
-
-        Route::post('/dates/updatestatus/v}',               [DateController::class, 'updatestatus'])->name('dates.updatestatus');      
-        Route::post('/dates/updateMax}',                    [DateController::class, 'updateMax'])->name('dates.updateMax');
-        Route::post('/dates/runSeeder',                     [DateController::class, 'runSeeder'])->name('dates.runSeeder');
     });
 
 Route::middleware('auth')

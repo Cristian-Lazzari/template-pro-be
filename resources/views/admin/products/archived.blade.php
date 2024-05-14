@@ -20,23 +20,23 @@
         11 => ['img' => $domain . 'egg.png', 'name' => 'uova'] ,
     ];
 @endphp
+
 @if (session('success'))
     @php
         $data = session('success')
     @endphp
     <div class="alert alert-primary">
-        {{ $data }} 
+        {{ $data }}
     </div>
 @endif
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
+<a class="btn btn-outline-dark mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
 
-<h1>Prodotti</h1>
+<h1>Prodotti - Archivio</h1>
  
-<form class="top-bar-product" action="{{ route('admin.products.filter') }}" method="post">
+<form class="top-bar-product archived" action="{{ route('admin.products.filter') }}" method="post">
     @csrf   
-    <input type="hidden" name="archive" value="0">
-    
-    <div class="bar">
+    <input type="hidden" name="archive" value="1">
+    <div class="bar ">
 
 
         {{-- NOME --}}
@@ -87,7 +87,7 @@
                  <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
              </svg>  FILTRA
          </button>
-         <a class="btn btn-warning" href="{{ route('admin.products.index')}}">
+         <a class="btn btn-warning" href="{{ route('admin.products.archived')}}">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
                  <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
              </svg> 
@@ -96,14 +96,10 @@
     </div>
     
 </form> 
-<div class="action-page">
-    <a class="btn btn-outline-success m-1 w-auto" href="{{ route('admin.products.create') }}">Crea un nuovo prodotto</a>
-    <a class="btn btn-outline-danger m-1 w-auto" href="{{ route('admin.products.archived') }}">Archivio</a>
-</div>
 
-<div class="object-container">
+
+<div class="object-container archived">
     @foreach ($products as $item)
-
         <div class="obj  @if (!$item->visible) not_v @endif">
             <h3><a href="{{ route('admin.products.show', $item) }}">{{$item->name}}</a></h3>     
             <div class="card_">
@@ -146,15 +142,15 @@
                 <a class="my_btn m" href="{{ route('admin.products.edit', $item) }}">Modifica</a>
                 <form action="{{ route('admin.products.status') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="archive" value="0">
+                    <input type="hidden" name="archive" value="1">
                     <input type="hidden" name="v" value="0">
                     <input type="hidden" name="a" value="1">
                     <input type="hidden" name="id" value="{{$item->id}}">
-                    <button class="my_btn d" type="submit">Archivia</button>
+                    <button class="my_btn d" type="submit">Ripristina</button>
                 </form>
                 <form action="{{ route('admin.products.status') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="archive" value="0">
+                    <input type="hidden" name="archive" value="1">
                     <input type="hidden" name="v" value="1">
                     <input type="hidden" name="a" value="0">
                     <input type="hidden" name="id" value="{{$item->id}}">

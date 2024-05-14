@@ -18,38 +18,31 @@ class CategoriesTableSeeder extends Seeder
         $categories = [
             [
                 'name'          => 'Tutti',
-                'slot'          => 0,
-                'type'          => '0'
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
             [
                 'name'          => 'Pizze Speciali',
-                'slot'          => 1,
-                'type'          => 't'
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
             [
                 'name'          => 'Pizze Rosse',
-                'slot'          => 1,
-                'type'          => 't'     
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'     
             ],
             [
                 'name'          => 'Pizze Bianche',
-                'slot'          => 1,
-                'type'          => 't'
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
             [
                 'name'          => 'Dolci',
-                'slot'          => 0,
-                'type'          => '0'
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
             [
                 'name'          => 'Bibite',
-                'slot'          => 0,
-                'type'          => '0'
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
             [
                 'name'          => 'Pezzi al taglio',
-                'slot'          => 1,
-                'type'          => 'q'
+                'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
         ];
 

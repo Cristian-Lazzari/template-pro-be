@@ -13,9 +13,10 @@ return new class extends Migration
 
             $table->string      ('name', 100);
             $table->bigInteger  ('price');
-            $table->tinyInteger ('type'); //indica se deve essere aggiunto a
+            $table->text        ('type'); //indica se deve essere possibile aggiungierlo in una o piu categorie
             $table->text        ('allergiens')->nullable() ;
             $table->string      ('icon')->nullable();
+            $table->boolean     ('option'); //indica se  e' un ingrediente o un opzione
             
             $table->timestamps();
         });

@@ -10,6 +10,19 @@
     @vite('resources/js/app.js')
 </head>
 <body>
+    @php
+        $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
+        $domain = 'https://db.qualcosa.it/public/';
+        $allergien = [
+                    1 => ['img' => $domain . 'glutine.png', 'name' => 'glutine'] ,
+                    2 => ['img' => $domain . 'pesce.png', 'name' => 'pesce'] ,
+                    3 => ['img' => $domain . 'crostacei.png', 'name' => 'crostacei'] ,
+                    4 => ['img' => $domain . 'latticini.png', 'name' => 'latticini'] ,
+                    5 => ['img' => $domain . '', 'name' => ''] ,
+                    6 => ['img' => $domain . '', 'name' => ''] ,
+                    7 => ['img' => $domain . '', 'name' => ''] ,
+                ]; 
+    @endphp
     <header>
         @include('admin.includes.nav')
     </header>

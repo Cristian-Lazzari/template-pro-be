@@ -3,7 +3,7 @@
 @section('contents')
 @php
         $days_name = [' ','lunedì', 'martedi', 'mercoledì', 'giovedì', 'venerd', 'sabato', 'domenica'];
-        @endphp
+@endphp
 
 
     

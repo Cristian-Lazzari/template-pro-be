@@ -7,7 +7,12 @@
     text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.62);
 }
 
-
+.error{
+    color: red;
+    padding: .5rem ;
+    border-radius: 10px;
+    background-color: rgba(255, 0, 0, 0.179);
+}
 .mycDash {
     display: flex;
     flex-direction: column;
@@ -277,16 +282,31 @@
 
 
 //****************** new css *************
+
 *{
-    transition: all .3s ease-in-out;
+    //transition: opacity .2s ease-out;
 }
 
-
-$bg-p-p : rgba(111, 152, 246, 0.548);
-$c-delete : rgb(228, 70, 42);
-$c-update : rgb(246, 214, 73);
+$bg-p-p : rgba(71, 79, 238, 0.133);
+$c-delete : rgba(228, 70, 42, 0.698);
+$c-update : rgba(224, 191, 42, 0.796);
 $c-new : rgb(84, 13, 227);
+$t : rgba(255, 255, 255, 0.361);
 
+.my_btn{
+    padding: .8rem 1.2rem;
+    border-radius: 150px;
+    border: none;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    a, button{
+        box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
+        color: white;
+        text-shadow: 0px 0px 6px rgb(220, 220, 220);
+    }
+}
 
 .d{
     background-color: $c-delete;
@@ -297,62 +317,523 @@ $c-new : rgb(84, 13, 227);
 .add{
     background-color: $c-new;
 }
+.v{
+    background-color: rgb(65, 183, 42);
+}
+
+
+    
 
 
 
-
-.obj{
+.top-bar-product{
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.195);
+    padding: 1.5rem;
+    background-color: rgba(92, 158, 158, 0.22);
     display: flex;
+
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: .8rem;
-
-    border-radius: 20px;
-    background-color: $bg-p-p;
-    .card{
-        padding: .8rem;
-
+    align-items: flex-start;
+    
+    .bar{
+        flex-wrap: wrap;
         display: flex;
-        justify-content: center;
-        gap: .8rem;
-        img{
-            border-radius: 18px;
-            width: clamp(120px, 100%, 240px);
-            background-size: cover;
-            background-position: center;
-        }
-        .info{
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 100%;
+        gap: 1rem;
+        div{
             display: flex;
             flex-direction: column;
-            gap: .8rem;
-            section{
+            gap: .7rem;
+        }
+        input, select{
+            border-radius: 10px;
+            height: 30px;
+            border: 1px solid black;
+            background-color: rgba(255, 255, 255, 0.67);
+        }
+        .s-name{
+            flex-wrap: wrap;
+            label{
+                width: 100%;
+            }
+            div{
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 1rem;
+            }
+            .search{
+                border: solid .2px rgb(255, 255, 255);
+                background-color: rgb(50, 185, 216);
+                border-radius: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 30px;
+                width: 30px;
+                color: white;
+                svg{
+                    width: 80%;
+                }
+            }
+        
+            
+        }
+    }
+    .buttons{
+        display: flex;
+        gap: 1rem;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-end;
+    }
+}
+.action-page{
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: .2rem;
+}
+
+.object-container{
+    margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    //align-items: center;
+    .obj{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        //align-items: flex-end;
+        flex-wrap: wrap;
+        flex-grow: 1;
+        gap: 1rem;
+        h3{
+            text-align: left;
+            
+            a{
+                text-decoration: none;
+                color: black;
+            }
+        }
+        .card_{
+            box-shadow: -2px -2px 15px rgba(71, 79, 238, 0.2);
+            border-radius: 20px;
+            background-color: $bg-p-p;
+            padding: .8rem;
+            display: flex !important;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 1.2rem;
+            //width: auto;
+            img{
+                border-radius: 18px;
+                width: clamp(100px, 100%, 160px);
+                aspect-ratio: 1;
+                object-fit: cover;
+                background-position: center;
+                box-shadow: 0px 0px 2px black;
+                background-color: rgba(255, 166, 0, 0.477);
+            }
+            .info{
+                flex-grow: 1;
                 display: flex;
                 flex-direction: column;
-                gap: .6rem;
-            }
-            .split_i{
-                display: flex;
-                justify-content: space-between;
-                .price{
-                    font-size: clamp(17px, 3.1vw, 23px);
-                    font-weight: bolder ;
+                gap: .8rem;
+                section{
+                    p{
+                        ///flex: 1 1 auto;
+                        max-width: 170px;
+                    }
+                    display: flex;
+                    flex-direction: column;
+                    gap: .6rem;
+                }
+                .split_i{
+                    display: flex;
+                    justify-content: space-between;
+                    .price{
+                        font-size: clamp(17px, 3.1vw, 23px);
+                        font-weight: bolder ;
+                    }
                 }
             }
         }
     }
     .actions, .allergiens{
-        width: 100%;
+        align-self: flex-end;
+        max-width: 270px;
         display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        div, a{
-            border-radius: 15px;
+        justify-content: flex-end;
+        gap: .8rem;
+        flex-wrap: wrap;
+        img{
+            border-radius: 100%;
+            aspect-ratio: 1;
+            width: 30px;
+            box-shadow: 0px 0px 2px black;
+        }
+        div, a, button{
+            box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
             color: white;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.256);
+            text-shadow: 0px 0px 6px rgb(220, 220, 220);
         }
        
     }
+    
+    
+}
 
+.slim_cont{
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    //align-items: flex-start;
+    
+}
+
+.slim_{
+    flex-grow: 1;
+    width: calc(33% - 2rem);
+    padding: .9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px;
+    background-color: rgba(23, 23, 116, 0.49);
+    gap: 1rem;
+    a{
+        color: white;
+        text-decoration: none;
+        font-size: clamp(13px, 2.2vw, 22px);
+    }
+    h3{
+        flex-shrink: 1;
+        line-height: 90% !important;
+    }
+    img{
+        flex-shrink: 0;
+        width: clamp(30px, 100%, 40px);
+        border-radius: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border: .5px solid black;
+    }
+    section{
+        width: 100%;
+        align-items: flex-end;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+        gap: 1rem;
+        .price{
+            font-size:clamp(17px, 3vw, 23px) ;
+            font-weight: bolder;
+        }
+        .actions{
+            gap: .5rem;
+            display: flex;
+            form{
+                display: flex;
+                justify-content: center;
+                align-items: flex-end;
+            }
+            .s_d{
+                
+                border: none;
+                background: none;
+                padding: none;
+                color: white;  
+            }
+        }
+    }
+    .s1{
+        align-items: flex-start !important;
+        text-align: end;
+    }
+}
+
+.archived{
+    background-color: rgba(150, 6, 6, 0.243);
+    padding: 1rem;
+    border-radius: 20px;
+    .card_{
+        background-color: white !important;
+    }
+}
+.not_v{
+    .card_, h3, .allergiens{
+        opacity: .5;
+    }
+        
+}
+.show_p{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2.2rem;
+    background-color: $bg-p-p;
+    border-radius: 20px;
+    h2{
+        font-weight: bolder;
+        text-transform: capitalize;
+        font-size: clamp(20px, 4.5vw, 42px) !important;
+    }
+    .split_p{
+        
+        display: flex;
+        gap: 2rem;
+        justify-content: flex-start;
+        //flex-wrap: wrap;
+        .image_p{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 1.8rem;
+            flex-grow: 1;
+            
+            flex-shrink: 1;
+            position: relative;
+            .logo_{
+                border-radius: 23px;
+                background-color: $c-update;
+                width: 100%;
+                aspect-ratio: 1.5;
+                object-fit: cover;
+                max-width: 650px;
+            }
+            .allergiens{
+                max-width: 350px;
+                width: 100%;
+                display: flex;
+                gap: .7rem;
+                align-self: flex-start;
+                flex-wrap: wrap;
+                img{
+                    padding: 5px;
+                    border: black solid 1px;
+                    background-color: white;
+                    width: 40px;
+                    border-radius: 100% ;
+                    aspect-ratio: 1;
+                }
+                justify-content: flex-start !important;
+            }
+        }
+        
+        .info{
+            flex-grow: 1;
+            //max-width: 50%;
+            section{
+                margin-bottom: 10px;
+                h4{
+                    font-size: clamp(18px, 3.5vw, 30px) !important;
+                    font-weight: bold;
+                    
+                }
+                p{
+                    display: flex;
+                    text-transform: capitalize;
+                    font-size: clamp(15px, 2.5vw, 25px) !important;
+                }
+            }
+        }
+    }
+    .price{
+        font-size: clamp(20px, 3.4vw, 30px);
+        font-weight: bolder;
+        align-self: flex-end;
+    }
+    .prod-spec{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        
+        .set_plate, .actions{
+            align-items: center;
+            display: flex;
+            gap: 1rem;
+            
+        }
+        
+        .set_plate{
+            justify-content:flex-start;
+            gap: 3rem;
+            p{
+                
+                margin: 0 !important;
+            }
+            .title, .res{
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                gap: .6rem;
+            }
+            .title{
+                
+                font-size: clamp(18px, 3.5vw, 30px) !important;
+            }
+            .res{
+                font-size: clamp(15px, 2.5vw, 25px) !important;            
+                flex-grow: 1;
+            }
+        }
+    }
+
+}
+
+.creation{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    .label_c{
+        margin-bottom: 8px;
+        font-weight: bolder;
+    }
+    section{
+        background: linear-gradient(-30deg, rgba(0, 33, 250, 0.308) , rgba(179, 0, 255, 0.3));
+        width: 100%;
+        padding: 1rem;
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        .split, .split-3{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            div{
+                width: calc(50% - 1.2rem);
+                p{
+                    display: flex;
+                    width: 100%;
+                    justify-content: center;
+                    align-items: center;
+                    gap: .5rem;
+
+                }
+            }
+            input, select{
+                flex-grow: 1;
+                background-color: $t;
+                border: .5px solid black;
+                border-radius: 10px;
+                height: 28px;
+            }
+        }
+        .split-3{
+            flex-wrap: wrap;
+            gap: .5rem;
+            justify-content: space-around;
+            div{
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: .5rem;
+                width: auto;
+                input, select{
+                    flex-shrink: 1 !important;
+                }
+            }
+        }
+        textarea{
+            border: .5px solid black;
+            border-radius: 10px;
+            background-color: $t;
+
+        }
+       
+        .desc{
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+
+        }
+
+    }
+    .more_i{
+    }
+    .check_c{
+        p{
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            label{
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+@media (max-width: 550px) {
+    .split{
+        div{
+            width: 100% !important;
+        }
+    }
+    .split-3{
+        flex-direction: column;
+        div{
+            flex-grow: 1;
+            width: 100% !important;
+            input, select{
+                flex-grow: 1;
+                width: 100% !important;
+            }
+        }
+    }
+    .show_p{
+        padding: 1.5rem;
+        .split_p{
+            flex-wrap: wrap;
+        }
+        .info{
+            max-width: 100% !important ;
+        }
+        .actions{
+            width: 100% !important;
+            flex-grow: 1;
+            align-items: flex-end !important;
+            flex-wrap: wrap;
+        }
+
+    }
+    .slim_cont{
+        .slim_{
+            
+            width: calc(50% - 1.2rem) !important;
+        }
+        img{
+            width: 28px !important;
+        }
+        h3{
+
+            a{
+                line-height: 70% !important;
+                font-size: 12px;
+            }
+        }
+        gap: 1.2rem !important;
+    }
 }

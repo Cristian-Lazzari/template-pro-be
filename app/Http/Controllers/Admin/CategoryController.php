@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Category;
-use App\Models\Ingredient;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-class IngredientController extends Controller
+class CategoryController extends Controller
 {
     private $validations_ingredient = [
         'name_ing'          => 'required|string|min:2',
         'price_ing'         => 'required',
     ];
     public function index()
-    {
-        $ingredients    = Ingredient::all(); 
-        return view('admin.ingredients.index', compact('ingredients'));
+    { 
+        $categories     = Category::all();
+        return view('admin.categories.index', compact('categories'));
     }
      
     public function create()
@@ -119,11 +118,5 @@ class IngredientController extends Controller
         $ingredient    = Ingredient::where('id', $id)->firstOrFail();; 
         $categories    = Category::all();
         return view('admin.ingredients.show', compact('categories', 'ingredient'));
-    }
-     
-   
-    
-
-    
+    }  
 }
-    
