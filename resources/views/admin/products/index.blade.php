@@ -4,9 +4,9 @@
 
 @section('contents')
 @php
-    $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-    $domain = 'https://future-plus.it/allergiens/';
-    $allergiens = [
+$typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
+$domain = 'https://future-plus.it/allergiens/';
+$allergiens = [
         1 => ['img' => $domain . 'gluten.png', 'name' => 'glutine'] ,
         2 => ['img' => $domain . 'fish.png', 'name' => 'pesce'] ,
         3 => ['img' => $domain . 'crab.png', 'name' => 'crostacei'] ,
@@ -18,6 +18,7 @@
         9 => ['img' => $domain . 'sedano.png', 'name' => 'sedano'] ,
         10 => ['img' => $domain . 'senape.png', 'name' => 'senape'] ,
         11 => ['img' => $domain . 'egg.png', 'name' => 'uova'] ,
+        12 => ['img' => $domain . 'gluten-free.png', 'name' => 'senza glutine']
 ];
 @endphp
 @if (session('success'))

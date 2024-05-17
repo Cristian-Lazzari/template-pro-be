@@ -11,9 +11,6 @@
     </div>
 @endif
     
-
-
-
 @php
 $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
 $domain = 'https://future-plus.it/allergiens/';
@@ -29,6 +26,7 @@ $allergiens = [
         9 => ['img' => $domain . 'sedano.png', 'name' => 'sedano'] ,
         10 => ['img' => $domain . 'senape.png', 'name' => 'senape'] ,
         11 => ['img' => $domain . 'egg.png', 'name' => 'uova'] ,
+        12 => ['img' => $domain . 'gluten-free.png', 'name' => 'senza glutine']
 ];
 @endphp
 <a class="btn btn-outline-dark mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
