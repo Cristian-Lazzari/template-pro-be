@@ -322,7 +322,15 @@ $t : rgba(255, 255, 255, 0.361);
 }
 
 
-    
+.ell-c{
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width:clamp(60px,70vw, 300px);
+    .ellips{
+        max-width:clamp(60px,70vw, 300px);  
+        white-space: nowrap;  
+    }
+}   
 
 
 
@@ -636,7 +644,7 @@ $t : rgba(255, 255, 255, 0.361);
         
         .info{
             flex-grow: 1;
-            //max-width: 50%;
+            max-width: 50%;
             section{
                 margin-bottom: 10px;
                 h4{

@@ -3,23 +3,7 @@
 
 
 @section('contents')
-@php
-    $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-    $domain = 'https://future-plus.it/allergiens/';
-    $allergiens = [
-        1 => ['img' => $domain . 'gluten.png', 'name' => 'glutine'] ,
-        2 => ['img' => $domain . 'fish.png', 'name' => 'pesce'] ,
-        3 => ['img' => $domain . 'crab.png', 'name' => 'crostacei'] ,
-        4 => ['img' => $domain . 'dairy.png', 'name' => 'latticini'] ,
-        5 => ['img' => $domain . 'sesame.png', 'name' => 'sesamo'] ,
-        6 => ['img' => $domain . 'peanut.png', 'name' => 'arachidi'] ,
-        7 => ['img' => $domain . 'soy.png', 'name' => 'soia'] ,
-        8 => ['img' => $domain . 'molluschi.png', 'name' => 'molluschi'] ,
-        9 => ['img' => $domain . 'sedano.png', 'name' => 'sedano'] ,
-        10 => ['img' => $domain . 'senape.png', 'name' => 'senape'] ,
-        11 => ['img' => $domain . 'egg.png', 'name' => 'uova'] ,
-];
-@endphp
+
 @if (session('success'))
     @php
         $data = session('success')
@@ -30,9 +14,9 @@
 @endif
 <a class="btn btn-outline-dark mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
 
-<h1>Prodotti</h1>
+<h1>Post</h1>
  
-<form class="top-bar-product" action="{{ route('admin.products.filter') }}" method="post">
+<form class="top-bar-product" action="{{ route('admin.posts.filter') }}" method="post">
     @csrf   
     <input type="hidden" name="archive" value="0">
     
@@ -41,11 +25,11 @@
 
         {{-- NOME --}}
         <div class="s-name">
-            <label for="name" class="fw-semibold">Nome Prodotto</label>
+            <label for="name" class="fw-semibold">Titolo post</label>
             <div>
-                <input type="text" class="" id="name" name="name"
+                <input type="text" class="" id="title" name="title"
                     @if (isset($filters))
-                        value="{{  $filters['name'] }}"  
+                        value="{{  $filters['title'] }}"  
                     @endif > 
                 <button class="search bg-primary" type="sumbit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -55,16 +39,8 @@
             </div>
         </div>
 
+        
         {{-- VISIBILITà  --}}
-        <div>
-            <label for="category_id" class="form-label fw-semibold">Categoria</label>
-            <select class="" id="category_id" name="category_id" >
-                <option @if (!isset($filters) || $filters['category_id'] == 0) selected @endif value="0">Tutti</option>
-                @foreach ($categories as $item)
-                    <option @if (isset($filters) && $filters['category_id'] == $item->id) selected @endif value="{{$item->id}}"> @if($item->id == 1) non categorizzati @else {{$item->name}} @endif</option>
-                @endforeach
-            </select>
-        </div>
         <div>
             <label for="visible" class="form-label fw-semibold">Visibilità</label>
             <select class="" id="visible" name="visible" >
@@ -74,9 +50,17 @@
             </select>
         </div>
         <div>
+            <label for="path" class="form-label fw-semibold">Path</label>
+            <select class="" id="path" name="path" >
+                <option @if (isset($filters) && $filters['path'] == '0') selected @endif value="0">Tutti</option>
+                <option @if (isset($filters) && $filters['path'] == '1') selected @endif value="1">News</option>
+                <option @if (isset($filters) && $filters['path'] == '2') selected @endif value="2">Storia</option>
+            </select>
+        </div>
+        <div>
             <label for="order" class="form-label fw-semibold">Ordina per</label>
             <select class="" id="order" name="order" >
-                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Ultima modifica</option>
+                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Precedenza assegnata</option>
                 <option @if (isset($filters) && $filters['order'] == '1') selected @endif value="1">Nome A-Z</option>
             </select>
         </div>
@@ -87,7 +71,7 @@
                  <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
              </svg>  FILTRA
          </button>
-         <a class="btn btn-warning" href="{{ route('admin.products.index')}}">
+         <a class="btn btn-warning" href="{{ route('admin.posts.index')}}">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
                  <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
              </svg> 
@@ -97,54 +81,50 @@
     
 </form> 
 <div class="action-page">
-    <a class="btn btn-outline-success m-1 w-auto" href="{{ route('admin.products.create') }}">Crea un nuovo prodotto</a>
-    <a class="btn btn-outline-danger m-1 w-auto" href="{{ route('admin.products.archived') }}">Archivio</a>
+    <a class="btn btn-outline-success m-1 w-auto" href="{{ route('admin.posts.create') }}">Crea un nuovo post</a>
+    <a class="btn btn-outline-danger m-1 w-auto" href="{{ route('admin.posts.archived') }}">Archivio</a>
 </div>
 
 <div class="object-container">
-    @foreach ($products as $item)
+    @foreach ($posts as $item)
 
         <div class="obj  @if (!$item->visible) not_v @endif">
-            <h3><a href="{{ route('admin.products.show', $item) }}">{{$item->name}}</a></h3>     
+            <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
             <div class="card_">
-                @if (isset($filters->image))
-                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                @if (isset($item->image))
+                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
                 @else
-                    <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->name }}">
+                    <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
                 @endif 
 
                 <div class="info">
                     <section>
-                        <h4>Ingredienti:</h4>
-                        <p>
-                            @foreach ($item->ingredients as $ingredient)     
-                                {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
-                            @endforeach
-                        </p>
+                        <h4>Descrizione:</h4> 
+                        <p>{{$item->description}}</p>       
                     </section>
                     <section>
-                        <h4>Descrizione:</h4>
-                        @if ($item->description)
-                            <p>{{$item->description}}</p>
+                        <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
+                        @if (isset($item->link)) 
+                            <h4 class="ell-c">Link: <span class="ellips">{{$item->link}}</span></h4>
                         @else
-                            <p>(nessuna)</p>
-                        @endif
+                            <p>(nessun link impostato)</p>   
+                        @endif  
                     </section>
+
                     <div class="split_i">
-                        <h4>{{$item->category->name}}</h4>
-                        <div class="price">€{{$item->price / 100}}</div>
+                        
+                        <h4 class="ell-c">Path: <span class="ellips">{{$item->path}}</span></h4>
+                        @if (isset($item->link))
+                            <div class="price">{{$item->hashtag}}</div>
+                        @else
+                            <div class="price">(nessun hashtag impostato)</div>   
+                        @endif 
                     </div>
                 </div>
             </div>
-            <div class="allergiens">
-                @php $all = json_decode($item->allergiens) @endphp
-                @foreach ($all as $i)
-                    <img src="{{$allergiens[$i]['img']}}" alt="" title="{{$allergiens[$i]['name']}}">
-                @endforeach
-            </div>
             <div class="actions">
-                <a class="my_btn m" href="{{ route('admin.products.edit', $item) }}">Modifica</a>
-                <form action="{{ route('admin.products.status') }}" method="POST">
+                <a class="my_btn m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
+                <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
                     <input type="hidden" name="archive" value="0">
                     <input type="hidden" name="v" value="0">
@@ -152,7 +132,7 @@
                     <input type="hidden" name="id" value="{{$item->id}}">
                     <button class="my_btn d" type="submit">Archivia</button>
                 </form>
-                <form action="{{ route('admin.products.status') }}" method="POST">
+                <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
                     <input type="hidden" name="archive" value="0">
                     <input type="hidden" name="v" value="1">

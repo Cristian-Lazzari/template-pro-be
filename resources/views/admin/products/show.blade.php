@@ -32,10 +32,12 @@
                 <img class="logo_" src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$product->name }}">
             @endif 
             <div class="allergiens">
-                @php $all = json_decode($product->allergiens) @endphp
-                @foreach ($all as $p)
-                    <img src="{{$allergiens[$p]['img']}}" alt="{{$allergiens[$p]['name']}}" title="{{$allergiens[$p]['name']}}">
-                @endforeach
+                @if ($product->allergiens !== [])
+                    @php $all = json_decode($product->allergiens) @endphp
+                    @foreach ($all as $p)
+                        <img src="{{$allergiens[$p]['img']}}" alt="{{$allergiens[$p]['name']}}" title="{{$allergiens[$p]['name']}}">
+                    @endforeach
+                @endif
             </div>
         </div>
         <div class="info">
@@ -79,16 +81,44 @@
         </div>
         <div class="actions">
             <a class="my_btn m" href="{{ route('admin.products.edit', $product) }}">Modifica</a>
-            {{-- <form action="{{ route('admin.products.status') }}" method="POST">
+            <form action="{{ route('admin.products.destroy', ['product'=>$product]) }}" method="post" >
+                @method('delete')
                 @csrf
                 <input type="hidden" name="f" value="1">
-                <button class="my_btn d" type="submit">Archivia</button>
+                <button class="my_btn d" type="submit">Elimina</button>
             </form>
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf
-                <input type="hidden" name="f" value="1">
-                <button class="my_btn v" type="submit">Visibilità -  @if ($product->visible) on  @else off @endif</button>
-            </form> --}}
+                <input type="hidden" name="archive" value="0">
+                <input type="hidden" name="v" value="0">
+                <input type="hidden" name="a" value="1">
+                <input type="hidden" name="id" value="{{$product->id}}">
+                <button class="my_btn d" type="submit">{{$product->arcived ? 'ripristina': 'archivia'}}</button>
+            </form>
+            <form action="{{ route('admin.products.status') }}" method="POST">
+                @csrf
+                <input type="hidden" name="archive" value="0">
+                <input type="hidden" name="v" value="1">
+                <input type="hidden" name="a" value="0">
+                <input type="hidden" name="id" value="{{$product->id}}">
+                @if (!$product->visible)
+                    <button class="my_btn v" type="submit">
+                        <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+                            <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+                            <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+                        </svg>  
+                    </button>
+                @else
+                    <button class="my_btn v" type="submit">
+                        <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                        </svg>    
+                    </button>
+                @endif
+                
+            </form>
+           
         </div>
     </div>
     <p>Data creazione: {{$product->created_at}}</p>

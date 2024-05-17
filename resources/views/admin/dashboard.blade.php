@@ -41,7 +41,7 @@
               </svg>
         </a>
     
-        <a class="s3b" href="{{ route('admin.products.index') }}">
+        <a class="s3b" href="{{ route('admin.posts.index') }}">
             Post - Chi siamo?
         </a>
     </section>

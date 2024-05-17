@@ -15,19 +15,31 @@ class ProductController extends Controller
 
     
     private $validationsTrue = [
-        'name'          => 'required|string|min:1|max:50',
+        'name'          => 'required|string|min:1|max:50|unique:products,name',
         'image'         => 'nullable|image',
         'price'         => 'required',
         'slot_plate'    => 'required',
     ];
 
     private $validationsFalse = [
+        'name'          => 'required|string|min:1|max:50|unique:products,name',
+        'image'         => 'nullable|image',
+        'price'         => 'required',
+    ];
+    private $validationsTrue1 = [
+        'name'          => 'required|string|min:1|max:50',
+        'image'         => 'nullable|image',
+        'price'         => 'required',
+        'slot_plate'    => 'required',
+    ];
+
+    private $validationsFalse1 = [
         'name'          => 'required|string|min:1|max:50',
         'image'         => 'nullable|image',
         'price'         => 'required',
     ];
     private $validations_ingredient = [
-        'name_ing'          => 'required|string|min:2',
+        'name_ing'          => 'required|string|min:2|unique:ingredients,name',
         'price_ing'         => 'required',
     ];
 
@@ -173,6 +185,10 @@ class ProductController extends Controller
             }
             
             $new_ing = new Ingredient();
+            if (isset($data['image'])) {
+                $imagePath = Storage::put('public/uploads', $data['image_ing']);
+                $new_ing->image = $imagePath;
+            }
             $new_ing->name = $data['name_ing'];
             if (isset($data['option_ing'])) {
                 $new_ing->option = true;
@@ -273,8 +289,7 @@ class ProductController extends Controller
         return view('admin.products.edit', compact( 'product', 'categories', 'ingredients'));        
     }
     
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id){
         $product = Product::where('id', $id)->firstOrFail();
     
         $typeOfOrdering = true; 
@@ -309,16 +324,13 @@ class ProductController extends Controller
             }
             $new_ing->save();
             
-            return to_route('admin.products.create')->with('ingredient_success', $data);     
+            return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
-
         if ($typeOfOrdering) {        
-            $request->validate($this->validationsTrue);
+            $request->validate($this->validationsTrue1);
         }else{
-            $request->validate($this->validationsFalse);
-        }
-        
-        
+            $request->validate($this->validationsFalse1);
+        }    
         $allergiens = [];
         if(isset($data['ingredients'])){     
             foreach ($data['ingredients'] as $i) {
@@ -338,14 +350,15 @@ class ProductController extends Controller
             }
         }
         
-
-        
         $prezzo_stringa = str_replace(',', '.', $data['price']);
         $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
         $prezzo_float = floatval($prezzo_stringa);
 
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
+            if ($product->image) {
+                Storage::delete($product->image);
+            }
             $product->image = $imagePath;
         } 
         $product->category_id   = $data['category_id'];
@@ -372,12 +385,18 @@ class ProductController extends Controller
                 array_push($ingredients, $v);
             }
             $product->ingredients()->sync($ingredients ?? []);  
+        }else{
+            $product->ingredients()->sync([] ?? []);  
         }
         
         return view('admin.products.show', compact( 'product'));     
     }
 
-    public function destroy($id)
+    public function destroy(Product $product)
     {     
+        $product->ingredients()->detach();
+        $product->forceDelete();
+        return to_route('admin.products.index');
+
     }
 }

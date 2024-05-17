@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\DateController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\IngredientController;
@@ -23,11 +24,17 @@ Route::middleware(['auth', 'verified'])
         Route::get('/',                                      [AdminPageController::class, 'dashboard'])->name('dashboard');
         Route::get('/setting',                               [AdminPageController::class, 'setting'])->name('setting');
    
-        // Rotte Resource
+        // Rotte product
         
         Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');
         Route::post('products/filter',  [ProductController::class, 'filter'])->name('products.filter');
         Route::post('products/status', [ProductController::class, 'status'])->name('products.status');
+   
+        // Rotte post
+        
+        Route::get('posts/archived', [PostController::class, 'archived'])->name('posts.archived');
+        Route::post('posts/filter',  [PostController::class, 'filter'])->name('posts.filter');
+        Route::post('posts/status', [PostController::class, 'status'])->name('posts.status');
         
         // Rotte Date 
         
@@ -35,9 +42,10 @@ Route::middleware(['auth', 'verified'])
         Route::post('/dates/updateMax',                     [DateController::class, 'updateMax'])->name('dates.updateMax');
         Route::post('/dates/runSeeder',                     [DateController::class, 'runSeeder'])->name('dates.runSeeder');
 
-        
+        //resource
         Route::resource('dates',        DateController::class);
         Route::resource('products',     ProductController::class);
+        Route::resource('posts',        PostController::class);
         Route::resource('ingredients',  IngredientController::class);
         Route::resource('categories',   CategoryController::class);
     });

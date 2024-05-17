@@ -22,14 +22,14 @@ $allergiens = [
         2 => ['img' => $domain . 'fish.png', 'name' => 'pesce'] ,
         3 => ['img' => $domain . 'crab.png', 'name' => 'crostacei'] ,
         4 => ['img' => $domain . 'dairy.png', 'name' => 'latticini'] ,
-        5 => ['img' => $domain . 'fish.png', 'name' => 'pesce'] ,
-        6 => ['img' => $domain . 'sesame.png', 'name' => 'sesamo'] ,
-        7 => ['img' => $domain . 'peanut.png', 'name' => 'arachidi'] ,
-        8 => ['img' => $domain . 'soy.png', 'name' => 'soia'] ,
-        9 => ['img' => $domain . 'molluschi.png', 'name' => 'molluschi'] ,
-        10 => ['img' => $domain . 'sedano.png', 'name' => 'sedano'] ,
+        5 => ['img' => $domain . 'sesame.png', 'name' => 'sesamo'] ,
+        6 => ['img' => $domain . 'peanut.png', 'name' => 'arachidi'] ,
+        7 => ['img' => $domain . 'soy.png', 'name' => 'soia'] ,
+        8 => ['img' => $domain . 'molluschi.png', 'name' => 'molluschi'] ,
+        9 => ['img' => $domain . 'sedano.png', 'name' => 'sedano'] ,
+        10 => ['img' => $domain . 'senape.png', 'name' => 'senape'] ,
         11 => ['img' => $domain . 'egg.png', 'name' => 'uova'] ,
-    ];
+];
 @endphp
 <a class="btn btn-outline-dark mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
 
@@ -47,7 +47,7 @@ $allergiens = [
             </div>
             <div>
                 <label class="label_c" for="price">Prezzo</label>
-                <p>€<input @if(!isset($data)) value="{{ old('price', $product->price) / 100 }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" placeholder=" inserisci il prezzo "></p>
+                <p>€<input @if($product->price) value="{{  $product->price / 100 }}" @else value="{{ old('price')}}" @endif  type="number" name="price" id="price" placeholder=" inserisci il prezzo "></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -125,6 +125,17 @@ $allergiens = [
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
+        <div class="split"> 
+            <div>
+                <label class="label_c" for="image_ing">Immagine</label>
+                <p><input  class="form-control" type="file" id="image_ing" name="image_ing" ></p>
+                @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
+            </div> 
+            <div class="m-auto">
+                <input type="checkbox" class="btn-check" id="option_ing" name="option_ing" value="1" @if (old('option_ing', [])) checked @endif>
+                <label class="btn btn-outline-dark" for="option_ing">questo ingrediente è un opzione</label>
+            </div>
+        </div>
         <div class="check_c">
             <label class="label_c" for="type">Categorie abbinate</label>
             <p>
@@ -159,11 +170,16 @@ $allergiens = [
                 @foreach($ingredients as $ingredient)
                     <input type="checkbox" class="btn-check" id="ingredient{{ $ingredient->id }}" name="ingredients[]" 
                     value="{{ $ingredient->id }}"
-                        @if((isset($data) && $ingredient['name'] == $data['name_ing']) || in_array($ingredient->id, old('ingredients', $product->ingredients->pluck('id')->all())))
+                    @if(isset($data))
+                        @if(($ingredient['name'] == $data['name_ing']))
                             checked 
-                        @elseif(isset($data) && in_array($ingredient->id, $data['ingredients'])) 
+                        @elseif(in_array($ingredient->id, $data['ingredients'])) 
                             checked 
-                        @endif>
+                        @endif
+                    @elseif(in_array($ingredient->id, old('ingredients', $product->ingredients->pluck('id')->all())))
+                     checked
+                    @endif
+                    >
 
                     <label class="btn btn-outline-dark shadow-sm" for="ingredient{{ $ingredient->id }}">{{ $ingredient->name }}</label>
                     @error('ingredients') 

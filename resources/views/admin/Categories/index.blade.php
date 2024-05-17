@@ -29,15 +29,16 @@
         <div class="slim_ ">
             <section class="s1">
 
-                @if (isset($filters->icon))
+                @if (isset($item->icon))
                     <img src="{{ asset('public/storage/' . $item->icon) }}" alt="{{$item->name}}">
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->name }}">
                 @endif 
     
-                <h3><a href="{{ route('admin.categories.show', $item) }}">{{$item->name}}</a></h3>     
+                <h3>{{$item->name}}</h3>     
             </section>
             <section>   
+                @if ($item->id !== 1)
                 <div></div>     
                 <div class="actions">
                     <a class="" href="{{ route('admin.categories.edit', $item) }}">
@@ -46,7 +47,8 @@
                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                         </svg>
                     </a>
-                    <form action="{{ route('admin.categories.destroy', 'ingredient') }}" method="POST">
+                    <form action="{{ route('admin.categories.destroy', ['category'=>$item]) }}" method="post" >
+                        @method('delete')
                         @csrf
                         <button class="s_d" type="submit">
                             <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
@@ -57,6 +59,7 @@
                     </form>
                     
                 </div>
+                @endif
             </section>
 
         </div>

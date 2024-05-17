@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Product;
 use App\Models\Category;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
@@ -10,6 +11,10 @@ use App\Http\Controllers\Controller;
 class IngredientController extends Controller
 {
     private $validations_ingredient = [
+        'name_ing'          => 'required|string|min:2|unique:ingredients,name',
+        'price_ing'         => 'required',
+    ];
+    private $validations_ingredient1 = [
         'name_ing'          => 'required|string|min:2',
         'price_ing'         => 'required',
     ];
@@ -46,6 +51,10 @@ class IngredientController extends Controller
         }
         
         $new_ing = new Ingredient();
+        if (isset($data['image'])) {
+            $imagePath = Storage::put('public/uploads', $data['image_ing']);
+            $new_ing->image = $imagePath;
+        }
         $new_ing->name = $data['name_ing'];
         if (isset($data['option_ing'])) {
             $new_ing->option = true;
@@ -68,14 +77,14 @@ class IngredientController extends Controller
     
     public function edit($id)
     {
-        $ingredient    = Ingredient::where('id', $id)->firstOrFail();; 
+        $ingredient    = Ingredient::where('id', $id)->firstOrFail();
         $categories    = Category::all();
         return view('admin.ingredients.edit', compact('categories', 'ingredient'));
     }
     public function update(Request $request, $id)
     {
         $data = $request->all();
-        $request->validate($this->validations_ingredient);
+        $request->validate($this->validations_ingredient1);
         
         $prezzo_stringa = str_replace(',', '.', $data['price_ing']);
         $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
@@ -91,8 +100,15 @@ class IngredientController extends Controller
             $type_ing = '[]';
         }
         
-        $new_ing = Ingredient::where('id', $id)->firstOrFail();; 
+        $new_ing = Ingredient::where('id', $id)->firstOrFail();
         $new_ing->name = $data['name_ing'];
+        if (isset($data['image'])) {
+            $imagePath = Storage::put('public/uploads', $data['image_ing']);
+            if ($new_ing->image) {
+                Storage::delete($new_ing->image);
+            }
+            $new_ing->image = $imagePath;
+        }
         if (isset($data['option_ing'])) {
             $new_ing->option = true;
         }else{
@@ -110,9 +126,11 @@ class IngredientController extends Controller
  
     }
     
-    public function destroy($id)
+    public function destroy(Ingredient $ingredient)
     {
-        //
+        $ingredient->products()->detach();
+        $ingredient->delete();
+        return to_route('admin.ingredients.index')->with('delete_success', $ingredient);
     }
     public function show($id)
     {

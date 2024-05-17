@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Category;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
-    private $validations_ingredient = [
-        'name_ing'          => 'required|string|min:2',
-        'price_ing'         => 'required',
+    private $validations_category = [
+        'name'          => 'required|string|min:2|unique:categories,name',
+    ];
+    private $validations_category1 = [
+        'name'          => 'required|string|min:2',
     ];
     public function index()
     { 
@@ -20,103 +23,69 @@ class CategoryController extends Controller
      
     public function create()
     {
-    $categories     = Category::all();
-    return view('admin.ingredients.create', compact('categories'));
+        return view('admin.categories.create');
     }
 
 
     public function store(Request $request)
     {
         $data = $request->all();
-        $request->validate($this->validations_ingredient);
+        $request->validate($this->validations_category);
         
-        $prezzo_stringa = str_replace(',', '.', $data['price_ing']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-        if (isset($data['allergiens_ing'])){
-            $ingredient_allergiens = $data['allergiens_ing'];
-        }else{
-            $ingredient_allergiens = '[]';
-        }
-        if (isset($data['type_ing'])){
-            $type_ing = $data['type_ing'];
-        }else{
-            $type_ing = '[]';
-        }
+        $category = new Category();
+        $category->name = $data['name'];
+        if (isset($data['icon'])) {
+            $iconPath = Storage::put('public/uploads', $data['icon']);
+            $category->icon = $iconPath;
+        } 
+        $category->save();
         
-        $new_ing = new Ingredient();
-        $new_ing->name = $data['name_ing'];
-        if (isset($data['option_ing'])) {
-            $new_ing->option = true;
-        }else{
-            $new_ing->option = false;
-        }
-
-        $new_ing->price = intval(round($prezzo_float * 100));
-        $new_ing->type = json_encode($type_ing);
-
-        if($ingredient_allergiens){
-            $new_ing->allergiens = json_encode($ingredient_allergiens);
-        }
-        $new_ing->save();
-        
-        $m = ' "' . $new_ing['name'] . '" è stato creato correttamente';
-        return to_route('admin.ingredients.index')->with('ingredient_success', $m);   
+        $m = ' "' . $category['name'] . '" è stato creato correttamente';
+        return to_route('admin.categories.index')->with('category_success', $m);   
     }
     
     
     public function edit($id)
     {
-        $ingredient    = Ingredient::where('id', $id)->firstOrFail();; 
-        $categories    = Category::all();
-        return view('admin.ingredients.edit', compact('categories', 'ingredient'));
+        $category    = Category::where('id', $id)->firstOrFail();; 
+    
+        return view('admin.categories.edit', compact( 'category'));
     }
     public function update(Request $request, $id)
     {
         $data = $request->all();
-        $request->validate($this->validations_ingredient);
+        $request->validate($this->validations_category1);
         
-        $prezzo_stringa = str_replace(',', '.', $data['price_ing']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-        if (isset($data['allergiens_ing'])){
-            $ingredient_allergiens = $data['allergiens_ing'];
-        }else{
-            $ingredient_allergiens = '[]';
+        $category = Category::where('id', $id)->firstOrFail();
+        $category->name = $data['name'];
+        if (isset($data['icon'])) {
+            $iconPath = Storage::put('public/uploads', $data['icon']);
+            if ($category->icon) {
+                Storage::delete($product->icon);
+            }
+            $category->icon = $iconPath;
         }
-        if (isset($data['type_ing'])){
-            $type_ing = $data['type_ing'];
-        }else{
-            $type_ing = '[]';
-        }
+        $category->update();
         
-        $new_ing = Ingredient::where('id', $id)->firstOrFail();; 
-        $new_ing->name = $data['name_ing'];
-        if (isset($data['option_ing'])) {
-            $new_ing->option = true;
-        }else{
-            $new_ing->option = false;
-        }
-        $new_ing->price = intval(round($prezzo_float * 100));
-        $new_ing->type = json_encode($type_ing);
-    
-        if($ingredient_allergiens){
-            $new_ing->allergiens = json_encode($ingredient_allergiens);
-        }
-        $new_ing->update();
-        $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';
-        return to_route('admin.ingredients.index')->with('ingredient_success', $m);
+        $m = ' "' . $category['name'] . '" è stato creato correttamente';
+        return to_route('admin.categories.index')->with('category_success', $m);
  
     }
     
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        //
+        foreach ($category->product as $product) {
+            $product->category_id = 1;
+            $product->update();
+        }
+        
+        $category->delete();
+        
+        return to_route('admin.categories.index')->with('delete_success', $category);
     }
     public function show($id)
     {
-        $ingredient    = Ingredient::where('id', $id)->firstOrFail();; 
-        $categories    = Category::all();
-        return view('admin.ingredients.show', compact('categories', 'ingredient'));
+        $category    = category::where('id', $id)->firstOrFail();
+        //return view('admin.categories.show', compact('category'));
     }  
 }
