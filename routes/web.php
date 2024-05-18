@@ -21,26 +21,25 @@ Route::middleware(['auth', 'verified'])
     ->prefix('admin')
     ->group(function () {
 
-        Route::get('/',                                      [AdminPageController::class, 'dashboard'])->name('dashboard');
-        Route::get('/setting',                               [AdminPageController::class, 'setting'])->name('setting');
+        Route::get('/',        [AdminPageController::class, 'dashboard'])->name('dashboard');
+        Route::get('/setting', [AdminPageController::class, 'setting'])->name('setting');
    
         // Rotte product
         
         Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');
         Route::post('products/filter',  [ProductController::class, 'filter'])->name('products.filter');
-        Route::post('products/status', [ProductController::class, 'status'])->name('products.status');
-   
+        Route::post('products/status',  [ProductController::class, 'status'])->name('products.status');
+        
         // Rotte post
         
         Route::get('posts/archived', [PostController::class, 'archived'])->name('posts.archived');
         Route::post('posts/filter',  [PostController::class, 'filter'])->name('posts.filter');
-        Route::post('posts/status', [PostController::class, 'status'])->name('posts.status');
+        Route::post('posts/status',  [PostController::class, 'status'])->name('posts.status');
         
         // Rotte Date 
         
-        Route::post('/dates/updatestatus/v}',               [DateController::class, 'updatestatus'])->name('dates.updatestatus');      
-        Route::post('/dates/updateMax',                     [DateController::class, 'updateMax'])->name('dates.updateMax');
-        Route::post('/dates/runSeeder',                     [DateController::class, 'runSeeder'])->name('dates.runSeeder');
+        Route::post('dates/status',    [DateController::class, 'status'])->name('dates.status');
+        Route::post('/dates/generate', [DateController::class, 'generate'])->name('dates.generate');
 
         //resource
         Route::resource('dates',        DateController::class);

@@ -21,80 +21,47 @@ class DateController extends Controller
     }
 
 
-    public function updatestatus(Request $request)
-    {
-        $v = $request->input('v');
-        $date = Date::find($request->input('id'));
-        if($v == 1){
-            $date->visible_fq = !$date->visible_fq;
-            $date->save();
-           
-        }else if($v == 2){
-            $date->visible_ft = !$date->visible_ft;
-            $date->save();
-           
-        }else if($v == 3){
-            $date->visible_t = !$date->visible_t;
-            $date->save();
-        }else if($v == 4){
-            $date->visible_d = !$date->visible_d;
-            $date->save();
-        }
-        
-        return redirect()->back();
-    }
-   
-
-
-    public function updateMax(Request $request)
-    {
-        $v = $request->input('v');
-        $max = $request->input('max');
-        $date = Date::find($request->input('id'));
-    //  dd($max);
-        if($v == 1){
-            $date->max_res = $max;
-        }else if($v == 2){
-            $date->max_pz_t = $max;
-        }else if($v == 3){
-            $date->max_pz_q = $max;
-        }else if($v == 4){
-            $date->max_domicilio = $max;
-        }
-        $date->save();   
-        return redirect()->back();
-    }
-
-
-    private $validations = [
+    private $validations2 = [
+        'max_reservations'      => 'required|integer',
+    ];
+    private $validations3t = [
+        'max_domicilio'         => 'required|integer',
+        'max_pz_q'              => 'required|integer',
+        'max_pz_t'              => 'required|integer',
+    ];
+    private $validations3f = [
+        'max_domicilio'         => 'required|integer',
+        'max_asporto'           => 'required|integer',
+    ];
+    private $validations4t = [
         'max_domicilio'         => 'required|integer',
         'max_reservations'      => 'required|integer',
         'max_pz_q'              => 'required|integer',
         'max_pz_t'              => 'required|integer',
-        'times_slot_1'          => 'array',
-        'times_slot_1.*'        => 'string',
-        'times_slot_2'          => 'array',
-        'times_slot_2.*'        => 'string',
-        'times_slot_3'          => 'array',
-        'times_slot_3.*'        => 'string',
-        'times_slot_4'          => 'array',
-        'times_slot_4.*'        => 'string',
-        'times_slot_5'          => 'array',
-        'times_slot_5.*'        => 'string',
-        'times_slot_6'          => 'array',
-        'times_slot_6.*'        => 'string',
-        'times_slot_7'          => 'array',
-        'times_slot_7.*'        => 'string',
+    ];
+    private $validations4f = [
+        'max_domicilio'         => 'required|integer',
+        'max_reservations'      => 'required|integer',
+        'max_asporto'           => 'required|integer',
     ];
 
-    public function runSeeder(Request $request)
+    public function generate(Request $request)
     {
+        $typeOfOrdering = true; 
         try {
             $request->validate($this->validations);
+            if($typeOfOrdering){
+                $max_pz_t = $request->input("max_pz_t");
+                $max_pz_q = $request->input("max_pz_q");
+            }else{
+                $max_asporto = $request->input("max_asporto");
+            }
+            if($pack== 2 || )
             $max_reservations = $request->input("max_reservations");
-            $max_pz_t = $request->input("max_pz_t");
-            $max_pz_q = $request->input("max_pz_q");
+
+
             $max_domicilio = $request->input("max_domicilio");
+
             $days_off = $request->input("days_off");
             $times_slot1 = $request->input("times_slot_1");
             $times_slot2 = $request->input("times_slot_2");
@@ -104,105 +71,25 @@ class DateController extends Controller
             $times_slot6 = $request->input("times_slot_6");
             $times_slot7 = $request->input("times_slot_7");
 
-            $timesDay = [
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                [
-                    ['time' => '19:00', 'set' => ''] ,
-                    ['time' => '19:15', 'set' => ''] ,
-                    ['time' => '19:30', 'set' => ''] ,
-                    ['time' => '19:45', 'set' => ''] ,
-                    ['time' => '20:00', 'set' => ''] ,
-                    ['time' => '20:15', 'set' => ''] ,
-                    ['time' => '20:30', 'set' => ''] ,
-                ],
-                
-   
+            $timesDay = [];
+            $day =[
+                ['time' => '19:00', 'set' => ''] ,
+                ['time' => '19:15', 'set' => ''] ,
+                ['time' => '19:30', 'set' => ''] ,
+                ['time' => '19:45', 'set' => ''] ,
+                ['time' => '20:00', 'set' => ''] ,
+                ['time' => '20:15', 'set' => ''] ,
+                ['time' => '20:30', 'set' => ''] ,
             ];
-
-
-            for ($i = 0; $i < count($timesDay[0]); $i++) {
-                $timesDay[0][$i]['set'] = $times_slot1[$i];
+            for ($i=0; $i < 6; $i++) { 
+                for ($s = 0; $s < count($timesDay[$i]); $i++) {
+                    $timesDay[$i][$s]['set'] = $times_slot1[$s];
+                }
+                array_push($timesDay, $day);
             }
-            for ($i = 0; $i < count($timesDay[1]); $i++) {
-                $timesDay[1][$i]['set'] = $times_slot2[$i];
-            }
-            for ($i = 0; $i < count($timesDay[2]); $i++) {
-                $timesDay[2][$i]['set'] = $times_slot3[$i];
-            }
-            for ($i = 0; $i < count($timesDay[3]); $i++) {
-                $timesDay[3][$i]['set'] = $times_slot4[$i];
-            }
-            for ($i = 0; $i < count($timesDay[4]); $i++) {
-                $timesDay[4][$i]['set'] = $times_slot5[$i];
-            }
-            for ($i = 0; $i < count($timesDay[5]); $i++) {
-                $timesDay[5][$i]['set'] = $times_slot6[$i];
-            }
-            for ($i = 0; $i < count($timesDay[6]); $i++) {
-                $timesDay[6][$i]['set'] = $times_slot7[$i];
-            }
-
-            //dd($timesDay);
-            // @dd("max_reservations: " . $max_reservations, "times_slot: " . $timesDay_slot, "days_off: " . $days_off);
-            // dump($timesDay);
 
             // Pulisco le tabelle
             DB::table('dates')->truncate();
-            DB::table('months')->truncate();
-            DB::table('days')->truncate();
 
             // Eseguo il seeder
             $seeder = new DatesTableSeeder();

@@ -15,26 +15,21 @@ return new class extends Migration
     {
         Schema::create('dates', function (Blueprint $table) {
             $table->id();
-
-            $table->smallInteger('reserved');
-            $table->smallInteger('reserved_pz_t');
-            $table->smallInteger('reserved_pz_q');
-            $table->smallInteger('reserved_domicilio');
             $table->smallInteger('year');
             $table->tinyInteger('month');
             $table->tinyInteger('day');
             $table->tinyInteger('day_w');
             $table->string('time');
+
             $table->string('date_slot');
-            $table->boolean('visible_t');
-            $table->boolean('visible_fq');
-            $table->boolean('visible_ft');
-            $table->boolean('visible_d');
-            $table->smallInteger('max_res');
-            $table->smallInteger('max_pz_q');
-            $table->smallInteger('max_pz_t');
-            $table->smallInteger('max_domicilio');
-            $table->tinyInteger('status');
+            //array
+            $table->text('reserving');
+            $table->text('visible');
+            $table->text('availability');
+            //
+            $table->tinyInteger('status_service');
+
+            $table->timestamps();
         });
     }
 

@@ -1,144 +1,122 @@
 @extends('layouts.base')
 
+
+
 @section('contents')
 @php
-        $days_name = [' ','lunedì', 'martedi', 'mercoledì', 'giovedì', 'venerd', 'sabato', 'domenica'];
+    $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
+    $pack = 1
 @endphp
+@if (session('ingredient_success'))
+    @php
+        $data = session('ingredient_success')
+    @endphp
+    <div class="alert alert-primary">
+        {{ $data }}
+    </div>
+@endif
+<a class="btn btn-outline-dark mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
 
+<h1>Date</h1>
 
-    
-<h1 class="m-5">GESTISCI IL IL GIORNO</h1>    
+<div class="action-page">
+   
+</div>
 
-
-
-        <div class="mydata">
-            
-            @foreach ($dates as $date)
-            
-            
-          @php
-              $status = ['','asporto','tavoli','asporto/tavoli','domicilio','domicilio/asporto','domicilio/tavoli','tutti']
-          @endphp
-                
-                <div class="mycard">
-                    <div class="left-c">
-                        <div class="data">
-                            <span>{{$status[$date['status']]}}</span>
-
-                            <h2>{{$date->time}}</h2>
-                            <span class="day_w">{{$days_name[$date->day_w]}}</span>
-                            <span>{{$date->day}}/{{$date->month}}/{{$date->year}}</span>
-                        </div>
-                        <div class="res">
-                            <h3>Ordini Prenotati</h3>
-                            <div class="n_res">{{$date->reserved_asporto}}</div>    
-                        </div>
-                        {{-- <div class="res">
-                            <h3>Posti Prenotati</h3>
-                            <div class="n_res">{{$date->reserved}}</div>
-                        </div> --}}
-                        <div class="res">
-                            <h3>Ordini a domicilio</h3>
-                            <div class="n_res">{{$date->reserved_domicilio}}</div>
-                        </div>
-                    </div>
-                    <div class="right-c">
-                        {{-- <div class="max">
-                            <h3>Max Posti</h3>
-                            <form action="{{ route('admin.dates.upmaxres', $date->id) }}" method="post">
-                                @csrf
-                                <button  class="btn btn-dark">+</button>
-                            </form>
-                            <span>{{$date->max_res}}</span>
-
-                            <form action="{{ route('admin.dates.downmaxres', $date->id) }}" method="post">
-                                @csrf
-                                <button  class="btn btn-dark">-</button>
-                            </form>
-                        </div> --}}
-                        <div class="max">
-                            <h3>Max Ordini</h3>
-                            <form action="{{ route('admin.dates.upmaxpz', $date->id) }}" method="post">
-                                @csrf
-                                <button  class="btn btn-dark">+</button>
-                                <input type="hidden" name="date_id" value="{{$date->id}}">
-                            </form>
-                            <span>{{$date->max_asporto}}</span>
-
-                            <form action="{{ route('admin.dates.downmaxpz', $date->id) }}" method="post">
-                                @csrf
-                                <button  class="btn btn-dark">-</button>
-                                <input type="hidden" name="date_id" value="{{$date->id}}">
-                            </form>
-                            
-                        </div>
-                        <div class="max">
-                            <h3>Max ordini dom.</h3>
-                            <form action="{{ route('admin.dates.upmaxpzd', $date->id) }}" method="post">
-                                @csrf
-                                <button  class="btn btn-dark">+</button>
-                                <input type="hidden" name="date_id" value="{{$date->id}}">
-                            </form>
-                            <span>{{$date->max_domicilio}}</span>
-                            
-                            <form action="{{ route('admin.dates.downmaxpzd', $date->id) }}" method="post">
-                                @csrf
-                                <button  class="btn btn-dark">-</button>
-                                <input type="hidden" name="date_id" value="{{$date->id}}">
-                            </form>
-
-                        </div>
-                        
-                    </div>
-                    
-                      
-                    <div class="visible-on">
-                        <form action="{{route('admin.dates.updatestatus')}}" method="post">
-                            @csrf
-                            <button @if (!$date->visible_asporto) class="off" @endif type="submit">{{ 'asporto' . '-' . ($date->visible_asporto ? 'si' : 'no')}}</button>
-                            <input type="hidden" name="v" value="1">
-                            <input type="hidden" name="id" value="{{$date->id}}">
-                        </form> 
-                
-                        {{-- <form action="{{route('admin.dates.updatestatus')}}" method="post">
-                            @csrf
-                            <button @if (!$date->visible_t) class="off" @endif type="submit">{{ 'tavoli' . '-' . ($date->visible_t ? 'si' : 'no')}}</button>
-                            <input type="hidden" name="v" value="2">
-                            <input type="hidden" name="id" value="{{$date->id}}">
-                        </form>  --}}
-                        <form action="{{route('admin.dates.updatestatus')}}" method="post">
-                            @csrf
-                            <button @if (!$date->visible_d) class="off" @endif type="submit">{{ 'domiclio' . '-' . ($date->visible_d ? 'si' : 'no')}}</button>
-                            <input type="hidden" name="v" value="3">
-                            <input type="hidden" name="id" value="{{$date->id}}">
-                        </form> 
-                        
-                      
-                    </div>
-               
-{{--                         
-                    <div class="visible">
-                        <span class="">non visibile</span> 
-                        
-                        <form action="{{ route('admin.dates.updatestatus', $date->id) }}" method="post">
-                            @csrf
-                            <button class="btn btn-success">visibilità</button>
-                        </form>
-                        
-                    </div> --}}
-                  
+<div class="container w-75 m-auto w-small-100">
+    <form class="d-flex flex-column py-5"  action="{{ route('admin.dates.generate') }}" method="post" enctype="multipart/form-data">
+        @csrf
+        <h3>GENERA NUOVE DATE</h3>
+        @if ($pack == 2 || $pack == 4)  
+            <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
+            <div class="input-group w-auto flex-nowrap py-2 ">
+                <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
+                <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" value="0">
+            </div>
+        @endif
+        @if ($pack == 3 || $pack == 4)  
+            @if ($typeOfOrdering)  
+                <h5 class="pt-4 ">Indica il numero massimo di pezzi al taglio per l'asporto</h5>
+                <div class="input-group w-auto flex-nowrap py-2 ">
+                    <label for="max_pz_q" class="input-group-text" >N° di pezzi</label>
+                    <input name="max_pz_q" id="max_pz_q" type="number" class="form-control" placeholder="N° di pezzi">
                 </div>
-                        
+                
+                <h5 class="pt-4 ">Indica il numero massimo di pizze al piatto per l'asporto</h5>
+                <div class="input-group w-auto flex-nowrap py-2 ">
+                    <label for="max_pz_t" class="input-group-text" >N° di pizze</label>
+                    <input name="max_pz_t" id="max_pz_t" type="number" class="form-control" placeholder="N° di pezzi">
+                </div>
+            @else
+                <h5 class="pt-4 ">Indica il numero massimo di ordini per l'asporto</h5>
+                <div class="input-group w-auto flex-nowrap py-2 ">
+                    <label for="max_asporto" class="input-group-text" >N° di ordini</label>
+                    <input name="max_asporto" id="max_asporto" type="number" class="form-control" placeholder="N° di pezzi">
+                </div>
                     
+            @endif
+            <h5 class="pt-4 ">Indica il numero massimo di ordini con la consegna a domicilio</h5>
+            <div class="input-group w-auto flex-nowrap py-2 ">
+                <label for="max_domicilio" class="input-group-text" >N° di oridini a domicilio</label>
+                <input name="max_domicilio" id="max_domicilio" type="number" class="form-control" placeholder="N° di pezzi">
+            </div>
+        @endif
+        <div>
+            <h5 class="pt-4">Seleziona i giorni in cui sei attivo</h5>
+            <div class="btn-group py-1 w-100 row g-2 " role="group" aria-label="Basic checkbox toggle button group">
+
+                @foreach ($days as $day)
+                
+                    <input class="btn-check "  name="day_off[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_off_{{ $day }}" value="{{ $day }}">
+                    <label class="btn btn-dark radius col w-100" for="day_off_{{ $day }}">{{ $days_name[$day] }}
+                        <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
+                            <div class="card card-body">
+                                <input
+                                    type="checkbox"
+                                    class="btn-check @error ('tags') is-invalid @enderror"
+                                    id="days_off_{{ $day }}"
+                                    name="days_off[]"
+                                    value="{{ $day }}">
+                                <label class="btn btn-outline-dark" for="days_off_{{ $day }}">Attiva</label>
+                                <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
+                                @foreach ($times as $time)
+                                    <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
+                                        @if ($pack == 2)
+                                            <option value="0">{{ $time['time'] }} - ND</option>
+                                            <option value="1">{{ $time['time'] }} - attivo</option>  
+                                        @elseif ($pack == 3)  
+                                            <option value="0">{{ $time['time'] }} - ND</option>
+                                            <option value="1">{{ $time['time'] }} - asporto</option>
+                                            <option value="4">{{ $time['time'] }} - domicilio</option>
+                                            <option value="7">{{ $time['time'] }} - tutti</option>
+                                        @elseif ($pack == 4)     
+                                            <option value="0">{{ $time['time'] }} - ND</option>
+                                            <option value="1">{{ $time['time'] }} - asporto</option>
+                                            <option value="2">{{ $time['time'] }} - tavoli</option>
+                                            <option value="3">{{ $time['time'] }} - asporto/tavoli</option>
+                                            <option value="4">{{ $time['time'] }} - domicilio</option>
+                                            <option value="5">{{ $time['time'] }} - domicilio/asporto</option>
+                                            <option value="6">{{ $time['time'] }} - domicilio/tavoli</option>
+                                            <option value="7">{{ $time['time'] }} - tutti</option>
+                                        @endif
+                                    </select>
+                                
+                                @endforeach                    
+                            
+                            </div>
+                        </div>
                     
-                    
-             
-            @endforeach
-     
+                
+                    </label>
+
+                @endforeach
+            </div>
         </div>
+        
 
- 
+        <button class="btn btn-outline-dark mt-4 w-100">Modifica</button>
+    </form>
+</div>
 
-    
+
 @endsection
-
