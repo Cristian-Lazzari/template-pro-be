@@ -48,19 +48,29 @@ class DateController extends Controller
     public function generate(Request $request)
     {
         $typeOfOrdering = true; 
+        $pack = 4;
         try {
             $request->validate($this->validations);
-            if($typeOfOrdering){
-                $max_pz_t = $request->input("max_pz_t");
-                $max_pz_q = $request->input("max_pz_q");
-            }else{
-                $max_asporto = $request->input("max_asporto");
+            if($pack== 2 ){
+                $max_reservations = $request->input("max_reservations");   
+            }elseif($pack == 3){
+                $max_domicilio = $request->input("max_domicilio");
+                if($typeOfOrdering){
+                    $max_pz_t = $request->input("max_pz_t");
+                    $max_pz_q = $request->input("max_pz_q");
+                }else{
+                    $max_asporto = $request->input("max_asporto");
+                } 
+            }elseif($pack == 4){
+                $max_reservations = $request->input("max_reservations");
+                $max_domicilio = $request->input("max_domicilio");
+                if($typeOfOrdering){
+                    $max_pz_t = $request->input("max_pz_t");
+                    $max_pz_q = $request->input("max_pz_q");
+                }else{
+                    $max_asporto = $request->input("max_asporto");
+                }
             }
-            if($pack== 2 || )
-            $max_reservations = $request->input("max_reservations");
-
-
-            $max_domicilio = $request->input("max_domicilio");
 
             $days_off = $request->input("days_off");
             $times_slot1 = $request->input("times_slot_1");
