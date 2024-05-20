@@ -27,7 +27,7 @@ return new class extends Migration
             $table->text('visible');
             $table->text('availability');
             //
-            $table->tinyInteger('status_service');
+            $table->tinyInteger('status');
 
             $table->timestamps();
         });

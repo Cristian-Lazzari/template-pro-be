@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])
         
         // Rotte Date 
         
+        Route::get('dates/showDay',    [DateController::class, 'showDay'])->name('dates.showDay');
         Route::post('dates/status',    [DateController::class, 'status'])->name('dates.status');
         Route::post('/dates/generate', [DateController::class, 'generate'])->name('dates.generate');
 

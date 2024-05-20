@@ -11,25 +11,16 @@ class Date extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reserved', 
-        'reserved_pz_q',
-        'reserved_pz_t',
-        'reserved_domicilio',
+        'reserving', 
         'year',
         'month',
         'day',
         'day_w', 
         'time', 
-        'max_res', 
-        'max_pz_q', 
-        'max_pz_t', 
-        'max_domicilio', 
+        'availability', 
         'date_slot', 
         'status', 
-        'visible_d',
-        'visible_t',
-        'visible_fq',
-        'visible_ft',
+        'visible',
     ];
     public $timestamps = false;
 

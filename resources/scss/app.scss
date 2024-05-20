@@ -106,12 +106,75 @@
 .c-white {
     color: white !important;
 }
+.day_form{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .3rem;
+    align-items: center;
+    input, label{
+        width: calc(50% - 1rem)!important;
+        flex-grow: 1;
+    }
+}
+.my{
+    text-align: center;
+    text-transform: capitalize;
+}
+.calendar-c{
+    margin: 3rem 0;
+    background-color: rgba(83, 89, 170, 0.31);
+    border-radius: 30px;
+    .c-name{
+        display: flex;
+        justify-content: space-between;
+        text-transform: capitalize;
+        padding: 5rem 13%;
+        color: #3e0f5d;
+        h4{
+
+            font-size: clamp(12px, 2vw, 20px);
+        }
+    }
+    .calendar{
+        text-align: center;
+        display: grid;
+        padding: 5rem 13%;
+        justify-content: center;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        
+        gap: .4rem;
+        width: 100%;
+    
+        .day{
+            color: #3e0f5d;
+            text-decoration: none;
+            font-size: clamp(15px, 2vw, 30px);
+            width: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            background-color: white;
+            .b{
+                background: none;
+                border: none;
+            }
+        }
+        .day-off{
+            opacity: .4;
+        }
+    }
+}
+
+
 
 //****************** new css *************
 
-*{
-    //transition: opacity .2s ease-out;
-}
+// *{
+//     //transition: opacity .2s ease-out;
+// }
 
 $bg-p-p : rgba(71, 79, 238, 0.133);
 $c-delete : rgba(228, 70, 42, 0.698);
@@ -669,5 +732,19 @@ $t : rgba(255, 255, 255, 0.361);
             }
         }
         gap: 1.2rem !important;
+    }
+    .day_form{
+        label{
+            width:90%!important;
+            flex-grow: 1;
+        }
+    }
+    .c-name{
+
+        h4{
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            max-width: 30px;
+        }
     }
 }
