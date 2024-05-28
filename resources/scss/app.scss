@@ -786,3 +786,33 @@ $t : rgba(255, 255, 255, 0.361);
         }
     }
 }
+.or-res-cont{
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+}
+.or-res{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    .top{
+        border-bottom: 1px black dotted;
+    }
+    section{
+        padding: .5rem;
+        display: flex;
+        width: 100%;
+        align-items: center;
+        .actions{
+            display: flex;
+            flex-grow: 1;
+            justify-content: flex-end;
+        }
+    }
+    .time{
+        font-size: clamp(18px, 3vw, 22px);
+    }
+    .date{
+        font-weight: bold;
+    }
+}
