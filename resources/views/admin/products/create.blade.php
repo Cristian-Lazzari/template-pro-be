@@ -12,22 +12,9 @@
 @endif
     
 @php
-$typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
+  //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
 $domain = 'https://future-plus.it/allergiens/';
-$allergiens = [
-        1 => ['img' => $domain . 'gluten.png', 'name' => 'glutine'] ,
-        2 => ['img' => $domain . 'fish.png', 'name' => 'pesce'] ,
-        3 => ['img' => $domain . 'crab.png', 'name' => 'crostacei'] ,
-        4 => ['img' => $domain . 'dairy.png', 'name' => 'latticini'] ,
-        5 => ['img' => $domain . 'sesame.png', 'name' => 'sesamo'] ,
-        6 => ['img' => $domain . 'peanut.png', 'name' => 'arachidi'] ,
-        7 => ['img' => $domain . 'soy.png', 'name' => 'soia'] ,
-        8 => ['img' => $domain . 'molluschi.png', 'name' => 'molluschi'] ,
-        9 => ['img' => $domain . 'sedano.png', 'name' => 'sedano'] ,
-        10 => ['img' => $domain . 'senape.png', 'name' => 'senape'] ,
-        11 => ['img' => $domain . 'egg.png', 'name' => 'uova'] ,
-        12 => ['img' => $domain . 'gluten-free.png', 'name' => 'senza glutine']
-];
+ 
 @endphp
 
 <a class="btn btn-outline-dark mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
@@ -36,7 +23,7 @@ $allergiens = [
 <h1>Crea nuovo Prodotto</h1>
 <form class="creation"  action="{{ route('admin.products.store') }}"  enctype="multipart/form-data"  method="POST">
     @csrf
-
+    
     <section class="base">
         <div class="split">
             <div>
@@ -77,7 +64,7 @@ $allergiens = [
     <section class="set" >
         <div class="split-3">
         
-            @if ($typeOfOrdering)
+            @if (config('configurazione.typeOfOrdering'))
             <div>
                 <label class="label_c" for="slot_plate">Spazio occupato</label>
                 <p><input @if(!isset($data)) value="{{ old('slot_plate') }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="inserisci lo spazio  "></p>
@@ -152,7 +139,7 @@ $allergiens = [
         <div class="check_c">
             <label class="label_c" for="type">Allergieni</label>
             <p>
-                @foreach($allergiens as $a)
+                @foreach(  config('configurazione.allergiens') as $a)
                     @php $i = $loop->iteration; @endphp
                     <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergiens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergiens_ing', []))) checked @endif>
                     <label class="btn btn-outline-dark" for="b{{ $i }}">{{ $a['name'] }}</label>
@@ -169,11 +156,11 @@ $allergiens = [
                 @foreach($ingredients as $ingredient)
                     <input type="checkbox" class="btn-check" id="ingredient{{ $ingredient->id }}" name="ingredients[]" 
                     value="{{ $ingredient->id }}"
-                        @if((isset($data) && $ingredient['name'] == $data['name_ing']) || in_array($ingredient->id, old('ingredients', [])))
-                            checked 
-                        @elseif(isset($data) && in_array($ingredient->id, $data['ingredients'])) 
-                            checked 
-                        @endif>
+                    @if(isset($data['ingredients']) && in_array($ingredient->id, $data['ingredients']))   
+                        checked 
+                    @elseif(in_array($ingredient->id, old('ingredients', [])))
+                        checked
+                    @endif>
 
                     <label class="btn btn-outline-dark shadow-sm" for="ingredient{{ $ingredient->id }}">{{ $ingredient->name }}</label>
                     @error('ingredients') 

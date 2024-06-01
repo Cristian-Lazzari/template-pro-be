@@ -2,19 +2,12 @@
 
 @section('contents')
     
-@php
-    $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-    $pack = 4; 
-    $days = [1, 2, 3, 4, 5, 6, 7];
-    $mesi = ['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-    $days_name = [' ','lunedì', 'martedi', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'];
-    
-@endphp
+
 <a class="btn btn-outline-dark mb-5" href="{{ route('admin.dates.index') }}">Indietro</a>
 
-<h1 class="p-3">{{$times[0]->day}} - {{$mesi[$times[0]->month]}}</h1>
+<h1 class="p-3">{{$day[0]->day}} - {{config('configurazione.mesi')[$day[0]->month]}}</h1>
 <div class="slim_cont">
-    @foreach ($times as $t)
+    @foreach ($day as $t)
     @php
         if($t->reserving !== '0'){
             $reserving = json_decode($t->reserving);
@@ -33,17 +26,14 @@
         }
     @endphp
 
-    <div class="slim_ ">
+    <div class="slim_ slim_time ">
         <section class="s1">
-            <h3>{{$t->time}}</h3>     
+            <h3>{{$t->time}}</h3>   
+            <button type="button" class="my_btn d" data-bs-toggle="modal" data-bs-target="#exampleModal{{$t->id}}">
+                Vedi dettagli
+            </button>
         </section>
-        @if ($visible)
-            <section>
-                <button type="button" class="my_btn d" data-bs-toggle="modal" data-bs-target="#exampleModal{{$t->id}}">
-                    Vedi dettagli
-                </button>
-            </section>
-        @endif
+        
         <div class="modal fade" id="exampleModal{{$t->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">

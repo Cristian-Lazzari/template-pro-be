@@ -28,8 +28,8 @@ class DatesTableSeeder extends Seeder
 
     public function run()
     {
-        $pack = 4;
-        $typeOfOrdering = true;
+         ;
+         
 
 
         $currentDate = new DateTime();
@@ -53,12 +53,12 @@ class DatesTableSeeder extends Seeder
                     if ($time['set']) {
                         $add = true;
                         
-                        if($pack == 2 ){ 
+                        if( config('configurazione.pack') == 2 ){ 
                             $visible = [
                                 'table' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
                             ];
-                        }elseif($pack == 3){
-                            if($typeOfOrdering){
+                        }elseif( config('configurazione.pack') == 3){
+                            if(config('configurazione.typeOfOrdering')){
                                 $visible = [
                                     'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
                                     'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
@@ -72,8 +72,8 @@ class DatesTableSeeder extends Seeder
                                 ];
                                 
                             }
-                        }elseif($pack == 4){     
-                            if($typeOfOrdering){
+                        }elseif( config('configurazione.pack') == 4){     
+                            if(config('configurazione.typeOfOrdering')){
                                 $visible = [
                                     'table' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
                                     'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,

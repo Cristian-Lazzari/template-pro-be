@@ -3,22 +3,7 @@
 
 
 @section('contents')
-@php
-    $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-    $pack = 4;
-    $times = [
-            1 => ['time' => '19:00', 'set' => ''] ,
-            2 => ['time' => '19:15', 'set' => ''] ,
-            3 => ['time' => '19:30', 'set' => ''] ,
-            4 => ['time' => '19:45', 'set' => ''] ,
-            5 => ['time' => '20:00', 'set' => ''] ,
-            6 => ['time' => '20:15', 'set' => ''] ,
-            7 => ['time' => '20:30', 'set' => ''] ,
-        ]; 
-    $days = [1, 2, 3, 4, 5, 6, 7];
-    $mesi = ['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-    $days_name = [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'];
-@endphp
+
 
 @if (session('not_found'))
     @php
@@ -60,7 +45,7 @@
         @php $i = 0; @endphp
         @foreach ($year as $m)
             <div class="carousel-item @if ($i == 0) active @endif">
-                <h2 class="my">{{$mesi[$m['month']]}} - {{$m['year']}}</h2>
+                <h2 class="my">{{config('configurazione.mesi')[$m['month']]}} - {{$m['year']}}</h2>
                 <div class="calendar-c">
                     <div class="c-name">
                         @php
@@ -113,15 +98,15 @@
         @csrf
         
         <h3>GENERA NUOVE DATE</h3>
-        @if ($pack == 2 || $pack == 4)  
+        @if ( config('configurazione.pack') == 2 ||  config('configurazione.pack') == 4)  
             <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
             <div class="input-group w-auto flex-nowrap py-2 ">
                 <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
                 <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
             </div>
         @endif
-        @if ($pack == 3 || $pack == 4)  
-            @if ($typeOfOrdering)  
+        @if ( config('configurazione.pack') == 3 ||  config('configurazione.pack') == 4)  
+            @if (config('configurazione.typeOfOrdering'))  
                 <h5 class="pt-4 ">Indica il numero massimo di pezzi al taglio (cucina 1) per l'asporto</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
@@ -151,10 +136,10 @@
             <h5 class="pt-4">Seleziona i giorni in cui sei attivo</h5>
             <div class="day_form" role="group" aria-label="Basic checkbox toggle button group">
 
-                @foreach ($days as $day)
+                @foreach (config('configurazione.days') as $day)
                 
                     <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <label class="btn btn-dark radius " for="day_{{ $day }}">{{ $days_name[$day] }}
+                    <label class="btn btn-dark radius " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
                         <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
                                 <input
@@ -165,17 +150,17 @@
                                     value="{{ $day }}">
                                 <label class="btn btn-outline-success w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
-                                @foreach ($times as $time)
+                                @foreach (config('configurazione.times') as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
-                                        @if ($pack == 2)
+                                        @if ( config('configurazione.pack') == 2)
                                             <option value="0">{{ $time['time'] }} - ND</option>
                                             <option value="1">{{ $time['time'] }} - attivo</option>  
-                                        @elseif ($pack == 3)  
+                                        @elseif ( config('configurazione.pack') == 3)  
                                             <option value="0">{{ $time['time'] }} - ND</option>
                                             <option value="1">{{ $time['time'] }} - asporto</option>
                                             <option value="4">{{ $time['time'] }} - domicilio</option>
                                             <option value="7">{{ $time['time'] }} - tutti</option>
-                                        @elseif ($pack == 4)     
+                                        @elseif ( config('configurazione.pack') == 4)     
                                             <option value="0">{{ $time['time'] }} - ND</option>
                                             <option value="1">{{ $time['time'] }} - asporto</option>
                                             <option value="2">{{ $time['time'] }} - tavoli</option>
@@ -198,8 +183,6 @@
                 @endforeach
             </div>
         </div>
-        
-        <input type="hidden" name="times" value="{{json_encode($times)}}">
         <button class="btn btn-outline-dark mt-4 w-100">Modifica</button>
     </form>
 </div>

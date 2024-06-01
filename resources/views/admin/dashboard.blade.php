@@ -2,7 +2,7 @@
 
 @section('contents')
 
-<div class="mycDash mt-5 m-auto" style="max-width: 900px">
+<div class="mycDash my-5 m-auto">
     <section>
         <a class="small s1a" href="{{ route('admin.setting') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-gear-wide-connected" viewBox="0 0 16 16">
@@ -36,11 +36,14 @@
     </section>
     <section>
         <a class="s3b" href="{{ route('admin.posts.index') }}">
-            Post - Chi siamo?
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-hash" viewBox="0 0 16 16">
+                <path d="M8.39 12.648a1 1 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1 1 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.51.51 0 0 0-.523-.516.54.54 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532s.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531s.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/>
+              </svg> 
+              About us
         </a>
     </section>
     <section>
-        <a class="s4a" href="{{ route('admin.products.index') }}">
+        <a class="s4a" href="{{ route('admin.reservations.index') }}">
             Prenotazioni Tavoli
         </a>
         <a class="small s4b" href="{{ route('admin.products.create') }}">
@@ -60,15 +63,73 @@
               </svg>
         </a>
     </section>
-    
-   
 
+    @if (isset($year))
+    <div class="date_index my-5">
+        <div id="carouselExampleIndicators" class="carousel slide">
+            <div class="carousel-indicators">
 
+                @php $i = 0; @endphp
+                @foreach ($year as $m)
+                    <button type="button" style="background: rgb(28, 3, 65); border-radius:50px; width:25px" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
+                    @if ($i == 0)
+                        class="active" aria-current="true" 
+                    @endif
+                    aria-label="{{ 'Slide ' . $i }}"></button>
+                    @php $i ++ @endphp
+                @endforeach
+            </div>
+            <div class="carousel-inner">
+            @php $i = 0; @endphp
+            @foreach ($year as $m)
+                <div class="carousel-item @if ($i == 0) active @endif">
+                    <h2 class="my">{{config('configurazione.mesi')[$m['month']]}} - {{$m['year']}}</h2>
+                    <div class="calendar-c">
+                        <div class="c-name">
+                            @php
+                            $day_name = ['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'];
+                            @endphp
+                            @foreach ($day_name as $item)
+                                <h4>{{$item}}</h4>
+                            @endforeach
+                        </div>
+                        <div class="calendar">
 
+                            @foreach ($m['days'] as $d)
+                                <form action="{{ route('admin.dates.showDay') }}" class="day {{ 'd' . $d['day_w']}} @if(!isset($d['time'])) day-off @endif " style="grid-column-start:{{$d['day_w'] }}" method="get">
+                                    @csrf
+                                    <input type="hidden" name="date" value="{{$d['date']}}">
+                                    @if(isset($d['asporto']))<p class="pop1"> <span>{{$d['asporto']}}</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-fog-fill" viewBox="0 0 16 16">
+                                        <path d="M3 13.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m10.405-9.473a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 12H13a3 3 0 0 0 .405-5.973"/>
+                                    </svg> </p>@endif
+                                    @if(isset($d['domicilio']))<p class="pop2"><span>{{$d['domicilio']}}</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
+                                        <path d="M10.5 8.5V3.707l.854-.853A.5.5 0 0 0 11.5 2.5v-2A.5.5 0 0 0 11 0H9.5a.5.5 0 0 0-.5.5v8zM5 7c0 .334-.164.264-.415.157C4.42 7.087 4.218 7 4 7s-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0"/>
+                                        <path d="M4 3h4v1H6.646A4 4 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3V3a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3"/>
+                                    </svg> </p>@endif
+                                    @if(isset($d['table']))<p class="pop3"> <span>{{$d['table']}}</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+                                    </svg></p>@endif
+                                    <button class="b">{{$d['day']}}</button>
+                                </form>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @php $i ++ @endphp
+            @endforeach
 
-
-   
-
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+@endif
 </div>
 
 

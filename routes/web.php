@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\IngredientController;
+use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Guests\PageController as GuestsPageController;
 
@@ -43,11 +44,12 @@ Route::middleware(['auth', 'verified'])
         Route::post('/dates/generate', [DateController::class, 'generate'])->name('dates.generate');
 
         //resource
-        Route::resource('dates',        DateController::class);
-        Route::resource('products',     ProductController::class);
-        Route::resource('posts',        PostController::class);
-        Route::resource('ingredients',  IngredientController::class);
-        Route::resource('categories',   CategoryController::class);
+        Route::resource('dates',         DateController::class);
+        Route::resource('products',      ProductController::class);
+        Route::resource('posts',         PostController::class);
+        Route::resource('reservations',  ReservationController::class);
+        Route::resource('ingredients',   IngredientController::class);
+        Route::resource('categories',    CategoryController::class);
     });
 
 Route::middleware('auth')

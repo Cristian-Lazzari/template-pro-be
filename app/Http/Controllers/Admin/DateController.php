@@ -38,8 +38,7 @@ class DateController extends Controller
     ];
     public function index()
     {
-        $typeOfOrdering = true; 
-        $pack = 4;
+        
         $dates = Date::all();
         if(count($dates) == 0){
             return view('admin.dates.index');
@@ -64,7 +63,7 @@ class DateController extends Controller
             if($d['reserving'] !== '0'){
                 //dump($d['day']);
                 $res = json_decode($d['reserving'], 1);
-                if($pack == 2 ){        
+                if( config('configurazione.pack') == 2 ){        
                     $day = [
                         'day' => $d['day'],
                         'day_w' => $d['day_w'],
@@ -76,8 +75,8 @@ class DateController extends Controller
                         'time' => $d['time'],
                         'table' => $res['table'],
                     ];
-                }elseif($pack == 3){
-                    if($typeOfOrdering){
+                }elseif( config('configurazione.pack') == 3){
+                    if(config('configurazione.typeOfOrdering')){
                         $day = [
                             'day' => $d['day'],
                             'day_w' => $d['day_w'],
@@ -106,8 +105,8 @@ class DateController extends Controller
                             'domicilio' => $res['domicilio'],
                         ];
                     }
-                }elseif($pack == 4){
-                    if($typeOfOrdering){ 
+                }elseif( config('configurazione.pack') == 4){
+                    if(config('configurazione.typeOfOrdering')){ 
                         $day = [
                             'day' => $d['day'],
                             'day_w' => $d['day_w'],
@@ -155,13 +154,13 @@ class DateController extends Controller
                     array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $day);
                     
                 }elseif($d['day'] == $firstDay['day']){
-                    if($pack == 2 ){        
+                    if( config('configurazione.pack') == 2 ){        
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
-                    }elseif($pack == 3){
+                    }elseif( config('configurazione.pack') == 3){
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
                         
-                    }elseif($pack == 4){
+                    }elseif( config('configurazione.pack') == 4){
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
@@ -199,24 +198,23 @@ class DateController extends Controller
 
     public function showDay(Request $request){
         $date = $request->input('date');
-        $times = Date::where('date_slot','like','%' . $date . '%')->get();
-        if(count($times) == 1){
-            if($times[0]['time'] == 0){   
-                return to_route('admin.dates.index')->with('not_found', $times);   
+        $day = Date::where('date_slot','like','%' . $date . '%')->get();
+        if(count($day) == 1){
+            if($day[0]['time'] == 0){   
+                return to_route('admin.dates.index')->with('not_found', $day);   
             }
         }
-        ///dd($times);
-        return view('admin.dates.showDay', compact('times'));   
+        ///dd($day);
+        return view('admin.dates.showDay', compact('day'));   
     }
 
 
 
     public function generate(Request $request)
     {
-        $typeOfOrdering = true; 
-        $pack = 4;
+          
         $data = $request->all();
-        if($pack == 2 ){ 
+        if( config('configurazione.pack') == 2 ){ 
             $request->validate($this->validations2);
             $availability = [
                 'table' =>  $data['max_reservations'],
@@ -224,8 +222,8 @@ class DateController extends Controller
             $reserving = [
                 'table' => 0,
             ];
-        }elseif($pack == 3){
-            if($typeOfOrdering){
+        }elseif( config('configurazione.pack') == 3){
+            if(config('configurazione.typeOfOrdering')){
                 $request->validate($this->validations3t);
                 $availability = [
                     'cucina_1' => $data['max_cucina_1'],
@@ -248,8 +246,8 @@ class DateController extends Controller
                     'domicilio' => 0,
                 ];
             } 
-        }elseif($pack == 4){
-            if($typeOfOrdering){
+        }elseif( config('configurazione.pack') == 4){
+            if(config('configurazione.typeOfOrdering')){
             $request->validate($this->validations4t);
             $availability = [
                 'table' =>  $data['max_reservations'],
@@ -286,7 +284,7 @@ class DateController extends Controller
         $times_slot6 = $request->input("times_slot_6");
         $times_slot7 = $request->input("times_slot_7");
         $timesDay = [];
-        $day = json_decode($request->input("times"), true);
+        $day = config('configurazione.times');
         
         for ($i = 0; $i < 7; $i++) { 
             array_push($timesDay, $day);

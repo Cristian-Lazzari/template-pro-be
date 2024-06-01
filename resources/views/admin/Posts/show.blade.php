@@ -2,7 +2,7 @@
 
 @section('contents')
 @php
-    $typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
+      //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
     $domain = 'https://future-plus.it/allergiens/';
     $allergiens = [
         1 => ['img' => $domain . 'gluten.png', 'name' => 'glutine'] ,

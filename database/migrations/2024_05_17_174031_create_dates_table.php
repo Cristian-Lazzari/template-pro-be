@@ -26,8 +26,8 @@ return new class extends Migration
             $table->text('reserving');
             $table->text('visible');
             $table->text('availability');
-            //
-            $table->tinyInteger('status');
+            
+            $table->tinyInteger('status'); //1-7 combinazione di servizi
 
             $table->timestamps();
         });

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
-$typeOfOrdering = true; //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
+  //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
 class ProductController extends Controller
 {
 
@@ -162,7 +162,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $typeOfOrdering = true; 
+          
         $data = $request->all();
      
         if (isset($data['newi'])){
@@ -202,11 +202,16 @@ class ProductController extends Controller
                 $new_ing->allergiens = json_encode($ingredient_allergiens);
             }
             $new_ing->save();
+            if(isset($data['ingredients'])){
+                array_push($data['ingredients'], $new_ing->id);
+            }else{
+                $data['ingredients'] = [$new_ing->id];
+            }
             
             return to_route('admin.products.create')->with('ingredient_success', $data);     
         }
 
-        if ($typeOfOrdering) {        
+        if (config('configurazione.typeOfOrdering')) {        
             $request->validate($this->validationsTrue);
         }else{
             $request->validate($this->validationsFalse);
@@ -229,7 +234,7 @@ class ProductController extends Controller
                 $allergiens = array_unique($allergiens);
                 $allergiens = json_encode($allergiens);
             }else{
-                $allergiens = "0";   
+                $allergiens = [];   
             }
         }
         
@@ -252,7 +257,7 @@ class ProductController extends Controller
         $product->allergiens    = $allergiens;
         
         
-        if($typeOfOrdering){
+        if(config('configurazione.typeOfOrdering')){
             $product->type_plate    = $data['type_plate'];     
             $product->slot_plate    = $data['slot_plate'];     
             $product->tag_set       = $data['tag_set'];
@@ -292,7 +297,7 @@ class ProductController extends Controller
     public function update(Request $request, $id){
         $product = Product::where('id', $id)->firstOrFail();
     
-        $typeOfOrdering = true; 
+          
         $data = $request->all();
         
         if (isset($data['newi'])){
@@ -323,10 +328,14 @@ class ProductController extends Controller
                 $new_ing->allergiens = json_encode($ingredient_allergiens);
             }
             $new_ing->save();
-            
+            if(isset($data['ingredients'])){
+                array_push($data['ingredients'], $new_ing->id);
+            }else{
+                $data['ingredients'] = [$new_ing->id];
+            }
             return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
-        if ($typeOfOrdering) {        
+        if (config('configurazione.typeOfOrdering')) {        
             $request->validate($this->validationsTrue1);
         }else{
             $request->validate($this->validationsFalse1);
@@ -336,7 +345,7 @@ class ProductController extends Controller
             foreach ($data['ingredients'] as $i) {
                 $all = Ingredient::where('id', $i)->firstOrFail();
                 $isall = json_decode($all['allergiens']);
-                if($isall !== "[]" || $isall !== NULL ){
+                if($isall !== "[]" && $isall !== NULL ){
                     foreach($isall as $ia){
                         array_push($allergiens, $ia);
                     }  
@@ -346,7 +355,7 @@ class ProductController extends Controller
                 $allergiens = array_unique($allergiens);
                 $allergiens = json_encode($allergiens);
             }else{
-                $allergiens = "0";   
+                $allergiens = [];   
             }
         }
         
@@ -370,7 +379,7 @@ class ProductController extends Controller
         $product->allergiens    = $allergiens;
         
         
-        if($typeOfOrdering){
+        if(config('configurazione.typeOfOrdering')){
             $product->type_plate    = $data['type_plate'];     
             $product->slot_plate    = $data['slot_plate'];     
             $product->tag_set       = $data['tag_set'];

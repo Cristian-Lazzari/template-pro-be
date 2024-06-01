@@ -15,17 +15,18 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->string('date_slot', 16);
-            $table->string('status', 10);
+            $table->string('date_slot', 16); 
+            $table->string('status', 10); //annullata confermata o in elaborazione
 
             $table->string('name', 50);
             $table->string('surname', 50);
             $table->string('email', 100);
             $table->string('phone', 20);
-            $table->boolean('news_letter');
             
             $table->string('n_person', 10);
             $table->string('message', 500)->nullable();
+            
+            $table->boolean('news_letter');
             $table->timestamps();
         });
     }
