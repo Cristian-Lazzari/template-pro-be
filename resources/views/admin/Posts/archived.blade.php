@@ -77,11 +77,11 @@
 <div class="object-container archived">
     @foreach ($posts as $item)
 
-        <div class="obj  @if (!$item->visible) not_v @endif">
+        <div class="obj  @if (!$item->visible) not_v @endif" >
             <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
             <div class="card_">
                 @if (isset($filters->image))
-                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
+                    <img onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}" src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
                 @endif 

@@ -43,17 +43,29 @@
                     </div>
                     <div class="modal-body">
                         <h3 class="m-3">Prenotazioni</h3>
-                        @foreach ($reserving as $key => $value)
-                            <span class="px-3">{{$key}}: {{$value}}</span>
-                        @endforeach
+                        @php $i = 0 @endphp
+                        <div class="d-flex gap-3 m-3 flex-wrap">
+                            @foreach ($reserving as $key => $value)
+                                <span style="white-space: nowrap" class="">{{config('configurazione.set_time')[$i]}}: {{$value}}</span>
+                                @php $i ++ @endphp
+                            @endforeach
+                        </div>
                         <h3 class="m-3">Disponibilità</h3>
-                        @foreach ($availability as $key => $value)
-                            <span class="px-3">{{$key}}: {{$value}} </span>
-                        @endforeach
+                        @php $i = 0 @endphp
+                        <div class="d-flex gap-2 m-3 flex-wrap">
+                            @foreach ($availability as $key => $value)
+                                <span style="white-space: nowrap" class="">{{config('configurazione.set_time')[$i]}}: {{$value}} </span>
+                                @php $i ++ @endphp
+                            @endforeach
+                        </div>
                         <h3 class="m-3">Visibilità</h3>
-                        @foreach ($visible as $key => $value)
-                            <span class="px-3">{{$key}}: {{$value ? 'si' : 'no'}}</span>
-                        @endforeach
+                        @php $i = 0 @endphp
+                        <div class="d-flex gap-2 m-3 flex-wrap">
+                            @foreach ($visible as $key => $value)
+                                <span style="white-space: nowrap" class="">{{config('configurazione.set_time')[$i]}}: {{$value ? 'si' : 'no'}}</span>
+                                @php $i ++ @endphp
+                            @endforeach
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">chiudi</button>

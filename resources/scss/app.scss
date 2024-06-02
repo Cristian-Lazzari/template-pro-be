@@ -22,6 +22,7 @@
         width: 100%;
     }
     a {
+        height: clamp(70px, 10vw, 150px) !important;
         text-decoration: none;
         color: rgb(255, 255, 255);
         flex: 8 1 auto;
@@ -215,13 +216,14 @@ $c-new : rgb(84, 13, 227);
 $t : rgba(255, 255, 255, 0.361);
 
 .my_btn{
-    padding: .8rem 1.2rem;
-    border-radius: 150px;
+    padding: .4rem 1rem;
+    border-radius: 10px;
     border: none;
     background-color: black;
     color: white;
     text-decoration: none;
     text-transform: uppercase;
+    font-size: clamp(12px, 2.3vw, 14px);
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: white;
@@ -313,12 +315,13 @@ $t : rgba(255, 255, 255, 0.361);
             
         }
     }
-    .buttons{
+    .buttons_{
+        margin-left: auto;
         display: flex;
         gap: 1rem;
         flex-direction: row;
         justify-content: center;
-        align-items: flex-end;
+        align-items: stretch;
     }
 }
 .action-page{
@@ -798,18 +801,32 @@ $t : rgba(255, 255, 255, 0.361);
     display: flex;
     flex-direction: column;
     width: 100%;
+    border: 1px solid black;
+    border-radius: 16px;
+    padding: 1.2rem 0;
+    margin-bottom: 1rem;
     .top{
         border-bottom: 1px black dotted;
+       p{
+        flex-grow: 1;
+       }
     }
     section{
-        padding: .5rem;
+        
+        padding: 1rem 1.2rem;
         display: flex;
         width: 100%;
         align-items: center;
-        .actions{
-            display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        .p{
             flex-grow: 1;
+        }
+        .actions{
+            flex-grow: 3;
+            display: flex;
             justify-content: flex-end;
+            gap: 10px;
         }
     }
     .time{

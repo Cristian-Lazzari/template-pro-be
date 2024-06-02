@@ -88,7 +88,7 @@
 <div class="object-container">
     @foreach ($posts as $item)
 
-        <div class="obj  @if (!$item->visible) not_v @endif">
+        <div class="obj  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
             <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
             <div class="card_">
                 @if (isset($item->image))

@@ -64,5 +64,10 @@ return [
     'days' => [1, 2, 3, 4, 5, 6, 7],
     'mesi' => ['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'],
     'days_name' => [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'],
-    
+    'set_time' => [
+        'tavoli', 
+        'pezzi al taglio',
+        'pizzze al piatto',
+        'consegna a domicilio',
+    ]
 ];

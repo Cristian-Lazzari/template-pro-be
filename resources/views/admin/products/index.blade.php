@@ -88,7 +88,7 @@
 <div class="object-container">
     @foreach ($products as $item)
 
-        <div class="obj  @if (!$item->visible) not_v @endif">
+        <div class="obj  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.products.show', $item->id) }}">
             <h3><a href="{{ route('admin.products.show', $item) }}">{{$item->name}}</a></h3>     
             <div class="card_">
                 @if (isset($filters->image))

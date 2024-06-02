@@ -88,7 +88,7 @@ $domain = 'https://future-plus.it/allergiens/';
 
 <div class="object-container archived">
     @foreach ($products as $item)
-        <div class="obj  @if (!$item->visible) not_v @endif">
+        <div class="obj  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.products.show', $product->id) }}">
             <h3><a href="{{ route('admin.products.show', $item) }}">{{$item->name}}</a></h3>     
             <div class="card_">
                 @if (isset($filters->image))
