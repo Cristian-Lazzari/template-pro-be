@@ -13,8 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reservations', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
+
             $table->string('date_slot', 16); 
             $table->string('status', 10); //annullata confermata o in elaborazione
 
@@ -23,10 +24,11 @@ return new class extends Migration
             $table->string('email', 100);
             $table->string('phone', 20);
             
-            $table->tinyInteger('n_person');
+            $table->tinyInteger('tot_price');
             $table->string('message', 500)->nullable();
             
             $table->boolean('news_letter');
+
             $table->timestamps();
         });
     }
@@ -38,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reservations');
+        Schema::dropIfExists('orders');
     }
 };

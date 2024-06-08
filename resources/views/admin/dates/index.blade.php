@@ -148,7 +148,7 @@
                                     id="days_on_{{ $day }}"
                                     name="days_on[]"
                                     value="{{ $day }}">
-                                <label class="btn btn-outline-success w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
+                                <label class="btn btn-outline-dark w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
                                 @foreach (config('configurazione.times') as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">

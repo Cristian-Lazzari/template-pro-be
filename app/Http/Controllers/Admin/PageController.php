@@ -12,7 +12,7 @@ class PageController extends Controller
     public function dashboard() {
         $dates = Date::all();
         if(count($dates) == 0){
-            return view('admin.dates.index');
+            return view('admin.dashboard');
         }
         $year = [
             1 => [

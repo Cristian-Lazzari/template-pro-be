@@ -9,11 +9,51 @@ use App\Http\Controllers\Controller;
 
 class ReservationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
+
+    public function filter(Request $request){
+        
+        // FUNZIONE DI FILTRAGGIO INDEX
+        $status = $request->input('status');
+        $name = $request->input('name');
+        $order = $request->input('order');
+        $date = $request->input('date');
+        $filters = [
+            'name'          => $name ,
+            'status'        => $status ,
+            'date'          => $date ,
+            'order'         => $order,     
+        ];
+        
+        $query = Reservation::query();
+        
+        if ($archive == 1) {
+            $query->where('archived', true);
+        }
+        if ($name) {
+            $query->where('name', 'like', '%' . $name . '%');
+        } 
+        if ($status == 1) {
+            $query->where('status', '=', 1);
+        } else if ($status == 2) {
+            $query->where('status', '=', 0);
+        }
+        if($date){
+            $query->where('date_slot', 'like', '%' . $date . '%');
+        }
+        if($order){
+            $reservations = $query->orderBy('date_slot', 'asc')->get();
+        }else{
+            $reservations = $query->orderBy('updated_at', 'desc')->get();    
+        }        
+    
+
+        return view('admin.reservations.index', compact('products', 'categories', 'filters'));
+    }
+
+
+
+
     public function index()
     {
         $reservations = Reservation::orderBy('created_at', 'desc')->paginate(15);

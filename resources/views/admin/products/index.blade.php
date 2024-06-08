@@ -81,8 +81,8 @@
     
 </form> 
 <div class="action-page">
-    <a class="btn btn-outline-success m-1 w-auto" href="{{ route('admin.products.create') }}">Crea un nuovo prodotto</a>
-    <a class="btn btn-outline-danger m-1 w-auto" href="{{ route('admin.products.archived') }}">Archivio</a>
+    <a class="my_btn m-1 w-auto" href="{{ route('admin.products.create') }}">Crea un nuovo prodotto</a>
+    <a class="my_btn m-1 w-auto" href="{{ route('admin.products.archived') }}">Archivio</a>
 </div>
 
 <div class="object-container">

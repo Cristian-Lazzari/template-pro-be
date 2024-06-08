@@ -81,8 +81,8 @@
     
 </form> 
 <div class="action-page">
-    <a class="btn btn-outline-success m-1 w-auto" href="{{ route('admin.posts.create') }}">Crea un nuovo post</a>
-    <a class="btn btn-outline-danger m-1 w-auto" href="{{ route('admin.posts.archived') }}">Archivio</a>
+    <a class="my_btn m-1 w-auto" href="{{ route('admin.posts.create') }}">Crea un nuovo post</a>
+    <a class="my_btn m-1 w-auto" href="{{ route('admin.posts.archived') }}">Archivio</a>
 </div>
 
 <div class="object-container">

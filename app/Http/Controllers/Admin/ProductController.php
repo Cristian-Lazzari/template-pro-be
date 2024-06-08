@@ -141,7 +141,7 @@ class ProductController extends Controller
         }
 
         return view('admin.products.index', compact('products', 'categories', 'filters'));
-        
+
     }
 
     public function index()

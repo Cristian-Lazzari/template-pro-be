@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary nav">
     <div class="container-fluid">
 
         <div class="d-flex">
-            <a class="btn btn-dark mybtdb" href="{{ route('admin.dashboard') }}">Dashboard</a>
+            <a class="btn dbbtn" href="{{ route('admin.dashboard') }}">Dashboard</a>
             {{-- <div class="notifications_container h-100 ms-2">
                 <button class="btn btn-warning" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                     <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-bell-fill" viewBox="0 0 16 16">
@@ -21,7 +21,7 @@
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-2">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle cwhite" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Prodotti
                     </a>
                     <ul class="dropdown-menu">
@@ -30,7 +30,7 @@
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle cwhite" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Categorie
                     </a>
                     <ul class="dropdown-menu">
@@ -39,7 +39,7 @@
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle cwhite" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Ingredienti
                     </a>
                     <ul class="dropdown-menu">
@@ -47,8 +47,8 @@
                         <li><a class="dropdown-item" href="{{ route('admin.ingredients.create') }}">Aggiungi</a></li>
                     </ul>
                 </li>
-                {{-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle cwhite" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Post
                     </a>
                     <ul class="dropdown-menu">
@@ -57,7 +57,7 @@
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle cwhite" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Prenotazioni tavoli
                     </a>
                     <ul class="dropdown-menu">
@@ -65,8 +65,8 @@
                         <li><a class="dropdown-item" href="{{ route('admin.reservations.create') }}">Aggiungi</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{-- <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle cwhite" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Ordini d'asporto
                     </a>
                     <ul class="dropdown-menu">
@@ -75,7 +75,7 @@
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle cwhite" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Impostazioni
                     </a>
                     <ul class="dropdown-menu">

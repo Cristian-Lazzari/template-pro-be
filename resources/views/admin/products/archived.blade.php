@@ -8,6 +8,11 @@
 $domain = 'https://future-plus.it/allergiens/';
  
 @endphp
+<style>
+    body{
+        background: rgba(193, 128, 128, 0.48);      
+    }
+</style>
 
 @if (session('success'))
     @php
@@ -88,7 +93,7 @@ $domain = 'https://future-plus.it/allergiens/';
 
 <div class="object-container archived">
     @foreach ($products as $item)
-        <div class="obj  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.products.show', $product->id) }}">
+        <div class="obj  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.products.show', $item->id) }}">
             <h3><a href="{{ route('admin.products.show', $item) }}">{{$item->name}}</a></h3>     
             <div class="card_">
                 @if (isset($filters->image))
@@ -123,7 +128,7 @@ $domain = 'https://future-plus.it/allergiens/';
             <div class="allergiens">
                 @php $all = json_decode($item->allergiens) @endphp
                 @foreach ($all as $i)
-                    <img src="{{$allergiens[$i]['img']}}" alt="" title="{{$allergiens[$i]['name']}}">
+                    <img src="{{config('configurazione.allergiens')[$i]['img']}}" alt="" title="{{config('configurazione.allergiens')[$i]['name']}}">
                 @endforeach
             </div>
             <div class="actions">

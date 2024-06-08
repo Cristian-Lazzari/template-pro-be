@@ -8,6 +8,12 @@
     $domain = 'https://future-plus.it/allergiens/';
     
 @endphp
+
+<style>
+    body{
+        background: rgba(193, 128, 128, 0.48);      
+    }
+</style>
 @if (session('success'))
     @php
         $data = session('success')

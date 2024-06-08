@@ -97,15 +97,15 @@
     </div>
 
         
-    @foreach ($reservations as $reservation)
+    @foreach ($orders as $order)
         <?php
-        $data_ora = DateTime::createFromFormat('d/m/Y H:i', $reservation->date_slot);
+        $data_ora = DateTime::createFromFormat('d/m/Y H:i', $order->date_slot);
         $ora_formattata = $data_ora->format('H:i');
         $data_formattata = $data_ora->format('d/m');
 
-        if ($reservation->status == 0) {
+        if ($order->status == 0) {
             $status_bg_color = 'bg-warning';
-        } else if ($reservation->status == 1) {
+        } else if ($order->status == 1) {
             $status_bg_color = 'bg-success';
         } else {
             $status_bg_color = 'bg-danger';
@@ -114,16 +114,16 @@
         
         <div class="or-res">
             <section class="top">
-                <p>{{$reservation->day}}/{{$reservation->month}}/{{$reservation->year}}</p>
-                <h3>{{$reservation->surname}} {{$reservation->name}}</h3>
+                <p>{{$order->day}}/{{$order->month}}/{{$order->year}}</p>
+                <h3>{{$order->surname}} {{$order->name}}</h3>
                 <div class="actions">
-                    <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn u">Dettagli</a>
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn u">Dettagli</a>
                     <div class="my_btn u">Contatta</div>
                 </div>
             </section>
             <section>
-                <h1 class="p">{{$reservation->time}}</h1>
-                <p>Totale ordine: {{$reservation->n_person}}</p>
+                <h1 class="p">{{$order->time}}</h1>
+                <p>Totale ordine: {{$order->n_person}}</p>
                 <div class="actions">
                     <div class="my_btn u">Conferma</div>
                     <div class="my_btn u">Annulla</div>

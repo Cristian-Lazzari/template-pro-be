@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DateController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'verified'])
 
         //resource
         Route::resource('dates',         DateController::class);
+        Route::resource('orders',        OrderController::class);
         Route::resource('products',      ProductController::class);
         Route::resource('posts',         PostController::class);
         Route::resource('reservations',  ReservationController::class);

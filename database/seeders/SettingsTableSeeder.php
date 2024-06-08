@@ -18,27 +18,28 @@ class SettingsTableSeeder extends Seeder
         $settings = [
             [
                 'name' => 'Prenotazione Asporti',  
-                'status' => true,  
-                'from' => '',  
-                'to' => '',  
+                'status' => true,
+                'porperty' => ''
             ],
             [
                 'name' => 'Prenotaione Tavoli',  
-                'status' => true,  
-                'from' => '',  
-                'to' => '',  
+                'status' => true,
+                'porperty' => ''
             ],
             [
                 'name' => 'Periodo di Ferie',  
-                'status' => false,  
-                'from' => '',  
-                'to' => '',  
+                'status' => false,
+                'porperty' => ''
             ],
             [
                 'name' => 'Possibilità di consegna a domicilio',  
-                'status' => false,  
-                'from' => '',  
-                'to' => '',  
+                'status' => false,
+                'porperty' => ''
+            ],
+            [
+                'name' => 'Comuni per il domicilio ',  
+                'status' => false,
+                'porperty' => ''
             ],
                
     
