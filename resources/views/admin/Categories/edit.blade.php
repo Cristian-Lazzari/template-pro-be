@@ -36,7 +36,7 @@
        
     </section>
 
-    <button class="btn btn-primary mb-5  w-75 m-auto" type="submit">Modifica Categoria</button>
+    <button class="my_btn mb-5  w-75 m-auto" type="submit">Modifica Categoria</button>
 
 </form>
 

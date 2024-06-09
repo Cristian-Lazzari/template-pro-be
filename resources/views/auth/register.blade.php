@@ -61,7 +61,7 @@
             Already registered?
         </a>
 
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="my_btn">Register</button>
     </form>
 
 @endsection

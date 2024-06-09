@@ -19,35 +19,45 @@ class SettingsTableSeeder extends Seeder
             [
                 'name' => 'Prenotazione Asporti',  
                 'status' => true,
-                'porperty' => ''
             ],
             [
                 'name' => 'Prenotaione Tavoli',  
                 'status' => true,
-                'porperty' => ''
-            ],
-            [
-                'name' => 'Periodo di Ferie',  
-                'status' => false,
-                'porperty' => ''
             ],
             [
                 'name' => 'Possibilità di consegna a domicilio',  
                 'status' => false,
-                'porperty' => ''
+            ],
+            [
+                'name' => 'Periodo di Ferie',  
+                'status' => false,
+                'property' => [
+                    'from' => '',
+                    'to' => '',
+                    'messagge' => '',
+                    'style' => '',
+                    
+                ]
             ],
             [
                 'name' => 'Comuni per il domicilio ',  
                 'status' => false,
-                'porperty' => ''
+                'property' => [
+                    [
+                        'comune' => 'Mmonte San Vito',
+                        'provincia' => 'AN',
+                    ]
+                ]
             ],
-               
+        ];
+        foreach ($settings as $s) {
+            if (isset($s->property)) {
+                $s->property = json_encode($s->property, true);
+            }
+        }
     
-            ];
-    
-            foreach ($settings as $setting) {
-                Setting::create($setting);
-    
+        foreach ($settings as $setting) {
+            Setting::create($setting);
+        }
     }
-}
 }

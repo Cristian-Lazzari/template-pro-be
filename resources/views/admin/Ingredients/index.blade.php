@@ -20,7 +20,7 @@
 <h1>Ingredienti</h1>
 
 <div class="action-page">
-    <a class="my_btn m-1 w-auto" href="{{ route('admin.ingredients.create') }}">Crea un nuovo ingrediente</a>
+    <a class="my_btn create m-1 w-auto" href="{{ route('admin.ingredients.create') }}">Crea un nuovo ingrediente</a>
 </div>
 
 <div class="slim_cont">

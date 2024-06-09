@@ -33,7 +33,7 @@
 
             @php $i = 0; @endphp
             @foreach ($year as $m)
-                <button type="button" style="background: rgb(28, 3, 65); border-radius:50px; width:25px" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
                 @if ($i == 0)
                     class="active" aria-current="true" 
                 @endif
@@ -139,7 +139,7 @@
                 @foreach (config('configurazione.days') as $day)
                 
                     <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <label class="btn btn-dark radius " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
+                    <label class="my_btn btn-dark scale-none  " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
                         <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
                                 <input

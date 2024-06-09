@@ -97,16 +97,16 @@ body{
     background-color: rgb(130, 125, 149, 0.788) !important;
 }
 .s1b {
-    background-color: rgb(3, 46, 187, 0.788) !important;
+    background-color: rgba(46, 11, 185, 0.788) !important;
 }
 .s2a {
     background-color: rgb(52, 53, 87, 0.788) !important;
 }
 .s2b {
-    background-color: rgb(0, 32, 134, 0.788) !important;
+    background-color: rgba(29, 2, 111, 0.788) !important;
 }
 .s2c {
-    background-color: rgb(0, 22, 96, 0.788) !important;
+    background-color: rgba(20, 2, 81, 0.788) !important;
 }
 .s3a {
     background-color: rgba(46, 0, 90, 0.788) !important;
@@ -237,26 +237,53 @@ body{
 // }
 
 $bg-p-p : rgba(238, 238, 244, 0.473);
-$c-delete : rgba(228, 70, 42, 0.698);
+$c-delete : rgba(233, 50, 84, 0.708);
 $c-update : rgba(224, 191, 42, 0.796);
-$c-new : rgb(84, 13, 227);
-$t : rgba(149, 31, 31, 0.361);
+$c-new : rgb(90, 20, 169);
+$t : rgba(193, 206, 236, 0.43);
 $cfilter : rgb(238, 231, 252);
 .my_btn{
-    padding: .3rem 1.2rem;
-    border-radius: 10px;
+    padding: .23rem 1.3rem;
+    border-radius: 9px;
     border: none;
-    background-color: black;
+    background-color: rgba(67, 37, 119, 0.828);
     color: white;
     text-decoration: none;
-    font-size: clamp(12px, 2.3vw, 14px);
+    font-size: clamp(12px, 2.3vw, 16px);
+    font-weight:600;
+    text-align: center;
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: white;
         text-shadow: 0px 0px 4px rgba(220, 220, 220, 0);
     }
 }
+.my_btn:hover{
+    transform: scale(1.031);
+    transition: all .2s ease-in-out;
+    opacity: .4;
+}
+.scale-none:hover{
+    transform: scale(1) !important;
+    transition: all .2s ease-in-out;
+    opacity: .4;
+    filter: invert(0) !important;
+}
+.create{
+    background-color: #550b8d00;
+    color: $c-new ;
+    border: 2px solid $c-new !important;
+}
+.trash{
+    background-color: #d71f6015;
+    color: $c-delete ;
+    border: 2px solid $c-delete !important;
+}
+.search{
+    border: 2px solid white !important;
+    background-color: #3a0d6435;
 
+}
 .d{
     background-color: $c-delete;
 }
@@ -468,7 +495,7 @@ $cfilter : rgb(238, 231, 252);
     justify-content: space-between;
     align-items: center;
     border-radius: 20px;
-    background-color: rgba(23, 23, 116, 0.49);
+    background-color: rgba(23, 23, 116, 0.319);
     gap: 1rem;
     a{
         color: white;

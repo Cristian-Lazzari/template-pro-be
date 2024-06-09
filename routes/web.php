@@ -43,7 +43,9 @@ Route::middleware(['auth', 'verified'])
         Route::get('dates/showDay',    [DateController::class, 'showDay'])->name('dates.showDay');
         Route::post('dates/status',    [DateController::class, 'status'])->name('dates.status');
         Route::post('/dates/generate', [DateController::class, 'generate'])->name('dates.generate');
-
+        
+        Route::post('orders/filter',       [OrderController::class, 'filter'])->name('orders.filter');
+        Route::post('reservations/filter', [ReservationController::class, 'filter'])->name('reservations.filter');
         //resource
         Route::resource('dates',         DateController::class);
         Route::resource('orders',        OrderController::class);

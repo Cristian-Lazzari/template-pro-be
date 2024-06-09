@@ -72,7 +72,7 @@
         </p>
     </section>
    
-    <button class="btn btn-primary mb-5  w-75 m-auto" type="submit">Crea Post</button>
+    <button class="my_btn mb-5  w-75 m-auto" type="submit">Crea Post</button>
 
 </form>
 

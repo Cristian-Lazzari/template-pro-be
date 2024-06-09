@@ -18,6 +18,7 @@ class ReservationController extends Controller
         $name = $request->input('name');
         $order = $request->input('order');
         $date = $request->input('date');
+
         $filters = [
             'name'          => $name ,
             'status'        => $status ,
@@ -26,17 +27,16 @@ class ReservationController extends Controller
         ];
         
         $query = Reservation::query();
-        
-        if ($archive == 1) {
-            $query->where('archived', true);
-        }
+       
         if ($name) {
             $query->where('name', 'like', '%' . $name . '%');
         } 
-        if ($status == 1) {
-            $query->where('status', '=', 1);
-        } else if ($status == 2) {
+        if ($status == 0) {
             $query->where('status', '=', 0);
+        } else if ($status == 2) {
+            $query->where('status', '=', 2);
+        } else if ($status == 1) {
+            $query->where('status', '=', 1);
         }
         if($date){
             $query->where('date_slot', 'like', '%' . $date . '%');
@@ -48,7 +48,7 @@ class ReservationController extends Controller
         }        
     
 
-        return view('admin.reservations.index', compact('products', 'categories', 'filters'));
+        return view('admin.reservations.index', compact('reservations', 'filters'));
     }
 
 
@@ -56,7 +56,7 @@ class ReservationController extends Controller
 
     public function index()
     {
-        $reservations = Reservation::orderBy('created_at', 'desc')->paginate(15);
+        $reservations = Reservation::where('status', '=', 0)->orderBy('created_at', 'desc')->get();
         $dates = Date::all();
         return view('admin.reservations.index', compact('reservations', 'dates'));
     }

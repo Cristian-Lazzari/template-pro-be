@@ -71,7 +71,7 @@
 
                     @php $i = 0; @endphp
                     @foreach ($year as $m)
-                        <button type="button" style="background: rgb(28, 3, 65); border-radius:50px; width:25px" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
+                        <button type="button"  data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
                         @if ($i == 0)
                             class="active" aria-current="true" 
                         @endif

@@ -69,5 +69,6 @@ return [
         'pezzi al taglio',
         'pizzze al piatto',
         'consegna a domicilio',
-    ]
+    ],
+    
 ];

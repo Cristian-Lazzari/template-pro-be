@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             IngredientsTableSeeder::class,
             CategoriesTableSeeder::class,
-            //SettingsTableSeeder::class,
+            SettingsTableSeeder::class,
         ]);
     }
 }
