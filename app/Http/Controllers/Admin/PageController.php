@@ -11,8 +11,9 @@ class PageController extends Controller
 {
     public function dashboard() {
         $dates = Date::all();
+        $setting = Setting::all();
         if(count($dates) == 0){
-            return view('admin.dashboard');
+            return view('admin.dashboard', compact('setting'));
         }
         $year = [
             1 => [
@@ -163,13 +164,9 @@ class PageController extends Controller
             ];
             
         };
-
-        return view ('admin.dashboard', compact('year'));
+        
+        return view ('admin.dashboard', compact('year', 'setting'));
     }
-    public function setting() {
-        $settings = Setting::all();
 
-        return view ('admin.setting', compact('settings', ));
-    }
 
 }

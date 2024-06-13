@@ -12,7 +12,7 @@ class ProductController extends Controller
 
         $categoryId = $request->query('category');
 
-        $query = Product::with('category', 'tags')->where('visible', '=', 0);
+        $query = Product::with('category', 'ingredints')->where('visible', '=', 0);
 
 
         if ($categoryId !== 0) {

@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('status'); 
             $table->string('name');
-            $table->string('property')->nullable();
+            $table->tinyInteger('status')->nullable(); 
+            $table->text('property')->nullable();
             $table->timestamps();
         });
     }

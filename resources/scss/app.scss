@@ -1,17 +1,64 @@
 @import "~bootstrap/scss/bootstrap";
 
 body{
-    background-color: rgb(207, 199, 219);
+    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+    background-image: linear-gradient(290deg, #3ab5b0 0%, #3d99be 31%, #56317a 100%);
+    //background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%); ////
+    // background-image: linear-gradient(to right, #eea2a2 0%, #bbc1bf 19%, #57c6e1 42%, #b49fda 79%, #7ac5d8 100%);
+    
+    // background-image: linear-gradient(to right, #74ebd5 0%, #9face6 100%);
+    // background-image: linear-gradient(to top, #9795f0 0%, #fbc8d4 100%);
+    //background-image: linear-gradient(to top, #d9afd9 0%, #97d9e1 100%);
+    // background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
+    // background-image: linear-gradient(to top, #d9afd9 0%, #97d9e1 100%);
+    background-size: cover;
+    background-repeat: no-repeat;
     padding-top: 80px;
+    height: 100%;
+    padding-bottom: 100%;
+    color: white;
 }
+
+.cont-dash{
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    gap: 50px;
+    width: 100% !important;
+    justify-content: space-between;
+    align-items: center;
+    .mycDash{
+        flex-grow: 1;
+
+    }
+    .date_index{
+        .calendar{
+            height: 100%!important;
+        }
+        flex-grow: 3;
+
+    }
+}
+@media (max-width: 1540px) {
+    .mycDash, 
+    .date_index{
+        width: 100% !important; 
+        flex-grow: 1 !important;
+    }
+    .cont-dash{
+        flex-direction: column;
+    }
+}
+
 .nav{
-    background-color: rgb(120, 114, 135) !important;
+    background-color: rgba(34, 22, 63, 0.544) !important;
     position: fixed;
     padding-left: 15px;
     top: 0;
     left: 0;
     right: 0;
     height: 80px;
+    z-index: 200;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 }
 .cwhite{
@@ -19,7 +66,7 @@ body{
 
 }
 .dbbtn{
-    background: linear-gradient(-30deg, rgba(0, 33, 250, 0.6) , rgba(179, 0, 255, 0.568));
+    background: linear-gradient(-30deg, rgb(33, 49, 158) , rgb(124, 14, 171));
     border: none;
     font-size: clamp(20px, 3vw, 27px);
     color: white;
@@ -49,7 +96,7 @@ body{
         width: 100%;
     }
     a {
-        height: clamp(70px, 10vw, 150px) !important;
+        height: clamp(70px, 10vw, 110px) !important;
         text-decoration: none;
         color: rgb(255, 255, 255);
         flex: 8 1 auto;
@@ -94,37 +141,37 @@ body{
     }
 }
 .s1a {
-    background-color: rgb(130, 125, 149, 0.788) !important;
+    background-color: rgb(130, 125, 149, 0.42) !important;
 }
 .s1b {
-    background-color: rgba(46, 11, 185, 0.788) !important;
+    background-color: rgba(46, 11, 185, 0.42) !important;
 }
 .s2a {
-    background-color: rgb(52, 53, 87, 0.788) !important;
+    background-color: rgb(52, 53, 87, 0.42) !important;
 }
 .s2b {
-    background-color: rgba(29, 2, 111, 0.788) !important;
+    background-color: rgba(29, 2, 111, 0.42) !important;
 }
 .s2c {
-    background-color: rgba(20, 2, 81, 0.788) !important;
+    background-color: rgba(20, 2, 81, 0.42) !important;
 }
 .s3a {
-    background-color: rgba(46, 0, 90, 0.788) !important;
+    background-color: rgba(46, 0, 90, 0.42) !important;
 }
 .s3b {
-    background-color: rgba(73, 0, 152, 0.788) !important;
+    background-color: rgba(73, 0, 152, 0.42) !important;
 }
 .s4a {
-    background-color: rgba(19, 148, 114, 0.788) !important;
+    background-color: rgba(19, 148, 114, 0.42) !important;
 }
 .s4b {
-    background-color: rgba(13, 115, 102, 0.788) !important;
+    background-color: rgba(13, 115, 102, 0.42) !important;
 }
 .s5a {
-    background-color: rgba(4, 134, 139, 0.788) !important;
+    background-color: rgba(4, 134, 139, 0.42) !important;
 }
 .s5b {
-    background-color: rgba(16, 95, 112, 0.788) !important;
+    background-color: rgba(16, 95, 112, 0.42) !important;
 }
 .mybtdb {
     font-size: 25px;
@@ -275,7 +322,7 @@ $cfilter : rgb(238, 231, 252);
     border: 2px solid $c-new !important;
 }
 .trash{
-    background-color: #d71f6015;
+    background-color: #eb92a146;
     color: $c-delete ;
     border: 2px solid $c-delete !important;
 }
@@ -311,6 +358,7 @@ $cfilter : rgb(238, 231, 252);
 
 
 .top-bar-product{
+    color: $c-new;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.195);
     padding: 1.5rem;
     background-color: $cfilter;
@@ -550,6 +598,7 @@ $cfilter : rgb(238, 231, 252);
 
 .archived{
     background-color: rgba(150, 6, 6, 0.243);
+    background-image: linear-gradient(to right, #ed6ea0 0%, #ec8c69 100%);
     padding: 1rem;
     border-radius: 20px;
     .card_{
@@ -888,3 +937,47 @@ $cfilter : rgb(238, 231, 252);
         font-weight: bold;
     }
 }
+
+
+
+
+//// uivers select
+ .radio-inputs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  background-color: #EEE;
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 0.25rem;
+  width: 300px;
+  font-size: 14px;
+}
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: .5rem 0;
+  color: rgba(51, 65, 85, 1);
+  transition: all .15s ease-in-out;
+}
+
+.radio-inputs .radio input:checked + .name {
+  background-color: #fff;
+  font-weight: 600;
+}
+//// uivers select end

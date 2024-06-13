@@ -8,56 +8,89 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SettingsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+   
     public function run()
     {
-        $settings = [
-            [
-                'name' => 'Prenotazione Asporti',  
-                'status' => true,
-            ],
-            [
-                'name' => 'Prenotaione Tavoli',  
-                'status' => true,
-            ],
-            [
-                'name' => 'Possibilità di consegna a domicilio',  
-                'status' => false,
-            ],
-            [
-                'name' => 'Periodo di Ferie',  
-                'status' => false,
-                'property' => [
-                    'from' => '',
-                    'to' => '',
-                    'messagge' => '',
-                    'style' => '',
-                    
-                ]
-            ],
-            [
-                'name' => 'Comuni per il domicilio ',  
-                'status' => false,
-                'property' => [
-                    [
-                        'comune' => 'Mmonte San Vito',
-                        'provincia' => 'AN',
+        
+        
+        if(config('configurazione.pack') == 3 || config('configurazione.pack') == 4){
+            $settings = [
+                [
+                    'name' => 'Prenotaione Tavoli',  
+                    'status' => 1,
+                    'property' => [
+                        'empty' => 0
+                    ],
+                ],
+                [
+                    'name' => 'Prenotazione Asporti',  
+                    'status' => 1,
+                    'property' => [
+                        'empty' => 0
+                    ],
+                ],
+                [
+                    'name' => 'Periodo di Ferie',  
+                    'status' => 0,
+                    'property' => [
+                        'from' => '',
+                        'to' => '',
                     ]
-                ]
-            ],
-        ];
-        foreach ($settings as $s) {
-            if (isset($s->property)) {
-                $s->property = json_encode($s->property, true);
-            }
+                ],
+                [
+                    'name' => 'Possibilità di consegna a domicilio',  
+                    'status' => 1,
+                    'property' => [
+                        'empty' => 0
+                    ],
+                ],
+                [
+                    'name' => 'Comuni per il domicilio ',
+                    'property' => [
+                        [
+                            'comune' => 'Monte San Vito',
+                            'provincia' => 'AN',
+                        ]
+                    ]
+                ],
+            ];
+        }else{
+            $settings = [
+                [
+                    'name' => 'Prenotaione Tavoli',  
+                    'status' => 1,
+                    'property' => [
+                        'empty' => 0
+                    ],
+                ],
+                [
+                    'name' => 'Prenotazione Asporti',  
+                    'status' => 1,
+                    'property' => [
+                        'empty' => 0
+                    ],
+                ],
+                [
+                    'name' => 'Periodo di Ferie',  
+                    'status' => 0,
+                    'property' => [
+                        'from' => '',
+                        'to' => '',
+                        'messagge' => '',
+                        'style' => '',
+                    ]
+                ],
+            ];
         }
-    
-        foreach ($settings as $setting) {
-            Setting::create($setting);
+
+        foreach ($settings as $s) {
+            $string = json_encode($s['property'], true);  
+            $s['property'] = $string;
+            dump( $s['name']);
+        
+
+            // Creazione della voce di impostazione
+            Setting::create($s);
         }
     }
 }
