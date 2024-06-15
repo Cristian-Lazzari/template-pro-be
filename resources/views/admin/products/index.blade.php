@@ -12,7 +12,7 @@
         {{ $data }} 
     </div>
 @endif
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
 
 <h1>Prodotti</h1>
  

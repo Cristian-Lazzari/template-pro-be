@@ -21,7 +21,7 @@
         {{ $data }}
     </div>
 @endif
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
 
 
 @if (isset($year))
@@ -148,7 +148,7 @@
                                     id="days_on_{{ $day }}"
                                     name="days_on[]"
                                     value="{{ $day }}">
-                                <label class="btn btn-outline-dark w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
+                                <label class="btn btn-outline-light w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
                                 @foreach (config('configurazione.times') as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
@@ -183,7 +183,7 @@
                 @endforeach
             </div>
         </div>
-        <button class="btn btn-outline-dark mt-4 w-100">Modifica</button>
+        <button class="btn btn-outline-light mt-4 w-100">Modifica</button>
     </form>
 </div>
 

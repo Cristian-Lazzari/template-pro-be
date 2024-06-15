@@ -44,6 +44,7 @@ class IngredientController extends Controller
         }else{
             $ingredient_allergiens = '[]';
         }
+
         if (isset($data['type_ing'])){
             $type_ing = $data['type_ing'];
         }else{
@@ -56,6 +57,7 @@ class IngredientController extends Controller
             $new_ing->image = $imagePath;
         }
         $new_ing->name = $data['name_ing'];
+
         if (isset($data['option_ing'])) {
             $new_ing->option = true;
         }else{
@@ -65,8 +67,9 @@ class IngredientController extends Controller
         $new_ing->price = intval(round($prezzo_float * 100));
         $new_ing->type = json_encode($type_ing);
 
-        if($ingredient_allergiens){
-            $new_ing->allergiens = json_encode($ingredient_allergiens);
+         if($ingredient_allergiens){
+            $rightall = array_map('intval', array_values($ingredient_allergiens));
+            $new_ing->allergiens = json_encode($rightall);
         }
         $new_ing->save();
         
@@ -117,8 +120,9 @@ class IngredientController extends Controller
         $new_ing->price = intval(round($prezzo_float * 100));
         $new_ing->type = json_encode($type_ing);
     
-        if($ingredient_allergiens){
-            $new_ing->allergiens = json_encode($ingredient_allergiens);
+         if($ingredient_allergiens){
+            $rightall = array_map('intval', array_values($ingredient_allergiens));
+            $new_ing->allergiens = json_encode($rightall);
         }
         $new_ing->update();
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';

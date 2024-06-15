@@ -17,7 +17,7 @@ $domain = 'https://future-plus.it/allergiens/';
  
 @endphp
 
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
 
 
 <h1>Crea nuovo Prodotto</h1>
@@ -119,7 +119,7 @@ $domain = 'https://future-plus.it/allergiens/';
             </div> 
             <div class="m-auto">
                 <input type="checkbox" class="btn-check" id="option_ing" name="option_ing" value="1" @if (old('option_ing', [])) checked @endif>
-                <label class="btn btn-outline-dark" for="option_ing">questo ingrediente è un opzione</label>
+                <label class="btn btn-outline-light" for="option_ing">questo ingrediente è un opzione</label>
             </div>
         </div>
         <div class="check_c">
@@ -129,7 +129,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 @foreach ($categories as $c)
                 
                 <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
-                <label class="btn btn-outline-dark" for="a{{ $c->id }}">{{ $c['name'] }}</label>
+                <label class="btn btn-outline-light" for="a{{ $c->id }}">{{ $c['name'] }}</label>
                 @endforeach
                 
             </p>
@@ -142,7 +142,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 @foreach(  config('configurazione.allergiens') as $a)
                     @php $i = $loop->iteration; @endphp
                     <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergiens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergiens_ing', []))) checked @endif>
-                    <label class="btn btn-outline-dark" for="b{{ $i }}">{{ $a['name'] }}</label>
+                    <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
                 @endforeach
             </p>
         </div>
@@ -162,7 +162,7 @@ $domain = 'https://future-plus.it/allergiens/';
                         checked
                     @endif>
 
-                    <label class="btn btn-outline-dark shadow-sm" for="ingredient{{ $ingredient->id }}">{{ $ingredient->name }}</label>
+                    <label class="btn btn-outline-light shadow-sm" for="ingredient{{ $ingredient->id }}">{{ $ingredient->name }}</label>
                     @error('ingredients') 
                         <div class="invalid-feedback">
                             {{ $message }}

@@ -6,7 +6,7 @@
 $domain = 'https://future-plus.it/allergiens/';
  
 @endphp
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.ingredients.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.ingredients.index') }}">Indietro</a>
 
 <h1>Dettagli Ingrediente</h1>
 <div class="show_p">

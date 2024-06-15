@@ -22,7 +22,7 @@ $domain = 'https://future-plus.it/allergiens/';
         {{ $data }}
     </div>
 @endif
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
 
 <h1>Prodotti - Archivio</h1>
  

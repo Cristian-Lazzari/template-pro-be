@@ -22,7 +22,7 @@
         {{ $data }} 
     </div>
 @endif
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
 
 <h1>Post - archivio</h1>
  

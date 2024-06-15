@@ -19,7 +19,7 @@
     ];
 
 @endphp
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
 
 <h1>Dettagli prodotto</h1>
 <div class="show_p">

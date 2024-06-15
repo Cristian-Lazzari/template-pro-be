@@ -12,7 +12,7 @@
 @endif
     
 
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.categories.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.categories.index') }}">Indietro</a>
 
 
 <h1>Modifica la Categoria</h1>

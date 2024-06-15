@@ -3,7 +3,7 @@
 @section('contents')
     
 
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.dates.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.dates.index') }}">Indietro</a>
 
 <h1 class="p-3">{{$day[0]->day}} - {{config('configurazione.mesi')[$day[0]->month]}}</h1>
 <div class="slim_cont">

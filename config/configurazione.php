@@ -1,7 +1,9 @@
 <?php
 return [
+
     'typeOfOrdering' => true,
     'pack' => 4,
+
     'allergiens' => [
         1 => [
             'img' => 'https://future-plus.it/allergiens/gluten.png',

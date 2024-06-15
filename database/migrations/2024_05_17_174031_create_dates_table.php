@@ -22,10 +22,14 @@ return new class extends Migration
             $table->string('time');
 
             $table->string('date_slot');
+
+
             //array
-            $table->text('reserving');
-            $table->text('visible');
+
+            
+            $table->text('reserving'); //{'cucina_1' : 3, 'cucina_2' : 2, 'domicilio' :0 , 'tavoli':0}
             $table->text('availability');
+            $table->text('visible');
             
             $table->tinyInteger('status'); //1-7 combinazione di servizi
 

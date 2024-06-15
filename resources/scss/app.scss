@@ -286,7 +286,7 @@ body{
 $bg-p-p : rgba(238, 238, 244, 0.473);
 $c-delete : rgba(233, 50, 84, 0.708);
 $c-update : rgba(224, 191, 42, 0.796);
-$c-new : rgb(90, 20, 169);
+$c-new : rgb(28, 2, 87);
 $t : rgba(193, 206, 236, 0.43);
 $cfilter : rgb(238, 231, 252);
 .my_btn{
@@ -597,13 +597,11 @@ $cfilter : rgb(238, 231, 252);
 }
 
 .archived{
-    background-color: rgba(150, 6, 6, 0.243);
-    background-image: linear-gradient(to right, #ed6ea0 0%, #ec8c69 100%);
+    //background-color: rgba(150, 6, 6, 0.243);
+    //background-image: linear-gradient(to right, #e3251344 0%, #ec8c69 100%);
     padding: 1rem;
     border-radius: 20px;
-    .card_{
-        background-color: white !important;
-    }
+   
 }
 .not_v{
     .card_, h3, .allergiens{

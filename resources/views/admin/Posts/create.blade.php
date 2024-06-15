@@ -13,7 +13,7 @@
     
 
 
-<a class="btn btn-outline-dark mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
+<a class="btn btn-outline-light mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
 
 
 <h1>Crea nuovo Post</h1>
