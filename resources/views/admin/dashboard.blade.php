@@ -144,7 +144,7 @@
             
             <section>
                 <h3> Prenotazioni Tavoli </h3>
-                <div class="radio-inputs">
+                <div class="radio-inputs mb-3">
                     <label class="radio">
                         <input type="radio" name="tavoli_status" @if($setting[0]['status'] == 0) checked  @endif value="0" >
                         <span class="name">Non Visibile</span>
@@ -162,7 +162,7 @@
             </section>
             <section>
                 <h3> Ordini d'Asporto </h3>
-                <div class="radio-inputs">
+                <div class="radio-inputs mb-3">
                     <label class="radio">
                         <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 0) checked  @endif value="0" >
                         <span class="name">Non Visibile</span>
@@ -181,7 +181,7 @@
             @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4) 
                 <section>
                     <h3> Ordini a Domicilio </h3>
-                    <div class="radio-inputs">
+                    <div class="radio-inputs mb-3">
                         <label class="radio">
                             <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 0) checked  @endif value="0" >
                             <span class="name">Non Visibile</span>
@@ -214,13 +214,53 @@
                     </label>
                 </div>
                 <h5 class="pt-4 ">Indica il periodo in cui sei in ferie</h5>
-                <div class="input-group flex-nowrap py-2 w-auto">
+                <div class="input-group flex-nowrap py-2 w-auto mb-3">
                     <label for="form" class="input-group-text" >Da</label>
                     <input name="from" id="form" type="date" class="form-control" placeholder="da" @if($setting[2]['property']['from'] !== '') value="{{$setting[2]['property']['from']}}"  @endif>
                     <label for="to" class="input-group-text" >A</label>
                     <input name="to" id="to" type="date" class="form-control" placeholder="da" @if($setting[2]['property']['to'] !== '') value="{{$setting[2]['property']['to']}}"  @endif>
                 </div>
             </section>
+
+            <section>
+                <h3> Giorni di attività </h3>
+                @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon2">{{ $giorno }}</span>
+                        <input type="text" class="form-control" placeholder="19:30 - 23:30" aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                    </div>
+                @endforeach
+            </section>
+
+            <section>
+                <h3> Posizione </h3>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Link Google Maps</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Indirizzo</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                </div>          
+            </section>
+
+            <section>
+                <h3> Contatti </h3>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Telefono</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Email</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                </div>        
+            </section>
+
+
     
             <button type="submit" class="my_btn">Modifica</button>
         </form>
@@ -231,7 +271,7 @@
                 $setting[4]['property'] = json_decode($setting[4]['property'], true);
             } 
             @endphp
-            <h2>Gestione indirizzzi di consegna</h2>
+            <h2>Gestione indirizzi di consegna</h2>
             <button type="button" class="my_btn create" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Crea nuovo
             </button>
