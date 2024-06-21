@@ -47,10 +47,10 @@ class PostController extends Controller
             }
             if ($archive == 1) {
                 $posts = Post::where('archived', true)->get();
-                return to_route('admin.posts.archived', compact('posts'))->with('success', $m);
+                return to_route('admin.Posts.archived', compact('posts'))->with('success', $m);
             } else{
                 $posts = Post::where('archived', false)->get();
-                return to_route('admin.posts.index', compact('posts'))->with('success', $m);
+                return to_route('admin.Posts.index', compact('posts'))->with('success', $m);
             }
             
             
@@ -66,10 +66,10 @@ class PostController extends Controller
             }
             if ($archive == 1) {
                 $posts = Post::where('archived', true)->get();
-                return to_route('admin.posts.archived', compact('posts',))->with('success', $m);
+                return to_route('admin.Posts.archived', compact('posts',))->with('success', $m);
             } else{
                 $posts = Post::where('archived', false)->get();
-                return to_route('admin.posts.index', compact('posts',))->with('success', $m);
+                return to_route('admin.Posts.index', compact('posts',))->with('success', $m);
             }
         } 
     }
@@ -78,7 +78,7 @@ class PostController extends Controller
         $posts   = Post::where('archived', true)->get();
         
         
-        return view('admin.posts.archived', compact('posts'));
+        return view('admin.Posts.archived', compact('posts'));
     }
 
     public function filter(Request $request){
@@ -129,22 +129,22 @@ class PostController extends Controller
         }        
         if ($archive == 1) {
 
-            return view('admin.posts.archived', compact('posts', 'filters'));
+            return view('admin.Posts.archived', compact('posts', 'filters'));
         }
 
-        return view('admin.posts.index', compact('posts', 'filters'));
+        return view('admin.Posts.index', compact('posts', 'filters'));
         
     }
 
     public function index()
     {
         $posts    = Post::where('archived', false)->get(); 
-        return view('admin.posts.index', compact('posts'));
+        return view('admin.Posts.index', compact('posts'));
     }
 
     public function create()
     {
-        return view('admin.posts.create');
+        return view('admin.Posts.create');
     }
 
     public function store(Request $request)
@@ -167,20 +167,20 @@ class PostController extends Controller
         
         $post->save();
       
-        return view('admin.posts.show', compact( 'post'));    
+        return view('admin.Posts.show', compact( 'post'));    
     }
     
     
     public function show($id)
     {
         $post = Post::where('id', $id)->firstOrFail();
-        return view('admin.posts.show', ['post' => $post]);      
+        return view('admin.Posts.show', ['post' => $post]);      
     }
     
     public function edit($id)
     {
         $post = Post::where('id', $id)->firstOrFail();  
-        return view('admin.posts.edit', compact( 'post'));        
+        return view('admin.Posts.edit', compact( 'post'));        
     }
     
     public function update(Request $request, $id)
@@ -204,13 +204,13 @@ class PostController extends Controller
         
         $post->update();
       
-        return view('admin.posts.show', compact('post'));
+        return view('admin.Posts.show', compact('post'));
     }
 
     public function destroy(Post $post)
     {
         $post->products()->detach();
         $post->delete();
-        return to_route('admin.posts.index')->with('delete_success', $post);
+        return to_route('admin.Posts.index')->with('delete_success', $post);
     }
 }

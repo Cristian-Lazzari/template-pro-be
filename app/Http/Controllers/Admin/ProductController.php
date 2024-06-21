@@ -148,7 +148,7 @@ class ProductController extends Controller
     {
         
         $products    = Product::where('archived', false)->get();
-        $categories = Category::all();
+        $categories  = Category::all();
         return view('admin.products.index', compact('products', 'categories'));
     }
 

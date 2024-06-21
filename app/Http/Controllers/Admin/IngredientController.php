@@ -74,7 +74,7 @@ class IngredientController extends Controller
         $new_ing->save();
         
         $m = ' "' . $new_ing['name'] . '" è stato creato correttamente';
-        return to_route('admin.Ingredients.index')->with('ingredient_success', $m);   
+        return to_route('admin.ingredients.index')->with('ingredient_success', $m);   
     }
     
     
@@ -126,7 +126,7 @@ class IngredientController extends Controller
         }
         $new_ing->update();
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';
-        return to_route('admin.Ingredients.index')->with('ingredient_success', $m);
+        return to_route('admin.ingredients.index')->with('ingredient_success', $m);
  
     }
     
@@ -134,7 +134,7 @@ class IngredientController extends Controller
     {
         $ingredient->products()->detach();
         $ingredient->delete();
-        return to_route('admin.Ingredients.index')->with('delete_success', $ingredient);
+        return to_route('admin.ingredients.index')->with('delete_success', $ingredient);
     }
     public function show($id)
     {
