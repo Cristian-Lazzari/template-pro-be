@@ -183,16 +183,16 @@
                     <h3> Ordini a Domicilio </h3>
                     <div class="radio-inputs mb-3">
                         <label class="radio">
-                            <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 0) checked  @endif value="0" >
+                            <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 0) checked  @endif value="0" >
                             <span class="name">Non Visibile</span>
                         </label>
                         <label class="radio">
-                            <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 1) checked  @endif value="1" >
+                            <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 1) checked  @endif value="1" >
                             <span class="name">Chiamate</span>
                         </label>
                             
                         <label class="radio">
-                            <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 2) checked  @endif value="2" >
+                            <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 2) checked  @endif value="2" >
                             <span class="name">Web App</span>
                         </label>
                     </div>
@@ -227,7 +227,7 @@
                 @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon2">{{ $giorno }}</span>
-                        <input type="text" class="form-control" placeholder="19:30 - 23:30" aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                        <input type="text" class="form-control" placeholder="19:30 - 23:30" name="{{ $giorno }}"  aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
                     </div>
                 @endforeach
             </section>
@@ -236,15 +236,15 @@
                 <h3> Posizione </h3>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Link Google Maps</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Indirizzo</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="indirizzo">
                 </div>          
             </section>
 
@@ -252,27 +252,27 @@
                 <h3> Contatti </h3>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Telefono</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="telefono">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Email</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="email">
                 </div>        
             </section>
 
 
     
-            <button type="submit" class="my_btn">Modifica</button>
+            <button type="submit" class="my_btn mb-3">Modifica</button>
         </form>
        
         @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
             @php
-            if (is_string($setting[4]['property'])) {
-                $setting[4]['property'] = json_decode($setting[4]['property'], true);
+            if (is_string($setting[7]['property'])) {
+                $setting[7]['property'] = json_decode($setting[7]['property'], true);
             } 
             @endphp
-            <h2>Gestione indirizzi di consegna</h2>
-            <button type="button" class="my_btn create" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <h2 >Gestione indirizzi di consegna</h2>
+            <button type="button" class="my_btn create mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Crea nuovo
             </button>
               
@@ -316,7 +316,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            @foreach ($setting[4]['property'] as $i)
+                            @foreach ($setting[7]['property'] as $i)
                                 <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
                                 <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
                             @endforeach
@@ -331,7 +331,7 @@
 
 
             <div class="addres"> 
-                @foreach ($setting[4]['property'] as $i)
+                @foreach ($setting[7]['property'] as $i)
                     <span class="my_btn">
                         {{$i['provincia']}}
                         {{$i['comune']}}

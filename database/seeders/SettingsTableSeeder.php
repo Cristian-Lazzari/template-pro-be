@@ -38,22 +38,6 @@ class SettingsTableSeeder extends Seeder
                     ]
                 ],
                 [
-                    'name' => 'Possibilità di consegna a domicilio',  
-                    'status' => 1,
-                    'property' => [
-                        'empty' => 0
-                    ],
-                ],
-                [
-                    'name' => 'Comuni per il domicilio',
-                    'property' => [
-                        [
-                            'comune' => 'Monte San Vito',
-                            'provincia' => 'AN',
-                        ]
-                    ]
-                ],
-                [
                     'name' => 'Orari di attività',
                     'property' => [
                         [
@@ -83,6 +67,22 @@ class SettingsTableSeeder extends Seeder
                         [
                             'Telefono' => '',
                             'Email' => '',
+                        ]
+                    ]
+                ],
+                [
+                    'name' => 'Possibilità di consegna a domicilio',  
+                    'status' => 1,
+                    'property' => [
+                        'empty' => 0
+                    ],
+                ],
+                [
+                    'name' => 'Comuni per il domicilio',
+                    'property' => [
+                        [
+                            'comune' => 'Monte San Vito',
+                            'provincia' => 'AN',
                         ]
                     ]
                 ],
@@ -115,36 +115,15 @@ class SettingsTableSeeder extends Seeder
                 ],
                 [
                     'name' => 'Orari di attività',
-                    'property' => [
-                        [
-                            'Lunedì' => '',
-                            'Martedì' => '',
-                            'Mercoledì' => '',
-                            'Giovedì' => '',
-                            'Venerdì' => '',
-                            'Sabato' => '',
-                            'Domenica' => '',
-                        ]
-                    ]
+                    'property' => [],
                 ],
                 [
                     'name' => 'Posizione',
-                    'property' => [
-                        [
-                            'Foto di Google Maps' => '',
-                            'Link di Google Maps' => '',
-                            'Indirizzo' => '',
-                        ]
-                    ]
+                    'property' => [],
                 ],
                 [
                     'name' => 'Contatti',
-                    'property' => [
-                        [
-                            'Telefono' => '',
-                            'Email' => '',
-                        ]
-                    ]
+                    'property' => [],
                 ],
             ];
         }
