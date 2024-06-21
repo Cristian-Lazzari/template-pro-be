@@ -18,12 +18,12 @@ class CategoryController extends Controller
     public function index()
     { 
         $categories     = Category::all();
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.Categories.index', compact('categories'));
     }
      
     public function create()
     {
-        return view('admin.categories.create');
+        return view('admin.Categories.create');
     }
 
 
@@ -41,7 +41,7 @@ class CategoryController extends Controller
         $category->save();
         
         $m = ' "' . $category['name'] . '" è stato creato correttamente';
-        return to_route('admin.categories.index')->with('category_success', $m);   
+        return to_route('admin.Categories.index')->with('category_success', $m);   
     }
     
     
@@ -49,7 +49,7 @@ class CategoryController extends Controller
     {
         $category    = Category::where('id', $id)->firstOrFail();; 
     
-        return view('admin.categories.edit', compact( 'category'));
+        return view('admin.Categories.edit', compact( 'category'));
     }
     public function update(Request $request, $id)
     {
@@ -68,7 +68,7 @@ class CategoryController extends Controller
         $category->update();
         
         $m = ' "' . $category['name'] . '" è stato creato correttamente';
-        return to_route('admin.categories.index')->with('category_success', $m);
+        return to_route('admin.Categories.index')->with('category_success', $m);
  
     }
     
@@ -81,11 +81,11 @@ class CategoryController extends Controller
         
         $category->delete();
         
-        return to_route('admin.categories.index')->with('delete_success', $category);
+        return to_route('admin.Categories.index')->with('delete_success', $category);
     }
     public function show($id)
     {
         $category    = category::where('id', $id)->firstOrFail();
-        //return view('admin.categories.show', compact('category'));
+        //return view('admin.Categories.show', compact('category'));
     }  
 }

@@ -27,7 +27,7 @@ class IngredientController extends Controller
     public function create()
     {
     $categories     = Category::all();
-    return view('admin.ingredients.create', compact('categories'));
+    return view('admin.Ingredients.create', compact('categories'));
     }
 
 
@@ -74,7 +74,7 @@ class IngredientController extends Controller
         $new_ing->save();
         
         $m = ' "' . $new_ing['name'] . '" è stato creato correttamente';
-        return to_route('admin.ingredients.index')->with('ingredient_success', $m);   
+        return to_route('admin.Ingredients.index')->with('ingredient_success', $m);   
     }
     
     
@@ -82,7 +82,7 @@ class IngredientController extends Controller
     {
         $ingredient    = Ingredient::where('id', $id)->firstOrFail();
         $categories    = Category::all();
-        return view('admin.ingredients.edit', compact('categories', 'ingredient'));
+        return view('admin.Ingredients.edit', compact('categories', 'ingredient'));
     }
     public function update(Request $request, $id)
     {
@@ -126,7 +126,7 @@ class IngredientController extends Controller
         }
         $new_ing->update();
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';
-        return to_route('admin.ingredients.index')->with('ingredient_success', $m);
+        return to_route('admin.Ingredients.index')->with('ingredient_success', $m);
  
     }
     
@@ -134,13 +134,13 @@ class IngredientController extends Controller
     {
         $ingredient->products()->detach();
         $ingredient->delete();
-        return to_route('admin.ingredients.index')->with('delete_success', $ingredient);
+        return to_route('admin.Ingredients.index')->with('delete_success', $ingredient);
     }
     public function show($id)
     {
         $ingredient    = Ingredient::where('id', $id)->firstOrFail();; 
         $categories    = Category::all();
-        return view('admin.ingredients.show', compact('categories', 'ingredient'));
+        return view('admin.Ingredients.show', compact('categories', 'ingredient'));
     }
      
    
