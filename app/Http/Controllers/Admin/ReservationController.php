@@ -48,7 +48,7 @@ class ReservationController extends Controller
         }        
     
 
-        return view('admin.reservations.index', compact('reservations', 'filters'));
+        return view('admin.Reservations.index', compact('reservations', 'filters'));
     }
 
 
@@ -58,7 +58,7 @@ class ReservationController extends Controller
     {
         $reservations = Reservation::where('status', '=', 0)->orderBy('created_at', 'desc')->get();
         $dates = Date::all();
-        return view('admin.reservations.index', compact('reservations', 'dates'));
+        return view('admin.Reservations.index', compact('reservations', 'dates'));
     }
 
     /**

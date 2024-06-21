@@ -48,7 +48,7 @@ class OrderController extends Controller
         }        
     
 
-        return view('admin.orders.index', compact('orders', 'filters'));
+        return view('admin.Orders.index', compact('orders', 'filters'));
     }
 
 
@@ -58,7 +58,7 @@ class OrderController extends Controller
     {
         $orders = Order::where('status', '=', 0)->orderBy('created_at', 'desc')->get();
         $dates = Date::all();
-        return view('admin.orders.index', compact('orders', 'dates'));
+        return view('admin.Orders.index', compact('orders', 'dates'));
     }
 
     /**
