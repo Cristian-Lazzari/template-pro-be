@@ -89,10 +89,10 @@ body{
 .mycDash {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 11px;
     section {
         display: flex;
-        gap: 15px;
+        gap: 11px;
         width: 100%;
     }
     a {
@@ -104,7 +104,7 @@ body{
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 20px;
+        border-radius: 14px;
         gap: 4px;
         box-shadow: 4px 3px 7px rgba(0, 0, 0, 0.34);
         transition: all 0.3s ease-in-out;
@@ -196,25 +196,30 @@ body{
     text-align: center;
     text-transform: capitalize;
 }
+
 .calendar-c{
-    margin: 3rem 0;
+    //margin: 3rem 0;
     background-color: rgba(83, 89, 170, 0.31);
     border-radius: 30px;
+    display: flex;
+    flex-direction: column;
     .c-name{
         display: flex;
+        flex-grow: 1;
         justify-content: space-between;
         text-transform: capitalize;
-        padding: 4rem 15% 0;
-        color: #3e0f5d;
+        padding: 4rem 6% 0;
+        width: 100%;
+        color: white;
         h4{
 
-            font-size: clamp(12px, 1.9vw, 20px);
+            font-size: clamp(12px, 1.6vw, 20px);
         }
     }
     .calendar{
         text-align: center;
         display: grid;
-        padding: 3rem 13% 4rem;
+        padding: 3rem 6% 4rem;
         justify-content: center;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
         
@@ -274,7 +279,36 @@ body{
         }
     }
 }
+#setting{
+    width: 80%;
+    max-width: 700px !important;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    background-color: #542b7989;
+    padding: 3rem;
+    border-radius: 39px;
+    form{
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        width: 100% !important;
+        section{
 
+            width: 100% !important;
+        }
+        .radio-inputs{
+            width: 100% !important;
+        }
+    }
+}
 
 
 //****************** new css *************
@@ -816,6 +850,13 @@ $cfilter : rgb(238, 231, 252);
 }
 
 @media (max-width: 550px) {
+    .mycDash{
+        gap: 9px;
+        section{
+            gap: 9px;
+
+        }
+    }
     .split{
         div{
             width: 100% !important;
@@ -871,6 +912,9 @@ $cfilter : rgb(238, 231, 252);
             flex-grow: 1;
         }
     }
+    .calendar{
+        gap: 3px !important;
+    }
     .c-name{
 
         h4{
@@ -880,6 +924,7 @@ $cfilter : rgb(238, 231, 252);
         }
     }
     .day{
+        border-radius: 5px !important;
         p{
 
             svg{
@@ -949,7 +994,6 @@ $cfilter : rgb(238, 231, 252);
   box-sizing: border-box;
   box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
   padding: 0.25rem;
-  width: 300px;
   font-size: 14px;
 }
 

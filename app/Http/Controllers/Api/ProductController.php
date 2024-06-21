@@ -14,14 +14,13 @@ class ProductController extends Controller
         $categoryId = $request->query('category');
 
         $query = Product::with('category', 'ingredients')->where('visible', 1);
-        $query = $query->where('archived', 0);
 
 
         if ($categoryId !== null && $categoryId !== 0) {
             $query = $query->where('category_id', $categoryId);
         } 
         
-        $products = $query->get();
+        $products = $query->where('archived', 0)->get();
         
 
 

@@ -27,13 +27,13 @@
 @if (isset($year))
     
 
-<div class="date_index">
+<div class="container date_index">
     <div id="carouselExampleIndicators" class="carousel slide">
         <div class="carousel-indicators">
 
             @php $i = 0; @endphp
             @foreach ($year as $m)
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
+                <button  type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$i}}"
                 @if ($i == 0)
                     class="active" aria-current="true" 
                 @endif
@@ -81,23 +81,22 @@
         @endforeach
 
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <button class="carousel-control-prev" style="width: 7% !important;" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <button class="carousel-control-next" style="width: 7% !important;" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
         </button>
       </div>
 </div>
 @endif
-<h1>Date</h1>
-<div class="container m-auto">
+<div class="container ">
     <form class="d-flex flex-column py-5"  action="{{ route('admin.dates.generate') }}" method="post" enctype="multipart/form-data">
+    <h1>Genera nuove disponibilità</h1>
         @csrf
         
-        <h3>GENERA NUOVE DATE</h3>
         @if ( config('configurazione.pack') == 2 ||  config('configurazione.pack') == 4)  
             <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
             <div class="input-group w-auto flex-nowrap py-2 ">

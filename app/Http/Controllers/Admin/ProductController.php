@@ -198,7 +198,7 @@ class ProductController extends Controller
             $new_ing->price = intval(round($prezzo_float * 100));
             $new_ing->type = json_encode($type_ing);
 
-            if($ingredient_allergiens){
+            if($ingredient_allergiens !== '[]'){
                 $rightall = array_map('intval', array_values($ingredient_allergiens));
                 $new_ing->allergiens = json_encode($rightall);
             }
@@ -238,7 +238,7 @@ class ProductController extends Controller
                 
                 $allergiens = json_encode($rightall);
             }else{
-                $allergiens = [];   
+                $allergiens = '[]';   
             }
         }
         
@@ -328,7 +328,7 @@ class ProductController extends Controller
             $new_ing->price = $data['price_ing'];
             $new_ing->type = json_encode($type_ing);
 
-            if($ingredient_allergiens){
+            if($ingredient_allergiens !== '[]'){
                 $new_ing->allergiens = json_encode($ingredient_allergiens);
             }
             $new_ing->save();
@@ -362,7 +362,7 @@ class ProductController extends Controller
                 
                 $allergiens = json_encode($rightall);
             }else{
-                $allergiens = [];   
+                $allergiens = '[]';   
             }
         }
         

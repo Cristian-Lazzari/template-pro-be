@@ -67,7 +67,7 @@ class IngredientController extends Controller
         $new_ing->price = intval(round($prezzo_float * 100));
         $new_ing->type = json_encode($type_ing);
 
-         if($ingredient_allergiens){
+         if($ingredient_allergiens !== '[]'){
             $rightall = array_map('intval', array_values($ingredient_allergiens));
             $new_ing->allergiens = json_encode($rightall);
         }
@@ -120,7 +120,7 @@ class IngredientController extends Controller
         $new_ing->price = intval(round($prezzo_float * 100));
         $new_ing->type = json_encode($type_ing);
     
-         if($ingredient_allergiens){
+         if($ingredient_allergiens !== '[]'){
             $rightall = array_map('intval', array_values($ingredient_allergiens));
             $new_ing->allergiens = json_encode($rightall);
         }
