@@ -192,7 +192,6 @@ class DateController extends Controller
             ];
             
         };
-        //dd($year);
         return view('admin.dates.index', compact('year'));
     }
 

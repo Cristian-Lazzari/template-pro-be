@@ -41,7 +41,7 @@ class CategoryController extends Controller
         $category->save();
         
         $m = ' "' . $category['name'] . '" è stato creato correttamente';
-        return to_route('admin.Categories.index')->with('category_success', $m);   
+        return to_route('admin.categories.index')->with('category_success', $m);   
     }
     
     
@@ -61,14 +61,14 @@ class CategoryController extends Controller
         if (isset($data['icon'])) {
             $iconPath = Storage::put('public/uploads', $data['icon']);
             if ($category->icon) {
-                Storage::delete($product->icon);
+                Storage::delete($category->icon);
             }
             $category->icon = $iconPath;
         }
         $category->update();
         
         $m = ' "' . $category['name'] . '" è stato creato correttamente';
-        return to_route('admin.Categories.index')->with('category_success', $m);
+        return to_route('admin.categories.index')->with('category_success', $m);
  
     }
     
@@ -81,7 +81,7 @@ class CategoryController extends Controller
         
         $category->delete();
         
-        return to_route('admin.Categories.index')->with('delete_success', $category);
+        return to_route('admin.categories.index')->with('delete_success', $category);
     }
     public function show($id)
     {

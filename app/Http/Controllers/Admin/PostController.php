@@ -47,10 +47,10 @@ class PostController extends Controller
             }
             if ($archive == 1) {
                 $posts = Post::where('archived', true)->get();
-                return to_route('admin.Posts.archived', compact('posts'))->with('success', $m);
+                return to_route('admin.posts.archived', compact('posts'))->with('success', $m);
             } else{
                 $posts = Post::where('archived', false)->get();
-                return to_route('admin.Posts.index', compact('posts'))->with('success', $m);
+                return to_route('admin.posts.index', compact('posts'))->with('success', $m);
             }
             
             
@@ -66,10 +66,10 @@ class PostController extends Controller
             }
             if ($archive == 1) {
                 $posts = Post::where('archived', true)->get();
-                return to_route('admin.Posts.archived', compact('posts',))->with('success', $m);
+                return to_route('admin.posts.archived', compact('posts',))->with('success', $m);
             } else{
                 $posts = Post::where('archived', false)->get();
-                return to_route('admin.Posts.index', compact('posts',))->with('success', $m);
+                return to_route('admin.posts.index', compact('posts',))->with('success', $m);
             }
         } 
     }
@@ -211,6 +211,6 @@ class PostController extends Controller
     {
         $post->products()->detach();
         $post->delete();
-        return to_route('admin.Posts.index')->with('delete_success', $post);
+        return to_route('admin.posts.index')->with('delete_success', $post);
     }
 }

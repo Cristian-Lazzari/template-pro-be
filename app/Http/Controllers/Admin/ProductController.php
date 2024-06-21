@@ -220,8 +220,8 @@ class ProductController extends Controller
         
         $product = new Product();
         
-        $allergiens = [];
         if(isset($data['ingredients'])){     
+            $allergiens = [];
             foreach ($data['ingredients'] as $i) {
                 $all = Ingredient::where('id', $i)->firstOrFail();
                 $isall = json_decode($all['allergiens']);
@@ -240,6 +240,8 @@ class ProductController extends Controller
             }else{
                 $allergiens = '[]';   
             }
+        }else{
+            $allergiens = '[]';   
         }
         
 
@@ -364,6 +366,8 @@ class ProductController extends Controller
             }else{
                 $allergiens = '[]';   
             }
+        }else{
+            $allergiens = '[]';   
         }
         
         $prezzo_stringa = str_replace(',', '.', $data['price']);
