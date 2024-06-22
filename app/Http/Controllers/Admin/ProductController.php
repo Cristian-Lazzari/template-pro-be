@@ -161,8 +161,26 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
-          
+    {   
+        //funzione del cazzo di chat per controllare la questione glutine e senza glutine
+        function cleanArray($array) {
+            $hasGluten = false;
+            $hasNoGluten = false;
+            foreach ($array as $item) {     
+                if ($item == 1) {
+                    $hasGluten = true;
+                } elseif ($item == 4) {
+                    $hasNoGluten = true;
+                }     
+            } 
+            if ($hasGluten && $hasNoGluten) {
+                $filteredArray = array_filter($array, function($value) {
+                    return $value !== 1;
+                });
+            }  
+            return array_values($filteredArray); // re-indicizzare l'array
+        }
+        //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
         $data = $request->all();
      
         if (isset($data['newi'])){
@@ -231,12 +249,12 @@ class ProductController extends Controller
                     }  
                 }
             }
-            if (count($allergiens) > 0) {
-                $allergiens = array_unique($allergiens);
 
-                $rightall = array_map('intval', array_values($allergiens));
-                
-                $allergiens = json_encode($rightall);
+            if (count($allergiens) > 0) {
+                $alldclen = array_unique($allergiens);
+                $rightall = array_map('intval', array_values($alldclen));   
+                $cleanAllergiens = cleanArray($rightall);          
+                $allergiens = json_encode($cleanAllergiens);
             }else{
                 $allergiens = '[]';   
             }
@@ -301,11 +319,30 @@ class ProductController extends Controller
     }
     
     public function update(Request $request, $id){
+
+        //funzione del cazzo di chat per controllare la questione glutine e senza glutine
+        function cleanArray($array) {
+            $hasGluten = false;
+            $hasNoGluten = false;
+            foreach ($array as $item) {     
+                if ($item == 1) {
+                    $hasGluten = true;
+                } elseif ($item == 4) {
+                    $hasNoGluten = true;
+                }     
+            } 
+            if ($hasGluten && $hasNoGluten) {
+                $filteredArray = array_filter($array, function($value) {
+                    return $value !== 1;
+                });
+            }  
+            return array_values($filteredArray); // re-indicizzare l'array
+        }
+        //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
+
+
         $product = Product::where('id', $id)->firstOrFail();
-    
-          
         $data = $request->all();
-        
         if (isset($data['newi'])){
             $newi = $data['newi'];
             if (isset($data['allergiens_ing'])){
@@ -358,11 +395,10 @@ class ProductController extends Controller
                 }
             }
             if (count($allergiens) > 0) {
-                $allergiens = array_unique($allergiens);
-
-                $rightall = array_map('intval', array_values($allergiens));
-                
-                $allergiens = json_encode($rightall);
+                $alldclen = array_unique($allergiens);
+                $rightall = array_map('intval', array_values($alldclen));   
+                $cleanAllergiens = cleanArray($rightall);          
+                $allergiens = json_encode($cleanAllergiens);
             }else{
                 $allergiens = '[]';   
             }
