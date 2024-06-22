@@ -6,73 +6,72 @@ return [
 
     'allergiens' => [
         1 => [
-            'special' => 'false',
+            'special' => 4,
             'img' => 'https://future-plus.it/allergiens/gluten-free.png',
             'name' => 'senza glutine'
         ],
         2 => [
-            'special' => 'false',
-            'img' => 'https://future-plus.it/allergiens/crab.png',
+            'special' => 1,
+            'img' => 'https://future-plus.it/allergiens/spicy.png',
             'name' => 'piccante'
         ],
         3 => [
-            'special' => 'false',
-            'img' => 'https://future-plus.it/allergiens/crab.png',
+            'special' => 1,
+            'img' => 'https://future-plus.it/allergiens/veggy.png',
             'name' => 'vegano'
         ],
         4 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/gluten.png',
-            'name' => 'glutine'
-            
+            'name' => 'glutine'   
         ],
         5 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/sesame.png',
             'name' => 'sesamo'
         ],
         6 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/peanut.png',
             'name' => 'arachidi'
         ],
         7 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/soy.png',
             'name' => 'soia'
         ],
         8 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/molluschi.png',
             'name' => 'molluschi'
         ],
         9 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/sedano.png',
             'name' => 'sedano'
         ],
         10 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/senape.png',
             'name' => 'senape'
         ],
         11 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/egg.png',
             'name' => 'uova'
         ],
         12 => [
-            'special' => 'false',
+            'special' => 0,
             'img' => 'https://future-plus.it/allergiens/dairy.png',
             'name' => 'latticini'
         ],
         13 => [
-           'special' => 'false',
+           'special' => 0,
             'img' => 'https://future-plus.it/allergiens/fish.png',
             'name' => 'pesce'
         ],
         14 => [
-           'special' => 'false',
+           'special' => 0,
             'img' => 'https://future-plus.it/allergiens/crab.png',
             'name' => 'crostacei'
         ],
