@@ -19,9 +19,10 @@ $domain = 'https://future-plus.it/allergiens/';
                 <img class="logo_" src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$ingredient->name }}">
             @endif 
             <div class="allergiens">
-                @php $all = json_decode($ingredient->allergiens) @endphp
+                @php $all = json_decode($ingredient->allergiens, true) @endphp
+               
                 @foreach ($all as $p)
-                    <img src="{{config('configurazione.allergiens')[$p]['img']}}" alt="{{config('configuraiozne.allergiens')[$p]['name']}}" title="{{config('configuraiozne.allergiens')[$p]['name']}}">
+                    <img src="{{config('configurazione.allergiens')[$p]['img']}}" alt="{{config('configurazione.allergiens')[$p]['name']}}" title="{{config('configurazione.allergiens')[$p]['name']}}">
                 @endforeach
             </div>
             <div class="price">€{{$ingredient->price / 100}}</div>
