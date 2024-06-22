@@ -21,7 +21,7 @@ $domain = 'https://future-plus.it/allergiens/';
             <div class="allergiens">
                 @php $all = json_decode($ingredient->allergiens) @endphp
                 @foreach ($all as $p)
-                    <img src="{{$allergiens[$p]['img']}}" alt="{{$allergiens[$p]['name']}}" title="{{$allergiens[$p]['name']}}">
+                    <img src="{{config('configuraiozne.allergiens')[$p]['img']}}" alt="{{config('configuraiozne.allergiens')[$p]['name']}}" title="{{config('configuraiozne.allergiens')[$p]['name']}}">
                 @endforeach
             </div>
             <div class="price">€{{$ingredient->price / 100}}</div>
