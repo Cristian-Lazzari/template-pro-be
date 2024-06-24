@@ -2,7 +2,6 @@
 
 @section('contents')
 
-
 <div class="cont-dash">
     <div class="mycDash my-5 ">
         <section>
@@ -222,12 +221,17 @@
                 </div>
             </section>
 
+            @php 
+                $property_orari = json_decode($setting[3]['property'], true);
+                $property_posizione = json_decode($setting[4]['property'], true);
+                $property_contatti = json_decode($setting[5]['property'], true);
+            @endphp
             <section>
                 <h3> Giorni di attività </h3>
                 @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon2">{{ $giorno }}</span>
-                        <input type="text" class="form-control" placeholder="19:30 - 23:30" name="{{ $giorno }}"  aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                        <input type="text" class="form-control" placeholder="19:30 - 23:30" name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
                     </div>
                 @endforeach
             </section>
@@ -236,15 +240,15 @@
                 <h3> Posizione </h3>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="foto_maps" value="{{ $property_posizione['foto_maps'] }}">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Link Google Maps</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps" value="{{ $property_posizione['link_maps'] }}">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Indirizzo</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="indirizzo">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="indirizzo" value="{{ $property_posizione['indirizzo'] }}">
                 </div>          
             </section>
 
@@ -252,11 +256,11 @@
                 <h3> Contatti </h3>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Telefono</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="telefono">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="telefono" value="{{ $property_contatti['telefono'] }}">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Email</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="email">
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="email" value="{{ $property_contatti['email'] }}">
                 </div>        
             </section>
 

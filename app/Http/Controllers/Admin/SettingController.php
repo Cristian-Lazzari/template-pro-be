@@ -248,29 +248,29 @@ class SettingController extends Controller
         $setting[2]->save();
 
         $giorni_attivita = [
-            'Lunedì'    =>  $request->lunedì,
-            'Martedì'   =>  $request->martedì,
-            'Mercoledì' =>  $request->mercoledì,
-            'Giovedì'   =>  $request->giovedì,
-            'Venerdì'   =>  $request->venerdì,
-            'Sabato'    =>  $request->sabato,
-            'Domenica'  =>  $request->domenica,
+            'lunedì'    =>  $request->lunedì,
+            'martedì'   =>  $request->martedì,
+            'mercoledì' =>  $request->mercoledì,
+            'giovedì'   =>  $request->giovedì,
+            'venerdì'   =>  $request->venerdì,
+            'sabato'    =>  $request->sabato,
+            'domenica'  =>  $request->domenica,
         ];
         $setting[3]->property = json_encode($giorni_attivita);
         $setting[3]->save();
 
         $posizione = [
-            'Foto di Google Maps' =>  $request->foto_maps,
-            'Link di Google Maps' =>  $request->link_maps,
-            'Indirizzo'           =>  $request->indirizzo,
+            'foto_maps' =>  $request->foto_maps,
+            'link_maps' =>  $request->link_maps,
+            'indirizzo'           =>  $request->indirizzo,
         ];
 
         $setting[4]->property = json_encode($posizione);
         $setting[4]->save();
 
         $contatti = [
-            'Telefono'  => $request->telefono,
-            'Email'     => $request->email,
+            'telefono'  => $request->telefono,
+            'email'     => $request->email,
         ];
         $setting[5]->property = json_encode($contatti);
         $setting[5]->save();      
@@ -283,7 +283,7 @@ class SettingController extends Controller
         }
     
 
-//date
+        //date
         $dates = Date::all();
         if(count($dates) == 0){
             return view('admin.dashboard', compact('setting'));
