@@ -1,8 +1,25 @@
 @import "~bootstrap/scss/bootstrap";
+$c1:#2B5876;
+$c2:#4E4376;
+$c3:#F6F4F3;
+$c4: #00C49A;
+$c5: #FF6666;
+.c-white {
+    color: $c3 !important;
+}
 
 body{
-    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
-    background-image: linear-gradient(290deg, #3ab5b0 0%, #3d99be 31%, #56317a 100%);
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-image: linear-gradient(to top, #a3bded 0%, #6991c7 100%);
+    background-image: linear-gradient(to top, #a7a6cb 0%, #8989ba 52%, #8989ba 100%);
+    background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
+    background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
+    background-image: linear-gradient(to top, #09203f 0%, #537895 100%);
+    background-image: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%);
+    // background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+    // background-image: linear-gradient(290deg, #3ab5b0 0%, #3d99be 31%, #56317a 100%);
     //background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%); ////
     // background-image: linear-gradient(to right, #eea2a2 0%, #bbc1bf 19%, #57c6e1 42%, #b49fda 79%, #7ac5d8 100%);
     
@@ -16,7 +33,7 @@ body{
     padding-top: 80px;
     height: 100%;
     padding-bottom: 100%;
-    color: white;
+    color: $c3;
 }
 
 .cont-dash{
@@ -141,46 +158,44 @@ body{
     }
 }
 .s1a {
-    background-color: rgb(130, 125, 149, 0.42) !important;
+    background-color: rgb(130, 125, 149) !important;
 }
 .s1b {
-    background-color: rgba(46, 11, 185, 0.42) !important;
+    background-color: rgba(46, 11, 185) !important;
 }
 .s2a {
-    background-color: rgb(52, 53, 87, 0.42) !important;
+    background-color: rgb(52, 53, 87) !important;
 }
 .s2b {
-    background-color: rgba(29, 2, 111, 0.42) !important;
+    background-color: rgba(29, 2, 111) !important;
 }
 .s2c {
-    background-color: rgba(20, 2, 81, 0.42) !important;
+    background-color: rgba(20, 2, 81) !important;
 }
 .s3a {
-    background-color: rgba(46, 0, 90, 0.42) !important;
+    background-color: rgba(46, 0, 90) !important;
 }
 .s3b {
-    background-color: rgba(73, 0, 152, 0.42) !important;
+    background-color: rgba(73, 0, 152) !important;
 }
 .s4a {
-    background-color: rgba(19, 148, 114, 0.42) !important;
+    background-color: $c4 !important;
 }
 .s4b {
-    background-color: rgba(13, 115, 102, 0.42) !important;
+    background-color: $c5 !important;
 }
 .s5a {
-    background-color: rgba(4, 134, 139, 0.42) !important;
+    background-color: $c4 !important;
 }
 .s5b {
-    background-color: rgba(16, 95, 112, 0.42) !important;
+    background-color: $c5 !important;
 }
 .mybtdb {
     font-size: 25px;
     padding: 5px 20px;
     border-radius: 11px;
 }
-.c-white {
-    color: white !important;
-}
+
 .day_form{
     display: flex;
     flex-direction: row;
