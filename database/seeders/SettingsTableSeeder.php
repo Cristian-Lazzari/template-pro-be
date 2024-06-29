@@ -39,36 +39,15 @@ class SettingsTableSeeder extends Seeder
                 ],
                 [
                     'name' => 'Orari di attività',
-                    'property' => [
-                        [
-                            'Lunedì' => '',
-                            'Martedì' => '',
-                            'Mercoledì' => '',
-                            'Giovedì' => '',
-                            'Venerdì' => '',
-                            'Sabato' => '',
-                            'Domenica' => '',
-                        ]
-                    ]
+                    'property' => []
                 ],
                 [
                     'name' => 'Posizione',
-                    'property' => [
-                        [
-                            'Foto di Google Maps' => '',
-                            'Link di Google Maps' => '',
-                            'Indirizzo' => '',
-                        ]
-                    ]
+                    'property' => []
                 ],
                 [
                     'name' => 'Contatti',
-                    'property' => [
-                        [
-                            'Telefono' => '',
-                            'Email' => '',
-                        ]
-                    ]
+                    'property' => []
                 ],
                 [
                     'name' => 'Possibilità di consegna a domicilio',  
