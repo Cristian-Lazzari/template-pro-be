@@ -6,6 +6,7 @@ use App\Models\Date;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -19,34 +20,34 @@ class SettingController extends Controller
                 'comune' => $comune,
                 'provincia' => $provincia,
             ];
-            $setting[4]['property'] = json_decode($setting[4]['property'], true);
+            $setting[7]['property'] = json_decode($setting[7]['property'], true);
             $isnew = true;
-            foreach ($setting[4]['property']  as $k) {
+            foreach ($setting[7]['property']  as $k) {
                 if($k['comune'] == $comune){
                     $isnew = false;
                 }
             }
             if ($isnew && $comune !== " ") {
-                $newp = $setting[4]['property'];
+                $newp = $setting[7]['property'];
 
                 array_push( $newp, $newarea);
-                $setting[4]['property'] = json_encode($newp);
-                $setting[4]->save();
+                $setting[7]['property'] = json_encode($newp);
+                $setting[7]->save();
             }
         }else{
             $comuni = $request->comuni;
             if($comuni !== null){
-                $setting[4]['property'] = json_decode($setting[4]['property'], true);
+                $setting[7]['property'] = json_decode($setting[7]['property'], true);
                 $upc = [];
-                foreach ($setting[4]['property'] as $co) {
+                foreach ($setting[7]['property'] as $co) {
                         if(!in_array($co['comune'], $comuni)){
                             array_push( $upc, $co);
                         }
                     
                 }
-                $setting[4]['property'] = $upc;
-                $setting[4]['property'] = json_encode($upc);
-                $setting[4]->save();
+                $setting[7]['property'] = $upc;
+                $setting[7]['property'] = json_encode($upc);
+                $setting[7]->save();
             }
 
         }
@@ -246,17 +247,52 @@ class SettingController extends Controller
         $setting[2]->status = $ferie;
         $setting[2]->property = json_encode($propertyArray);
         $setting[2]->save();
-        
+
+        $giorni_attivita = [
+            'lunedì'    =>  $request->lunedì,
+            'martedì'   =>  $request->martedì,
+            'mercoledì' =>  $request->mercoledì,
+            'giovedì'   =>  $request->giovedì,
+            'venerdì'   =>  $request->venerdì,
+            'sabato'    =>  $request->sabato,
+            'domenica'  =>  $request->domenica,
+        ];
+        $setting[3]->property = json_encode($giorni_attivita);
+        $setting[3]->save();
+
+        dump('STAMPA DELLA REQUEST PRIMA DI TUTTO: ', $request->foto_maps);
+        $posizione = [
+            'foto_maps' =>  "",
+            'link_maps' =>  $request->link_maps,
+            'indirizzo' =>  $request->indirizzo,
+        ];
+
+        if (isset($request->foto_maps)) {
+            $imagePath = Storage::put('public/uploads', $request->foto_maps);
+            $posizione['foto_maps'] = $imagePath;
+        }
+        dump('DOPO IL CARICAMENTO DEL FILE: ', $posizione['foto_maps']); 
+
+        $setting[4]->property = json_encode($posizione);
+        dump('DOPO IL SALVATAGGIO: ', $setting[4]->property);
+        $setting[4]->save();
+
+        $contatti = [
+            'telefono'  => $request->telefono,
+            'email'     => $request->email,
+        ];
+        $setting[5]->property = json_encode($contatti);
+        $setting[5]->save();      
         
         if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4) {
-            $setting[4]->property = json_encode($setting[4]->property);
+            $setting[7]->property = json_encode($setting[7]->property);
             $domicilio = $request->domicilio_status;
-            $setting[3]->status = $domicilio;
-            $setting[3]->save();
+            $setting[6]->status = $domicilio;
+            $setting[6]->save();
         }
     
 
-//date
+        //date
         $dates = Date::all();
         if(count($dates) == 0){
             return view('admin.dashboard', compact('setting'));

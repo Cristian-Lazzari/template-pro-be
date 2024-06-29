@@ -38,6 +38,18 @@ class SettingsTableSeeder extends Seeder
                     ]
                 ],
                 [
+                    'name' => 'Orari di attività',
+                    'property' => []
+                ],
+                [
+                    'name' => 'Posizione',
+                    'property' => []
+                ],
+                [
+                    'name' => 'Contatti',
+                    'property' => []
+                ],
+                [
                     'name' => 'Possibilità di consegna a domicilio',  
                     'status' => 1,
                     'property' => [
@@ -45,7 +57,7 @@ class SettingsTableSeeder extends Seeder
                     ],
                 ],
                 [
-                    'name' => 'Comuni per il domicilio ',
+                    'name' => 'Comuni per il domicilio',
                     'property' => [
                         [
                             'comune' => 'Monte San Vito',
@@ -79,6 +91,18 @@ class SettingsTableSeeder extends Seeder
                         'messagge' => '',
                         'style' => '',
                     ]
+                ],
+                [
+                    'name' => 'Orari di attività',
+                    'property' => [],
+                ],
+                [
+                    'name' => 'Posizione',
+                    'property' => [],
+                ],
+                [
+                    'name' => 'Contatti',
+                    'property' => [],
                 ],
             ];
         }

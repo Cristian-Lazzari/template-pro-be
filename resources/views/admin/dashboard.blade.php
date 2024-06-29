@@ -2,7 +2,6 @@
 
 @section('contents')
 
-
 <div class="cont-dash">
     <div class="mycDash my-5 ">
         <section>
@@ -144,7 +143,7 @@
             
             <section>
                 <h3> Prenotazioni Tavoli </h3>
-                <div class="radio-inputs">
+                <div class="radio-inputs mb-3">
                     <label class="radio">
                         <input type="radio" name="tavoli_status" @if($setting[0]['status'] == 0) checked  @endif value="0" >
                         <span class="name">Non Visibile</span>
@@ -162,7 +161,7 @@
             </section>
             <section>
                 <h3> Ordini d'Asporto </h3>
-                <div class="radio-inputs">
+                <div class="radio-inputs mb-3">
                     <label class="radio">
                         <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 0) checked  @endif value="0" >
                         <span class="name">Non Visibile</span>
@@ -181,18 +180,18 @@
             @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4) 
                 <section>
                     <h3> Ordini a Domicilio </h3>
-                    <div class="radio-inputs">
+                    <div class="radio-inputs mb-3">
                         <label class="radio">
-                            <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 0) checked  @endif value="0" >
+                            <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 0) checked  @endif value="0" >
                             <span class="name">Non Visibile</span>
                         </label>
                         <label class="radio">
-                            <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 1) checked  @endif value="1" >
+                            <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 1) checked  @endif value="1" >
                             <span class="name">Chiamate</span>
                         </label>
                             
                         <label class="radio">
-                            <input type="radio" name="domicilio_status"  @if($setting[3]['status'] == 2) checked  @endif value="2" >
+                            <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 2) checked  @endif value="2" >
                             <span class="name">Web App</span>
                         </label>
                     </div>
@@ -221,18 +220,67 @@
                     <input name="to" id="to" type="date" class="form-control" placeholder="da" @if($setting[2]['property']['to'] !== '') value="{{$setting[2]['property']['to']}}"  @endif>
                 </div>
             </section>
+
+            @php 
+                $property_orari = json_decode($setting[3]['property'], true);
+                $property_posizione = json_decode($setting[4]['property'], true);
+                $property_contatti = json_decode($setting[5]['property'], true);
+            @endphp
+            <section>
+                <h3> Giorni di attività </h3>
+                @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon2">{{ $giorno }}</span>
+                        <input type="text" class="form-control" placeholder="19:30 - 23:30" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                    </div>
+                @endforeach
+            </section>
+
+            <section>
+                <h3> Posizione </h3>
+                @if(isset($property_posizione["foto_maps"]) && $property_posizione['foto_maps'] !== "")
+                    <img src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
+                @else
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
+                        <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
+                    </div>
+                @endif
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Link Google Maps</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps" @if($property_contatti) value="{{ $property_posizione['link_maps'] }}" @endif>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Indirizzo</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="indirizzo" @if($property_contatti) value="{{ $property_posizione['indirizzo'] }}" @endif>
+                </div>          
+            </section>
+
+            <section>
+                <h3> Contatti </h3>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Telefono</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="telefono" @if($property_contatti) value="{{ $property_contatti['telefono'] }}" @endif>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">Email</span>
+                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="email" @if($property_contatti) value="{{ $property_contatti['email'] }}" @endif>
+                </div>        
+            </section>
+
+
     
-            <button type="submit" class="my_btn">Modifica</button>
+            <button type="submit" class="my_btn mb-3">Modifica</button>
         </form>
        
         @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
             @php
-            if (is_string($setting[4]['property'])) {
-                $setting[4]['property'] = json_decode($setting[4]['property'], true);
+            if (is_string($setting[7]['property'])) {
+                $setting[7]['property'] = json_decode($setting[7]['property'], true);
             } 
             @endphp
-            <h2>Gestione indirizzzi di consegna</h2>
-            <button type="button" class="my_btn create" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <h2 >Gestione indirizzi di consegna</h2>
+            <button type="button" class="my_btn create mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Crea nuovo
             </button>
               
@@ -276,7 +324,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            @foreach ($setting[4]['property'] as $i)
+                            @foreach ($setting[7]['property'] as $i)
                                 <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
                                 <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
                             @endforeach
@@ -291,7 +339,7 @@
 
 
             <div class="addres"> 
-                @foreach ($setting[4]['property'] as $i)
+                @foreach ($setting[7]['property'] as $i)
                     <span class="my_btn">
                         {{$i['provincia']}}
                         {{$i['comune']}}
