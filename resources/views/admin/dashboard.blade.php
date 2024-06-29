@@ -238,10 +238,14 @@
 
             <section>
                 <h3> Posizione </h3>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
-                    <input type="text" class="form-control" aria-describedby="basic-addon1" name="foto_maps" @if($property_contatti) value="{{ $property_posizione['foto_maps'] }}" @endif>
-                </div>
+                @if(isset($property_posizione["foto_maps"]) && $property_posizione['foto_maps'] !== "")
+                    <img src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
+                @else
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
+                        <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
+                    </div>
+                @endif
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">Link Google Maps</span>
                     <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps" @if($property_contatti) value="{{ $property_posizione['link_maps'] }}" @endif>

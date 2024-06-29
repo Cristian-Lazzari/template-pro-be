@@ -6,6 +6,7 @@ use App\Models\Date;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -259,13 +260,21 @@ class SettingController extends Controller
         $setting[3]->property = json_encode($giorni_attivita);
         $setting[3]->save();
 
+        dump('STAMPA DELLA REQUEST PRIMA DI TUTTO: ', $request->foto_maps);
         $posizione = [
-            'foto_maps' =>  $request->foto_maps,
+            'foto_maps' =>  "",
             'link_maps' =>  $request->link_maps,
-            'indirizzo'           =>  $request->indirizzo,
+            'indirizzo' =>  $request->indirizzo,
         ];
 
+        if (isset($request->foto_maps)) {
+            $imagePath = Storage::put('public/uploads', $request->foto_maps);
+            $posizione['foto_maps'] = $imagePath;
+        }
+        dump('DOPO IL CARICAMENTO DEL FILE: ', $posizione['foto_maps']); 
+
         $setting[4]->property = json_encode($posizione);
+        dump('DOPO IL SALVATAGGIO: ', $setting[4]->property);
         $setting[4]->save();
 
         $contatti = [
