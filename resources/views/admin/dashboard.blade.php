@@ -34,67 +34,68 @@
                 <a href="{{ route('admin.categories.index') }}" class="my_btn_1">Categorie</a>
                 <a href="{{ route('admin.ingredients.index') }}" class="my_btn_1">Ingredienti</a>
             </div>
-        </div>
-        
-        @if (true)
-        <div class="right-t">
-            <div class="result-bar">
-                <div class="stat">
-                    <h2>€{{$traguard[1]}}</h2>
-                    <span>questo mese</span>
+        </div>      
+        @if (config('configurazione.pack') > 2 )
+            <div class="right-t">
+                @if (config('configurazione.pack') > 3 )
+                <div class="result-bar">
+                    <div class="stat">
+                        <h2>€{{$traguard[1]}}</h2>
+                        <span>questo mese</span>
+                    </div>
+                    <div class="stat">
+                        <h2>€{{$traguard[2]}}</h2>
+                        <span>questo anno</span>
+                    </div>
                 </div>
-                <div class="stat">
-                    <h2>€{{$traguard[2]}}</h2>
-                    <span>questo anno</span>
+                <div class="delivery-c">
+                    <div class="top-p">
+                        <h3>Ordini asporto/delivery</h3>
+                        <a href="{{ route('admin.orders.index') }}" class="plus">
+                            <div class="line"></div>
+                            <div class="line l2"></div>
+                        </a>
+                    </div>
+                    <div class="stat-p">
+                        <div class="stat">
+                            <h4>{{$order[1]}}</h4>
+                            <span>in elaborazione</span>
+                        </div>
+                        <div class="stat">
+                            <h4>{{$order[2]}}</h4>
+                            <span>confermate</span>
+                        </div>
+                        <div class="stat">
+                            <h4>{{$order[3]}}</h4>
+                            <span>annullate</span>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                <div class="delivery-c">
+                    <div class="top-p">
+                        <h3>Prenotazioni Tavoli</h3>
+                        <a href="{{ route('admin.reservations.index') }}" class="plus">
+                            <div class="line"></div>
+                            <div class="line l2"></div>
+                        </a>
+                    </div>
+                    <div class="stat-p">
+                        <div class="stat">
+                            <h4>{{$reservation[1]}}</h4>
+                            <span>in elaborazione</span>
+                        </div>
+                        <div class="stat">
+                            <h4>{{$reservation[2]}}</h4>
+                            <span>confermate</span>
+                        </div>
+                        <div class="stat">
+                            <h4>{{$reservation[3]}}</h4>
+                            <span>annullate</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="delivery-c">
-                <div class="top-p">
-                    <h3>Ordini asporto/delivery</h3>
-                    <a href="{{ route('admin.orders.index') }}" class="plus">
-                        <div class="line"></div>
-                        <div class="line l2"></div>
-                    </a>
-                </div>
-                <div class="stat-p">
-                    <div class="stat">
-                        <h4>{{$order[1]}}</h4>
-                        <span>in elaborazione</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$order[2]}}</h4>
-                        <span>confermate</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$order[3]}}</h4>
-                        <span>annullate</span>
-                    </div>
-                </div>
-            </div>
-            <div class="delivery-c">
-                <div class="top-p">
-                    <h3>Prenotazioni Tavoli</h3>
-                    <a href="{{ route('admin.reservations.index') }}" class="plus">
-                        <div class="line"></div>
-                        <div class="line l2"></div>
-                    </a>
-                </div>
-                <div class="stat-p">
-                    <div class="stat">
-                        <h4>{{$reservation[1]}}</h4>
-                        <span>in elaborazione</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$reservation[2]}}</h4>
-                        <span>confermate</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$reservation[3]}}</h4>
-                        <span>annullate</span>
-                    </div>
-                </div>
-            </div>
-        </div>
         @endif
         <div class="prod post">  
             <div class="top-p">
@@ -203,13 +204,19 @@
                     </button>
                 </div>
             </div>
+        @else 
+        <div class="date-off">
+
+            <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, clicca QUI e impostale ora</a>
+        </div>
         @endif
        </div>
         <div class="setting">
             <h2>Impostazioni</h2>
-            <div class="top-set">
+            <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="top-set">
+                @csrf
                 <div class="set">
-                    <h4>Asporto</h4>
+                    <h5>Asporto</h5>
                     <div class="radio-inputs">
                         <label class="radio">
                             <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 0) checked  @endif value="0" >
@@ -228,7 +235,7 @@
                     </div>
                 </div>
                 <div class="set">
-                    <h4>Tavoli</h4>
+                    <h5>Tavoli</h5>
                     <div class="radio-inputs">
                         <label class="radio">
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 0) checked  @endif value="0" >
@@ -248,7 +255,7 @@
                 </div>
                 @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
                 <div class="set">
-                    <h4>Domicilio</h4>
+                    <h5>Domicilio</h5>
                     <div class="radio-inputs">
                         <label class="radio">
                             <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 0) checked  @endif value="0" >
@@ -265,7 +272,7 @@
                     $setting[2]['property'] = json_decode($setting[2]['property'], true);
                 @endphp
                 <div class="set">
-                    <h4>Ferie</h4>
+                    <h5>Ferie</h5>
                     <div class="sets">
                         <div class="radio-inputs">
                             <label class="radio">
@@ -285,57 +292,196 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                <button type="submit" class="my_btn_1 my_btn_2 w-75 m-auto">Aggiorna</button>
+                
+            </form>
             <div class="bottom-set">
                 <div class="accordion accordion-flush" id="accordionFlushExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
+                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
+                        @csrf
+                        <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
                             Giorni e orari d'apertura
                             </button>
-                        </h2>
+                        </h4>
                         <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body"></div>
+                            <div class="accordion-body">
+                                @php 
+                                    $property_orari = json_decode($setting[3]['property'], true);
+                                    $property_posizione = json_decode($setting[4]['property'], true);
+                                    $property_contatti = json_decode($setting[5]['property'], true);
+                                @endphp
+                                <section>
+                                    <h3> Giorni di attività </h3>
+                                    @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="basic-addon2">{{ $giorno }}</span>
+                                            <input type="text" class="form-control" placeholder="19:30 - 23:30" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                                        </div>
+                                    @endforeach
+                                </section>
+                                <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
+                    </form>
+                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
+                        @csrf
+                        <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
                             Posizione del tuo locale
                             </button>
-                        </h2>
+                        </h4>
                         <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body"></div>
+                            <div class="accordion-body">
+                                <section>
+                                    <h3> Posizione </h3>
+                                    @if(isset($property_posizione["foto_maps"]) && $property_posizione['foto_maps'] !== "")
+                                        <img src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
+                                    @else
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="basic-addon1">Foto Google Maps</span>
+                                            <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
+                                        </div>
+                                    @endif
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">Link Google Maps</span>
+                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps" @if($property_contatti) value="{{ $property_posizione['link_maps'] }}" @endif>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">Indirizzo</span>
+                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="indirizzo" @if($property_contatti) value="{{ $property_posizione['indirizzo'] }}" @endif>
+                                    </div>          
+                                </section>
+                                <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
+                    </form>
+                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
+                        @csrf
+                        <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
                             Contatti
                             </button>
-                        </h2>
+                        </h4>
                         <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body"></div>
+                            <div class="accordion-body">
+                                <section>
+                                    <h3> Contatti </h3>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">Telefono</span>
+                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="telefono" @if($property_contatti) value="{{ $property_contatti['telefono'] }}" @endif>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="basic-addon1">Email</span>
+                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="email" @if($property_contatti) value="{{ $property_contatti['email'] }}" @endif>
+                                    </div>        
+                                </section>
+                                <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                     @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
+                        @csrf
+                        <h4 class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
                             Gestione comuni consegna
                           </button>
-                        </h2>
-                        <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body"></div>
+                        </h4>
+                        <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
+                                    @php
+                                    if (is_string($setting[7]['property'])) {
+                                        $setting[7]['property'] = json_decode($setting[7]['property'], true);
+                                    } 
+                                    @endphp
+                                <h2 >Gestione indirizzi di consegna</h2>
+                                <button type="button" class=" my_btn_1 mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                    Crea nuovo
+                                </button>
+
+                                <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
+                                    Modifica selezione
+                                </button>
+                                
+                                <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
+                                            @csrf
+                                            <input type="hidden" name="ar" value="remove">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop1Label">Seleziona i comuni che vuoi rimuovere</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @foreach ($setting[7]['property'] as $i)
+                                                    <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
+                                                    <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
+                                                @endforeach
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
+                                                <button type="sumbit" class="my_btn add">Rimuovi comuni selezionati</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="address"> 
+                                    @foreach ($setting[7]['property'] as $i)
+                                        <span class="">
+                                            ({{$i['provincia']}})
+                                            {{$i['comune']}}
+                                        </span>    
+                                    @endforeach
+                                </div>
+                                
+
+                                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
+                                            @csrf
+                                            <input type="hidden" name="ar" value="add">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" style="color: black" id="staticBackdropLabel">Aggiungi un comune per le consegne</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="input-group flex-nowrap py-2 w-auto">
+                                                    <label for="comune" class="input-group-text" >Comune</label>
+                                                    <input name="comune" id="comune" type="text" class="form-control" placeholder="comune">
+                                                </div>
+                                                <div class="input-group flex-nowrap py-2 w-auto">
+                                                    <label for="provincia" class="input-group-text" >Provincia</label>
+                                                    <input name="provincia" id="provincia" type="text" class="form-control" placeholder="sigla della provincia es: AN">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
+                                                <button type="sumbit" class="my_btn add">Aggiungi nuovo comune</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                     </div> 
                     @endif
                   </div>
             </div>
+
         </div>
     </div>
 </div>
+{{-- 
 
 
+
+
+
+</div> --}}
 @endsection
 

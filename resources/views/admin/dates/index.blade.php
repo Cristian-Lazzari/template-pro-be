@@ -138,7 +138,7 @@
                 @foreach (config('configurazione.days') as $day)
                 
                     <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <label class="my_btn btn-dark scale-none  " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
+                    <label class="my_btn_1 my_btn_2 scale-none  " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
                         <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
                                 <input
@@ -147,7 +147,7 @@
                                     id="days_on_{{ $day }}"
                                     name="days_on[]"
                                     value="{{ $day }}">
-                                <label class="btn btn-outline-light w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
+                                <label class="btn btn-outline-dark w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
                                 @foreach (config('configurazione.times') as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">

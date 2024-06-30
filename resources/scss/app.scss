@@ -2,7 +2,12 @@
 $c1:#1E3B64;
 $c2:#FF7658;
 $c3:#F4F4EF;
-
+$bg-p-p : $c3;
+$c-delete : $c2;
+$c-update : $c3;
+$c-new : $c1;
+$t : rgba(193, 206, 236, 0.43);
+$cfilter : $c2;
 .my_btn_1{
     background-color: $c1;
     color: $c3;
@@ -10,7 +15,94 @@ $c3:#F4F4EF;
     border-radius: 6px;
     text-decoration: none;
     text-align: center;
+    border: none;
 }
+.my_btn_2{
+    background-color: $c2;
+    color: $c3;
+}
+.my_btn{
+    padding: .23rem 1.3rem;
+    border-radius: 9px;
+    border: none;
+    background-color: $c2;
+    color: $white;
+    text-decoration: none;
+    font-size: clamp(12px, 2.3vw, 16px);
+    font-weight:600;
+    text-align: center;
+    a, button{
+        box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
+        color: $white;
+        text-shadow: 0px 0px 4px rgba(220, 220, 220, 0);
+    }
+}
+.my_btn:hover{
+    transform: scale(1.031);
+    transition: all .2s ease-in-out;
+    opacity: .4;
+}
+.scale-none{
+    h5{
+        color: $c2 !important;
+    }
+}
+.scale-none:hover{
+    transform: scale(1) !important;
+    transition: all .2s ease-in-out;
+    opacity: .9;
+    filter: invert(0) !important;
+    h5{
+        color: $c2 !important;
+    }
+}
+.create{
+    background-color: $c3;
+    color: $c1 ;
+    
+}
+.trash{
+    background-color: $c2;
+    color: $c3 ;
+}
+.search{
+    background-color: $c1;
+    color: $c2;
+    svg{
+        border-color: $c2;
+        fill: $c2;
+    }
+
+}
+.d{
+    background-color: $c-delete;
+}
+.m{
+    background-color: $c-update;
+    color: $c2 !important;
+    a, button{
+        color: $c2 !important;
+
+    }
+}
+.add{
+    background-color: $c-new;
+}
+.v{
+    background-color: rgb(65, 183, 42);
+}
+
+
+.ell-c{
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width:clamp(60px,70vw, 300px);
+    .ellips{
+        max-width:clamp(60px,70vw, 300px);  
+        $white-space: nowrap;  
+    }
+}   
+
 
 .c-white {
     color: $c3 !important;
@@ -138,10 +230,27 @@ body{
 
     }
     .bottom-c{
+        align-items: stretch;
+        .date{
+            color: $c3;
+            flex-grow: 3;
+            flex-shrink: 1;
+            .date-off{
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                a{
+                    color: $c2;
+                    text-decoration: none;
+                }
+            }
+        }
         .setting{
             padding: 1.6rem ;
             border-radius: 20px;
             flex-grow: 1;
+            flex-shrink: 2;
             text-align: center;
             background-color: $c3;
             color: $c1;
@@ -153,6 +262,30 @@ body{
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
+            }
+            .bottom-set{
+                h4{
+                    color: $c1;
+                    button{
+                        font-size: clamp(15px, 2.7vw, 17px);
+
+                        color: $c1;
+                    }
+                }
+                border-radius: 20px;
+                overflow: hidden;
+                .address{
+                    display: flex;
+                    gap: 2px;
+                    flex-wrap: wrap;
+                    span{
+                        flex-grow: 1;
+                        background-color: $c1;
+                        padding: .4em 1em;
+                        border-radius: 7px;
+                        color: $c2;
+                    }
+                }
             }
             .set{
                 display: flex;
@@ -188,10 +321,7 @@ body{
             }
             
         }
-        .date{
-            color: $c3;
-            flex-grow: 1;
-        }
+        
     }
     
 }
@@ -206,6 +336,16 @@ body{
         }
         .stat{
             flex-direction: column;
+        }
+        .top-set{
+            gap: 2rem !important;
+        }
+        .set{
+            flex-direction: column;
+            
+            .radio-inputs, .sets{
+                width: 100% !important;
+            }
         }
     }
 }
@@ -325,13 +465,14 @@ body{
         border-radius: 17px;
         h4{
 
-            font-size: clamp(12px, 1.6vw, 20px);
+            font-size: clamp(10px, 100%, 20px);
+            font-weight: lighter;
         }
     }
     .calendar{
         text-align: center;
         display: grid;
-        padding: 3rem 7% 4rem;
+        padding: 3rem 6.6% 4rem;
         justify-content: center;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
         
@@ -342,7 +483,6 @@ body{
             color: $c3;
             background-color: $c1;
             text-decoration: none;
-            font-size: clamp(15px, 2vw, 30px);
             width: auto;
             display: flex;
             justify-content: center;
@@ -356,11 +496,12 @@ body{
                 padding: 0;
                 font-size: clamp(14px , 2.1vw, 20px);
                 color: $c3;
+                font-weight: lighter;
             }
             p{
                 display: flex;
                 position: absolute;
-                font-size: clamp(7px , 1.5vw, 12px);
+                font-size: clamp(5px , 80% , 12px);
                 //background-color: black;
                 //color: $white;
                 border-radius: 100px;
@@ -370,7 +511,7 @@ body{
                 gap: 3px;
                 margin: 2px;
                 svg{
-                    width: clamp(14px , 2.1vw, 20px);
+                    width: 20px;
                 }
             }
             .pop1{
@@ -429,85 +570,7 @@ body{
 //     //transition: opacity .2s ease-out;
 // }
 
-$bg-p-p : $c3;
-$c-delete : $c2;
-$c-update : $c3;
-$c-new : $c1;
-$t : rgba(193, 206, 236, 0.43);
-$cfilter : $c2;
-.my_btn{
-    padding: .23rem 1.3rem;
-    border-radius: 9px;
-    border: none;
-    background-color: $c1;
-    color: $white;
-    text-decoration: none;
-    font-size: clamp(12px, 2.3vw, 16px);
-    font-weight:600;
-    text-align: center;
-    a, button{
-        box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
-        color: $white;
-        text-shadow: 0px 0px 4px rgba(220, 220, 220, 0);
-    }
-}
-.my_btn:hover{
-    transform: scale(1.031);
-    transition: all .2s ease-in-out;
-    opacity: .4;
-}
-.scale-none:hover{
-    transform: scale(1) !important;
-    transition: all .2s ease-in-out;
-    opacity: .4;
-    filter: invert(0) !important;
-}
-.create{
-    background-color: $c3;
-    color: $c1 ;
-    
-}
-.trash{
-    background-color: $c2;
-    color: $c3 ;
-}
-.search{
-    background-color: $c1;
-    color: $c2;
-    svg{
-        border-color: $c2;
-        fill: $c2;
-    }
 
-}
-.d{
-    background-color: $c-delete;
-}
-.m{
-    background-color: $c-update;
-    color: $c2 !important;
-    a, button{
-        color: $c2 !important;
-
-    }
-}
-.add{
-    background-color: $c-new;
-}
-.v{
-    background-color: rgb(65, 183, 42);
-}
-
-
-.ell-c{
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    max-width:clamp(60px,70vw, 300px);
-    .ellips{
-        max-width:clamp(60px,70vw, 300px);  
-        $white-space: nowrap;  
-    }
-}   
 
 
 
