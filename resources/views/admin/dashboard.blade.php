@@ -96,34 +96,33 @@
             </div>
         </div>
         @endif
-        <div class="prod">   
-            <div class="delivery-c">
-                <div class="top-p">
-                    <h3>I tuoi post</h3>
-                    <a href="{{ route('admin.posts.index') }}" class="plus">
-                        <div class="line"></div>
-                        <div class="line l2"></div>
-                    </a>
+        <div class="prod post">  
+            <div class="top-p">
+                <h3>I tuoi post</h3>
+                <a href="{{ route('admin.posts.index') }}" class="plus">
+                    <div class="line"></div>
+                    <div class="line l2"></div>
+                </a>
+            </div>
+            <div class="stat-p">
+                <div class="stat">
+                    <h4>{{$post[1]}}</h4>
+                    <span>totali</span>
                 </div>
-                <div class="stat-p">
-                    <div class="stat">
-                        <h4>{{$post[1]}}</h4>
-                        <span>totali</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$post[2]}}</h4>
-                        <span>pronti</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$post[3]}}</h4>
-                        <span>postati</span>
-                    </div>
-                    <div class="stat">
-                        <h4>{{$post[4]}}</h4>
-                        <span>archiviati</span>
-                    </div>
+                <div class="stat">
+                    <h4>{{$post[2]}}</h4>
+                    <span>pronti</span>
+                </div>
+                <div class="stat">
+                    <h4>{{$post[3]}}</h4>
+                    <span>postati</span>
+                </div>
+                <div class="stat">
+                    <h4>{{$post[4]}}</h4>
+                    <span>archiviati</span>
                 </div>
             </div>
+           
         </div>
         
     </div>

@@ -65,7 +65,7 @@ body{
                 text-decoration: none;
             }
             flex-grow: 1;
-            padding: 1.6rem 1.1rem;
+            padding: 1.6rem 10px;
             background-color: $c2;
             display: flex;
             justify-content: space-between;
@@ -75,9 +75,11 @@ body{
             .top-p{
                 display: flex;
                 justify-content: space-between;
-                gap: 10px;
+                gap: 4px;
+                width: 100%;
             }
             .stat-p{
+                width: 100%;
                 //flex-grow: ;
                 padding: 8px;
                 border-radius: 10px;
@@ -201,6 +203,9 @@ body{
         .setting{
             width: 100%;
             
+        }
+        .stat{
+            flex-direction: column;
         }
     }
 }
