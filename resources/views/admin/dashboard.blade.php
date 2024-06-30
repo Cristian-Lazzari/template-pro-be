@@ -381,7 +381,7 @@
                         </div>
                     </form>
                     @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
-                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
+                    <div class="accordion-item">
                         @csrf
                         <h4 class="accordion-header">
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
@@ -389,45 +389,17 @@
                           </button>
                         </h4>
                         <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                            <div class="accordion-body">
-                                @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
-                                    @php
+                            <div class="accordion-body">                            
+                                @php
                                     if (is_string($setting[7]['property'])) {
                                         $setting[7]['property'] = json_decode($setting[7]['property'], true);
                                     } 
-                                    @endphp
+                                @endphp
                                 <h2 >Gestione indirizzi di consegna</h2>
-                                <button type="button" class=" my_btn_1 mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                    Crea nuovo
-                                </button>
-
-                                <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
-                                    Modifica selezione
-                                </button>
-                                
-                                <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
-                                            @csrf
-                                            <input type="hidden" name="ar" value="remove">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop1Label">Seleziona i comuni che vuoi rimuovere</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                @foreach ($setting[7]['property'] as $i)
-                                                    <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
-                                                    <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
-                                                @endforeach
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
-                                                <button type="sumbit" class="my_btn add">Rimuovi comuni selezionati</button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                <div class="actions">
+                                    <button type="button" class=" my_btn_1 mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crea nuovo </button>
+                                    <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> Modifica selezione </button>
                                 </div>
-                                
                                 
                                 <div class="address"> 
                                     @foreach ($setting[7]['property'] as $i)
@@ -436,36 +408,7 @@
                                             {{$i['comune']}}
                                         </span>    
                                     @endforeach
-                                </div>
-                                
-
-                                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
-                                            @csrf
-                                            <input type="hidden" name="ar" value="add">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" style="color: black" id="staticBackdropLabel">Aggiungi un comune per le consegne</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="input-group flex-nowrap py-2 w-auto">
-                                                    <label for="comune" class="input-group-text" >Comune</label>
-                                                    <input name="comune" id="comune" type="text" class="form-control" placeholder="comune">
-                                                </div>
-                                                <div class="input-group flex-nowrap py-2 w-auto">
-                                                    <label for="provincia" class="input-group-text" >Provincia</label>
-                                                    <input name="provincia" id="provincia" type="text" class="form-control" placeholder="sigla della provincia es: AN">
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
-                                                <button type="sumbit" class="my_btn add">Aggiungi nuovo comune</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                @endif
+                                </div>                          
                             </div>
                         </div>
                     </div> 
@@ -475,13 +418,60 @@
 
         </div>
     </div>
+
+
+
+    <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
+                @csrf
+                <input type="hidden" name="ar" value="remove">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop1Label">Seleziona i comuni che vuoi rimuovere</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @foreach ($setting[7]['property'] as $i)
+                        <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
+                        <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
+                    @endforeach
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
+                    <button type="sumbit" class="my_btn add">Rimuovi comuni selezionati</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
+                @csrf
+                <input type="hidden" name="ar" value="add">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" style="color: black" id="staticBackdropLabel">Aggiungi un comune per le consegne</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group flex-nowrap py-2 w-auto">
+                        <label for="comune" class="input-group-text" >Comune</label>
+                        <input name="comune" id="comune" type="text" class="form-control" placeholder="comune">
+                    </div>
+                    <div class="input-group flex-nowrap py-2 w-auto">
+                        <label for="provincia" class="input-group-text" >Provincia</label>
+                        <input name="provincia" id="provincia" type="text" class="form-control" placeholder="sigla della provincia es: AN">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
+                    <button type="sumbit" class="my_btn add">Aggiungi nuovo comune</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 </div>
-{{-- 
-
-
-
-
-
-</div> --}}
 @endsection
 
