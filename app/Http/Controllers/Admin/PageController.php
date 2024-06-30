@@ -3,8 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Date;
+use App\Models\Post;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\Setting;
+use App\Models\Category;
+use App\Models\Ingredient;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class PageController extends Controller
@@ -12,9 +20,41 @@ class PageController extends Controller
     public function dashboard() {
         $dates = Date::all();
         $setting = Setting::all();
+        $product_ = [
+            1 => Product::where('visible', 1)->where('archived', 0)->count(),
+            2 => Product::where('archived', 0)->count(),
+        ];
+        $stat = [
+            1 => Category::count(),
+            2 => Ingredient::count(),
+        ];
+        $meseCorrenteInizio = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $meseCorrenteFine = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
+        $traguard = [
+            1 =>  Order::whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [$meseCorrenteInizio, $meseCorrenteFine])->sum('tot_price'),
+            2 =>  Order::sum('tot_price'),
+        ];
+        $post = [ 
+            1 => Post::count(),
+            2 => Post::where('visible', 0)->count(),
+            3 => Post::where('visible', 1)->where('archived', 0)->count(),
+            4 => Post::where('archived', 1)->count(),
+        ];
+        $order = [ 
+            1 => Order::where('status', 0)->count(),
+            2 => Order::where('status', 1)->count(),
+            3 => Order::where('status', 2)->count(),
+        ];
+        $reservation = [
+            1 => Reservation::where('status', 0)->count(),
+            2 => Reservation::where('status', 1)->count(),
+            3 => Reservation::where('status', 2)->count(),
+        ];
+        
+
         if(count($dates) == 0){
-            return view('admin.dashboard', compact('setting'));
-        }
+            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post'));
+        };
         $year = [
             1 => [
                 'year' => $dates[0]['year'],
@@ -165,7 +205,7 @@ class PageController extends Controller
             
         };
         
-        return view ('admin.dashboard', compact('year', 'setting'));
+        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post'));
     }
 
 

@@ -15,7 +15,7 @@
         @include('admin.includes.nav')
     </header>
 
-    <div class="p-3" style="max-width: 1900px; margin: 0 auto">
+    <div class="p-3 container"  >
         @yield('contents')
     </div>
 

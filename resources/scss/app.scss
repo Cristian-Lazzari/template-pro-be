@@ -1,33 +1,23 @@
 @import "~bootstrap/scss/bootstrap";
-$c1:#2B5876;
-$c2:#4E4376;
-$c3:#F6F4F3;
-$c4: #00C49A;
-$c5: #FF6666;
+$c1:#1E3B64;
+$c2:#FF7658;
+$c3:#F4F4EF;
+
+.my_btn_1{
+    background-color: $c1;
+    color: $c3;
+    padding: .5rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+}
+
 .c-white {
     color: $c3 !important;
 }
 
 body{
-    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
-    background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
-    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    background-image: linear-gradient(to top, #a3bded 0%, #6991c7 100%);
-    background-image: linear-gradient(to top, #a7a6cb 0%, #8989ba 52%, #8989ba 100%);
-    background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
-    background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
-    background-image: linear-gradient(to top, #09203f 0%, #537895 100%);
-    background-image: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%);
-    // background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
-    // background-image: linear-gradient(290deg, #3ab5b0 0%, #3d99be 31%, #56317a 100%);
-    //background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%); ////
-    // background-image: linear-gradient(to right, #eea2a2 0%, #bbc1bf 19%, #57c6e1 42%, #b49fda 79%, #7ac5d8 100%);
-    
-    // background-image: linear-gradient(to right, #74ebd5 0%, #9face6 100%);
-    // background-image: linear-gradient(to top, #9795f0 0%, #fbc8d4 100%);
-    //background-image: linear-gradient(to top, #d9afd9 0%, #97d9e1 100%);
-    // background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
-    // background-image: linear-gradient(to top, #d9afd9 0%, #97d9e1 100%);
+    background-color: $c1;
     background-size: cover;
     background-repeat: no-repeat;
     padding-top: 80px;
@@ -36,160 +26,206 @@ body{
     color: $c3;
 }
 
-.cont-dash{
-    margin: 0 auto;
-    padding: 1rem;
-    display: flex;
-    gap: 50px;
-    width: 100% !important;
-    justify-content: space-between;
-    align-items: center;
-    .mycDash{
-        flex-grow: 1;
-
-    }
-    .date_index{
-        .calendar{
-            height: 100%!important;
+.dash-c{
+    .plus{
+        background-color: $c1;
+        height: 27px;
+        width: 40px;
+        border-radius: 7px;
+        position: relative;
+        .line{
+            
+            background-color: $c3;
+            height: 50%;
+            width: 3px;
+            border-radius: 1px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
-        flex-grow: 3;
+        .l2{
+            transform: translate(-50%, -50%) rotateZ(90deg);
+        }
+    }
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+    .top-c, .bottom-c{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        gap: 1.5rem;
+        .prod, .result-bar, .delivery-c{
+            a{
+                color: $c3;
+                text-decoration: none;
+            }
+            flex-grow: 1;
+            padding: 1.6rem 1.1rem;
+            background-color: $c2;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            gap: .9rem;
+            border-radius: 20px;
+            .top-p{
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .stat-p{
+                //flex-grow: ;
+                padding: 8px;
+                border-radius: 10px;
+                background-color: $c3;
+                color: $c1;
+                display: grid;
+                row-gap: .5rem;
+                column-gap: 1.5rem;
+                grid-template-columns: 1fr 1fr;
+                .stat{
+                    display: flex;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                    gap: 4px;
+                }
+            }
+            .action{
+                width: 100%;
+                display: flex;
+                gap: 5px;
+                justify-content: space-between;
+                .my_btn_1{
+                    flex-grow: 1;
+                }
+            }
+        }
+        .right-t{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            .result-bar{
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-around;
+                .stat{
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+            }
+            .delivery-c{
+                flex-grow: 1;
+                background-color: $c3;
+                color: $c1;
+                .stat-p{
+                    background-color: $c2;
+                    color: $c3;
+                    flex-wrap: nowrap !important;
+                    justify-content: space-around;
+                    display: flex;
+                    
+                }
+            }
+        }
+        
 
     }
-}
-@media (max-width: 1540px) {
-    .mycDash, 
-    .date_index{
-        width: 100% !important; 
-        flex-grow: 1 !important;
+    .bottom-c{
+        .setting{
+            padding: 1.6rem ;
+            border-radius: 20px;
+            flex-grow: 1;
+            text-align: center;
+            background-color: $c3;
+            color: $c1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 1.5rem;
+            .top-set{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .set{
+                display: flex;
+                gap: 8px;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                .radio-inputs{
+                    width: 72%;
+                    
+                }
+                .sets{
+                    width: 72%;
+                    
+                    .radio-inputs{
+                        margin-bottom: 4px;
+                        width: 100%;
+    
+                    }
+                    .input-group{
+                       // width: 80%;
+                        label{
+                            background-color: $c2 !important;
+                            color: $c3;
+                            border:  2px solid $c2;
+                        }
+                        input{
+                            color: $c1;
+                            border:  2px solid $c2;
+                        }
+                    }
+                }
+            }
+            
+        }
+        .date{
+            color: $c3;
+            flex-grow: 1;
+        }
     }
-    .cont-dash{
-        flex-direction: column;
+    
+}
+@media (max-width: 1000px) {
+    .dash-c{
+        .top-c, .bottom-c{
+            flex-wrap: wrap;       
+        }
+        .setting{
+            width: 100%;
+            
+        }
     }
 }
+
 
 .nav{
-    background-color: rgba(34, 22, 63, 0.544) !important;
+    background-color: $c3!important;
     position: fixed;
     padding-left: 15px;
     top: 0;
     left: 0;
     right: 0;
-    height: 80px;
     z-index: 200;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 }
-.cwhite{
-    color: white !important;
 
-}
-.dbbtn{
-    background: linear-gradient(-30deg, rgb(33, 49, 158) , rgb(124, 14, 171));
-    border: none;
-    font-size: clamp(20px, 3vw, 27px);
-    color: white;
-    border-radius: 13px;
-    transition: text-shadow .5s ease-in-out;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.527);
-}
-.dbbtn:hover{
-    color: white;
-    text-shadow: 0 0 5px white;
-    transition: text-shadow .5s ease-in-out;
 
-}
+
 .error{
     color: red;
     padding: .5rem ;
     border-radius: 10px;
     background-color: rgba(255, 0, 0, 0.179);
 }
-.mycDash {
-    display: flex;
-    flex-direction: column;
-    gap: 11px;
-    section {
-        display: flex;
-        gap: 11px;
-        width: 100%;
-    }
-    a {
-        height: clamp(70px, 10vw, 110px) !important;
-        text-decoration: none;
-        color: rgb(255, 255, 255);
-        flex: 8 1 auto;
-        //background-color: #78b1d5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 14px;
-        gap: 4px;
-        box-shadow: 4px 3px 7px rgba(0, 0, 0, 0.34);
-        transition: all 0.3s ease-in-out;
-        font-size: clamp(20px, 2.7vw, 26px);
-        text-transform: uppercase;
-        font-weight: bold;
-        svg{
-            transition: all 0.3s ease-in-out;
 
-        }
-    }
-
-    .small {
-        width: clamp(70px, 10%, 150px) !important;
-        flex-grow: 0;
-        //width: auto !important;
-        aspect-ratio: 1;
-    }
-}
-@media (min-width: 950px) {
-    .mycDash {
-        a:hover {
-            font-size: 29px;
-            transition: all 0.3s ease-in-out;
-            opacity: 0.7;
-            gap: 10px;
-            svg{
-                transition: all 0.3s ease-in-out;
-                scale: 1.4;
-            }
-        }
-        a{
-        }
-    }
-}
-.s1a {
-    background-color: rgb(130, 125, 149) !important;
-}
-.s1b {
-    background-color: rgba(46, 11, 185) !important;
-}
-.s2a {
-    background-color: rgb(52, 53, 87) !important;
-}
-.s2b {
-    background-color: rgba(29, 2, 111) !important;
-}
-.s2c {
-    background-color: rgba(20, 2, 81) !important;
-}
-.s3a {
-    background-color: rgba(46, 0, 90) !important;
-}
-.s3b {
-    background-color: rgba(73, 0, 152) !important;
-}
-.s4a {
-    background-color: $c4 !important;
-}
-.s4b {
-    background-color: $c5 !important;
-}
-.s5a {
-    background-color: $c4 !important;
-}
-.s5b {
-    background-color: $c5 !important;
-}
 .mybtdb {
     font-size: 25px;
     padding: 5px 20px;
@@ -211,21 +247,77 @@ body{
     text-align: center;
     text-transform: capitalize;
 }
+.carousel-indicators{
+    padding: 0 15px;
+    button{
 
-.calendar-c{
-    //margin: 3rem 0;
-    background-color: rgba(83, 89, 170, 0.31);
-    border-radius: 30px;
+       // background-color:  $c1 !important;
+    }
+    background-color:  $c2 !important;
+    border-radius: 20px;
+}
+
+.lez-c{
+    padding: 0 15px;
+    height: 30px;
+    width: 13px;
+    position: relative;
     display: flex;
+    align-items: center;
+    .line{
+        background-color: $c1;
+        height: 13px;
+        width: 2px;
+        position: absolute;
+        transform:translate(50%, 50%) rotateZ(45deg);
+        border-radius: 2px;
+    }
+    .l2{
+        height: 13px;
+        transform:translate(50%, -11%) rotateZ(-45deg);
+    }
+}
+.prev{
+    transform: rotateY(180deg);
+
+}
+.carousel-inner{
+    display: flex;
+    align-items: stretch !important;
+    gap: 10px;
+    
+}
+.calendar-c{
+    .date-set{
+        top: 0px;
+        right: 50px;
+        position: absolute;
+        color: $c3;
+        svg{
+            height: 27px;
+            width: 27px;
+        }
+    }
+    //margin: 3rem 0;
+    width: 100%;
+    //height: 100%;
+    background-color: $c3;
+    border-radius: 20px;
+    display: flex;
+    padding: 5px;
     flex-direction: column;
     .c-name{
         display: flex;
         flex-grow: 1;
         justify-content: space-between;
+        align-items: center;
         text-transform: capitalize;
-        padding: 4rem 6% 0;
+        margin:  auto;
+        padding: 15px 7% ;
         width: 100%;
-        color: white;
+        color: $c3;
+        background-color:  $c2 !important;
+        border-radius: 17px;
         h4{
 
             font-size: clamp(12px, 1.6vw, 20px);
@@ -234,7 +326,7 @@ body{
     .calendar{
         text-align: center;
         display: grid;
-        padding: 3rem 6% 4rem;
+        padding: 3rem 7% 4rem;
         justify-content: center;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
         
@@ -242,7 +334,8 @@ body{
         width: 100%;
     
         .day{
-            color: #3e0f5d;
+            color: $c3;
+            background-color: $c1;
             text-decoration: none;
             font-size: clamp(15px, 2vw, 30px);
             width: auto;
@@ -251,21 +344,20 @@ body{
             align-items: center;
             aspect-ratio: 1;
             border-radius: 10px;
-            background-color: white;
-
             position: relative;
             .b{
                 background: none;
                 border: none;
                 padding: 0;
-                font-size: clamp(10px , 2.1vw, 20px);
+                font-size: clamp(14px , 2.1vw, 20px);
+                color: $c3;
             }
             p{
                 display: flex;
                 position: absolute;
                 font-size: clamp(7px , 1.5vw, 12px);
                 //background-color: black;
-                //color: white;
+                //color: $white;
                 border-radius: 100px;
                 width: 30%;
                 justify-content: center;
@@ -273,7 +365,7 @@ body{
                 gap: 3px;
                 margin: 2px;
                 svg{
-                    width: 120%;
+                    width: clamp(14px , 2.1vw, 20px);
                 }
             }
             .pop1{
@@ -332,25 +424,25 @@ body{
 //     //transition: opacity .2s ease-out;
 // }
 
-$bg-p-p : rgba(238, 238, 244, 0.473);
-$c-delete : rgba(233, 50, 84, 0.708);
-$c-update : rgba(224, 191, 42, 0.796);
-$c-new : rgb(28, 2, 87);
+$bg-p-p : $c3;
+$c-delete : $c2;
+$c-update : $c3;
+$c-new : $c1;
 $t : rgba(193, 206, 236, 0.43);
-$cfilter : rgb(238, 231, 252);
+$cfilter : $c2;
 .my_btn{
     padding: .23rem 1.3rem;
     border-radius: 9px;
     border: none;
-    background-color: rgba(67, 37, 119, 0.828);
-    color: white;
+    background-color: $c1;
+    color: $white;
     text-decoration: none;
     font-size: clamp(12px, 2.3vw, 16px);
     font-weight:600;
     text-align: center;
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
-        color: white;
+        color: $white;
         text-shadow: 0px 0px 4px rgba(220, 220, 220, 0);
     }
 }
@@ -366,18 +458,21 @@ $cfilter : rgb(238, 231, 252);
     filter: invert(0) !important;
 }
 .create{
-    background-color: #550b8d00;
-    color: $c-new ;
-    border: 2px solid $c-new !important;
+    background-color: $c3;
+    color: $c1 ;
+    
 }
 .trash{
-    background-color: #eb92a146;
-    color: $c-delete ;
-    border: 2px solid $c-delete !important;
+    background-color: $c2;
+    color: $c3 ;
 }
 .search{
-    border: 2px solid white !important;
-    background-color: #3a0d6435;
+    background-color: $c1;
+    color: $c2;
+    svg{
+        border-color: $c2;
+        fill: $c2;
+    }
 
 }
 .d{
@@ -385,6 +480,11 @@ $cfilter : rgb(238, 231, 252);
 }
 .m{
     background-color: $c-update;
+    color: $c2 !important;
+    a, button{
+        color: $c2 !important;
+
+    }
 }
 .add{
     background-color: $c-new;
@@ -400,14 +500,14 @@ $cfilter : rgb(238, 231, 252);
     max-width:clamp(60px,70vw, 300px);
     .ellips{
         max-width:clamp(60px,70vw, 300px);  
-        white-space: nowrap;  
+        $white-space: nowrap;  
     }
 }   
 
 
 
 .top-bar-product{
-    color: $c-new;
+    color: $c3;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.195);
     padding: 1.5rem;
     background-color: $cfilter;
@@ -432,8 +532,14 @@ $cfilter : rgb(238, 231, 252);
         input, select{
             border-radius: 10px;
             height: 30px;
-            border: 1px solid black;
-            background-color: rgba(255, 255, 255, 0.67);
+            border: none;
+            background-color: $c3;
+            opacity: 0.6;
+            transition: all .2s ease-in;
+        }
+        input:hover, select:hover{
+            opacity: 1;
+            transition: all .2s ease-in;
         }
         .s-name{
             flex-wrap: wrap;
@@ -447,22 +553,6 @@ $cfilter : rgb(238, 231, 252);
                 flex-wrap: nowrap;
                 gap: 1rem;
             }
-            .search{
-                border: solid .2px rgb(255, 255, 255);
-                background-color: rgb(50, 185, 216);
-                border-radius: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 30px;
-                width: 30px;
-                color: white;
-                svg{
-                    width: 80%;
-                }
-            }
-        
-            
         }
     }
     .buttons_{
@@ -475,7 +565,7 @@ $cfilter : rgb(238, 231, 252);
     }
 }
 .action-page{
-    padding: 1rem;
+    padding: 1rem 0;
     width: 100%;
     display: flex;
     justify-content: flex-end;
@@ -504,10 +594,11 @@ $cfilter : rgb(238, 231, 252);
             
             a{
                 text-decoration: none;
-                color: black;
+                color: $c3;
             }
         }
         .card_{
+            color: $c1 ;
             border-radius: 20px;
             background-color: $bg-p-p;
             padding: .8rem;
@@ -524,7 +615,7 @@ $cfilter : rgb(238, 231, 252);
                 object-fit: cover;
                 background-position: center;
                 box-shadow: 0px 0px 2px black;
-                background-color: rgba(255, 166, 0, 0.477);
+                background-color: rgba(219, 219, 219, 0.477);
             }
             .info{
                 flex-grow: 1;
@@ -566,7 +657,7 @@ $cfilter : rgb(238, 231, 252);
         }
         div, a, button{
             box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
-            color: white;
+            color: $white;
             text-shadow: 0px 0px 6px rgb(220, 220, 220);
         }
        
@@ -577,7 +668,7 @@ $cfilter : rgb(238, 231, 252);
 
 .slim_cont{
     display: flex;
-    gap: 2rem;
+    gap: 1.1rem;
     flex-wrap: wrap;
     //align-items: flex-start;
     
@@ -592,18 +683,20 @@ $cfilter : rgb(238, 231, 252);
     justify-content: space-between;
     align-items: center;
     border-radius: 20px;
-    background-color: rgba(23, 23, 116, 0.319);
+    background-color: $c3;
     gap: 1rem;
     a{
-        color: white;
+        color: $c1;
         text-decoration: none;
         font-size: clamp(13px, 2.2vw, 22px);
     }
     h3{
         flex-shrink: 1;
         line-height: 90% !important;
+        color: $c1;
     }
     img{
+        background-color: #FF7658;
         flex-shrink: 0;
         width: clamp(30px, 100%, 40px);
         border-radius: 100%;
@@ -621,21 +714,42 @@ $cfilter : rgb(238, 231, 252);
         .price{
             font-size:clamp(17px, 3vw, 23px) ;
             font-weight: bolder;
+            color: $c2; 
         }
         .actions{
-            gap: .5rem;
             display: flex;
-            form{
+            gap: 4px;
+            form, a{
+                padding: 0;
                 display: flex;
                 justify-content: center;
-                align-items: flex-end;
+                align-items: center;
+                height: 27px;
+                width: 27px;
+            }
+            svg{
+                margin-top: auto;
+                height: 100%;
+                width: 27px;
+                fill: $c3; 
+                border-radius: 4px;
+                padding: 6px;
+                background-color: $c1;
+                display: block;
             }
             .s_d{
-                
+                display: block;
                 border: none;
-                background: none;
-                padding: none;
-                color: white;  
+                padding: 0;
+                color: $c2; 
+                height: 100%;
+                width: 27px;
+                svg{
+                    background-color: $c2;
+                    fill: $c3; 
+                    height: 100%;
+                    width: 27px;
+                }
             }
         }
     }
@@ -666,6 +780,7 @@ $cfilter : rgb(238, 231, 252);
     padding: 2.2rem;
     background-color: $bg-p-p;
     border-radius: 20px;
+    color: $c1;
     h2{
         font-weight: bolder;
         text-transform: capitalize;
@@ -705,7 +820,7 @@ $cfilter : rgb(238, 231, 252);
                 img{
                     padding: 5px;
                     border: black solid 1px;
-                    background-color: white;
+                    background-color: $white;
                     width: 40px;
                     border-radius: 100% ;
                     aspect-ratio: 1;
@@ -1005,7 +1120,7 @@ $cfilter : rgb(238, 231, 252);
   display: flex;
   flex-wrap: wrap;
   border-radius: 0.5rem;
-  background-color: #EEE;
+  background-color: $c2;
   box-sizing: border-box;
   box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
   padding: 0.25rem;
@@ -1029,12 +1144,13 @@ $cfilter : rgb(238, 231, 252);
   border-radius: 0.5rem;
   border: none;
   padding: .5rem 0;
-  color: rgba(51, 65, 85, 1);
+  color: $c3;
   transition: all .15s ease-in-out;
 }
 
 .radio-inputs .radio input:checked + .name {
-  background-color: #fff;
+  background-color: $c3;
+  color: $c1;
   font-weight: 600;
 }
 //// uivers select end

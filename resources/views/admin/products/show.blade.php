@@ -80,7 +80,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 <input type="hidden" name="v" value="0">
                 <input type="hidden" name="a" value="1">
                 <input type="hidden" name="id" value="{{$product->id}}">
-                <button class="my_btn d" type="submit">{{$product->arcived ? 'ripristina': 'archivia'}}</button>
+                <button class="my_btn d" type="submit">{{$product->arcived ? 'Ripristina': 'Archivia'}}</button>
             </form>
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf

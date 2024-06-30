@@ -10,7 +10,7 @@ $domain = 'https://future-plus.it/allergiens/';
 @endphp
 <style>
     body{
-        background: rgba(193, 128, 128, 0.48);      
+        background: #FF7658;      
     }
 </style>
 
