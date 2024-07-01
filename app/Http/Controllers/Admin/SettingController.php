@@ -102,7 +102,6 @@ class SettingController extends Controller
         $setting[3]->property = json_encode($giorni_attivita);
         $setting[3]->save();
 
-        // dd($setting[4]['property']);
         // $oldPosition = json_decode( $setting[4]['property'], true);
         if(isset($oldPosition['foto_maps'])){
             $posizione = [
@@ -111,7 +110,9 @@ class SettingController extends Controller
                 'indirizzo' =>  $request->indirizzo,
             ];     
             if (isset($request->foto_maps)) {
-                $imagePath = Storage::put('public/uploads', $request->foto_maps);
+                dump($request->foto_maps);
+                $imagePath = $request->file('foto_maps')->store('public/uploads');
+                dd($imagePath);
                 $posizione['foto_maps'] = $imagePath;
             }else{
                 $posizione['foto_maps'] = $oldPosition['foto_maps'];
@@ -123,7 +124,9 @@ class SettingController extends Controller
                 'indirizzo' =>  $request->indirizzo,
             ];
             if (isset($request->foto_maps)) {
-                $imagePath = Storage::put('public/uploads', $request->foto_maps);
+                dump($request->foto_maps);
+                $imagePath = $request->file('foto_maps')->store('public/uploads');
+                dd($imagePath);
                 $posizione['foto_maps'] = $imagePath;
             }
         }
@@ -145,6 +148,6 @@ class SettingController extends Controller
         }
         $m = 'Le impostazioni sono state ggiornate correttamente';
 
-        return redirect()->back()->with('success', $m);   
+       // return redirect()->back()->with('success', $m);   
     }
 }
