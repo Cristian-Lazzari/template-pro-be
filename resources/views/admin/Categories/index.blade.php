@@ -20,7 +20,7 @@
 <h1>Categorie prodotti</h1>
 
 <div class="action-page">
-    <a class="my_btn create m-1 w-auto" href="{{ route('admin.categories.create') }}">Crea una nuova categoria</a>
+    <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.categories.create') }}">Crea una nuova categoria</a>
 </div>
 
 <div class="slim_cont">

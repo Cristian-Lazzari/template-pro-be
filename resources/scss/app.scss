@@ -12,26 +12,27 @@ $cfilter : $c2;
 .my_btn_1{
     background-color: $c1;
     color: $c3;
-    padding: .5rem 1.2rem;
-    border-radius: 6px;
-    text-decoration: none;
-    text-align: center;
-    border: none;
 }
 .my_btn_2{
     background-color: $c2;
     color: $c3;
 }
-.my_btn{
-    padding: .23rem 1.3rem;
-    border-radius: 9px;
-    border: none;
-    background-color: $c2;
-    color: $white;
+.my_btn_3{
+    background-color: $c3;
+    color: $c2;
+}
+.my_btn_4{
+    background-color: $c1;
+    color: $c2;
+}
+.my_btn_1, .my_btn_2, .my_btn_3, .my_btn_4{
     text-decoration: none;
-    font-size: clamp(12px, 2.3vw, 16px);
-    font-weight:600;
+    font-weight:500;
     text-align: center;
+    padding: .5rem 1.2rem;
+    border-radius: 6px;
+    border: none;
+    font-size: clamp(12px, 2.3vw, 16px);
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: $white;
@@ -785,6 +786,7 @@ body{
             display: flex;
             gap: 4px;
             form, a{
+                text-decoration: none;
                 padding: 0;
                 display: flex;
                 justify-content: center;

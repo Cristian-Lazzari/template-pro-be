@@ -50,16 +50,16 @@ $domain = 'https://future-plus.it/allergiens/';
     </div>
     <div class="prod-spec">
         <div class="actions">
-            <a class="my_btn m" href="{{ route('admin.ingredients.edit', $ingredient) }}">Modifica</a>
+            <a class="my_btn_1 m" href="{{ route('admin.ingredients.edit', $ingredient) }}">Modifica</a>
             {{-- <form action="{{ route('admin.ingredients.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="f" value="1">
-                <button class="my_btn d" type="submit">Archivia</button>
+                <button class="my_btn_1 d" type="submit">Archivia</button>
             </form>
             <form action="{{ route('admin.ingredients.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="f" value="1">
-                <button class="my_btn v" type="submit">Visibilità -  @if ($ingredient->visible) on  @else off @endif</button>
+                <button class="my_btn_1 v" type="submit">Visibilità -  @if ($ingredient->visible) on  @else off @endif</button>
             </form> --}}
         </div>
     </div>

@@ -29,7 +29,7 @@
     <div class="slim_ slim_time ">
         <section class="s1">
             <h3>{{$t->time}}</h3>   
-            <button type="button" class="my_btn d" data-bs-toggle="modal" data-bs-target="#exampleModal{{$t->id}}">
+            <button type="button" class="my_btn_1 d" data-bs-toggle="modal" data-bs-target="#exampleModal{{$t->id}}">
                 Vedi dettagli
             </button>
         </section>

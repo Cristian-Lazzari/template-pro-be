@@ -10,7 +10,7 @@ $domain = 'https://future-plus.it/allergiens/';
 @endphp
 <style>
     body{
-        background: #FF7658;      
+        background: #020222;      
     }
 </style>
 
@@ -71,15 +71,15 @@ $domain = 'https://future-plus.it/allergiens/';
         </div>
        
         <div class="buttons">
-         <button type="submit" class=" my_btn">
+         <button type="submit" class=" my_btn_3">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
                  <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
-             </svg>  FILTRA
+             </svg>  Applica
          </button>
-         <a class="my_btn search" href="{{ route('admin.products.archived')}}">
+         <a class="my_btn_1 search" href="{{ route('admin.products.archived')}}">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
                  <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
-             </svg> 
+             </svg> Rimuovi
          </a>   
         </div>
     </div>
@@ -128,14 +128,14 @@ $domain = 'https://future-plus.it/allergiens/';
                 @endforeach
             </div>
             <div class="actions">
-                <a class="my_btn m" href="{{ route('admin.products.edit', $item) }}">Modifica</a>
+                <a class="my_btn_1 m" href="{{ route('admin.products.edit', $item) }}">Modifica</a>
                 <form action="{{ route('admin.products.status') }}" method="POST">
                     @csrf
                     <input type="hidden" name="archive" value="1">
                     <input type="hidden" name="v" value="0">
                     <input type="hidden" name="a" value="1">
                     <input type="hidden" name="id" value="{{$item->id}}">
-                    <button class="my_btn d" type="submit">Ripristina</button>
+                    <button class="my_btn_1 d" type="submit">Ripristina</button>
                 </form>
                 <form action="{{ route('admin.products.status') }}" method="POST">
                     @csrf
@@ -144,14 +144,14 @@ $domain = 'https://future-plus.it/allergiens/';
                     <input type="hidden" name="a" value="0">
                     <input type="hidden" name="id" value="{{$item->id}}">
                     @if (!$item->visible)
-                        <button class="my_btn v" type="submit">
+                        <button class="my_btn_1 v" type="submit">
                             <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
                                 <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
                                 <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
                             </svg>  
                         </button>
                     @else
-                        <button class="my_btn v" type="submit">
+                        <button class="my_btn_1 v" type="submit">
                             <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                                 <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>

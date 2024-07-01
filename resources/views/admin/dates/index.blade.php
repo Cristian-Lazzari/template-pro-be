@@ -10,7 +10,7 @@
         $data = session('not_found')
     @endphp
     <div class="alert alert-danger">
-        La data non ha orari a cui è possibile ordinare
+        La data non ha orari a cui è possibile ordinare o prenotare
     </div>
 @endif
 @if (session('success'))

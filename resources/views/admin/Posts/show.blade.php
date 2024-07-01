@@ -70,13 +70,13 @@
                 <input type="hidden" name="v" value="0">
                 <input type="hidden" name="a" value="1">
                 <input type="hidden" name="id" value="{{$post->id}}">
-                <button class="my_btn d" type="submit">Archivia</button>
+                <button class="my_btn_1 d" type="submit">Archivia</button>
             </form>
-            <a class="my_btn m" href="{{ route('admin.posts.edit', $post) }}">Modifica</a>
+            <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $post) }}">Modifica</a>
             <form action="{{ route('admin.posts.destroy', ['post'=>$post]) }}" method="post" >
                 @method('delete')
                 @csrf
-                <button class="my_btn bg-danger" type="submit">Elimina</button>
+                <button class="my_btn_1 bg-danger" type="submit">Elimina</button>
             </form>
              
         </div>

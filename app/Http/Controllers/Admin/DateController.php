@@ -320,7 +320,7 @@ class DateController extends Controller
         $seeder->run();
         // Ripristino le prenotazioni
         //$this->restoreReservationsAndOrders();
-        $m = 'Seeder avvenuto con successso!';
+        $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
         return back()->with('success', $m);
  
     }

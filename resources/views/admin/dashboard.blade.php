@@ -5,7 +5,7 @@
     @php
         $data = session('success')
     @endphp
-    <div class="alert alert-light">
+    <div class="alert alert-success">
         {{ $data }} 
     </div>
 @endif
@@ -469,8 +469,8 @@
                     @endforeach
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
-                    <button type="sumbit" class="my_btn add">Rimuovi comuni selezionati</button>
+                    <button type="button" class="my_btn_1" data-bs-dismiss="modal">Annulla</button>
+                    <button type="sumbit" class="my_btn_2">Rimuovi comuni selezionati</button>
                 </div>
             </form>
         </div>
@@ -496,8 +496,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="my_btn d" data-bs-dismiss="modal">Annulla</button>
-                    <button type="sumbit" class="my_btn add">Aggiungi nuovo comune</button>
+                    <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
+                    <button type="sumbit" class="my_btn_1 add">Aggiungi nuovo comune</button>
                 </div>
             </form>
         </div>
