@@ -4,7 +4,7 @@
     "src": "../public/build/resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app.563bd70d.css"
+      "../public/build/assets/app.563bd70d.css"
     ]
   },
   "resources/scss/app.scss": {
