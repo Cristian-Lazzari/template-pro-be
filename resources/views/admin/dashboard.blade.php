@@ -1,7 +1,14 @@
 @extends('layouts.base')
 
 @section('contents')
-
+@if (session('success'))
+    @php
+        $data = session('success')
+    @endphp
+    <div class="alert alert-light">
+        {{ $data }} 
+    </div>
+@endif
 <div class="dash-c">
     <div class="top-c">
         <div class="prod">

@@ -49,7 +49,9 @@ class SettingController extends Controller
                 $setting[7]->save();
             }
         }
-        return redirect()->back();
+        $m = 'Gli indirizzi sono stati aggiornati correttamente';
+
+        return redirect()->back()->with('success', $m); 
     }
     
     public function updateAll(Request $request)
@@ -131,8 +133,8 @@ class SettingController extends Controller
             $setting[6]->status = $domicilio;
             $setting[6]->save();
         }
-    
+        $m = 'Le impostazioni sono state ggiornate correttamente';
 
-        return redirect()->back();   
+        return redirect()->back()->with('success', $m);   
     }
 }

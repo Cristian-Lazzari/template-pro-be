@@ -1,5 +1,6 @@
 @import "~bootstrap/scss/bootstrap";
 $c1:#1E3B64;
+$c2:#10b7b1;
 $c2:#FF7658;
 $c3:#F4F4EF;
 $bg-p-p : $c3;
@@ -968,13 +969,15 @@ body{
         font-weight: bolder;
     }
     section{
-        background: linear-gradient(-30deg, rgba(0, 33, 250, 0.308) , rgba(179, 0, 255, 0.3));
+        background: $c3;
+        background: linear-gradient(-15deg, $c1 , $c2);
         width: 100%;
         padding: 1rem;
         border-radius: 18px;
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        color: $c3;
         .split, .split-3{
             display: flex;
             justify-content: center;
