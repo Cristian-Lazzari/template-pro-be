@@ -1,7 +1,7 @@
 {
   "resources/js/app.js": {
     "file": "../public/build/passets/app.82c6a187.js",
-    "src": "resources/js/app.js",
+    "src": "../public/build/resources/js/app.js",
     "isEntry": true,
     "css": [
       "../public/build/assets/app.fe68c9a1.css"
@@ -9,7 +9,7 @@
   },
   "resources/scss/app.scss": {
     "file": "../public/build/assets/app.fe68c9a1.css",
-    "src": "resources/scss/app.scss",
+    "src": "../public/build/resources/scss/app.scss",
     "isEntry": true
   }
 }
