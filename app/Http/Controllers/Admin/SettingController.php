@@ -144,6 +144,6 @@ class SettingController extends Controller
         }
         $m = 'Le impostazioni sono state ggiornate correttamente';
 
-       // return redirect()->back()->with('success', $m);   
+        return redirect()->back()->with('success', $m);   
     }
 }
