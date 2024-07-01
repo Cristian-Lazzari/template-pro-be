@@ -110,9 +110,7 @@ class SettingController extends Controller
                 'indirizzo' =>  $request->indirizzo,
             ];     
             if (isset($request->foto_maps)) {
-                dump($request->foto_maps);
                 $imagePath = $request->file('foto_maps')->store('public/uploads');
-                dd($imagePath);
                 $posizione['foto_maps'] = $imagePath;
             }else{
                 $posizione['foto_maps'] = $oldPosition['foto_maps'];
@@ -124,9 +122,7 @@ class SettingController extends Controller
                 'indirizzo' =>  $request->indirizzo,
             ];
             if (isset($request->foto_maps)) {
-                dump($request->foto_maps);
                 $imagePath = $request->file('foto_maps')->store('public/uploads');
-                dd($imagePath);
                 $posizione['foto_maps'] = $imagePath;
             }
         }
