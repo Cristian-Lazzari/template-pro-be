@@ -237,7 +237,6 @@
             </div>
         @else 
         <div class="date-off">
-
             <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, clicca QUI e impostale ora</a>
         </div>
         @endif
@@ -366,8 +365,12 @@
                             <div class="accordion-body">
                                 <section>
                                     <h3> Posizione </h3>
+                                    @dump($property_posizione['foto_maps'])
                                     @if(isset($property_posizione["foto_maps"]) && $property_posizione['foto_maps'] !== "")
                                         <img src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
+                                        <div class="input-group mb-3">
+                                            <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
+                                        </div>
                                     @else
                                         <div class="input-group mb-3">
                                             
