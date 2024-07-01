@@ -366,13 +366,12 @@
                                 <section>
                                     <h3> Posizione </h3>
                                     @if(isset($property_posizione["foto_maps"]) && $property_posizione['foto_maps'] !== "")
-                                        <img class="w-100 rounded" src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
+                                        <img class="w-100 rounded mb-2" src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
                                         <div class="input-group mb-3">
                                             <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
                                         </div>
                                     @else
-                                        <div class="input-group mb-3">
-                                            
+                                        <div class="input-group mb-3">    
                                             <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
                                         </div>
                                     @endif
