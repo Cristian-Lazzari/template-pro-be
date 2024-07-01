@@ -354,7 +354,7 @@
                             </div>
                         </div>
                     </form>
-                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
+                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item" enctype="multipart/form-data">
                         @csrf
                         <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
