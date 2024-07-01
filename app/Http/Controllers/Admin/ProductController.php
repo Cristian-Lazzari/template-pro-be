@@ -177,6 +177,8 @@ class ProductController extends Controller
                 $filteredArray = array_filter($array, function($value) {
                     return $value !== 1;
                 });
+            }else{
+                $filteredArray = $array;
             }  
             return array_values($filteredArray); // re-indicizzare l'array
         }
@@ -335,6 +337,8 @@ class ProductController extends Controller
                 $filteredArray = array_filter($array, function($value) {
                     return $value !== 1;
                 });
+            }else{
+                $filteredArray = $array;
             }  
             return array_values($filteredArray); // re-indicizzare l'array
         }

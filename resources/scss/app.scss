@@ -232,6 +232,7 @@ body{
     .bottom-c{
         align-items: stretch;
         .date{
+            flex-shrink: 0;
             color: $c3;
             flex-grow: 3;
             flex-shrink: 1;
@@ -247,10 +248,10 @@ body{
             }
         }
         .setting{
+            
+            flex-shrink: 3;
             padding: 1.6rem ;
             border-radius: 20px;
-            flex-grow: 1;
-            flex-shrink: 2;
             text-align: center;
             background-color: $c3;
             color: $c1;
@@ -274,6 +275,13 @@ body{
                 }
                 border-radius: 20px;
                 overflow: hidden;
+                .activity-day{
+                    label{
+                        width: 20%;
+                        text-align: center;
+                        text-transform: capitalize;
+                    }
+                }
                 .address{
                     display: flex;
                     gap: 2px;
@@ -285,6 +293,13 @@ body{
                         border-radius: 7px;
                         color: $c2;
                     }
+                }
+                .actions{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    gap: 4px;
+                    margin: 13px 0;
                 }
             }
             .set{
@@ -435,7 +450,7 @@ body{
 .calendar-c{
     .date-set{
         top: 0px;
-        right: 50px;
+        right: 7%;
         position: absolute;
         color: $c3;
         svg{
@@ -458,13 +473,17 @@ body{
         align-items: center;
         text-transform: capitalize;
         margin:  auto;
-        padding: 15px 7% ;
+        padding: 15px 7.2% ;
         width: 100%;
+        max-width: 100%;
         color: $c3;
         background-color:  $c2 !important;
         border-radius: 17px;
         h4{
-
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            
+            width: clamp(20px, 10%, 70px);
             font-size: clamp(10px, 100%, 20px);
             font-weight: lighter;
         }
@@ -530,38 +549,15 @@ body{
         .day-off{
             opacity: .4;
         }
+        .day-active{
+            background-color: $c2;
+            .b{
+                font-weight: bold;
+            }
+        }
     }
 }
-#setting{
-    width: 80%;
-    max-width: 700px !important;
-    margin: 0 auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 3rem;
-    background-color: #542b7989;
-    padding: 3rem;
-    border-radius: 39px;
-    form{
-        max-width: 400px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 3rem;
-        width: 100% !important;
-        section{
 
-            width: 100% !important;
-        }
-        .radio-inputs{
-            width: 100% !important;
-        }
-    }
-}
 
 
 //****************** new css *************
@@ -1048,13 +1044,7 @@ body{
 }
 
 @media (max-width: 550px) {
-    .mycDash{
-        gap: 9px;
-        section{
-            gap: 9px;
-
-        }
-    }
+    
     .split{
         div{
             width: 100% !important;
