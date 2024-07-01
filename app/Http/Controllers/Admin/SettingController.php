@@ -102,8 +102,8 @@ class SettingController extends Controller
         $setting[3]->property = json_encode($giorni_attivita);
         $setting[3]->save();
 
-        
-        $oldPosition = json_decode( $setting[4]['property'], true);
+        // dd($setting[4]['property']);
+        // $oldPosition = json_decode( $setting[4]['property'], true);
         if(isset($oldPosition['foto_maps'])){
             $posizione = [
                 'foto_maps' =>  "",
