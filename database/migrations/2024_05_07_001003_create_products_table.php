@@ -25,11 +25,11 @@ return new class extends Migration
             
             $table->text        ('allergiens')->nullable(); 
             
-            $table->tinyInteger  ('slot_plate'); //indica  slot occupa
-            $table->string      ('type_plate', 4);  //indica se è di tipo fq ft o altro 
-            $table->tinyInteger ('tag_set'); //indica se questo prodotto puo subire modifiche 0 nessuna, 1 togli ingredienti, 2 aggiungi e togli
+            $table->tinyInteger ('slot_plate')->nullable(); //indica quanti slot occupa
+            $table->tinyInteger ('type_plate')->nullable();  //indica se è di tipo fq ft o altro 
+            $table->tinyInteger ('tag_set')->nullable(); //indica se questo prodotto puo subire modifiche 0 nessuna, 1 togli ingredienti, 2 aggiungi e togli
             $table->boolean     ('visible')->default(true);
-            $table->boolean      ('archived')->default(false);
+            $table->boolean     ('archived')->default(false);
             $table->timestamps();
         });
     }

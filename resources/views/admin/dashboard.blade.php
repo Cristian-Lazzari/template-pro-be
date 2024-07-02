@@ -106,8 +106,8 @@
         @endif
         <div class="prod post">  
             <div class="top-p">
-                <h3>I tuoi post</h3>
-                <a href="{{ route('admin.posts.index') }}" class="plus">
+                <a href="{{ route('admin.posts.index') }}"> <h2>I tuoi post</h2></a>
+                <a href="{{ route('admin.posts.create') }}" class="plus">
                     <div class="line"></div>
                     <div class="line l2"></div>
                 </a>

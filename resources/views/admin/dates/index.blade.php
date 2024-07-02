@@ -135,7 +135,7 @@
             <div class="input-group w-auto flex-nowrap py-2 ">
                 <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
                 <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
-            </div>
+            </div> @error('max_reservations') <p class="error">{{ $message }}</p> @enderror
         @endif
         @if ( config('configurazione.pack') == 3 ||  config('configurazione.pack') == 4)  
             @if (config('configurazione.typeOfOrdering'))  
@@ -143,26 +143,26 @@
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
                     <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" placeholder="N° di pezzi">
-                </div>
+                </div> @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
                 
                 <h5 class="pt-4 ">Indica il numero massimo di pizze al piatto (cucina 2) per l'asporto</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_2" class="input-group-text" >N° di pizze</label>
                     <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" placeholder="N° di pezzi">
-                </div>
+                </div> @error('max_cucina_2') <p class="error">{{ $message }}</p> @enderror
             @else
                 <h5 class="pt-4 ">Indica il numero massimo di ordini per l'asporto</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_asporto" class="input-group-text" >N° di ordini</label>
                     <input name="max_asporto" id="max_asporto" type="number" class="form-control" placeholder="N° di ordini per fascia oraria">
-                </div>
+                </div> @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
                     
             @endif
             <h5 class="pt-4 ">Indica il numero massimo di ordini con la consegna a domicilio</h5>
             <div class="input-group w-auto flex-nowrap py-2 ">
                 <label for="max_domicilio" class="input-group-text" >N° di oridini a domicilio</label>
                 <input name="max_domicilio" id="max_domicilio" type="number" class="form-control" placeholder="N° di ordini per fascia oraria">
-            </div>
+            </div> @error('max_domicilio') <p class="error">{{ $message }}</p> @enderror
         @endif
         <div>
             <h5 class="pt-4">Seleziona i giorni in cui sei attivo</h5>

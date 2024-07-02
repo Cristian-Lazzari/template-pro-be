@@ -17,14 +17,18 @@ return new class extends Migration
             $table->id();
 
             $table->string('date_slot', 16); 
-            $table->string('status', 10); //annullata confermata o in elaborazione
+            $table->tinyInteger('status'); //annullata confermata o in elaborazione
 
             $table->string('name', 50);
             $table->string('surname', 50);
             $table->string('email', 100);
             $table->string('phone', 20);
+
+            $table->string('address', 120);
+            $table->string('address_n', 4);
+            $table->string('comune', 30);
             
-            $table->tinyInteger('tot_price');
+            $table->smallInteger('tot_price');
             $table->string('message', 500)->nullable();
             
             $table->boolean('news_letter');

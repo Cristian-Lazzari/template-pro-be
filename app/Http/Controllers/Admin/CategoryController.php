@@ -80,8 +80,8 @@ class CategoryController extends Controller
         }
         
         $category->delete();
-        
-        return to_route('admin.categories.index')->with('delete_success', $category);
+        $m = ' "' . $category->name . '" è stata eliminato e rimossa dai prodotti correttamente';
+        return to_route('admin.categories.index')->with('delete_success', $m);
     }
     public function show($id)
     {

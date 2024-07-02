@@ -15,12 +15,21 @@
         {{ $data }}
     </div>
 @endif
+@if (session('delete_success'))
+    @php
+        $data = session('delete_success')
+    @endphp
+    <div class="alert alert-danger">
+        {{ $data }}
+    </div>
+@endif
+
 <a class="btn btn-outline-light mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
 
 <h1>Ingredienti</h1>
 
 <div class="action-page">
-    <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.ingredients.create') }}">Crea un nuovo ingrediente</a>
+    <a class="my_btn_2 m-1 w-auto" href="{{ route('admin.ingredients.create') }}">Crea un nuovo ingrediente</a>
 </div>
 
 <div class="slim_cont">

@@ -23,8 +23,8 @@ return new class extends Migration
             $table->foreign('order_id')->references('id')->on('orders');
             
             $table->tinyInteger('quantity');
-            $table->string('deselected');
-            $table->string('addicted');
+            $table->string('remove');
+            $table->string('add');
 
             $table->timestamps();
         });

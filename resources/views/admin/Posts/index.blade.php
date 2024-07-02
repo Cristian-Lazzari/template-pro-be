@@ -12,6 +12,14 @@
         {{ $data }} 
     </div>
 @endif
+@if (session('delete_success'))
+    @php
+        $data = session('delete_success')
+    @endphp
+    <div class="alert alert-danger">
+       " {{ $data->title }} " e stato eliminato correttamente
+    </div>
+@endif
 <a class="btn btn-outline-light mb-5" href="{{ route('admin.dashboard') }}">Indietro</a>
 
 <h1>Post</h1>

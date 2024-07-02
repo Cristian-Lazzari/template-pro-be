@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->string('date_slot', 16); 
-            $table->string('status', 10); //annullata confermata o in elaborazione
+            $table->tinyInteger('status'); //annullata confermata o in elaborazione
 
             $table->string('name', 50);
             $table->string('surname', 50);

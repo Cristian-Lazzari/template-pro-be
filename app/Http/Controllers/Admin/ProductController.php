@@ -456,7 +456,7 @@ class ProductController extends Controller
     {     
         $product->ingredients()->detach();
         $product->forceDelete();
-        return to_route('admin.products.index');
+        return to_route('admin.products.index')->with('delete_success', $product);
 
     }
 }

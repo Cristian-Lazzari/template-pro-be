@@ -18,15 +18,15 @@ return new class extends Migration
 
 
             $table->string('title', 100);
-            $table->string('hashtag', 140);
             $table->text('description');
             $table->tinyInteger('path');
             $table->smallInteger('order');
             $table->string('image');
+            $table->text('hashtag')->nullable();;
             $table->string('link')->nullable();
             
-            $table->boolean     ('visible')->default(true);
-            $table->boolean      ('archived')->default(false);
+            $table->boolean  ('visible')->default(false);
+            $table->boolean  ('archived')->default(false);
 
             $table->timestamps();
         });

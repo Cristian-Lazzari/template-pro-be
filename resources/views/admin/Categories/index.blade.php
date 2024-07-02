@@ -7,11 +7,19 @@
       //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
     $domain = 'https://future-plus.it/allergiens/';
 @endphp
-@if (session('success'))
+@if (session('category_success'))
     @php
-        $data = session('success')
+        $data = session('category_success')
     @endphp
     <div class="alert alert-primary">
+        {{ $data }}
+    </div>
+@endif
+@if (session('delete_success'))
+    @php
+        $data = session('delete_success')
+    @endphp
+    <div class="alert alert-danger">
         {{ $data }}
     </div>
 @endif
@@ -20,7 +28,7 @@
 <h1>Categorie prodotti</h1>
 
 <div class="action-page">
-    <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.categories.create') }}">Crea una nuova categoria</a>
+    <a class="my_btn_2 m-1 w-auto" href="{{ route('admin.categories.create') }}">Crea una nuova categoria</a>
 </div>
 
 <div class="slim_cont">

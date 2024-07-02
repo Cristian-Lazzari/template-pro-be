@@ -134,7 +134,8 @@ class IngredientController extends Controller
     {
         $ingredient->products()->detach();
         $ingredient->delete();
-        return to_route('admin.ingredients.index')->with('delete_success', $ingredient);
+        $m = ' "' . $ingredient->name . '" è stato eliminato e rimosso dai prodotti correttamente';
+        return to_route('admin.ingredients.index')->with('delete_success', $m);
     }
     public function show($id)
     {

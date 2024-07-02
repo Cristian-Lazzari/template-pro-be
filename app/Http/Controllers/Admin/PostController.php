@@ -209,7 +209,6 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        $post->products()->detach();
         $post->delete();
         return to_route('admin.posts.index')->with('delete_success', $post);
     }
