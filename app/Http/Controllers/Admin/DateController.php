@@ -18,8 +18,8 @@ class DateController extends Controller
     ];
     private $validations3t = [
         'max_domicilio'         => 'required|integer',
-        'max_cucina_1'              => 'required|integer',
-        'max_cucina_2'              => 'required|integer',
+        'max_cucina_1'          => 'required|integer',
+        'max_cucina_2'          => 'required|integer',
     ];
     private $validations3f = [
         'max_domicilio'         => 'required|integer',
@@ -28,8 +28,8 @@ class DateController extends Controller
     private $validations4t = [
         'max_domicilio'         => 'required|integer',
         'max_reservations'      => 'required|integer',
-        'max_cucina_1'              => 'required|integer',
-        'max_cucina_2'              => 'required|integer',
+        'max_cucina_1'          => 'required|integer',
+        'max_cucina_2'          => 'required|integer',
     ];
     private $validations4f = [
         'max_domicilio'         => 'required|integer',
@@ -208,8 +208,6 @@ class DateController extends Controller
         return view('admin.dates.showDay', compact('day'));   
     }
 
-
-
     public function generate(Request $request)
     {
           
@@ -321,10 +319,11 @@ class DateController extends Controller
         $seeder->run();
         // Ripristino le prenotazioni
         //$this->restoreReservationsAndOrders();
-        $m = 'Seeder avvenuto con successso!';
+        $m = 'Le date sono state generate correttamente';
         return back()->with('success', $m);
  
     }
+
     //da fixare
     public function restoreReservationsAndOrders()
     {

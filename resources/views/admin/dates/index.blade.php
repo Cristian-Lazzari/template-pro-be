@@ -102,7 +102,10 @@
             <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
             <div class="input-group w-auto flex-nowrap py-2 ">
                 <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
-                <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
+                <input name="max_reservations" id="max_reservations" type="number" class="form-control" value="{{ old('max_reservations') }}" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
+                </p>
+                    @error('max_reservations') <p class="error">{{ $message }}
+                </p> @enderror
             </div>
         @endif
         @if ( config('configurazione.pack') == 3 ||  config('configurazione.pack') == 4)  
@@ -110,26 +113,38 @@
                 <h5 class="pt-4 ">Indica il numero massimo di pezzi al taglio (cucina 1) per l'asporto</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
-                    <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" placeholder="N° di pezzi">
+                    <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" value="{{ old('max_cucina_1') }}" placeholder="N° di pezzi">
+                    </p>
+                        @error('max_cucina_1') <p class="error">{{ $message }}
+                    </p> @enderror
                 </div>
                 
                 <h5 class="pt-4 ">Indica il numero massimo di pizze al piatto (cucina 2) per l'asporto</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_2" class="input-group-text" >N° di pizze</label>
-                    <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" placeholder="N° di pezzi">
+                    <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" value="{{ old('max_cucina_2') }}" placeholder="N° di pezzi">
+                    </p>
+                        @error('max_cucina_2') <p class="error">{{ $message }}
+                    </p> @enderror
                 </div>
             @else
                 <h5 class="pt-4 ">Indica il numero massimo di ordini per l'asporto</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_asporto" class="input-group-text" >N° di ordini</label>
-                    <input name="max_asporto" id="max_asporto" type="number" class="form-control" placeholder="N° di ordini per fascia oraria">
+                    <input name="max_asporto" id="max_asporto" type="number" class="form-control" value="{{ old('max_asporto') }}" placeholder="N° di ordini per fascia oraria">
+                    </p>
+                        @error('max_asporto') <p class="error">{{ $message }}
+                    </p> @enderror
                 </div>
                     
             @endif
             <h5 class="pt-4 ">Indica il numero massimo di ordini con la consegna a domicilio</h5>
             <div class="input-group w-auto flex-nowrap py-2 ">
                 <label for="max_domicilio" class="input-group-text" >N° di oridini a domicilio</label>
-                <input name="max_domicilio" id="max_domicilio" type="number" class="form-control" placeholder="N° di ordini per fascia oraria">
+                <input name="max_domicilio" id="max_domicilio" type="number" class="form-control" value="{{ old('Max_domicilio') }}" placeholder="N° di ordini per fascia oraria">
+                </p>
+                    @error('max_domicilio') <p class="error">{{ $message }}
+                </p> @enderror
             </div>
         @endif
         <div>
@@ -137,49 +152,56 @@
             <div class="day_form" role="group" aria-label="Basic checkbox toggle button group">
 
                 @foreach (config('configurazione.days') as $day)
-                
-                    <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <label class="my_btn btn-dark scale-none  " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
-                        <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
+                    <input class="btn-check" 
+                        name="day[]" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#multiCollapseExample{{$day}}" 
+                        aria-expanded="false" 
+                        aria-controls="multiCollapseExample{{$day}}" 
+                        id="day_{{ $day }}" 
+                        value="{{ $day }}" 
+                        {{ in_array($day, old('day', [])) ? 'checked' : '' }}
+                    >
+
+                    <label class="my_btn btn-dark scale-none" for="day_{{ $day }}">
+                        {{ config('configurazione.days_name')[$day] }}
+                        <div class="collapse multi-collapse {{ in_array($day, old('day', [])) ? 'show' : '' }}" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
-                                <input
-                                    type="checkbox"
-                                    class="btn-check"
-                                    id="days_on_{{ $day }}"
-                                    name="days_on[]"
-                                    value="{{ $day }}">
+                                <input type="checkbox" 
+                                    class="btn-check" 
+                                    id="days_on_{{ $day }}" 
+                                    name="days_on[]" 
+                                    value="{{ $day }}" 
+                                    {{ in_array($day, old('days_on', [])) ? 'checked' : '' }}
+                                >
                                 <label class="btn btn-outline-light w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
+                
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
                                 @foreach (config('configurazione.times') as $time)
-                                    <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
-                                        @if ( config('configurazione.pack') == 2)
-                                            <option value="0">{{ $time['time'] }} - ND</option>
-                                            <option value="1">{{ $time['time'] }} - attivo</option>  
-                                        @elseif ( config('configurazione.pack') == 3)  
-                                            <option value="0">{{ $time['time'] }} - ND</option>
-                                            <option value="1">{{ $time['time'] }} - asporto</option>
-                                            <option value="4">{{ $time['time'] }} - domicilio</option>
-                                            <option value="7">{{ $time['time'] }} - tutti</option>
-                                        @elseif ( config('configurazione.pack') == 4)     
-                                            <option value="0">{{ $time['time'] }} - ND</option>
-                                            <option value="1">{{ $time['time'] }} - asporto</option>
-                                            <option value="2">{{ $time['time'] }} - tavoli</option>
-                                            <option value="3">{{ $time['time'] }} - asporto/tavoli</option>
-                                            <option value="4">{{ $time['time'] }} - domicilio</option>
-                                            <option value="5">{{ $time['time'] }} - domicilio/asporto</option>
-                                            <option value="6">{{ $time['time'] }} - domicilio/tavoli</option>
-                                            <option value="7">{{ $time['time'] }} - tutti</option>
+                                    <select class="form-select col" name="times_slot_{{$day}}[]" id="">
+                                        @if (config('configurazione.pack') == 2)
+                                            <option value="0" {{ (old('times_slot_'.$day.'.'.$loop->index) == 0) ? 'selected' : '' }}>{{ $time['time'] }} - ND</option>
+                                            <option value="1" {{ (old('times_slot_'.$day.'.'.$loop->index) == 1) ? 'selected' : '' }}>{{ $time['time'] }} - attivo</option>  
+                                        @elseif (config('configurazione.pack') == 3)  
+                                            <option value="0" {{ (old('times_slot_'.$day.'.'.$loop->index) == 0) ? 'selected' : '' }}>{{ $time['time'] }} - ND</option>
+                                            <option value="1" {{ (old('times_slot_'.$day.'.'.$loop->index) == 1) ? 'selected' : '' }}>{{ $time['time'] }} - asporto</option>
+                                            <option value="4" {{ (old('times_slot_'.$day.'.'.$loop->index) == 4) ? 'selected' : '' }}>{{ $time['time'] }} - domicilio</option>
+                                            <option value="7" {{ (old('times_slot_'.$day.'.'.$loop->index) == 7) ? 'selected' : '' }}>{{ $time['time'] }} - tutti</option>
+                                        @elseif (config('configurazione.pack') == 4)     
+                                            <option value="0" {{ (old('times_slot_'.$day.'.'.$loop->index) == 0) ? 'selected' : '' }}>{{ $time['time'] }} - ND</option>
+                                            <option value="1" {{ (old('times_slot_'.$day.'.'.$loop->index) == 1) ? 'selected' : '' }}>{{ $time['time'] }} - asporto</option>
+                                            <option value="2" {{ (old('times_slot_'.$day.'.'.$loop->index) == 2) ? 'selected' : '' }}>{{ $time['time'] }} - tavoli</option>
+                                            <option value="3" {{ (old('times_slot_'.$day.'.'.$loop->index) == 3) ? 'selected' : '' }}>{{ $time['time'] }} - asporto/tavoli</option>
+                                            <option value="4" {{ (old('times_slot_'.$day.'.'.$loop->index) == 4) ? 'selected' : '' }}>{{ $time['time'] }} - domicilio</option>
+                                            <option value="5" {{ (old('times_slot_'.$day.'.'.$loop->index) == 5) ? 'selected' : '' }}>{{ $time['time'] }} - domicilio/asporto</option>
+                                            <option value="6" {{ (old('times_slot_'.$day.'.'.$loop->index) == 6) ? 'selected' : '' }}>{{ $time['time'] }} - domicilio/tavoli</option>
+                                            <option value="7" {{ (old('times_slot_'.$day.'.'.$loop->index) == 7) ? 'selected' : '' }}>{{ $time['time'] }} - tutti</option>
                                         @endif
                                     </select>
-                                
                                 @endforeach                    
-                            
                             </div>
                         </div>
-                    
-                
                     </label>
-
                 @endforeach
             </div>
         </div>
