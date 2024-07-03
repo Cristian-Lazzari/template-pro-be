@@ -28,10 +28,7 @@ class DatesTableSeeder extends Seeder
 
     public function run()
     {
-         ;
-         
-
-
+        
         $currentDate = new DateTime();
         $reserving = $this->reserving;
         $availability = $this->availability;

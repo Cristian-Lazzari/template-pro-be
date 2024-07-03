@@ -22,4 +22,5 @@ Route::get('ingredient',        [IngredientController::class, 'index'])->name('a
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 Route::get('dates',             [DateController::class, 'index'])->name('api.dates.index');
-//wcf =  where it come from e puo essere 0 (se viene da p-tavoli), 1 (se viene da p-asporto), 2 (se viene da p-domicilio),
+Route::get('getDays',           [DateController::class, 'getDays'])->name('api.dates.getDays');
+//filter =  where it come from e puo essere 0 (se viene da p-tavoli), 1 (se viene da p-asporto), 2 (se viene da p-domicilio),
