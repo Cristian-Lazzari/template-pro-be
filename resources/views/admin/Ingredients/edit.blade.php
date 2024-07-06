@@ -33,8 +33,8 @@ $domain = 'https://future-plus.it/allergiens/';
             <label class="label_c" for="type">Categorie abbinate</label>
             <p>
                 @php
-                    if ($ingredient->type) {
-                        $t = json_decode($ingredient->type);
+                    if ($ingredient->type !== NULL && $ingredient->type !== '"[]"') {
+                        $t = json_decode($ingredient->type, true);
                     }else{
                         $t = [];
                     }
@@ -42,7 +42,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 
                 @foreach ($categories as $c)
                 
-                <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
+                <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, $t)) checked @endif>
                 <label class="btn btn-outline-light" for="a{{ $c->id }}">{{ $c['name'] }}</label>
                 @endforeach
                 

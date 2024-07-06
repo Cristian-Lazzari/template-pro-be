@@ -272,7 +272,7 @@ class PageController extends Controller
         $setting = Setting::all();
         $product_ = [
             1 => Product::where('visible', 1)->where('archived', 0)->count(),
-            2 => Product::where('archived', 0)->count(),
+            2 => Product::where('archived', 1)->count(),
         ];
         $stat = [
             1 => Category::count(),

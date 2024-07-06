@@ -155,7 +155,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories     = Category::all();
-        $ingredients     = Ingredient::all(); 
+        $ingredients    = Ingredient::where('option', false)->get();  
         
         return view('admin.products.create', compact('categories', 'ingredients'));
     }
@@ -221,6 +221,8 @@ class ProductController extends Controller
             if($ingredient_allergiens !== '[]'){
                 $rightall = array_map('intval', array_values($ingredient_allergiens));
                 $new_ing->allergiens = json_encode($rightall);
+            }else{
+                $new_ing->allergiens = '[]';
             }
             $new_ing->save();
             if(isset($data['ingredients'])){
@@ -315,7 +317,7 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $id)->firstOrFail();
         $categories     = Category::all();
-        $ingredients     = Ingredient::all(); 
+        $ingredients    = Ingredient::where('option', false)->get();  
         
         return view('admin.products.edit', compact( 'product', 'categories', 'ingredients'));        
     }
@@ -372,7 +374,10 @@ class ProductController extends Controller
             $new_ing->type = json_encode($type_ing);
 
             if($ingredient_allergiens !== '[]'){
-                $new_ing->allergiens = json_encode($ingredient_allergiens);
+                $rightall = array_map('intval', array_values($ingredient_allergiens));
+                $new_ing->allergiens = json_encode($rightall);
+            }else{
+                $new_ing->allergiens = '[]';
             }
             $new_ing->save();
             if(isset($data['ingredients'])){

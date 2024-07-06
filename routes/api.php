@@ -18,7 +18,7 @@ Route::get('products',          [ProductController::class, 'index'])->name('api.
 Route::get('categories',        [CategoryController::class, 'index'])->name('api.categories.index');
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
 Route::get('post',              [PostController::class, 'index'])->name('api.post.index');
-Route::get('ingredient',        [IngredientController::class, 'index'])->name('api.ingredient.index');
+Route::get('getIngredient',        [IngredientController::class, 'getIngredient'])->name('api.ingredient.getIngredient');
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 Route::get('dates',             [DateController::class, 'index'])->name('api.dates.index');

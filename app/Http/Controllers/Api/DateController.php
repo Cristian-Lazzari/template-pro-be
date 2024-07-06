@@ -14,7 +14,6 @@ class DateController extends Controller
 
         $filter = $request->query('filter'); // 1 tavol1 // asporto 2 // 3 domicillio
         
-        
         // Ottieni la data e l'ora attuale 
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
 
@@ -44,23 +43,32 @@ class DateController extends Controller
                 $query->where('visible', 'like',  '%' . $vis_a . '%');
                 $dates = $query->get();          
             }else{
+                $query->whereIn('status', [1, 3, 5, 7]);
                 $query->where('visible', 'like',  '%' . $vis_c2 . '%')
                     ->orWhere('visible', 'like', '%' . $vis_c1 . '%');
                 $dates = $query->get();
+                //dd($query);
             }
         }else{
             if ( config('configurazione.typeOfOrdering') == false) {
                 $query->where('visible', 'like',  '%' . $vis_d . '%');
-                $dates = $query->get();          
+                $dates = $query->get();          //1 3 5 7 
             }else{
                 $query->where('visible', 'like',  '%' . $vis_c2 . '%' . $vis_d . '%')
                     ->orWhere('visible', 'like', '%' . $vis_c1 . '%' . $vis_d . '%');
+                    
                 $dates = $query->get();
                
             }
         }
 
-        
+        if(count($dates) == 0){
+            return response()->json([
+                'success'   => false,
+                'results'   => [],    
+                'filter'   => $filter,    
+            ]);
+        }
 
 
         $year = [
@@ -125,7 +133,7 @@ class DateController extends Controller
 
                 $day = [
                     'date' => $date,
-                    'time' => [],
+                    'times' => [],
                     'day_w' => $d['day_w'],
                     'day' => $d['day'],
                     'av' => $av,
@@ -147,7 +155,7 @@ class DateController extends Controller
                         'date' => $date]);
                 }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
                     array_push($year[$cy]['days'], $day);
-                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
+                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['times'], $time);
                 }elseif($d['day'] == $firstDay['day']){
                     // prima correggo i dati del giorno in cui poi pusho l orario
                     if( config('configurazione.pack') == 2 ){ 
@@ -231,7 +239,7 @@ class DateController extends Controller
                             $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['domicilio'] += $day['av']['domicilio'];
                         }
                     }
-                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
+                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['times'], $time);
                 }
             }else{
                 
@@ -259,12 +267,13 @@ class DateController extends Controller
         };
         
         // dd($year[1]);
-        dd($year);
+        //dd($year);
         
         return response()->json([
             'success'   => true,
-            'dates'   => $year,    
-            'filer'   => $filter,    
+            'results'   => $year,    
+            'filter'   => $filter,    
+            'count'   => count($year),    
         ]);
     }
    

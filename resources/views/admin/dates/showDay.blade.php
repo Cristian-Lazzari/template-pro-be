@@ -41,7 +41,7 @@
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Dettagli slot orario {{$t->time}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body c-black">
                         <h3 class="m-3">Prenotazioni</h3>
                         @php $i = 0 @endphp
                         <div class="d-flex gap-3 m-3 flex-wrap">

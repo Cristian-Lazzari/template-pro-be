@@ -20,8 +20,9 @@ class IngredientController extends Controller
     ];
     public function index()
     {
-        $ingredients    = Ingredient::all(); 
-        return view('admin.Ingredients.index', compact('ingredients'));
+        $ingredients    = Ingredient::where('option', false)->get(); 
+        $options        = Ingredient::where('option', true)->get(); 
+        return view('admin.Ingredients.index', compact('ingredients', 'options'));
     }
      
     public function create()
@@ -70,6 +71,8 @@ class IngredientController extends Controller
          if($ingredient_allergiens !== '[]'){
             $rightall = array_map('intval', array_values($ingredient_allergiens));
             $new_ing->allergiens = json_encode($rightall);
+        }else{
+            $new_ing->allergiens = '[]';
         }
         $new_ing->save();
         
@@ -123,6 +126,8 @@ class IngredientController extends Controller
          if($ingredient_allergiens !== '[]'){
             $rightall = array_map('intval', array_values($ingredient_allergiens));
             $new_ing->allergiens = json_encode($rightall);
+        }else{
+            $new_ing->allergiens = '[]';
         }
         $new_ing->update();
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';

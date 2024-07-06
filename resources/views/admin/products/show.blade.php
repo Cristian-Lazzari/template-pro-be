@@ -61,8 +61,9 @@ $domain = 'https://future-plus.it/allergiens/';
                 @if($product->tag_set == 0)
                 <p> Nessuma </p>  @elseif($product->tag_set == 1)
                 <p> Togliere </p> @elseif($product->tag_set == 2)
-                <p> Aggiungiere </p> @else
-                <p> Aggiungiere / Togliere@else</p>
+                <p> Aggiungiere </p>
+                @else
+                <p> Aggiungiere / Togliere</p>
                 @endif
             </div>
         </div>

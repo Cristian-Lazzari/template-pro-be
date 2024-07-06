@@ -17,7 +17,7 @@ class CategoriesTableSeeder extends Seeder
     {
         $categories = [
             [
-                'name'          => 'Tutti',
+                'name'          => 'Non categorizzato',
                 'icon'          => 'https://db.kojo-sushi.it/public/image/or.png'
             ],
             [
