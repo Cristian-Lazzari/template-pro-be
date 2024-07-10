@@ -57,7 +57,7 @@
                 </div>
                 <div class="delivery-c">
                     <div class="top-p">
-                        <h3>Ordini asporto/delivery</h3>
+                        <a href="{{ route('admin.orders.index') }}"> <h3>Ordini asporto/delivery</h3></a>
                         <a href="{{ route('admin.orders.index') }}" class="plus">
                             <div class="line"></div>
                             <div class="line l2"></div>
@@ -81,7 +81,7 @@
                 @endif
                 <div class="delivery-c">
                     <div class="top-p">
-                        <h3>Prenotazioni Tavoli</h3>
+                        <a href="{{ route('admin.reservations.index') }}"> <h3>Prenotazioni Tavoli</h3></a>
                         <a href="{{ route('admin.reservations.index') }}" class="plus">
                             <div class="line"></div>
                             <div class="line l2"></div>

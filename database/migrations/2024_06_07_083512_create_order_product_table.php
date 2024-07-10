@@ -24,6 +24,7 @@ return new class extends Migration
             
             $table->tinyInteger('quantity');
             $table->string('remove');
+            $table->string('option');
             $table->string('add');
 
             $table->timestamps();

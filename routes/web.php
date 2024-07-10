@@ -36,6 +36,9 @@ Route::middleware(['auth', 'verified'])
         Route::post('products/filter',  [ProductController::class, 'filter'])->name('products.filter');
         Route::post('products/status',  [ProductController::class, 'status'])->name('products.status');
         
+        // Rotte order res
+        Route::post('orders/status',       [OrderController::class, 'status'])->name('orders.status');
+        Route::post('reservations/status', [ReservationController::class, 'status'])->name('reservations.status');
         
         // Rotte post
         

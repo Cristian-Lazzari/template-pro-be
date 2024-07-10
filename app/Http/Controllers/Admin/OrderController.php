@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Date;
 use App\Models\Order;
+use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -56,7 +57,7 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::where('status', '=', 0)->orderBy('created_at', 'desc')->get();
+        $orders = Order::where('status', '=', 2)->orderBy('created_at', 'desc')->get();
         $dates = Date::all();
         return view('admin.Orders.index', compact('orders', 'dates'));
     }
@@ -90,7 +91,9 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        //
+        $order = Order::where('id', $id)->firstOrFail();
+        $orderProduct = OrderProduct::all();
+        return view('admin.orders.show', compact('order', 'orderProduct'));
     }
 
     /**

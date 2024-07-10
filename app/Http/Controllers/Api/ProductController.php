@@ -16,7 +16,7 @@ class ProductController extends Controller
         $query = Product::with('category', 'ingredients')->where('visible', 1);
 
 
-        if ($categoryId !== null && $categoryId !== 0) {
+        if ($categoryId !== null && $categoryId !== 0 && $categoryId !== '0') {
             $query = $query->where('category_id', $categoryId);
         } 
         

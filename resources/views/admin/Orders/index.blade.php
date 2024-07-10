@@ -26,11 +26,7 @@
                     @if (isset($filters))
                         value="{{  $filters['name'] }}"  
                     @endif > 
-                <button class="search bg-primary d-none d-sm-block" type="sumbit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
-                </button>
+                
             </div>
         </div>
 
@@ -54,7 +50,7 @@
         
        
         <div class="buttons_">
-         <button type="submit" class=" my_btn">
+         <button type="submit" class=" my_btn_3">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
                 <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
              </svg>  FILTRA
@@ -71,32 +67,10 @@
 
 
 
-    {{-- Legenda  --}}
-    <div class="py-3">
-        <?php 
-        $statuses = ['In Elaborazione', 'Confermato', 'Annullato'];
-        ?>
-        @foreach ($statuses as $status)
-            @if ($status == 'In Elaborazione')
-                <span class="text-warning">
-                    <span>In Elaborazione</span>
-            @elseif ($status == 'Confermato')
-                <span class="text-success">
-                    <span>Confermato</span>
-            @else
-                <span class="text-danger">
-                    <span>Annullato</span>
-            @endif
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-fill me-2" viewBox="0 0 16 16">
-                    <circle cx="7" cy="7" r="7"/>
-                </svg>
-            </span>
-        @endforeach
-    </div>
-
+  
         
     @foreach ($orders as $order)
-        <?php
+        {{-- <hp
         $data_ora = DateTime::createFromFormat('d/m/Y H:i', $order->date_slot);
         $ora_formattata = $data_ora->format('H:i');
         $data_formattata = $data_ora->format('d/m');
@@ -108,23 +82,33 @@
         } else {
             $status_bg_color = 'bg-danger';
         }
-        ?>
+        ?> --}}
+        @php
+            $parts = explode(" ", $order->date_slot);
+            $date = $parts[0];
+            $time = $parts[1];
+        @endphp 
         
-        <div class="or-res">
+        <div class="or-res my-4">
             <section class="top">
-                <p>{{$order->day}}/{{$order->month}}/{{$order->year}}</p>
-                <h3>{{$order->surname}} {{$order->name}}</h3>
+                <div class="name">
+                    <h4>{{$date}}</h4>
+                    <h3>{{$order->surname}} {{$order->name}}</h3>
+                </div>
                 <div class="actions">
-                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn_1 u">Dettagli</a>
-                    <div class="my_btn_1 u">Contatta</div>
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn_2">Dettagli</a>
+                    <div class="my_btn_3">Contatta</div>
                 </div>
             </section>
             <section>
-                <h1 class="p">{{$order->time}}</h1>
-                <p>Totale ordine: {{$order->tot_price}}</p>
+                <div class="name">
+
+                    <h1 class="p">{{$time}}</h1>
+                    <h4>Totale ordine: € {{$order->tot_price / 100}}</h4>
+                </div>
                 <div class="actions">
-                    <div class="my_btn_1 u">Conferma</div>
-                    <div class="my_btn_1 u">Annulla</div>
+                    <div class="my_btn_3 ">Conferma</div>
+                    <div class="my_btn_2 ">Annulla</div>
                 </div>
             </section>
         </div>

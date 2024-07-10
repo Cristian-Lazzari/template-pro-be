@@ -273,6 +273,7 @@ class DateController extends Controller
             'success'   => true,
             'results'   => $year,    
             'filter'   => $filter,    
+            'typeOfOrdering'   => config('configurazione.typeOfOrdering'),    
             'count'   => count($year),    
         ]);
     }
