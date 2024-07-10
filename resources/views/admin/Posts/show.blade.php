@@ -36,7 +36,7 @@
         <div class="info">
             <section>
                 <h4>Descrizione:</h4> 
-                <p>{{$post->description}} Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus quisquam fuga voluptatem, aliquid culpa facere! Sunt, numquam. Aperiam eius doloribus officiis delectus officia aut fugiat sapiente quaerat, excepturi omnis quisquam?</p>       
+                <p>{{$post->description}} </p>       
             </section>
             <section>
                 <h4>Precedenza: <strong>{{$post->order}}</strong></h4>      

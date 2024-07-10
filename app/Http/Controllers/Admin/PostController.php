@@ -117,15 +117,15 @@ class PostController extends Controller
         if ($path == 1) {
             $query->where('path', '=', 1);
         } else if ($path == 2) {
-            $query->where('path', '=', 0);
+            $query->where('path', '=', 2);
         }
         if($type){
             $query->where('type', $type);
         }
         if($order){
-            $posts = $query->orderBy('order')->get();
+            $posts = $query->orderBy('name', 'desc')->get();    
         }else{
-            $posts = $query->orderBy('updated_at', 'desc')->get();    
+            $posts = $query->orderBy('order', 'desc')->get();
         }        
         if ($archive == 1) {
 
@@ -138,7 +138,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts    = Post::where('archived', false)->get(); 
+        $posts    = Post::where('archived', false)->orderBy('order', 'desc')->get(); 
         return view('admin.Posts.index', compact('posts'));
     }
 

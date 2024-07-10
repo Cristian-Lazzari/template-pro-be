@@ -61,15 +61,17 @@ class DateController extends Controller
             list($date, $time) = explode(" ", $d['date_slot']);
             
             if($d['reserving'] !== '0'){
-                //dump($d['day']);
                 $res = json_decode($d['reserving'], 1);
+                // dump($date . $time);
+                // dump($res);
+
                 if( config('configurazione.pack') == 2 ){        
                     $day = [
                         'day' => $d['day'],
                         'day_w' => $d['day_w'],
                         'date' => $date,
                         'time' => [],
-                        'table' => 0,
+                        'table' => $res['table'],
                     ];
                     $time = [
                         'time' => $d['time'],
@@ -82,8 +84,8 @@ class DateController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => 0,
-                            'domicilio' => 0,
+                            'asporto' => $res['asporto'],
+                            'domicilio' => $res['domicilio'],
                         ];
                         $time = [
                             'time' => $d['time'],
@@ -96,8 +98,8 @@ class DateController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => 0,
-                            'domicilio' => 0,
+                            'asporto' => $res['asporto'],
+                            'domicilio' => $res['domicilio'],
                         ];
                         $time = [
                             'time' => $d['time'],
@@ -112,9 +114,9 @@ class DateController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => 0,
-                            'table' => 0,
-                            'domicilio' => 0,
+                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                            'table' => $res['table'],
+                            'domicilio' => $res['domicilio'],
                         ];
                         $time = [
                             'time' => $d['time'],
@@ -128,20 +130,20 @@ class DateController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => 0,
-                            'table' => 0,
-                            'domicilio' => 0,
+                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                            'table' => $res['table'],
+                            'domicilio' => $res['domicilio'],
                         ];
                         $time = [
                             'time' => $d['time'],
-                            'asporto' => $res['asporto'],
+                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
                             'table' => $res['table'],
                             'domicilio' => $res['domicilio'],
                         ];
                     }
                 }
             }
-            // || || count($year[1]['days']) !== 0
+            
             $cy = count($year);
             if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
                 if( $d['time'] == 0 ){
@@ -151,8 +153,7 @@ class DateController extends Controller
                         'date' => $date]);
                 }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
                     array_push($year[$cy]['days'], $day);
-                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $day);
-                    
+                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
                 }elseif($d['day'] == $firstDay['day']){
                     if( config('configurazione.pack') == 2 ){        
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
@@ -206,7 +207,80 @@ class DateController extends Controller
         ///dd($day);
         return view('admin.dates.showDay', compact('day'));   
     }
+    public function status(Request $request){
+        $id = $request->input('id');
+        $date = Date::where('id', $id)->firstOrFail();
+        
+        if( config('configurazione.pack') == 2 ){ 
+            $av = [
+                'table' =>$request->avtable
+            ];
+            $vis = [
+                'table' =>$request->vistable
+            ];
+        }elseif( config('configurazione.pack') == 3){
+            if(config('configurazione.typeOfOrdering')){
+                $av = [
+                    'cucina_1' =>$request->avcucina_1,
+                    'cucina_2' =>$request->avcucina_2,
+                    'domicilio' =>$request->avdomicilio,
+                ];
+                $vis = [
+                    'cucina_1' =>$request->viscucina_1,
+                    'cucina_2' =>$request->viscucina_2,
+                    'domicilio' =>$request->visdomicilio,
+                ];
+            }else{
+                $av = [
+                    'asporto' =>$request->avasporto,
+                    'domicilio' =>$request->avdomicilio,
+                ];
+                $vis = [
+                    'asporto' =>$request->visasporto,
+                    'domicilio' =>$request->visdomicilio,
+                ];
+            }
+           
+        }elseif( config('configurazione.pack') == 4){
+            if(config('configurazione.typeOfOrdering')){
+                $av = [
+                    'table' =>$request->avtable,
+                    'cucina_1' =>$request->avcucina_1,
+                    'cucina_2' =>$request->avcucina_2,
+                    'domicilio' =>$request->avdomicilio,
+                ];
+                $vis = [
+                    'table' =>$request->vistable,
+                    'cucina_1' =>$request->viscucina_1,
+                    'cucina_2' =>$request->viscucina_2,
+                    'domicilio' =>$request->visdomicilio,
+                ];
+                dump($request->viscucina_1);
+                dump($request->viscucina_2);
+                dump($request->domicilio);
+                dump($request->vistable);
+            }else{
+                $av = [
+                    'table' =>$request->avtable,
+                    'asporto' =>$request->avasporto,
+                    'domicilio' =>$request->avdomicilio,
+                ];
+                $vis = [
+                    'table' =>$request->vistable,
+                    'asporto' =>$request->visasporto,
+                    'domicilio' =>$request->visdomicilio,
+                ];
+            }
+        }
+        $date->availability = json_encode($av);
+        $date->visible = json_encode($vis);
+        $date->update();
 
+        $m = 'Questo orario: ' . $date->time . ' e\' stato ggiornato correttamente';
+
+
+        return redirect()->back()->with('success', $m);
+    }
 
 
     public function generate(Request $request)
@@ -357,4 +431,6 @@ class DateController extends Controller
             }
         }
     }
+
+
 }
