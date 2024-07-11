@@ -595,7 +595,10 @@ body{
         div{
             display: flex;
             flex-direction: column;
-            gap: .7rem;
+            gap: .4rem;
+        }
+        label{
+            margin: 0;
         }
         input, select{
             border-radius: 10px;
@@ -623,11 +626,11 @@ body{
             }
         }
     }
-    .buttons_{
+    .buttons{
         margin-left: auto;
         display: flex;
         gap: 1rem;
-        flex-direction: row;
+        flex-direction: row !important;
         justify-content: center;
         align-items: stretch;
     }

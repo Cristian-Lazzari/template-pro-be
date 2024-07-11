@@ -54,7 +54,7 @@
             </select>
         </div>
         <div>
-            <label for="path" class="form-label fw-semibold">Path</label>
+            <label for="path" class="form-label fw-semibold">Pagina</label>
             <select class="" id="path" name="path" >
                 <option @if (isset($filters) && $filters['path'] == '0') selected @endif value="0">Tutti</option>
                 <option @if (isset($filters) && $filters['path'] == '1') selected @endif value="1">News</option>
@@ -117,7 +117,7 @@
 
                     <div class="split_i">
                         
-                        <h4 class="ell-c">Path: <span class="ellips">{{$item->path}}</span></h4>
+                        <h4 class="ell-c">Pagina: <span class="ellips">{{$item->path == 1 ? 'News' : 'Story'}}</span></h4>
                         @if (isset($item->link))
                             <div class="price">{{$item->hashtag}}</div>
                         @else

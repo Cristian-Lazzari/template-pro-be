@@ -68,15 +68,6 @@ $domain = 'https://future-plus.it/allergiens/';
             </div>
         </div>
         <div class="actions">
-            <a class="my_btn_1 " href="{{ route('admin.products.edit', $product) }}">Modifica</a>      
-            <form action="{{ route('admin.products.status') }}" method="POST">
-                @csrf
-                <input type="hidden" name="archive" value="0">
-                <input type="hidden" name="v" value="0">
-                <input type="hidden" name="a" value="1">
-                <input type="hidden" name="id" value="{{$product->id}}">
-                <button class="my_btn_2 my_btn_1 d" type="submit">{{$product->arcived ? 'Ripristina': 'Archivia'}}</button>
-            </form>
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="archive" value="0">
@@ -100,11 +91,21 @@ $domain = 'https://future-plus.it/allergiens/';
                 @endif
                 
             </form>
+            <a class="my_btn_1 " href="{{ route('admin.products.edit', $product) }}">Modifica</a>      
+            <form action="{{ route('admin.products.status') }}" method="POST">
+                @csrf
+                <input type="hidden" name="archive" value="0">
+                <input type="hidden" name="v" value="0">
+                <input type="hidden" name="a" value="1">
+                <input type="hidden" name="id" value="{{$product->id}}">
+                <button class="my_btn_2 my_btn_1 d" type="submit">{{$product->arcived ? 'Ripristina': 'Archivia'}}</button>
+            </form>
+            
             <form action="{{ route('admin.products.destroy', ['product'=>$product]) }}" method="post" >
                 @method('delete')
                 @csrf
                 <input type="hidden" name="f" value="1">
-                <button class="my_btn_2 my_btn_1 d" type="submit">Elimina</button>
+                <button class="my_btn_2 bg-danger" type="submit">Elimina</button>
             </form>
            
         </div>

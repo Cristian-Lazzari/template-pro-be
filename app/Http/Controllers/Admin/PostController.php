@@ -33,7 +33,7 @@ class PostController extends Controller
     public function status(Request $request){
         $a = $request->a ;
         $v = $request->v ;
-        $archive = $request->archive ;
+        $archive = $request->archive ; //serve per capire dove reindirizzare //TO-DO sostituire qui e su product con back()
         
         ///se uguale a 1 archivio il prodotto
         if($a == 1){
@@ -123,7 +123,7 @@ class PostController extends Controller
             $query->where('type', $type);
         }
         if($order){
-            $posts = $query->orderBy('name', 'desc')->get();    
+            $posts = $query->orderBy('title',)->get();    
         }else{
             $posts = $query->orderBy('order', 'desc')->get();
         }        

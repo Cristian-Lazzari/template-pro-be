@@ -240,10 +240,10 @@
             <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, clicca QUI e impostale ora</a>
         </div>
         @endif
-       </div>
-        <div class="setting">
+        </div>
+        <form class="setting" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
             <h2>Impostazioni</h2>
-            <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="top-set">
+            <div class="top-set">
                 @csrf
                 <div class="set">
                     <h5>Asporto</h5>
@@ -306,11 +306,11 @@
                     <div class="sets">
                         <div class="radio-inputs">
                             <label class="radio">
-                                <input type="radio" name="ferie_status"  @if($setting[6]['status'] == 0) checked  @endif value="0" >
+                                <input type="radio" name="ferie_status"  @if($setting[2]['status'] == 0) checked  @endif value="0" >
                                 <span class="name">A lavoro</span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="ferie_status"  @if($setting[6]['status'] == 1) checked  @endif value="1" >
+                                <input type="radio" name="ferie_status"  @if($setting[2]['status'] == 1) checked  @endif value="1" >
                                 <span class="name">In ferie</span>
                             </label>
                         </div>
@@ -324,11 +324,11 @@
                 </div>
                 <button type="submit" class="my_btn_1 my_btn_2 w-75 m-auto">Aggiorna</button>
                 
-            </form>
+            </div>
             <div class="bottom-set">
                 <div class="accordion accordion-flush" id="accordionFlushExample">
-                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
-                        @csrf
+                    <div class="accordion-item">
+                        
                         <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
                             Giorni e orari d'apertura
@@ -353,9 +353,9 @@
                                 <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
                             </div>
                         </div>
-                    </form>
-                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item" enctype="multipart/form-data">
-                        @csrf
+                    </div>
+                    <div class="accordion-item">
+                        
                         <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
                             Posizione del tuo locale
@@ -387,9 +387,9 @@
                                 <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
                             </div>
                         </div>
-                    </form>
-                    <form action="{{ route('admin.settings.updateAll')}}" method="POST" class="accordion-item">
-                        @csrf
+                    </div>
+                    <div class="accordion-item">
+                        
                         <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
                             Contatti
@@ -411,14 +411,14 @@
                                 <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                     @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
                     <div class="accordion-item">
                         @csrf
                         <h4 class="accordion-header">
-                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
                             Gestione comuni consegna
-                          </button>
+                            </button>
                         </h4>
                         <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">                            
@@ -445,10 +445,10 @@
                         </div>
                     </div> 
                     @endif
-                  </div>
+                    </div>
             </div>
 
-        </div>
+        </form>
     </div>
 
 

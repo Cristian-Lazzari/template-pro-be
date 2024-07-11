@@ -50,7 +50,7 @@
 
             <section class="split_i">
                 
-                <h4 class="">Path: </h4>
+                <h4 class="">Pagina: </h4>
                 <p class="">{{$post->path}}</p>
                 @if (isset($post->link))
                     <h4>Hashtag:</h4>
@@ -67,12 +67,29 @@
             <form action="{{ route('admin.posts.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="archive" value="0">
+                <input type="hidden" name="v" value="1">
+                <input type="hidden" name="a" value="0">
+                <input type="hidden" name="id" value="{{$post->id}}">
+                @if (!$post->visible)
+                    <button class="my_btn_4" type="submit">
+                       PUBBLICA
+                    </button>
+                @else
+                    <button class="my_btn_4" type="submit">
+                        Nascondi   
+                    </button>
+                @endif
+                
+            </form>
+            <a class="my_btn_1" href="{{ route('admin.posts.edit', $post) }}">Modifica</a>
+            <form action="{{ route('admin.posts.status') }}" method="POST">
+                @csrf
+                <input type="hidden" name="archive" value="0">
                 <input type="hidden" name="v" value="0">
                 <input type="hidden" name="a" value="1">
                 <input type="hidden" name="id" value="{{$post->id}}">
-                <button class="my_btn_1 d" type="submit">Archivia</button>
+                <button class="my_btn_2" type="submit">Archivia</button>
             </form>
-            <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $post) }}">Modifica</a>
             <form action="{{ route('admin.posts.destroy', ['post'=>$post]) }}" method="post" >
                 @method('delete')
                 @csrf
@@ -81,8 +98,8 @@
              
         </div>
     </div>
-    <p>Data creazione: {{$post->created_at}}</p>
-    <p>Ultima modifica: {{$post->updated_at}}</p>
+    <p></p>
+    <p>Data creazione: {{$post->created_at}}, Ultima modifica: {{$post->updated_at}}.</p>
 </div>
 
  
