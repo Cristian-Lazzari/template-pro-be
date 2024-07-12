@@ -11,6 +11,24 @@ class ReservationController extends Controller
 {
     
 
+    public function status(Request $request){
+
+        $type = $request->input('type');
+        $c_a = $request->input('c_a');
+        $id = $request->input('id');
+        $res = Reservation::where('id', $rid)->firstOrFail();
+        if($c_a){
+            $res->status = 1;
+            $m = 'La prenotazione e\' stata annullata correttamente';
+        }else{
+            $res->status = 0;
+            $m = 'La prenotazione e\' stata confermata correttamente';
+        }
+        $res->update();
+        return redirect()->back()->with('success', $m);   
+
+
+    }
     public function filter(Request $request){
         
         // FUNZIONE DI FILTRAGGIO INDEX
@@ -56,7 +74,7 @@ class ReservationController extends Controller
 
     public function index()
     {
-        $reservations = Reservation::where('status', '=', 0)->orderBy('created_at', 'desc')->get();
+        $reservations = Reservation::where('status', '=', 2)->orderBy('date_slot', 'asc')->get();
         $dates = Date::all();
         return view('admin.Reservations.index', compact('reservations', 'dates'));
     }

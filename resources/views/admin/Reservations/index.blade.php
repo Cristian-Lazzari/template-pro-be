@@ -78,21 +78,25 @@
          $date = $parts[0];
          $time = $parts[1];
         @endphp 
-        <div class="or-res">
+        <div class="or-res my-4">
             <section class="top">
-                <h4>{{$date}}</h4>
-                <h3>{{$reservation->surname}} {{$reservation->name}}</h3>
+                <div class="name">
+                    <h4>{{$date}}</h4>
+                    <h3>{{$reservation->surname}} {{$reservation->name}}</h3>
+                </div>
                 <div class="actions">
-                    <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn_1 w-50">Dettagli</a>
-                    <div class="my_btn_1 w-50">Contatta</div>
+                    <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn_1">Dettagli</a>
+                    <div class="my_btn_1">Contatta</div>
                 </div>
             </section>
             <section>
-                <h1 class="p">{{$time}}</h1>
-                <p>Ospiti: {{$reservation->n_person}}</p>
+                <div class="name">
+                    <h1 class="p">{{$time}}</h1>
+                    <h4>Ospiti: {{$reservation->n_person}}</h4>
+                </div>
                 <div class="actions">
-                    <div class="my_btn_3 w-50">Conferma</div>
-                    <div class="my_btn_2 w-50">Annulla</div>
+                    <div class="my_btn_3">Conferma</div>
+                    <div class="my_btn_2">Annulla</div>
                 </div>
             </section>
         </div>

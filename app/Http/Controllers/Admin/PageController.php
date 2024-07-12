@@ -43,14 +43,14 @@ class PageController extends Controller
             4 => Post::where('archived', 1)->count(),
         ];
         $order = [ 
-            1 => Order::where('status', 0)->count(),
-            2 => Order::where('status', 1)->count(),
-            3 => Order::where('status', 2)->count(),
+            1 => Order::where('status', 1)->count(),
+            2 => Order::where('status', 2)->count(),
+            3 => Order::where('status', 0)->count(),
         ];
         $reservation = [
-            1 => Reservation::where('status', 0)->count(),
-            2 => Reservation::where('status', 1)->count(),
-            3 => Reservation::where('status', 2)->count(),
+            1 => Reservation::where('status', 1)->count(),
+            2 => Reservation::where('status', 2)->count(),
+            3 => Reservation::where('status', 0)->count(),
         ];
         
 

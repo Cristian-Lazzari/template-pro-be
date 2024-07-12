@@ -79,22 +79,23 @@
         
         <div class="or-res my-4">
             <section class="top">
-                <h4>{{$date}}</h4>
-                <h3>{{$order->surname}} {{$order->name}}</h3>
+                <div class="name">
+                    <h4>{{$date}}</h4>
+                    <h3>{{$order->surname}} {{$order->name}}</h3>
+                </div>
                 
                 <div class="actions">
-                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn_1 w-50">Dettagli</a>
-                    <div class="my_btn_4 w-50">Contatta</div>
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn_1">Dettagli</a>
+                    <div class="my_btn_4">Contatta</div>
                 </div>
             </section>
             <section>
                 <div class="name">
-
                     <h1 class="p">{{$time}}</h1>
                     <h4>Totale ordine: € {{$order->tot_price / 100}}</h4>
                 </div>
                 <div class="actions">
-                    <div class="my_btn_3 ">Conferma</div>
+                    <div class="my_btn_3">Conferma</div>
                     <div class="my_btn_2 ">Annulla</div>
                 </div>
             </section>

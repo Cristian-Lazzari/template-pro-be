@@ -47,11 +47,11 @@
                 @if (config('configurazione.pack') > 3 )
                 <div class="result-bar">
                     <div class="stat">
-                        <h2>€{{$traguard[1]}}</h2>
+                        <h2>€{{$traguard[1] / 100}}</h2>
                         <span>questo mese</span>
                     </div>
                     <div class="stat">
-                        <h2>€{{$traguard[2]}}</h2>
+                        <h2>€{{$traguard[2] / 100}}</h2>
                         <span>questo anno</span>
                     </div>
                 </div>
@@ -65,11 +65,11 @@
                     </div>
                     <div class="stat-p">
                         <div class="stat">
-                            <h3>{{$order[1]}}</h3>
+                            <h3>{{$order[2]}}</h3>
                             <span>in elaborazione</span>
                         </div>
                         <div class="stat">
-                            <h3>{{$order[2]}}</h3>
+                            <h3>{{$order[1]}}</h3>
                             <span>confermate</span>
                         </div>
                         <div class="stat">
@@ -89,11 +89,11 @@
                     </div>
                     <div class="stat-p">
                         <div class="stat">
-                            <h3>{{$reservation[1]}}</h3>
+                            <h3>{{$reservation[2]}}</h3>
                             <span>in elaborazione</span>
                         </div>
                         <div class="stat">
-                            <h3>{{$reservation[2]}}</h3>
+                            <h3>{{$reservation[1]}}</h3>
                             <span>confermate</span>
                         </div>
                         <div class="stat">
