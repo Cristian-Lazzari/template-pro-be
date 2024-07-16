@@ -9,8 +9,7 @@ use Illuminate\Queue\SerializesModels;
 class confermaOrdineAdmin extends Mailable
 {
     use Queueable, SerializesModels;
-    public $newOrder;
-    public $arrvar2;
+    public $content_mail;
 
 
     /**
@@ -18,17 +17,16 @@ class confermaOrdineAdmin extends Mailable
      *
      * @return void
      */
-    public function __construct($newOrder, $arrvar2)
+    public function __construct($content_mail, )
     {
-        $this->newOrder = $newOrder;
-        $this->arrvar2 = $arrvar2;
+        $this->content_mail = $content_mail;
 
     }
 
 
     public function build()
     {
-        return $this->subject('Oggetto dell\'email')
+        return $this->subject('Notifica da Nome locale')
             ->view('emails.confermaOrderAdmin');
     }
 

@@ -95,8 +95,20 @@
                     <h4>Totale ordine: € {{$order->tot_price / 100}}</h4>
                 </div>
                 <div class="actions">
-                    <div class="my_btn_3">Conferma</div>
-                    <div class="my_btn_2 ">Annulla</div>
+                    <form action="{{ route('admin.orders.status') }}" method="POST">
+                        @csrf
+                        <input value="1" type="hidden" name="c_a">
+                        <input value="{{$order->id}}" type="hidden" name="id">
+
+                        <button type="submit" class="my_btn_3">Conferma</button>
+                    </form>
+                    <form action="{{ route('admin.orders.status') }}" method="POST">
+                        @csrf
+                        <input value="0" type="hidden" name="c_a">
+                        <input value="{{$order->id}}" type="hidden" name="id">
+
+                        <button type="submit" class="my_btn_2">Annulla</button>
+                    </form>
                 </div>
             </section>
         </div>

@@ -50,53 +50,53 @@
 
                     @foreach ($orderProduct as $i)
                     
-                    @if ($order->id == $i->order_id)
-                    @foreach ($order->products as $o)
-                    
-                        @if ($o->id == $i->product_id)
-                        <?php $name= $o->name ?>
+                        @if ($order->id == $i->order_id)
+                            @foreach ($order->products as $o)
+                            
+                                @if ($o->id == $i->product_id)
+                                <?php $name= $o->name ?>
+                                @endif
+                                
+                            @endforeach
+                            <?php
+                                $arrO= json_decode($i->option); 
+                                $arrA= json_decode($i->add); 
+                                $arrD= json_decode($i->remove); 
+                            ?>
+                            <div class="product">
+                                <div class="counter">* {{$i->quantity}}</div>              
+                                <div class="name">{{$name}}</div>
+                                <div class="variations">
+                                    @if ($arrO !== [])
+                                    <div class="options">
+                                        <h5>Opzioni:</h5>
+                                        @foreach ($arrO as $a)
+                                        <span>+ {{$a}}</span>
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                    <div class="bottom-var">
+                                        @if ($arrA !== [])
+                                        <div class="add">
+                                            <h5>Ingredienti extra:</h5>
+                                            @foreach ($arrA as $a)
+                                            <span>+ {{$a}}</span>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        @if ($arrD !== [])
+                                        <div class="removed">
+                                            <h5>Ingredienti rimossi:</h5>
+                                            @foreach ($arrD as $a)
+                                            <span>- {{$a}}</span>
+                                            @endforeach       
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                            </div>
                         @endif
-                        
-                    @endforeach
-                    <?php
-                        $arrO= json_decode($i->option); 
-                        $arrA= json_decode($i->add); 
-                        $arrD= json_decode($i->remove); 
-                    ?>
-                    <div class="product">
-                        <div class="counter">* {{$i->quantity}}</div>              
-                        <div class="name">{{$name}}</div>
-                        <div class="variations">
-                            @if ($arrO !== [])
-                            <div class="options">
-                                <h5>Opzioni:</h5>
-                                @foreach ($arrO as $a)
-                                <span>+ {{$a}}</span>
-                                @endforeach
-                            </div>
-                            @endif
-                            <div class="bottom-var">
-                                @if ($arrA !== [])
-                                <div class="add">
-                                    <h5>Ingredienti extra:</h5>
-                                    @foreach ($arrA as $a)
-                                    <span>+ {{$a}}</span>
-                                    @endforeach
-                                </div>
-                                @endif
-                                @if ($arrD !== [])
-                                <div class="removed">
-                                    <h5>Ingredienti rimossi:</h5>
-                                    @foreach ($arrD as $a)
-                                    <span>- {{$a}}</span>
-                                    @endforeach       
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                        
-                    </div>
-                    @endif
                     @endforeach
                     <div class="t_price">€{{$order->tot_price / 100}}</div>
                     <div class="t_price">{{$order->total_pz_q}} pezzi taglio</div>

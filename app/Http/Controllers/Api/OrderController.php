@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\Date;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\Ingredient;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
+use App\Mail\confermaOrdineAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
@@ -35,12 +37,6 @@ class OrderController extends Controller
     
             $arrvar = str_replace('\\', '', $data['cart']);
             $cart = json_decode($arrvar, true);
-           // $cart = $data['cart'];
-            
-            //dump($data['cart']);
-            // dump($arrvar);
-            // //$cart = json_decode($data['cart'], true);
-            //dd($cart);
     
             if(config('configurazione.typeOfOrdering')){
                 $res_c1 = $res['cucina_1'];
@@ -181,8 +177,8 @@ class OrderController extends Controller
                     $ingredient = Ingredient::where('name', $cart[$i]['add'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
                 }
-                for ($z = 0; $z < count($cart[$i]['options']); $z++) {
-                    $ingredient = Ingredient::where('name', $cart[$i]['options'][$z])->first();
+                for ($z = 0; $z < count($cart[$i]['option']); $z++) {
+                    $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
                 }
             }
@@ -210,20 +206,62 @@ class OrderController extends Controller
                 $item_order->order_id = $newOrder->id;
                 $item_order->product_id = $e['id'];
                 $item_order->quantity= $e['counter'];
-                $item_order->remove = json_encode($e['removed']);
+                $item_order->remove = json_encode($e['remove']);
                 $item_order->add = json_encode($e['add']);
-                $item_order->option = json_encode($e['options']);
+                $item_order->option = json_encode($e['option']);
                 $item_order->save();
             }
             $date->update();
+
+            $set = Setting::where('name', 'Contatti')->firstOrFail();
+            $p_set = json_decode($set->property, true);
+
+            $bodymail_a = [
+                'type' => 'or',
+                'to' => 'admin',
+                'name' => $newOrder->name,
+                'surname' => $newOrder->surname,
+                'email' => $newOrder->email,
+                'date_slot' => $newOrder->date_slot,
+                'message' => $newOrder->message,
+                'phone' => $newOrder->phone,
+                'admin_phone' => $p_set['telefono'],
+                
+                'comune' => $newOrder->comune,
+                'address' => $newOrder->address,
+                'address_n' => $newOrder->address_n,
+                
+                'status' => $newOrder->status,
+                'cart' => $cart,
+                'total_price' => $total_price,
+            ];
+            $bodymail_u = [
+                'type' => 'or',
+                'to' => 'user',
+                'name' => $newOrder->name,
+                'surname' => $newOrder->surname,
+                'email' => $newOrder->email,
+                'date_slot' => $newOrder->date_slot,
+                'message' => $newOrder->message,
+                'phone' => $newOrder->phone,
+                'admin_phone' => $p_set['telefono'],
+                
+                'comune' => $newOrder->comune,
+                'address' => $newOrder->address,
+                'address_n' => $newOrder->address_n,
+                
+                'status' => $newOrder->status,
+                'cart' => $cart,
+                'total_price' => $total_price,
+            ];
         
+    
+            $mail = new confermaOrdineAdmin($bodymail_u);
+            Mail::to($data['email'])->send($mail);
+    
+            $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+            Mail::to('test@dashboardristorante.it')->send($mailAdmin);
 
-
-        // $mail = new confermaPrenotazione($newOrder);
-        // Mail::to($data['email'])->send($mail);
-
-        // $mailAdmin = new confermaPrenotazioneAdmin($newOrder);
-        // Mail::to('info@dashboadristorante.it')->send($mailAdmin);
             return response()->json([
                 'success' => true,
                 'prenotazione' => $newOrder,

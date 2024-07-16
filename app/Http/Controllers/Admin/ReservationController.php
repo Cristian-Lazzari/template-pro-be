@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Date;
+use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use App\Mail\confermaOrdineAdmin;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
     
-
     public function status(Request $request){
-
-        $type = $request->input('type');
         $c_a = $request->input('c_a');
         $id = $request->input('id');
-        $res = Reservation::where('id', $rid)->firstOrFail();
+        $res = Reservation::where('id', $id)->firstOrFail();
         if($c_a){
             $res->status = 1;
             $m = 'La prenotazione e\' stata annullata correttamente';
@@ -25,10 +25,34 @@ class ReservationController extends Controller
             $m = 'La prenotazione e\' stata confermata correttamente';
         }
         $res->update();
+        
+
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        $bodymail = [
+            'type' => 'res',
+            'to' => 'user',
+            
+            'name' => $res->name,
+            'surname' => $res->surname,
+            'email' => $res->email,
+            'date_slot' => $res->date_slot,
+            'message' => $res->message,
+            'phone' => $res->phone,
+            'admin_phone' => $p_set['telefono'],
+               
+            'n_person' => $res->n_person,
+            'status' => $res->status,
+        ];
+
+       
+        $mail = new confermaOrdineAdmin($bodymail);
+        Mail::to($res['email'])->send($mail);
+        
         return redirect()->back()->with('success', $m);   
-
-
     }
+    
+
     public function filter(Request $request){
         
         // FUNZIONE DI FILTRAGGIO INDEX

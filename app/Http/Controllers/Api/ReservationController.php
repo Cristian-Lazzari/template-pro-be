@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Date;
+use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use App\Mail\confermaOrdineAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
@@ -61,12 +63,47 @@ class ReservationController extends Controller
         $newRes->news_letter = $data['news_letter'];
         $date->update();
         $newRes->save();
+        
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
 
-        // $mail = new confermaPrenotazione($newRes);
-        // Mail::to($data['email'])->send($mail);
 
-        // $mailAdmin = new confermaPrenotazioneAdmin($newRes);
-        // Mail::to('info@dashboadristorante.it')->send($mailAdmin);
+        $bodymail_a = [
+            'type' => 'res',
+            'to' => 'admin',
+            'name' => $newRes->name,
+            'surname' => $newRes->surname,
+            'email' => $newRes->email,
+            'date_slot' => $newRes->date_slot,
+            'message' => $newRes->message,
+            'phone' => $newRes->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'n_person' => $n_person,
+            'status' => $newRes->status,
+        ];
+        $bodymail_u = [
+            'type' => 'res',
+            'to' => 'user',
+            'name' => $newRes->name,
+            'surname' => $newRes->surname,
+            'email' => $newRes->email,
+            'date_slot' => $newRes->date_slot,
+            'message' => $newRes->message,
+            'phone' => $newRes->phone,
+            'admin_phone' => $p_set['telefono'],
+
+            'n_person' => $n_person,
+            'status' => $newRes->status,
+        ];
+        
+    
+
+        $mail = new confermaOrdineAdmin($bodymail_u);
+        Mail::to($newRes->email)->send($mail);
+
+        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        Mail::to('test@dashboardristorante.it')->send($mailAdmin);
 
 
         

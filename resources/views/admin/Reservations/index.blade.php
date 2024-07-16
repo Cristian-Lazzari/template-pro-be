@@ -95,8 +95,20 @@
                     <h4>Ospiti: {{$reservation->n_person}}</h4>
                 </div>
                 <div class="actions">
-                    <div class="my_btn_3">Conferma</div>
-                    <div class="my_btn_2">Annulla</div>
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="1" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+
+                        <button type="submit" class="my_btn_3">Conferma</button>
+                    </form>
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="0" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+
+                        <button type="submit" class="my_btn_2">Annulla</button>
+                    </form>
                 </div>
             </section>
         </div>

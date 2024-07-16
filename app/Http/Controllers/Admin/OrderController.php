@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Date;
 use App\Models\Order;
+use App\Models\Setting;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
+use App\Mail\confermaOrdineAdmin;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -52,6 +55,52 @@ class OrderController extends Controller
         return view('admin.Orders.index', compact('orders', 'filters'));
     }
 
+    public function status(Request $request){
+        $c_a = $request->input('c_a');
+        $id = $request->input('id');
+        $order = Order::where('id', $id)->firstOrFail();
+        if($c_a){
+            $order->status = 1;
+            $m = 'La prenotazione e\' stata annullata correttamente';
+        }else{
+            $order->status = 0;
+            $m = 'La prenotazione e\' stata confermata correttamente';
+        }
+        $order->update();
+        
+
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        $orderProduct = OrderProduct::all();
+        $bodymail = [
+            'type' => 'or',
+            'to' => 'user',
+            'order_id' => $order->id,
+            'name' => $order->name,
+            'surname' => $order->surname,
+            'email' => $order->email,
+            'date_slot' => $order->date_slot,
+            'message' => $order->message,
+            'phone' => $order->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'comune' => $order->comune,
+            'addres' => $order->address,
+            'address_n' => $order->address_n,
+            'orderProduct' => $orderProduct,
+            
+            'status' => $order->status,
+            'cart' => $order->products,
+            'total_price' => $order->tot_price,
+        ];
+
+       
+        $mail = new confermaOrdineAdmin($bodymail);
+        Mail::to($order['email'])->send($mail);
+        
+        return redirect()->back()->with('success', $m);   
+    }
+    
 
 
 
@@ -93,6 +142,7 @@ class OrderController extends Controller
     {
         $order = Order::where('id', $id)->firstOrFail();
         $orderProduct = OrderProduct::all();
+
         return view('admin.orders.show', compact('order', 'orderProduct'));
     }
 
