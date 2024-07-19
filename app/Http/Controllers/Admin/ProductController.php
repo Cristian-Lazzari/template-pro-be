@@ -437,7 +437,7 @@ class ProductController extends Controller
         
         if(config('configurazione.typeOfOrdering')){
             $product->type_plate    = $data['type_plate'];     
-            $product->slot_plate    = $data['slot_plate'];     
+           // $product->slot_plate    = $data['slot_plate'];     
             $product->tag_set       = $data['tag_set'];
         }
     

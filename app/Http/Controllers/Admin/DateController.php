@@ -401,30 +401,39 @@ class DateController extends Controller
     //da fixare
     public function restoreReservationsAndOrders()
     {
-        $reservations = Reservation::all();
-
+        $reservations = Reservation::where('status' , 2)->orWhere('status', 1)->all();
         if ($reservations) {
             foreach ($reservations as $reservation) {
-                $date = Date::where('date_slot', $reservation->date_slot)->first();
+                $date = Date::where('date_slot', $reservation->date_slot)->firstOrFail();
                 if ($date) {
-                    $date->reserved = $date->reserved + $reservation->n_person;
+                    $av = json_decode($date->availability);
+                    $res = json_decode($date->reserved);
+                    $res['table'] += $reservation->n_person;
+                    if($res['table'] >= $av['table']){
+                        $vis = json_decode($date->visible);
+                        $vis = 0;
+                    }
                     $date->save();
                 }
             }
         }
 
-        $orders = Order::all();
-
+        $orders = Order::where('status' , 2)->orWhere('status', 1)->all();
         if ($orders) {
             foreach ($orders as $order) {
-                $date = Date::where('date_slot', $order->date_slot)->first();
+                $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
                 if ($date) {
-                    $date->reserved_pz_q = $date->reserved_pz_q + $order->total_pz_q;
-                    if($date->reserved_pz_q > $date->max_px_q){
-                        $date->visble_fq = 0;
+                    $av = json_decode($date->availability);
+                    $res = json_decode($date->reserved);
+                    $products = $order->products;
+                    foreach ($products as $key => $value) {
+                        # code...
                     }
-                    if($date->reserved_pz_t > $date->max_px_t){
-                        $date->visble_ft = 0;
+                    $res['cucina_1'] += $npezzi;
+                    $res['cucina_2'] += $order->n_person;
+                    if($res['cucina_1'] >= $av['cucina_1']){
+                        $vis = json_decode($date->visible);
+                        $vis = 0;
                     }
                     $date->save();
                 }
