@@ -147,7 +147,7 @@ $domain = 'https://future-plus.it/allergiens/';
             </p>
         </div>
             <input type="submit" class="btn-check" id="newi" name="newi" value="1">
-            <label class="my_btn_1 w-75 m-auto" for="newi">Crea Ingrediente</label>
+            <label class="my_btn_5 m-auto" for="newi">Crea Ingrediente</label>
     </section>
     <section class="cont_i">
         <h2>Abbina Ingredienti</h2>
