@@ -26,11 +26,6 @@
                 <p> <input value="{{ old('name') }}" type="text" name="name" id="name" placeholder=" inserisci il nome"> </p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
-            <div>
-                <label class="label_c" for="icon">Immagine</label>
-                <p><input  class="form-control" type="file" id="icon" name="icon" ></p>
-                @error('icon') <p class="error">{{ $message }}</p> @enderror
-            </div>
         </div>
        
     </section>

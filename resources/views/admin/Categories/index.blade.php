@@ -36,13 +36,6 @@
 
         <div class="slim_ ">
             <section class="s1">
-
-                @if (isset($item->icon))
-                    <img src="{{ asset('public/storage/' . $item->icon) }}" alt="{{$item->name}}">
-                @else
-                    <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->name }}">
-                @endif 
-    
                 <h3><a>{{$item->name}}</a></h3>     
             </section>
             <section>   
