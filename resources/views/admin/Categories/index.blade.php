@@ -42,8 +42,8 @@
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->name }}">
                 @endif 
-                    
-                <h5>{{$item->name}}</h5>     
+    
+                <h3><a>{{$item->name}}</a></h3>     
             </section>
             <section>   
                 @if ($item->id !== 1)
