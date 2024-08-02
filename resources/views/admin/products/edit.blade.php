@@ -110,17 +110,14 @@ $domain = 'https://future-plus.it/allergiens/';
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
-        <div class="split"> 
-            <div>
-                <label class="label_c" for="image_ing">Immagine</label>
-                <p><input  class="form-control" type="file" id="image_ing" name="image_ing" ></p>
-                @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
-            </div> 
-            <div class="m-auto">
-                <input type="checkbox" class="btn-check" id="option_ing" name="option_ing" value="1" @if (old('option_ing', [])) checked @endif>
-                <label class="btn btn-outline-light" for="option_ing">questo ingrediente è un opzione</label>
-            </div>
-        </div>
+        
+        <div>
+            <label class="label_c" for="image_ing">Immagine</label>
+            <p><input  class="form-control" type="file" id="image_ing" name="image_ing" ></p>
+            @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
+        </div> 
+           
+    
         <div class="check_c">
             <label class="label_c" for="type">Categorie abbinate</label>
             <p>
