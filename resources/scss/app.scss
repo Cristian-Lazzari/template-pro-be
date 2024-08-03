@@ -25,23 +25,6 @@ color: $c1 !important;
 .mylinknavs{
 font-size: $fs_md !important;
 }
-.my_btn_1{
-    background-color: $c1;
-    color: $c3;
-}
-.my_btn_2{
-    background-color: $c2;
-    color: $c3;
-}
-.my_btn_3{
-    background-color: $c3;
-    color: $c2;
-}
-.my_btn_4{
-    background-color: $c1;
-    color: $c2;
-}
-
 .my_btn_1, .my_btn_2, .my_btn_3, .my_btn_4, .my_btn_5{
     text-decoration: none;
     font-weight:500;
@@ -51,13 +34,33 @@ font-size: $fs_md !important;
     border: none;
     cursor: pointer;
     font-size: $fs_xsm;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.601);
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.367);
     box-shadow: 1px 1px 7px rgba(0, 0, 0, 0.301);
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: $white;
         text-shadow: 0px 0px 4px rgba(220, 220, 220, 0);
     }
+}
+.my_btn_1{
+    background-color: $c1;
+    color: $c3;
+    text-shadow: 1px 1px 4px rgba(181, 181, 181, 0.367);
+}
+.my_btn_2{
+    background-color: $c2;
+    color: $c3;
+    text-shadow: 1px 1px 4px rgba(101, 181, 181, 0.367);
+}
+.my_btn_3{
+    background-color: $c3;
+    color: $c2;
+    text-shadow: 1px 1px 4px #ff775877;
+}
+.my_btn_4{
+    background-color: $c1;
+    color: $c2;
+    text-shadow: 1px 1px 4px #ff775877;
 }
 .my_btn_5{
     cursor: pointer;
@@ -1002,8 +1005,8 @@ body{
         font-weight: bolder;
     }
     section{
-        background: $c3;
-        background: linear-gradient(-15deg, $c1 , $c2);
+        background: #ff775877;
+        //background: linear-gradient(-15deg, $c1 , $c2);
         width: 100%;
         padding: 1rem;
         border-radius: 18px;

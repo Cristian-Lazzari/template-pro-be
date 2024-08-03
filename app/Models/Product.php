@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Order;
 use App\Models\Category;
 use App\Models\Ingredient;
 use Illuminate\Database\Eloquent\Model;
@@ -17,8 +18,7 @@ class Product extends Model
         return $this->belongsToMany(Ingredient::class);
     }
 
-    public function orders()
-    {
-        return $this->belongsToMany('Order');
+    public function orders(){
+        return $this->belongsToMany(Order::class);
     }
 }

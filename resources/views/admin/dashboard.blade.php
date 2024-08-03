@@ -235,9 +235,13 @@
                     </button>
                 </div>
             </div>
-        @else 
+        @elseif(config('configurazione.pack' > 1)) 
         <div class="date-off">
             <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, clicca QUI e impostale ora</a>
+        </div>
+        @else
+        <div class="date-off">
+            <a href="https://future-plus.it/#pacchetti">Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e <strong>prenota una call con i nostri consulenti</strong></a>
         </div>
         @endif
         </div>
@@ -452,7 +456,7 @@
     </div>
 
 
-
+    @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
     <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
@@ -475,6 +479,7 @@
             </form>
         </div>
     </div>
+    @endif
 
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

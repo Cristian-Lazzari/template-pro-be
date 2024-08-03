@@ -460,6 +460,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {     
         $product->ingredients()->detach();
+        $product->orders()->detach();
         $product->forceDelete();
         return to_route('admin.products.index')->with('delete_success', $product);
 

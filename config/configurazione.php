@@ -2,7 +2,7 @@
 return [
 
     'typeOfOrdering' => true,
-    'pack' => 4,
+    'pack' => 1,
     'maxdayres' => 45,
 
     'allergiens' => [
