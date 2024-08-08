@@ -19,10 +19,10 @@ class ReservationController extends Controller
         $res = Reservation::where('id', $id)->firstOrFail();
         if($c_a){
             $res->status = 1;
-            $m = 'La prenotazione e\' stata annullata correttamente';
+            $m = 'La prenotazione e\' stata confermata correttamente';
         }else{
             $res->status = 0;
-            $m = 'La prenotazione e\' stata confermata correttamente';
+            $m = 'La prenotazione e\' stata annullata correttamente';
         }
         $res->update();
         
@@ -89,8 +89,11 @@ class ReservationController extends Controller
             $reservations = $query->orderBy('updated_at', 'desc')->get();    
         }        
     
+        $data = [];
+        array_push($data, $filters);
+        array_push($data, $reservations);
 
-        return view('admin.Reservations.index', compact('reservations', 'filters'));
+        return redirect()->back()->with('filter', $data);
     }
 
 
@@ -103,67 +106,14 @@ class ReservationController extends Controller
         return view('admin.Reservations.index', compact('reservations', 'dates'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        $reservation = Reservation::where('id', $id)->firstOrFail();
+       
+
+        return view('admin.reservations.show', compact('reservation'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //

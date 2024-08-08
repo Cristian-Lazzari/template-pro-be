@@ -3,7 +3,26 @@
 
 
 @section('contents')
-
+@if (session('success'))
+    @php
+        $data = session('success')
+    @endphp
+    <div class="alert alert-primary">
+        {{ $data }}
+    </div>
+@endif
+@if (session('filter'))
+    @php
+        $data = session('filter');
+        $filters = $data[0];
+        $orders = $data[1];
+    @endphp
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        
+      Filtri aggiornati
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 <h1>Ordinazioni d'asporto / domicilio</h1>
 
 <form class="top-bar-product" action="{{ route('admin.orders.filter') }}" method="post">
@@ -64,11 +83,7 @@
     </div>
     
 </form> 
-
-
-
-  
-        
+         
     @foreach ($orders as $order)
 
         @php
@@ -77,7 +92,13 @@
             $time = $parts[1];
         @endphp 
         
-        <div class="or-res my-4">
+        @if ($order->status == 2)
+        <div class="or-res my_2 my-4">
+        @elseif ($order->status == 1)
+        <div class="or-res my_1 my-4">
+        @elseif ($order->status == 0)
+        <div class="or-res my_0 my-4">
+        @endif
             <section class="top">
                 <div class="name">
                     <h4>{{$date}}</h4>
@@ -95,20 +116,24 @@
                     <h4>Totale ordine: € {{$order->tot_price / 100}}</h4>
                 </div>
                 <div class="actions">
-                    <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @if($order->status !== 1)
+                    <form class="w-100" action="{{ route('admin.orders.status') }}" method="POST">
                         @csrf
                         <input value="1" type="hidden" name="c_a">
                         <input value="{{$order->id}}" type="hidden" name="id">
-
-                        <button type="submit" class="my_btn_3">Conferma</button>
+                        
+                        <button type="submit" class="w-100 my_btn_3">Conferma</button>
                     </form>
-                    <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @endif
+                    @if($order->status !== 0)
+                    <form class="w-100" action="{{ route('admin.orders.status') }}" method="POST">
                         @csrf
                         <input value="0" type="hidden" name="c_a">
                         <input value="{{$order->id}}" type="hidden" name="id">
-
-                        <button type="submit" class="my_btn_2">Annulla</button>
+                        
+                        <button type="submit" class="w-100 my_btn_2">Annulla</button>
                     </form>
+                    @endif
                 </div>
             </section>
         </div>

@@ -44,8 +44,8 @@ $domain = 'https://future-plus.it/allergiens/';
         </div>
         <div class="split"> 
             <div>
-                <label class="label_c" for="image_ing">Immagine</label>
-                <p><input  class="form-control" type="file" id="image_ing" name="image_ing" ></p>
+                <label class="label_c" for="file-input">Immagine</label>
+                <p><input type="file" id="file-input" name="image_ing" ></p>
                 @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
             </div> 
             <div class="m-auto">

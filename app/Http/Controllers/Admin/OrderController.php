@@ -52,7 +52,11 @@ class OrderController extends Controller
         }        
     
 
-        return view('admin.Orders.index', compact('orders', 'filters'));
+        $data = [];
+        array_push($data, $filters);
+        array_push($data, $orders);
+
+        return redirect()->back()->with('filter', $data);
     }
 
     public function status(Request $request){
@@ -61,10 +65,10 @@ class OrderController extends Controller
         $order = Order::where('id', $id)->firstOrFail();
         if($c_a){
             $order->status = 1;
-            $m = 'La prenotazione e\' stata annullata correttamente';
+            $m = 'La prenotazione e\' stata confermata correttamente';
         }else{
             $order->status = 0;
-            $m = 'La prenotazione e\' stata confermata correttamente';
+            $m = 'La prenotazione e\' stata annullata correttamente';
         }
         $order->update();
         

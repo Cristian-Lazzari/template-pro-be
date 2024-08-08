@@ -144,13 +144,13 @@ class PageController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                            'asporto' => $res['asporto'],
                             'table' => $res['table'],
                             'domicilio' => $res['domicilio'],
                         ];
                         $time = [
                             'time' => $d['time'],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                            'asporto' => $res['asporto'],
                             'table' => $res['table'],
                             'domicilio' => $res['domicilio'],
                         ];

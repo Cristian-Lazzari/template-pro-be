@@ -28,15 +28,15 @@
                 @error('title') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="label_c" for="order">Precedenza</label>
+                <label class="label_c" for="order">Precedenza *1</label>
                 <p><input value="{{ old('order') }}" type="number" name="order" id="order" placeholder=" inserisci la precedenza "></p>
                 @error('order') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
         <div class="split">    
             <div>
-                <label class="label_c" for="image">Immagine</label>
-                <p><input  class="form-control" type="file" id="image" name="image" ></p>
+                <label class="label_c" for="file-input">Immagine</label>
+                <p><input type="file" id="file-input" name="image" ></p>
                 @error('image') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
@@ -50,30 +50,31 @@
                 @error('path') <p class="error">{{ $message }}</p> @enderror
             </div>        
         </div>
+        <p class="desc"> 
+            <label class="label_c" for="description">Descrizione *2</label>   
+            <textarea name="description" id="description" cols="30" rows="10" >{{ old('description') }}</textarea>
+            @error('description') <p class="error">{{ $message }}</p> @enderror
+        </p>
         <div class="split">
             <div class="desc">
-                <label class="label_c" for="hashtag">Hashtag</label>
+                <label class="label_c" for="hashtag">Hashtag *3</label>
                 <textarea name="hashtag" id="hashtag" cols="1" rows="3"  >{{ old('hashtag') }}</textarea>
-                   
+                
             </div>
             <div>
-                <label class="label_c" for="link">Link</label>
+                <label class="label_c" for="link">Link *3</label>
                 <p><input value="{{ old('link') }}" type="text" name="link" id="link" placeholder=" inserisci il link"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror
-                <p>* se il post non ha link lascia il campo vuoto</p>
             </div>
             
         </div>
-        <p class="desc"> 
-            <label class="label_c" for="description">Descrizione</label>   
-            <textarea name="description" id="description" cols="30" rows="10" >{{ old('description') }}</textarea>
-            <p>per andare a capo riportare i caratteri: <strong>/**/</strong> , per mettere in grassetto del testo invece basta racchiudere la porzione di testo che si vuole mettere in grassetto con questi caratteri: <strong>***</strong> parola da mettere in grassetto <strong>***</strong> .  </p>
-            @error('description') <p class="error">{{ $message }}</p> @enderror
-        </p>
     </section>
-   
-    <button class="my_btn_1 mb-5  w-75 m-auto" type="submit">Crea Post</button>
-
+    <p>*1 il post con la precedenza più alta verra visualizzato per primo</p>
+    <p>*2 per andare a capo riportare i caratteri: <strong>/**/</strong> , per mettere in grassetto del testo invece basta racchiudere la porzione di testo che si vuole mettere in grassetto tra 3 asterischi in questo modo: <strong>***</strong> parola da mettere in grassetto <strong>***</strong> .  </p>
+    <p>*3 campi facoltativi</p>
+    
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Post</button>
+    
 </form>
 
 

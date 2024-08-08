@@ -51,7 +51,7 @@
             <section class="split_i">
                 
                 <h4 class="">Pagina: </h4>
-                <p class="">{{$post->path}}</p>
+                <p class="">{{$post->path == 1 ? 'News' : 'Story'}}</p>
                 @if (isset($post->link))
                     <h4>Hashtag:</h4>
                     <p class="">{{$post->hashtag}}</p>

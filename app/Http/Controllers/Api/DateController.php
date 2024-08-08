@@ -37,7 +37,6 @@ class DateController extends Controller
         if ($filter == 1) {
             $query->where('visible', 'like',  '%' . $vis_t . '%');
             $dates = $query->get();
-            
         }elseif($filter == 2){
             if ( config('configurazione.typeOfOrdering') == false) {
                 $query->where('visible', 'like',  '%' . $vis_a . '%');
@@ -45,7 +44,7 @@ class DateController extends Controller
             }else{
                 $query->whereIn('status', [1, 3, 5, 7]);
                 $query->where('visible', 'like',  '%' . $vis_c2 . '%')
-                    ->orWhere('visible', 'like', '%' . $vis_c1 . '%');
+                      ->orWhere('visible', 'like', '%' . $vis_c1 . '%');
                 $dates = $query->get();
                 //dd($query);
             }
@@ -159,6 +158,7 @@ class DateController extends Controller
                 }elseif($d['day'] == $firstDay['day']){
                     // prima correggo i dati del giorno in cui poi pusho l orario
                     if( config('configurazione.pack') == 2 ){ 
+                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] += $day['vis']['table'];
                         if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] >= 1){
                             $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] = 1;
                         }
@@ -215,7 +215,6 @@ class DateController extends Controller
                             $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['asporto'] += $day['av']['asporto'];
                             $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['domicilio'] += $day['av']['domicilio'];   
                         }else{
-
                             $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] += $day['vis']['table'];
                             if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] >= 1){
                                 $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] = 1;

@@ -52,7 +52,7 @@ class DatesTableSeeder extends Seeder
                         
                         if( config('configurazione.pack') == 2 ){ 
                             $visible = [
-                                'table' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
+                                'table' => $time['set'] == 1 ? 1 : 0,
                             ];
                         }elseif( config('configurazione.pack') == 3){
                             if(config('configurazione.typeOfOrdering')){

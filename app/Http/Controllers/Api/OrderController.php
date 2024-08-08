@@ -196,7 +196,7 @@ class OrderController extends Controller
             if (isset($data['comune'])) {
                 $newOrder->comune = $data['comune'];
                 $newOrder->address = $data['via'];
-                $newOrder->addres_n = $data['cv'];
+                $newOrder->address_n = $data['cv'];
             }
             $newOrder->save();
     

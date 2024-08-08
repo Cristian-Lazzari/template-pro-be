@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class IngredientController extends Controller
 {
@@ -53,9 +54,9 @@ class IngredientController extends Controller
         }
         
         $new_ing = new Ingredient();
-        if (isset($data['image'])) {
+        if (isset($data['image_ing'])) {
             $imagePath = Storage::put('public/uploads', $data['image_ing']);
-            $new_ing->image = $imagePath;
+            $new_ing->icon = $imagePath;
         }
         $new_ing->name = $data['name_ing'];
 

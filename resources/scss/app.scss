@@ -10,21 +10,12 @@ $c-new : $c1;
 $t : rgba(193, 206, 236, 0.43);
 $cfilter : $c2;
 
-$fs_xsm: clamp(12px, 2.2vw, 17px);
-$fs_sm: clamp(14px, 2.4vw, 21px);
-$fs_md: clamp(16px, 2.7vw, 24px);
+$fs_xsm: clamp(12px, 2.1vw, 14px);
+$fs_sm: clamp(14px, 2.3vw, 16px);
+$fs_md: clamp(16px, 2.4vw, 24px);
 $fs_lg: clamp(20px, 3.2vw, 35px);
 $fs_xlg: clamp(28px, 3.8vw, 39px);
 
-
-.mylinknav{
-font-size: $fs_sm;
-font-weight: light !important;
-color: $c1 !important;
-}
-.mylinknavs{
-font-size: $fs_md !important;
-}
 .my_btn_1, .my_btn_2, .my_btn_3, .my_btn_4, .my_btn_5{
     text-decoration: none;
     font-weight:500;
@@ -36,6 +27,7 @@ font-size: $fs_md !important;
     font-size: $fs_xsm;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.367);
     box-shadow: 1px 1px 7px rgba(0, 0, 0, 0.301);
+    transition: all .2s ease-in-out;
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: $white;
@@ -68,10 +60,29 @@ font-size: $fs_md !important;
     color: $c3;
     border: 2px solid $c3;
 }
-.my_btn:hover{
-    transform: scale(1.031);
+.my_btn_1:hover, .my_btn_2:hover, .my_btn_3:hover, .my_btn_4:hover, .my_btn_5:hover{
+    transform: scale(0.98);
+    box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.147), 0 0 4px rgba(0, 0, 0, 0.345);
     transition: all .2s ease-in-out;
-    opacity: .4;
+}
+
+.nav{
+    background-color: $c3!important;
+    position: fixed;
+    padding-left: 15px;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    .mylinknav{
+        font-size: $fs_sm;
+        font-weight: light !important;
+        color: $c1 !important;
+        }
+        .mylinknavs{
+        font-size: $fs_md !important;
+        }
 }
 .scale-none{
     h5{
@@ -398,24 +409,11 @@ body{
 }
 
 
-.nav{
-    background-color: $c3!important;
-    position: fixed;
-    padding-left: 15px;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 200;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-}
-
-
-
 .error{
-    color: red;
+    color: rgba(249, 194, 194, 0.936);
     padding: .5rem ;
     border-radius: 10px;
-    background-color: rgba(255, 0, 0, 0.179);
+    background-color: rgba(255, 0, 0, 0.699);
 }
 
 .mybtdb {
@@ -591,7 +589,6 @@ body{
 }
 
 
-
 //****************** new css *************
 
 // *{
@@ -632,13 +629,18 @@ body{
             border-radius: 10px;
             height: 30px;
             border: none;
-            background-color: $c3;
-            opacity: 0.6;
+            background-color: #f4f4ef8a;
+            color: $c3;
             transition: all .2s ease-in;
+            padding-inline: 14px;
         }
         input:hover, select:hover{
             opacity: 1;
             transition: all .2s ease-in;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(100%);
+            scale: 1.2;
         }
         .s-name{
             flex-wrap: wrap;
@@ -996,6 +998,9 @@ body{
 }
 
 .creation{
+    input::placeholder {
+        color: #f4f4ef52; /* Cambia questo colore a tuo piacimento */
+    }
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -1005,7 +1010,7 @@ body{
         font-weight: bolder;
     }
     section{
-        background: #ff775877;
+        background: #ff77589d;
         //background: linear-gradient(-15deg, $c1 , $c2);
         width: 100%;
         padding: 1rem;
@@ -1014,9 +1019,50 @@ body{
         flex-direction: column;
         gap: 1rem;
         color: $c3;
+        input, select{
+            flex-grow: 1;
+            background-color: rgba(255, 255, 255, 0.363);
+            border: none;
+            border-radius: 10px;
+            height: 40px;
+            padding: 10px;
+            color: $c3;
+            transition: all .3s ease-in-out;
+        }
+        input:focus, select:focus, textarea:focus{
+            border: 2px solid $c3;
+            box-shadow: 0 0 3px $c2;
+            outline: none;
+            transition: all .3s ease-in-out;
+        }
+        input:hover, select:hover, textarea:hover{
+            background-color: $c3;
+            color: $c2;
+            transition: all .3s ease-in-out;
+        }
+        #file-input, #file-input1 {
+            padding: 2px;
+            width: 100%;  
+        }
+        #file-input::file-selector-button , 
+        #file-input1::file-selector-button {
+            border: none;
+            background: rgba(255, 255, 255, 0.453);
+            height: 100%;
+            padding: 5px 10px;
+            border-radius: 7px;
+            color: $c2;
+            cursor: pointer;
+            transition: background .2s ease-in-out;
+        }
+        #file-input::file-selector-button:hover, 
+        #file-input1::file-selector-button:hover {
+            background: $c2;
+            color: $c3;
+        }
         .split, .split-3{
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             gap: 1rem;
             flex-wrap: wrap;
@@ -1031,13 +1077,7 @@ body{
 
                 }
             }
-            input, select{
-                flex-grow: 1;
-                background-color: $t;
-                border: .5px solid black;
-                border-radius: 10px;
-                height: 28px;
-            }
+         
         }
         .split-3{
             flex-wrap: wrap;
@@ -1055,12 +1095,17 @@ body{
             }
         }
         textarea{
-            border: .5px solid black;
+            border: none;
             border-radius: 10px;
-            background-color: $t;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.363);
+            color: $c3;
 
         }
-       
+        label{
+            text-transform: capitalize;
+            font-size: clamp(16px, 2.7vw, 20px);
+        }
         .desc{
             display: flex;
             flex-direction: column;
@@ -1071,12 +1116,12 @@ body{
     }
     .check_c{
         p{
-
             display: flex;
             flex-wrap: wrap;
             gap: .4rem;
             label{
                 margin-bottom: 0;
+                font-size: clamp(14px, 2.2vw, 16px);
             }
         }
     }
@@ -1138,6 +1183,16 @@ body{
             }
         }
     }
+}
+.my_1{
+    background-color: #2a71dcb6;
+}
+.my_2{
+    background-color: #a8adb3ad;
+}
+.my_0{
+    background-color: #be2a2aa3;
+
 }
 @media (max-width:992px) {
     .or-res{

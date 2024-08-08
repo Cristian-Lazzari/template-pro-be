@@ -5,11 +5,16 @@
     @php
         $data = session('success')
     @endphp
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ $data }} 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 <div class="dash-c">
+    @php
+        $pack = ['', 'Essetians', 'Cene & Pranzi', 'Delivery & Asporto', 'Premium' ]
+    @endphp
+    <p class="my_btn_5" >Pacchetto: <a href="https://future-plus.it/#pacchetti">{{$pack[config('configurazione.pack')]}}</a></p>
     <div class="top-c">
         <div class="prod">
             <div class="top-p">
@@ -42,9 +47,9 @@
                 <a href="{{ route('admin.ingredients.index') }}" class="my_btn_1">Ingredienti</a>
             </div>
         </div>      
-        @if (config('configurazione.pack') > 2 )
+        @if (config('configurazione.pack') > 1 )
             <div class="right-t">
-                @if (config('configurazione.pack') > 3 )
+                @if (config('configurazione.pack') > 2 )
                 <div class="result-bar">
                     <div class="stat">
                         <h2>€{{$traguard[1] / 100}}</h2>
@@ -79,6 +84,8 @@
                     </div>
                 </div>
                 @endif
+                @if (config('configurazione.pack') !== 3)
+                    
                 <div class="delivery-c">
                     <div class="top-p">
                         <a href="{{ route('admin.reservations.index') }}"> <h3>Prenotazioni Tavoli</h3></a>
@@ -102,6 +109,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         @endif
         <div class="prod post">  
@@ -235,13 +243,14 @@
                     </button>
                 </div>
             </div>
-        @elseif(config('configurazione.pack' > 1)) 
-        <div class="date-off">
-            <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, clicca QUI e impostale ora</a>
-        </div>
-        @else
+        
+        @elseif(config('configurazione.pack') == 1)
         <div class="date-off">
             <a href="https://future-plus.it/#pacchetti">Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e <strong>prenota una call con i nostri consulenti</strong></a>
+        </div>
+        @else 
+        <div class="date-off">
+            <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, <strong>clicca QUI</strong> e impostale ora</a>
         </div>
         @endif
         </div>
@@ -279,7 +288,7 @@
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 1) checked  @endif value="1" >
                             <span class="name">Chiamate</span>
                         </label>
-                        @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)   
+                        @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)   
                         <label class="radio">
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 2) checked  @endif value="2" >
                             <span class="name">Web App</span>

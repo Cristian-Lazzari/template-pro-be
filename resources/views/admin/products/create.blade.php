@@ -33,15 +33,15 @@ $domain = 'https://future-plus.it/allergiens/';
             </div>
             <div>
                 <label class="label_c" for="price">Prezzo</label>
-                <p>€<input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" placeholder=" inserisci il prezzo "></p>
+                <p>€<input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" step="0.01" placeholder=" inserisci il prezzo "></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
         <div class="split">
             
             <div>
-                <label class="label_c" for="image">Immagine</label>
-                <p><input  class="form-control" type="file" id="image" name="image" ></p>
+                <label class="label_c" for="file-input">Immagine</label>
+                <p><input type="file" id="file-input" name="image" ></p>
                 @error('image') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
@@ -58,9 +58,11 @@ $domain = 'https://future-plus.it/allergiens/';
         </div>
         <p class="desc"> 
             <label class="label_c" for="description">Descrizione</label>   
-            <textarea name="description" id="description" cols="30" rows="10" >{{ old('description') }}</textarea>
+            <textarea name="description" id="description" cols="30" rows="10" >@if(!isset($data)) {{ old('description') }} @else {{ $data['description'] }} @endif </textarea>
         </p>
     </section>
+    @error('slot_plate') <p class="error">{{ $message }}</p> @enderror
+    @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
     <section class="set" >
         <div class="split-3">
         
@@ -70,7 +72,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 <p><input @if(!isset($data)) value="{{ old('slot_plate') }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="inserisci lo spazio  "></p>
                 @error('slot_plate') <p class="error">{{ $message }}</p> @enderror
             </div>
-           
+        
             <div>
                 <label class="label_c" for="type_plate">Tipo di piatto</label>
                 <p>
@@ -97,6 +99,7 @@ $domain = 'https://future-plus.it/allergiens/';
             </div>
         </div>
     </section>
+    @endif
     <section class="more_i">
         <h2>Crea e aggiungi Ingredienti mancanti</h2>
         <div class="split">
@@ -107,13 +110,13 @@ $domain = 'https://future-plus.it/allergiens/';
             </div>
             <div>
                 <label class="label_c" for="price_ing">Prezzo</label>
-                <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing" placeholder=" inserisci il prezzo "></p>
+                <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" inserisci il prezzo "></p>
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
         <div>
-            <label class="label_c" for="image_ing">Immagine</label>
-            <p><input  class="form-control" type="file" id="image_ing" name="image_ing" ></p>
+            <label class="label_c" for="file-input1">Immagine</label>
+            <p><input type="file" id="file-input1" name="image_ing" ></p>
             @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
         </div> 
         <div class="check_c">
@@ -141,7 +144,7 @@ $domain = 'https://future-plus.it/allergiens/';
             </p>
         </div>
             <input type="submit" class="btn-check" id="newi" name="newi" value="1">
-            <label class="my_btn_5 m-auto" for="newi">Crea Ingrediente</label>
+            <label class="my_btn_1 w-50 m-auto" for="newi">Crea Ingrediente</label>
     </section>
     <section class="cont_i">
         <h2>Abbina Ingredienti</h2>

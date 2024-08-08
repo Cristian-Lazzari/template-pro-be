@@ -218,8 +218,10 @@
                     </label>
 
                 @endforeach
+
             </div>
         </div>
+        @error('days_on') <p class="error m-2">seleziona "Attiva" nei giorni i cui sei operativo</p> @enderror
         <button class="btn btn-outline-light mt-4 w-100">Modifica</button>
     </form>
 </div>

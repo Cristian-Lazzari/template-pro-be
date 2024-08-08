@@ -49,6 +49,7 @@ $domain = 'https://future-plus.it/allergiens/';
     </div>
     <div class="price">€{{$product->price / 100}}</div>
     <div class="prod-spec">
+        @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
         <div class="set_plate">
             <div class="title">
                 <p>Slot piatto:</p>
@@ -67,6 +68,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 @endif
             </div>
         </div>
+        @endif
         <div class="actions">
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf

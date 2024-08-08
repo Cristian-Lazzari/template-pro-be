@@ -56,8 +56,11 @@
                             @php $i = 0 @endphp
                             <div class="cont">
                                 @foreach ($reserving as $key => $value)
-                                    <div class="not-set">
-                                        <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                <div class="not-set">
+                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3) <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) <h5>{{config('configurazione.set_time')[$i - 1]}}:</h5>
+                                        @else<h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
+                                        @endif
                                         <span class=""> {{$value}}</span>
                                     </div>
                                     @php $i ++ @endphp
@@ -70,7 +73,10 @@
                             <div class="cont">
                                 @foreach ($availability as $key => $value)
                                     <div class="set">
-                                        <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3) <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) <h5>{{config('configurazione.set_time')[$i - 1]}}:</h5>
+                                        @else<h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
+                                        @endif
                                         <input type="number" name="av{{$key}}" value="{{$value}}" class="">   
                                     </div>
                                     @php $i ++ @endphp
@@ -83,7 +89,10 @@
                             <div class="cont">
                                 @foreach ($visible as $key => $value)
                                     <div class="set">
-                                        <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3) <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) <h5>{{config('configurazione.set_time')[$i - 1]}}:</h5>
+                                        @else<h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
+                                        @endif
                                         <select name="vis{{$key}}" class="">
                                             <option @if ($value) selected @endif value="1">SI</option>
                                             <option @if (!$value) selected @endif value="0">NO</option>

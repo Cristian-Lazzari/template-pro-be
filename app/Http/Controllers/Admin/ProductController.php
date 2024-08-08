@@ -26,6 +26,8 @@ class ProductController extends Controller
         'image'         => 'nullable|image',
         'price'         => 'required',
     ];
+
+
     private $validationsTrue1 = [
         'name'          => 'required|string|min:1|max:50',
         'image'         => 'nullable|image',
@@ -38,6 +40,9 @@ class ProductController extends Controller
         'image'         => 'nullable|image',
         'price'         => 'required',
     ];
+
+
+
     private $validations_ingredient = [
         'name_ing'          => 'required|string|min:2|unique:ingredients,name',
         'price_ing'         => 'required',
@@ -205,10 +210,12 @@ class ProductController extends Controller
             }
             
             $new_ing = new Ingredient();
-            if (isset($data['image'])) {
+            if (isset($data['image_ing'])) {
                 $imagePath = Storage::put('public/uploads', $data['image_ing']);
-                $new_ing->image = $imagePath;
+                
+                $new_ing->icon = $imagePath;
             }
+            //dd($data['image_ing']);
             $new_ing->name = $data['name_ing'];
             if (isset($data['option_ing'])) {
                 $new_ing->option = true;
@@ -230,11 +237,11 @@ class ProductController extends Controller
             }else{
                 $data['ingredients'] = [$new_ing->id];
             }
-            
+           unset( $data['image_ing']);
             return to_route('admin.products.create')->with('ingredient_success', $data);     
         }
 
-        if (config('configurazione.typeOfOrdering')) {        
+        if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2) {        
             $request->validate($this->validationsTrue);
         }else{
             $request->validate($this->validationsFalse);
@@ -285,7 +292,7 @@ class ProductController extends Controller
         $product->allergiens    = $allergiens;
         
         
-        if(config('configurazione.typeOfOrdering')){
+        if(config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2){
             $product->type_plate    = $data['type_plate'];     
             $product->slot_plate    = $data['slot_plate'];     
             $product->tag_set       = $data['tag_set'];
@@ -365,11 +372,8 @@ class ProductController extends Controller
             
             $new_ing = new Ingredient();
             $new_ing->name = $data['name_ing'];
-            if (isset($data['option_ing'])) {
-                $new_ing->option = true;
-            }else{
-                $new_ing->option = false;
-            }
+            
+            $new_ing->option = 0;
             $new_ing->price = $data['price_ing'];
             $new_ing->type = json_encode($type_ing);
 
@@ -387,7 +391,7 @@ class ProductController extends Controller
             }
             return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
-        if (config('configurazione.typeOfOrdering')) {        
+        if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2) {        
             $request->validate($this->validationsTrue1);
         }else{
             $request->validate($this->validationsFalse1);
@@ -435,9 +439,9 @@ class ProductController extends Controller
         $product->allergiens    = $allergiens;
         
         
-        if(config('configurazione.typeOfOrdering')){
+        if(config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2){
             $product->type_plate    = $data['type_plate'];     
-           // $product->slot_plate    = $data['slot_plate'];     
+            $product->slot_plate    = $data['slot_plate'];     
             $product->tag_set       = $data['tag_set'];
         }
     

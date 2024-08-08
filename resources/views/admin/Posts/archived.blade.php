@@ -17,9 +17,10 @@
     @php
         $data = session('success')
     @endphp
-    <div class="alert alert-primary">
-        {{ $data }} 
-    </div>
+   <div class="alert alert-primary alert-dismissible fade show" role="alert">
+    {{ $data }} 
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 @endif
 <a class="btn btn-outline-light mb-5" href="{{ route('admin.posts.index') }}">Indietro</a>
 

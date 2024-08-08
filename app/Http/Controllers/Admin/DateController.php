@@ -15,26 +15,31 @@ class DateController extends Controller
 {
     private $validations2 = [
         'max_reservations'      => 'required|integer',
+        'days_on'               => 'required',
     ];
     private $validations3t = [
         'max_domicilio'         => 'required|integer',
-        'max_cucina_1'              => 'required|integer',
-        'max_cucina_2'              => 'required|integer',
+        'max_cucina_1'          => 'required|integer',
+        'max_cucina_2'          => 'required|integer',
+        'days_on'               => 'required',
     ];
     private $validations3f = [
         'max_domicilio'         => 'required|integer',
         'max_asporto'           => 'required|integer',
+        'days_on'               => 'required',
     ];
     private $validations4t = [
         'max_domicilio'         => 'required|integer',
         'max_reservations'      => 'required|integer',
-        'max_cucina_1'              => 'required|integer',
-        'max_cucina_2'              => 'required|integer',
+        'max_cucina_1'          => 'required|integer',
+        'max_cucina_2'          => 'required|integer',
+        'days_on'               => 'required',
     ];
     private $validations4f = [
         'max_domicilio'         => 'required|integer',
         'max_reservations'      => 'required|integer',
         'max_asporto'           => 'required|integer',
+        'days_on'               => 'required',
     ];
     public function index()
     {
@@ -130,13 +135,13 @@ class DateController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                            'asporto' => $res['asporto'],
                             'table' => $res['table'],
                             'domicilio' => $res['domicilio'],
                         ];
                         $time = [
                             'time' => $d['time'],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                            'asporto' => $res['asporto'],
                             'table' => $res['table'],
                             'domicilio' => $res['domicilio'],
                         ];
@@ -216,59 +221,55 @@ class DateController extends Controller
                 'table' =>$request->avtable
             ];
             $vis = [
-                'table' =>$request->vistable
+                'table' =>intval($request->vistable)
             ];
         }elseif( config('configurazione.pack') == 3){
             if(config('configurazione.typeOfOrdering')){
                 $av = [
-                    'cucina_1' =>$request->avcucina_1,
-                    'cucina_2' =>$request->avcucina_2,
-                    'domicilio' =>$request->avdomicilio,
+                    'cucina_1' =>intval($request->avcucina_1),
+                    'cucina_2' =>intval($request->avcucina_2),
+                    'domicilio' =>intval($request->avdomicilio),
                 ];
                 $vis = [
-                    'cucina_1' =>$request->viscucina_1,
-                    'cucina_2' =>$request->viscucina_2,
-                    'domicilio' =>$request->visdomicilio,
+                    'cucina_1' =>intval($request->viscucina_1),
+                    'cucina_2' =>intval($request->viscucina_2),
+                    'domicilio' =>intval($request->visdomicilio),
                 ];
             }else{
                 $av = [
-                    'asporto' =>$request->avasporto,
-                    'domicilio' =>$request->avdomicilio,
+                    'asporto' =>intval($request->avasporto),
+                    'domicilio' =>intval($request->avdomicilio),
                 ];
                 $vis = [
-                    'asporto' =>$request->visasporto,
-                    'domicilio' =>$request->visdomicilio,
+                    'asporto' =>intval($request->visasporto),
+                    'domicilio' =>intval($request->visdomicilio),
                 ];
             }
            
         }elseif( config('configurazione.pack') == 4){
             if(config('configurazione.typeOfOrdering')){
                 $av = [
-                    'table' =>$request->avtable,
-                    'cucina_1' =>$request->avcucina_1,
-                    'cucina_2' =>$request->avcucina_2,
-                    'domicilio' =>$request->avdomicilio,
+                    'table' =>intval($request->avtable),
+                    'cucina_1' =>intval($request->avcucina_1),
+                    'cucina_2' =>intval($request->avcucina_2),
+                    'domicilio' =>intval($request->avdomicilio),
                 ];
                 $vis = [
-                    'table' =>$request->vistable,
-                    'cucina_1' =>$request->viscucina_1,
-                    'cucina_2' =>$request->viscucina_2,
-                    'domicilio' =>$request->visdomicilio,
+                    'table' =>intval($request->vistable),
+                    'cucina_1' =>intval($request->viscucina_1),
+                    'cucina_2' =>intval($request->viscucina_2),
+                    'domicilio' =>intval($request->visdomicilio),
                 ];
-                dump($request->viscucina_1);
-                dump($request->viscucina_2);
-                dump($request->domicilio);
-                dump($request->vistable);
             }else{
                 $av = [
-                    'table' =>$request->avtable,
-                    'asporto' =>$request->avasporto,
-                    'domicilio' =>$request->avdomicilio,
+                    'table' =>intval($request->avtable),
+                    'asporto' =>intval($request->avasporto),
+                    'domicilio' =>intval($request->avdomicilio),
                 ];
                 $vis = [
-                    'table' =>$request->vistable,
-                    'asporto' =>$request->visasporto,
-                    'domicilio' =>$request->visdomicilio,
+                    'table' =>intval($request->vistable),
+                    'asporto' =>intval($request->visasporto),
+                    'domicilio' =>intval($request->visdomicilio),
                 ];
             }
         }

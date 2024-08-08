@@ -3,7 +3,8 @@ return [
 
     'typeOfOrdering' => true,
     'pack' => 1,
-    'maxdayres' => 45,
+    'maxdayres' => 45, //giorni massimi in cui si vuole ricevere le prentazioni
+    'domain' => 'http://localhost:5174',
 
     'allergiens' => [
         1 => [
@@ -126,6 +127,11 @@ return [
         'pezzi al taglio',
         'pizzze al piatto',
         'consegna a domicilio',
+    ],
+    'set_time_2' => [
+        'tavoli', 
+        'asporto',
+        'domicilio',
     ],
     
 ];

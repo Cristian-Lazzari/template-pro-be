@@ -46,31 +46,35 @@
                         <li><a class="dropdown-item" href="{{ route('admin.posts.create') }}">Aggiungi</a></li>
                     </ul>
                 </li>
+                @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)    
                 <li class="nav-item dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Prenotazioni tavoli
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('admin.reservations.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.reservations.create') }}">Aggiungi</a></li>
+                        <li><a class="dropdown-item" href="{{ config('configurazione.domain') . '/check-out'}}">Aggiungi</a></li>
                     </ul>
                 </li>
+                @endif
+                @if (config('configurazione.pack') > 2)   
                 <li class="nav-item dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Ordini d'asporto
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('admin.orders.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.orders.create') }}">Aggiungi</a></li>
+                        <li><a class="dropdown-item" href="{{ config('configurazione.domain') . '/ordina'}}">Aggiungi</a></li>
                     </ul>
                 </li>
+                @endif
+                @if (config('configurazione.pack') > 1)  
                 <li class="nav-item ">
-                    <a class="nav-link mylinknav" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link mylinknav" href="{{ route('admin.dates.index') }}">
                         Gestione date
                     </a>
-                    
-                </li>
-               
+                </li>      
+                @endif
             </ul>   
         </div>
     </div>

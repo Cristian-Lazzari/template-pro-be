@@ -13,7 +13,7 @@ $domain = 'https://future-plus.it/allergiens/';
     <h2>{{$ingredient->name}}</h2>
     <div class="split_p">
         <div class="image_p">
-            @if (isset($ingredient->image))
+            @if (isset($ingredient->icon))
                 <img class="logo_" src="{{ asset('public/storage/' . $ingredient->image) }}" alt="{{$ingredient->name }}">
             @else 
                 <img class="logo_" src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$ingredient->name }}">
@@ -50,7 +50,7 @@ $domain = 'https://future-plus.it/allergiens/';
     </div>
     <div class="prod-spec">
         <div class="actions">
-            <a class="my_btn_1 m" href="{{ route('admin.ingredients.edit', $ingredient) }}">Modifica</a>
+            <a class="my_btn_2" href="{{ route('admin.ingredients.edit', $ingredient) }}">Modifica</a>
             {{-- <form action="{{ route('admin.ingredients.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="f" value="1">

@@ -3,7 +3,26 @@
 
 
 @section('contents')
-
+@if (session('success'))
+    @php
+        $data = session('success')
+    @endphp
+    <div class="alert alert-primary">
+        {{ $data }}
+    </div>
+@endif
+@if (session('filter'))
+    @php
+        $data = session('filter');
+        $filters = $data[0];
+        $reservations = $data[1];
+    @endphp
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        
+      Filtri aggiornati
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 <h1>Prenotazioni Tavoli</h1>
 
 <form class="top-bar-product" action="{{ route('admin.reservations.filter') }}" method="post">
@@ -78,7 +97,13 @@
          $date = $parts[0];
          $time = $parts[1];
         @endphp 
-        <div class="or-res my-4">
+        @if ($reservation->status == 2)
+        <div class="or-res my_2 my-4">
+        @elseif ($reservation->status == 1)
+        <div class="or-res my_1 my-4">
+        @elseif ($reservation->status == 0)
+        <div class="or-res my_0 my-4">
+        @endif
             <section class="top">
                 <div class="name">
                     <h4>{{$date}}</h4>
@@ -86,7 +111,7 @@
                 </div>
                 <div class="actions">
                     <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn_1">Dettagli</a>
-                    <div class="my_btn_1">Contatta</div>
+                    <div class="my_btn_4">Contatta</div>
                 </div>
             </section>
             <section>
@@ -95,20 +120,24 @@
                     <h4>Ospiti: {{$reservation->n_person}}</h4>
                 </div>
                 <div class="actions">
-                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                    @if($reservation->status !== 1)
+                    <form class="w-100" action="{{ route('admin.reservations.status') }}" method="POST">
                         @csrf
                         <input value="1" type="hidden" name="c_a">
                         <input value="{{$reservation->id}}" type="hidden" name="id">
-
-                        <button type="submit" class="my_btn_3">Conferma</button>
+                        
+                        <button type="submit" class="w-100 my_btn_3">Conferma</button>
                     </form>
-                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                    @endif
+                    @if(!$reservation->status !== 0)
+                    <form class="w-100" action="{{ route('admin.reservations.status') }}" method="POST">
                         @csrf
                         <input value="0" type="hidden" name="c_a">
                         <input value="{{$reservation->id}}" type="hidden" name="id">
 
-                        <button type="submit" class="my_btn_2">Annulla</button>
+                        <button type="submit" class="w-100 my_btn_2">Annulla</button>
                     </form>
+                    @endif
                 </div>
             </section>
         </div>
