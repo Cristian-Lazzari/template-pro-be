@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('address_n', 4)->nullable();
             $table->string('comune', 30)->nullable();
             
-            $table->smallInteger('tot_price');
+            $table->bigInteger('tot_price');
             $table->string('message', 500)->nullable();
             
             $table->boolean('news_letter');
@@ -37,11 +37,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('orders');

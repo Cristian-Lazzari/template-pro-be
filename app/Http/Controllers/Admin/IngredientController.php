@@ -21,8 +21,8 @@ class IngredientController extends Controller
     ];
     public function index()
     {
-        $ingredients    = Ingredient::where('option', false)->get(); 
-        $options        = Ingredient::where('option', true)->get(); 
+        $ingredients    = Ingredient::where('option', false)->orderBy('name')->get(); 
+        $options        = Ingredient::where('option', true)->orderBy('name')->get(); 
         return view('admin.Ingredients.index', compact('ingredients', 'options'));
     }
      

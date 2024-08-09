@@ -84,9 +84,9 @@ class ReservationController extends Controller
             $query->where('date_slot', 'like', '%' . $date . '%');
         }
         if($order){
-            $reservations = $query->orderBy('date_slot', 'asc')->get();
-        }else{
             $reservations = $query->orderBy('updated_at', 'desc')->get();    
+        }else{
+            $reservations = $query->orderBy('date_slot', 'desc')->get();
         }        
     
         $data = [];

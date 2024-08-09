@@ -129,7 +129,9 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 }
 
 .v{
-    background-color: rgb(65, 183, 42);
+    background-color: $c1;
+    border: 2px solid $c2;
+    color: $c2 !important;
 }
 
 .ell-c{
@@ -633,6 +635,7 @@ body{
             color: $c3;
             transition: all .2s ease-in;
             padding-inline: 14px;
+            appearance: none;
         }
         input:hover, select:hover{
             opacity: 1;
@@ -751,6 +754,12 @@ body{
         justify-content: flex-end;
         gap: .8rem;
         flex-wrap: wrap;
+        form{
+            height: 100%;
+            button{
+                height: 100%;
+            }
+        }
         img{
             border-radius: 100%;
             aspect-ratio: 1;

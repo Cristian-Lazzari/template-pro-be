@@ -6,8 +6,9 @@
 $domain = 'https://future-plus.it/allergiens/';
  
 @endphp
-<a class="btn btn-outline-light mb-5" href="{{ route('admin.products.index') }}">Indietro</a>
-
+<button onclick="history.back()" class="btn btn-outline-light my-5">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"/></svg>
+</button>
 <h1>Dettagli prodotto</h1>
 <div class="show_p">
     <h2>{{$product->name}}</h2>
@@ -49,16 +50,19 @@ $domain = 'https://future-plus.it/allergiens/';
     </div>
     <div class="price">€{{$product->price / 100}}</div>
     <div class="prod-spec">
-        @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
         <div class="set_plate">
             <div class="title">
+                @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
                 <p>Slot piatto:</p>
                 <p>Tipo piatto:</p>
+                @endif
                 <p>Costum cliente:</p>
             </div>
             <div class="res">
-                <p>{{$product->slot_plate}}</p>
-                @if($product->type_plate == 0) <p>Altro</p> @elseif($product->type_plate == 1) <p>Cucina 1</p> @else <p>Cucina 2</p> @endif
+                @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
+                    <p>{{$product->slot_plate}}</p>
+                    @if($product->type_plate == 0) <p>Altro</p> @elseif($product->type_plate == 1) <p>Cucina 1</p> @else <p>Cucina 2</p> @endif
+                @endif
                 @if($product->tag_set == 0)
                 <p> Nessuma </p>  @elseif($product->tag_set == 1)
                 <p> Togliere </p> @elseif($product->tag_set == 2)
@@ -68,7 +72,7 @@ $domain = 'https://future-plus.it/allergiens/';
                 @endif
             </div>
         </div>
-        @endif
+       
         <div class="actions">
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf

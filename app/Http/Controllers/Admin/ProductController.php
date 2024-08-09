@@ -292,10 +292,13 @@ class ProductController extends Controller
         $product->allergiens    = $allergiens;
         
         
-        if(config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2){
-            $product->type_plate    = $data['type_plate'];     
-            $product->slot_plate    = $data['slot_plate'];     
+        
+        if(config('configurazione.pack') > 2){
             $product->tag_set       = $data['tag_set'];
+            if( config('configurazione.typeOfOrdering') ){
+                $product->type_plate    = $data['type_plate'];     
+                $product->slot_plate    = $data['slot_plate'];     
+            }
         }
     
         
@@ -439,10 +442,12 @@ class ProductController extends Controller
         $product->allergiens    = $allergiens;
         
         
-        if(config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2){
-            $product->type_plate    = $data['type_plate'];     
-            $product->slot_plate    = $data['slot_plate'];     
+        if(config('configurazione.pack') > 2){
             $product->tag_set       = $data['tag_set'];
+            if( config('configurazione.typeOfOrdering') ){
+                $product->type_plate    = $data['type_plate'];     
+                $product->slot_plate    = $data['slot_plate'];     
+            }
         }
     
         
