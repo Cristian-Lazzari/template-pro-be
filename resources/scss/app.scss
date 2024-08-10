@@ -1037,6 +1037,10 @@ body{
             padding: 10px;
             color: $c3;
             transition: all .3s ease-in-out;
+            appearance: none;
+        }
+        select{
+            text-align: center;
         }
         input:focus, select:focus, textarea:focus{
             border: 2px solid $c3;
