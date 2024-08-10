@@ -19,14 +19,14 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'impasto celiaco',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[12]",
                 'option' => true,
             ],
             [
                 'name' => 'pomodoro',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => true,
             ],
@@ -34,7 +34,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pesto della casa',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -42,7 +42,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'melanzane grigliate',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -50,7 +50,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'salsa di peperoncini freschi',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -58,7 +58,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'passata di pomodoro cotta con ventricina piccante',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -66,7 +66,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'aglio',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -74,7 +74,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'basilico',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -82,7 +82,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'rucola',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -90,7 +90,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'foglie del cappero',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -98,7 +98,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'carciofini',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -106,7 +106,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'funghi',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -114,7 +114,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'olive nere',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -122,7 +122,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'patate',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -130,7 +130,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'cipolla',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -138,7 +138,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'radicchio',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -146,7 +146,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'verdure di sIngredientione',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -154,7 +154,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'origano',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -162,7 +162,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'rosmarino',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -170,7 +170,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'salsa tartufata',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -178,7 +178,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pesto di basilico',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -186,7 +186,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pomodorino ciliegino',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -194,7 +194,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pomodorino giallo',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -202,7 +202,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pinoli',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -210,7 +210,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pesto di pistacchi della casa',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -218,7 +218,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'granella di pistacchi',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -226,7 +226,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'noci',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -234,7 +234,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'carne salada trentina',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -242,7 +242,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'salsiccia',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -250,7 +250,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'salame',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -258,7 +258,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'mortadella',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -266,7 +266,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'ventricina piccante',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -274,7 +274,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'arrosto di tacchino in porchetta marchigiano',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -282,7 +282,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'würstel',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -290,7 +290,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pancetta marchigiana',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -298,7 +298,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'speck',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -306,7 +306,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'parmigiano',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -314,7 +314,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'mozzarella fior di latte',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -322,7 +322,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'mozzarella di bufala campana',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -330,7 +330,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'scaglie di grana',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -338,7 +338,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'stracciatella',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -346,7 +346,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'stracciatella di burrata',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -354,7 +354,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'gorgonzola',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -362,7 +362,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pecorino',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -370,7 +370,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'acciughe del mar cantabrico',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -378,7 +378,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'cotto',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],
@@ -386,7 +386,7 @@ class IngredientsTableSeeder extends Seeder
             [
                 'name' => 'pancetta',  
                 'price' => 100,
-                'type' => "[]",
+                'type' => "[1,2,3,4,5]",
                 'allergiens' => "[1,2,3]",
                 'option' => false,
             ],

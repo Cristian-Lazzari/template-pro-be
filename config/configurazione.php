@@ -1,9 +1,9 @@
 <?php
 return [
 
-    'typeOfOrdering' => false,
-    'pack' => 3,
-    'maxdayres' => 45, //giorni massimi in cui si vuole ricevere le prentazioni
+    'typeOfOrdering' => true,
+    'pack' => 4,
+    'maxdayres' => 65, //giorni massimi in cui si vuole ricevere le prentazioni
     'domain' => 'http://localhost:5174',
 
     'allergiens' => [
