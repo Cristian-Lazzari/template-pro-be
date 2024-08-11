@@ -89,7 +89,7 @@ class DateController extends Controller
                             'day_w' => $d['day_w'],
                             'date' => $date,
                             'time' => [],
-                            'asporto' => $res['asporto'],
+                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
                             'domicilio' => $res['domicilio'],
                         ];
                         $time = [
