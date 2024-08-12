@@ -18,7 +18,7 @@ class DateController extends Controller
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
 
         // Ottieni la data di inizio (ad esempio, l'inizio della giornata attuale)
-        $startDateTime = Carbon::now()->startOfDay()->format('Y-m-d H:i:s');
+        $startDateTime = Carbon::now()->startOfDay()->addMinutes(45)->format('Y-m-d H:i:s');
 
         // Ottieni la data di fine (ad esempio, la fine della giornata attuale)
         $endDateTime = Carbon::now()->addDays(config('configurazione.maxdayres'))->format('Y-m-d H:i:s');
@@ -63,6 +63,7 @@ class DateController extends Controller
 
         if(count($dates) == 0){
             return response()->json([
+                'startDateTime' =>$startDateTime,
                 'success'   => false,
                 'results'   => [],    
                 'filter'   => $filter,    
@@ -269,6 +270,7 @@ class DateController extends Controller
         //dd($year);
         
         return response()->json([
+            'startDateTime' =>$startDateTime,
             'success'   => true,
             'results'   => $year,    
             'filter'   => $filter,    
