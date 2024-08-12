@@ -215,7 +215,6 @@ class ProductController extends Controller
                 
                 $new_ing->icon = $imagePath;
             }
-            //dd($data['image_ing']);
             $new_ing->name = $data['name_ing'];
             if (isset($data['option_ing'])) {
                 $new_ing->option = true;
@@ -375,7 +374,11 @@ class ProductController extends Controller
             
             $new_ing = new Ingredient();
             $new_ing->name = $data['name_ing'];
-            
+            if (isset($data['image_ing'])) {
+                $imagePath = Storage::put('public/uploads', $data['image_ing']);
+                
+                $new_ing->icon = $imagePath;
+            }
             $new_ing->option = 0;
             $new_ing->price = $data['price_ing'];
             $new_ing->type = json_encode($type_ing);
@@ -392,6 +395,7 @@ class ProductController extends Controller
             }else{
                 $data['ingredients'] = [$new_ing->id];
             }
+            unset( $data['image_ing']);
             return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
         if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2) {        
