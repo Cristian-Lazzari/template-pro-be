@@ -46,7 +46,7 @@ class OrderController extends Controller
                 $np_c1 = $data['npezzi_c1'];
                 $np_c2 = $data['npezzi_c2'];
                 if(isset($data['comune'])){
-                    if( ($res['domiclio'] + 1) < $av['domiclio']){
+                    if( ($res['domicilio'] + 1) < $av['domicilio']){
                         $res['domicilio'] = $res['domicilio'] + 1;
     
                         if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
@@ -70,7 +70,7 @@ class OrderController extends Controller
                                 'data' => $date
                             ]);
                         }
-                    } elseif (($res['domiclio'] + 1) == $av['domiclio']){
+                    } elseif (($res['domicilio'] + 1) == $av['domicilio']){
                         $res['domicilio'] = $res['domicilio'] + 1;
                         $vis['domicilio'] = 0;
                         if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
