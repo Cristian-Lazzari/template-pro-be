@@ -109,12 +109,12 @@ class IngredientController extends Controller
         
         $new_ing = Ingredient::where('id', $id)->firstOrFail();
         $new_ing->name = $data['name_ing'];
-        if (isset($data['image'])) {
+        if (isset($data['image_ing'])) {
             $imagePath = Storage::put('public/uploads', $data['image_ing']);
-            if ($new_ing->image) {
-                Storage::delete($new_ing->image);
+            if ($new_ing->icon) {
+                Storage::delete($new_ing->icon);
             }
-            $new_ing->image = $imagePath;
+            $new_ing->icon = $imagePath;
         }
         if (isset($data['option_ing'])) {
             $new_ing->option = true;

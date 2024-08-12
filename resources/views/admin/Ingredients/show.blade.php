@@ -16,7 +16,7 @@ $domain = 'https://future-plus.it/allergiens/';
     <div class="split_p">
         <div class="image_p">
             @if (isset($ingredient->icon))
-                <img class="logo_" src="{{ asset('public/storage/' . $ingredient->image) }}" alt="{{$ingredient->name }}">
+                <img class="logo_" src="{{ asset('public/storage/' . $ingredient->icon) }}" alt="{{$ingredient->name }}">
             @else 
                 <img class="logo_" src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$ingredient->name }}">
             @endif 
