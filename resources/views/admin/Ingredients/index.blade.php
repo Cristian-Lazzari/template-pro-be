@@ -40,8 +40,9 @@
         <div class="slim_ ">
             <section class="s1">
 
-                {{ $item->icon }}
+                icona:{{ $item->icon }}
                 @if (isset($item->icon))
+                'e allora perche???????'
                     <img src="{{ asset('public/storage/' . $item->icon) }}" alt="{{$item->name }}">
                 @else 
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->name }}">
