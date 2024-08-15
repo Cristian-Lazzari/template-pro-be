@@ -111,7 +111,7 @@ class ReservationController extends Controller
         $reservation = Reservation::where('id', $id)->firstOrFail();
        
 
-        return view('admin.reservations.show', compact('reservation'));
+        return view('admin.Reservations.show', compact('reservation'));
     }
 
     public function destroy($id)

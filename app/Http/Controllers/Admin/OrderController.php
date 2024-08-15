@@ -147,7 +147,7 @@ class OrderController extends Controller
         $order = Order::where('id', $id)->firstOrFail();
         $orderProduct = OrderProduct::all();
 
-        return view('admin.orders.show', compact('order', 'orderProduct'));
+        return view('admin.Orders.show', compact('order', 'orderProduct'));
     }
 
     /**
