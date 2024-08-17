@@ -2,7 +2,7 @@
     <div class="container-fluid">
 
         <div class="d-flex">
-            <a class="my_btn_4 mylinknavs" href="{{ route('admin.dashboard') }}">Dashboard</a>
+            <a class="my_btn_5 mylinknavs" href="{{ route('admin.dashboard') }}">Dashboard</a>
             {{-- <div class="notifications_container h-100 ms-2">
                 <button class="my_btn_1 search" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                     <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-bell-fill" viewBox="0 0 16 16">

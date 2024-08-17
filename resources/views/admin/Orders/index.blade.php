@@ -106,8 +106,8 @@
                 </div>
                 
                 <div class="actions">
-                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn_1">Dettagli</a>
-                    <div class="my_btn_4">Contatta</div>
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="my_btn_5">Dettagli</a>
+                    <div class="my_btn_5">Contatta</div>
                 </div>
             </section>
             <section>
@@ -122,7 +122,7 @@
                         <input value="1" type="hidden" name="c_a">
                         <input value="{{$order->id}}" type="hidden" name="id">
                         
-                        <button type="submit" class="w-100 my_btn_3">Conferma</button>
+                        <button type="submit" class="w-100 my_btn_6">Conferma</button>
                     </form>
                     @endif
                     @if($order->status !== 0)
@@ -131,7 +131,7 @@
                         <input value="0" type="hidden" name="c_a">
                         <input value="{{$order->id}}" type="hidden" name="id">
                         
-                        <button type="submit" class="w-100 my_btn_2">Annulla</button>
+                        <button type="submit" class="w-100 my_btn_6">Annulla</button>
                     </form>
                     @endif
                 </div>

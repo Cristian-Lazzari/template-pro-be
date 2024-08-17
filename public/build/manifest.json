@@ -4,12 +4,12 @@
     "src": "../public/build/resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.724b49b4.css"
+      "../public/build/assets/app.3fc6439b.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.724b49b4.css",
-    "src": "resources/scss/app.scss",
+    "file": "../public/build/assets/app.3fc6439b.css",
+    "src": "../public/build/resources/scss/app.scss",
     "isEntry": true
   }
 }
