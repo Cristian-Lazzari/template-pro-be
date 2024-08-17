@@ -1060,7 +1060,7 @@ body{
             transition: all .3s ease-in-out;
         }
         input:hover, select:hover, textarea:hover{
-            background-color: $c3;
+            background-color: $c1;
             color: $c2;
             transition: all .3s ease-in-out;
         }
@@ -1127,7 +1127,7 @@ body{
 
         }
         label{
-            text-transform: capitalize;
+            //text-transform: capitalize;
             font-size: clamp(16px, 2.7vw, 20px);
         }
         .desc{
