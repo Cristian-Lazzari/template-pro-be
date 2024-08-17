@@ -1241,15 +1241,17 @@ body{
             display: flex;
             justify-content: space-between;
             font-size: 20px;
-            div {
+            a {
                 border: 2px solid $c3;
                 margin: 10px;
                 border-radius: 8px;
-
+                color: $c3;
+                text-decoration: none;
                 padding: 4px 10px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                cursor: pointer;
             }
         }
         .body {
@@ -1490,6 +1492,22 @@ body{
             svg{
                 display: none;
             }
+        }
+    }
+    .myres-c{
+        .body, .mail-tel{
+            flex-direction: column !important;
+            .myres-center,.myres-left, .myres-right, .myres-center-res{
+                width: 100% !important;
+            }
+
+        }
+        .mail-tel{
+            padding: 12px;
+            gap: 6px;
+           .mail,.tel{
+            margin: 0 !important;
+           } 
         }
     }
 }

@@ -28,8 +28,8 @@
         @endif
 
             <div class="mail-tel">
-                <div class="mail">{{$order->email}}</div>
-                <div class="tel">{{$order->phone}}</div>
+                <a href="{{'mailto:' . $order->email}}" class="mail">{{$order->email}}</a>
+                <a href="{{'tel:' . $order->phone}}" class="tel">{{$order->phone}}</a>
             </div>
             <div class="body">
                 <section class="myres-left">

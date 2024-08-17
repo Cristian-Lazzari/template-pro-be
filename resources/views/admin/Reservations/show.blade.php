@@ -26,8 +26,8 @@
         @endif
 
             <div class="mail-tel">
-                <div class="mail">{{$reservation->email}}</div>
-                <div class="tel">{{$reservation->phone}}</div>
+                <a href="{{'mailto:' . $reservation->email}}" class="mail">{{$reservation->email}}</a>
+                <a href="{{'tel:' . $reservation->phone}}" class="tel">{{$reservation->phone}}</a>
             </div>
             <div class="body">
                 <section class="myres-left">
