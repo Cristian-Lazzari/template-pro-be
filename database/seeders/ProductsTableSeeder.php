@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class ProjectsTableSeeder extends Seeder
+class ProductsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -1723,7 +1723,7 @@ class ProjectsTableSeeder extends Seeder
     
     
     foreach ($newproducts as $product) {
-        $newProject = Project::create([
+        $newProduct = Product::create([
             'category_id'   => $product['category_id'],
             'name'          => $product['name'],
             'price'         => $product['price'],
@@ -1738,7 +1738,7 @@ class ProjectsTableSeeder extends Seeder
         ]);
         if(count($product['arrIdTag'])){
 
-            $newProject->tags()->sync($product['arrIdTag'] ?? []);
+            $newProduct->tags()->sync($product['arrIdTag'] ?? []);
         }
     }
 }
