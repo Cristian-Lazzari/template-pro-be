@@ -1736,7 +1736,7 @@ class ProductsTableSeeder extends Seeder
             'slot_plate'    => 1,           
             'type_plate'    => 0,           
             'tag_set'       => 1,           
-            'derciption'    => '',           
+            'description'    => '',           
             'allergens'    => '[]',           
         ]);
         if(count($product['arrIdTag'])){
