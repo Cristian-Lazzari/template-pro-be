@@ -4,7 +4,7 @@
     
 @php
   //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-$domain = 'https://future-plus.it/allergiens/';
+$domain = 'https://future-plus.it/allergens/';
  
 @endphp
 
@@ -56,11 +56,11 @@ $domain = 'https://future-plus.it/allergiens/';
         </div>
         
         <div class="check_c">
-            <label class="label_c" for="type">Allergieni</label>
+            <label class="label_c" for="type">allergeni</label>
             <p>
-                @foreach(  config('configurazione.allergiens') as $a)
+                @foreach(  config('configurazione.allergens') as $a)
                     @php $i = $loop->iteration; @endphp
-                    <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergiens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergiens_ing', []))) checked @endif>
+                    <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
                     <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
                 @endforeach
             </p>

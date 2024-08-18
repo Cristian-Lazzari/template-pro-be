@@ -127,11 +127,11 @@
                     </div>
                 </div>
             </div>
-            <div class="allergiens">
+            <div class="allergens">
                 
-                @php $all = json_decode($item->allergiens) @endphp
+                @php $all = json_decode($item->allergens) @endphp
                 @foreach ($all as $i)
-                    <img src="{{config('configurazione.allergiens')[$i]['img']}}" alt="" title="{{config('configurazione.allergiens')[$i]['name']}}">
+                    <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
                 @endforeach
             </div>
             <div class="actions">

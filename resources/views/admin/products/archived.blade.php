@@ -5,7 +5,7 @@
 @section('contents')
 @php
   //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-$domain = 'https://future-plus.it/allergiens/';
+$domain = 'https://future-plus.it/allergens/';
  
 @endphp
 <style>
@@ -124,10 +124,10 @@ $domain = 'https://future-plus.it/allergiens/';
                     </div>
                 </div>
             </div>
-            <div class="allergiens">
-                @php $all = json_decode($item->allergiens) @endphp
+            <div class="allergens">
+                @php $all = json_decode($item->allergens) @endphp
                 @foreach ($all as $i)
-                    <img src="{{config('configurazione.allergiens')[$i]['img']}}" alt="" title="{{config('configurazione.allergiens')[$i]['name']}}">
+                    <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
                 @endforeach
             </div>
             <div class="actions">

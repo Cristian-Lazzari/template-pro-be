@@ -5,7 +5,7 @@
 @section('contents')
 @php
       //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-    $domain = 'https://future-plus.it/allergiens/';
+    $domain = 'https://future-plus.it/allergens/';
 @endphp
 @if (session('ingredient_success'))
     @php

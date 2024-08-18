@@ -758,7 +758,7 @@ body{
             }
         }
     }
-    .actions, .allergiens{
+    .actions, .allergens{
         align-self: flex-end;
         max-width: 270px;
         display: flex;
@@ -890,7 +890,7 @@ body{
    
 }
 .not_v{
-    .card_, h3, .allergiens{
+    .card_, h3, .allergens{
         opacity: .5;
     }
         
@@ -933,7 +933,7 @@ body{
                 object-fit: cover;
                 max-width: 650px;
             }
-            .allergiens{
+            .allergens{
                 max-width: 350px;
                 width: 100%;
                 display: flex;

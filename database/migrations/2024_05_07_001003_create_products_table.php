@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string      ('image')->nullable();
             $table->text        ('description')->nullable(); 
             
-            $table->text        ('allergiens')->nullable(); 
+            $table->text        ('allergens')->nullable(); 
             
             $table->tinyInteger ('slot_plate')->nullable(); //indica quanti slot occupa
             $table->tinyInteger ('type_plate')->nullable();  //indica se è di tipo fq ft o altro 

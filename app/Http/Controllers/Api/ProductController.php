@@ -28,7 +28,7 @@ class ProductController extends Controller
         return response()->json([
             'success'   => true,
             'results'   => $products,
-            'allergiens'   => config('configurazione.allergiens'),
+            'allergens'   => config('configurazione.allergens'),
         ]);
     }
 }

@@ -198,10 +198,10 @@ class ProductController extends Controller
             $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
             $prezzo_float = floatval($prezzo_stringa);
 
-            if (isset($data['allergiens_ing'])){
-                $ingredient_allergiens = $data['allergiens_ing'];
+            if (isset($data['allergens_ing'])){
+                $ingredient_allergens = $data['allergens_ing'];
             }else{
-                $ingredient_allergiens = '[]';
+                $ingredient_allergens = '[]';
             }
             if (isset($data['type_ing'])){
                 $type_ing = $data['type_ing'];
@@ -224,11 +224,11 @@ class ProductController extends Controller
             $new_ing->price = intval(round($prezzo_float * 100));
             $new_ing->type = json_encode($type_ing);
 
-            if($ingredient_allergiens !== '[]'){
-                $rightall = array_map('intval', array_values($ingredient_allergiens));
-                $new_ing->allergiens = json_encode($rightall);
+            if($ingredient_allergens !== '[]'){
+                $rightall = array_map('intval', array_values($ingredient_allergens));
+                $new_ing->allergens = json_encode($rightall);
             }else{
-                $new_ing->allergiens = '[]';
+                $new_ing->allergens = '[]';
             }
             $new_ing->save();
             if(isset($data['ingredients'])){
@@ -249,27 +249,27 @@ class ProductController extends Controller
         $product = new Product();
         
         if(isset($data['ingredients'])){     
-            $allergiens = [];
+            $allergens = [];
             foreach ($data['ingredients'] as $i) {
                 $all = Ingredient::where('id', $i)->firstOrFail();
-                $isall = json_decode($all['allergiens']);
+                $isall = json_decode($all['allergens']);
                 if($isall !== "[]" && $isall !== NULL ){
                     foreach($isall as $ia){
-                        array_push($allergiens, $ia);
+                        array_push($allergens, $ia);
                     }  
                 }
             }
 
-            if (count($allergiens) > 0) {
-                $alldclen = array_unique($allergiens);
+            if (count($allergens) > 0) {
+                $alldclen = array_unique($allergens);
                 $rightall = array_map('intval', array_values($alldclen));   
-                $cleanAllergiens = cleanArray($rightall);          
-                $allergiens = json_encode($cleanAllergiens);
+                $cleanallergens = cleanArray($rightall);          
+                $allergens = json_encode($cleanallergens);
             }else{
-                $allergiens = '[]';   
+                $allergens = '[]';   
             }
         }else{
-            $allergiens = '[]';   
+            $allergens = '[]';   
         }
         
 
@@ -288,7 +288,7 @@ class ProductController extends Controller
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
 
-        $product->allergiens    = $allergiens;
+        $product->allergens    = $allergens;
         
         
         
@@ -360,10 +360,10 @@ class ProductController extends Controller
         $data = $request->all();
         if (isset($data['newi'])){
             $newi = $data['newi'];
-            if (isset($data['allergiens_ing'])){
-                $ingredient_allergiens = $data['allergiens_ing'];
+            if (isset($data['allergens_ing'])){
+                $ingredient_allergens = $data['allergens_ing'];
             }else{
-                $ingredient_allergiens = '[]';
+                $ingredient_allergens = '[]';
             }
             if (isset($data['type_ing'])){
                 $type_ing = $data['type_ing'];
@@ -383,11 +383,11 @@ class ProductController extends Controller
             $new_ing->price = $data['price_ing'];
             $new_ing->type = json_encode($type_ing);
 
-            if($ingredient_allergiens !== '[]'){
-                $rightall = array_map('intval', array_values($ingredient_allergiens));
-                $new_ing->allergiens = json_encode($rightall);
+            if($ingredient_allergens !== '[]'){
+                $rightall = array_map('intval', array_values($ingredient_allergens));
+                $new_ing->allergens = json_encode($rightall);
             }else{
-                $new_ing->allergiens = '[]';
+                $new_ing->allergens = '[]';
             }
             $new_ing->save();
             if(isset($data['ingredients'])){
@@ -403,27 +403,27 @@ class ProductController extends Controller
         }else{
             $request->validate($this->validationsFalse1);
         }    
-        $allergiens = [];
+        $allergens = [];
         if(isset($data['ingredients'])){     
             foreach ($data['ingredients'] as $i) {
                 $all = Ingredient::where('id', $i)->firstOrFail();
-                $isall = json_decode($all['allergiens']);
+                $isall = json_decode($all['allergens']);
                 if($isall !== "[]" && $isall !== NULL ){
                     foreach($isall as $ia){
-                        array_push($allergiens, $ia);
+                        array_push($allergens, $ia);
                     }  
                 }
             }
-            if (count($allergiens) > 0) {
-                $alldclen = array_unique($allergiens);
+            if (count($allergens) > 0) {
+                $alldclen = array_unique($allergens);
                 $rightall = array_map('intval', array_values($alldclen));   
-                $cleanAllergiens = cleanArray($rightall);          
-                $allergiens = json_encode($cleanAllergiens);
+                $cleanallergens = cleanArray($rightall);          
+                $allergens = json_encode($cleanallergens);
             }else{
-                $allergiens = '[]';   
+                $allergens = '[]';   
             }
         }else{
-            $allergiens = '[]';   
+            $allergens = '[]';   
         }
         
         $prezzo_stringa = str_replace(',', '.', $data['price']);
@@ -443,7 +443,7 @@ class ProductController extends Controller
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
 
-        $product->allergiens    = $allergiens;
+        $product->allergens    = $allergens;
         
         
         if(config('configurazione.pack') > 2){

@@ -3,7 +3,7 @@
 @section('contents')
 @php
   //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
-$domain = 'https://future-plus.it/allergiens/';
+$domain = 'https://future-plus.it/allergens/';
  
 @endphp
 <button onclick="history.back()" class="btn btn-outline-light my-5">
@@ -19,11 +19,11 @@ $domain = 'https://future-plus.it/allergiens/';
             @else 
                 <img class="logo_" src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$product->name }}">
             @endif 
-            <div class="allergiens">
-                @if ($product->allergiens !== [])
-                    @php $all = json_decode($product->allergiens) @endphp
+            <div class="allergens">
+                @if ($product->allergens !== [])
+                    @php $all = json_decode($product->allergens) @endphp
                     @foreach ($all as $p)
-                        <img src="{{config('configurazione.allergiens')[$p]['img']}}" alt="{{config('configurazione.allergiens')[$p]['name']}}" title="{{config('configurazione.allergiens')[$p]['name']}}">
+                        <img src="{{config('configurazione.allergens')[$p]['img']}}" alt="{{config('configurazione.allergens')[$p]['name']}}" title="{{config('configurazione.allergens')[$p]['name']}}">
                     @endforeach
                 @endif
             </div>
