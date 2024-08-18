@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+use App\Models\Product;
 use App\Models\Category;
 use App\Models\Ingredient;
 use Illuminate\Database\Seeder;
@@ -1724,7 +1725,7 @@ class ProductsTableSeeder extends Seeder
     
     
     foreach ($newproducts as $product) {
-        $newProduct = Product::create([
+        $newProduct = Products::create([
             'category_id'   => $product['category_id'],
             'name'          => $product['name'],
             'price'         => $product['price'],
