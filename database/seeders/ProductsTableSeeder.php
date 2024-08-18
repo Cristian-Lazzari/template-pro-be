@@ -1721,7 +1721,7 @@ class ProductsTableSeeder extends Seeder
         
         ];
         array_push($newproducts, $newproduct);
-        //dump( $newproducts);
+        dump( $newproducts);
     };
     
     
