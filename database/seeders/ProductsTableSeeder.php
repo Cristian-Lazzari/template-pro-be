@@ -1741,7 +1741,7 @@ class ProductsTableSeeder extends Seeder
         ]);
         if(count($product['arrIdTag'])){
 
-            $newProduct->tags()->sync($product['arrIdTag'] ?? []);
+            $newProduct->ingredients()->sync($product['arrIdTag'] ?? []);
         }
     }
 }
