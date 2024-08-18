@@ -1698,9 +1698,9 @@ class ProductsTableSeeder extends Seeder
                         $newTag = new Ingredient();
                         $newTag->name          = strtolower($ingredient);
                         $newTag->price         = 0;
-                        $newTag->type          = [];
+                        $newTag->type          = '[]';
                         $newTag->option        = 0;
-                        $newTag->allergens     = [];
+                        $newTag->allergens     = '[]';
 
                         $newTag->save();
                         array_push($arrIdTag, $newTag->id);
@@ -1735,7 +1735,7 @@ class ProductsTableSeeder extends Seeder
             'type_plate'    => 0,           
             'tag_set'       => 1,           
             'derciption'    => '',           
-            'allergens'    => [],           
+            'allergens'    => '[]',           
         ]);
         if(count($product['arrIdTag'])){
 
