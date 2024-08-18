@@ -1700,7 +1700,9 @@ class ProductsTableSeeder extends Seeder
                         $newTag = new Ingredient();
                         $newTag->name          = strtolower($ingredient);
                         $newTag->price         = 0;
-                        $newTag->allergens    = 0;
+                        $newTag->type          = [];
+                        $newTag->option        = 0;
+                        $newTag->allergens     = [];
 
                         $newTag->save();
                         array_push($arrIdTag, $newTag->id);
