@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Ingredient;
-use Faker\Generator as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -14,7 +13,7 @@ class ProductsTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run(Faker $faker)
+    public function run()
 {
     $products = [
         [
