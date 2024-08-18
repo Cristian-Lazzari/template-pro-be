@@ -160,7 +160,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories     = Category::all();
-        $ingredients    = Ingredient::where('option', false)->get();  
+        $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
         
         return view('admin.products.create', compact('categories', 'ingredients'));
     }
@@ -326,7 +326,7 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $id)->firstOrFail();
         $categories     = Category::all();
-        $ingredients    = Ingredient::where('option', false)->get();  
+        $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
         
         return view('admin.products.edit', compact( 'product', 'categories', 'ingredients'));        
     }

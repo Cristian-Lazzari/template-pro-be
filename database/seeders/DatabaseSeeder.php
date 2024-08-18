@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Seeders\DatesTableSeeder;
 use Database\Seeders\UsersTableSeeder;
+use Database\Seeders\ProductsTableSeeder;
 use Database\Seeders\SettingsTableSeeder;
 use Database\Seeders\IngredientsTableSeeder;
 
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UsersTableSeeder::class,
-            IngredientsTableSeeder::class,
+            ProductsTableSeeder::class,
             CategoriesTableSeeder::class,
             SettingsTableSeeder::class,
         ]);
