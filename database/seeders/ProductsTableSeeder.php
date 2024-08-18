@@ -1730,7 +1730,7 @@ class ProductsTableSeeder extends Seeder
             'category_id'   => $product['category_id'],
             'name'          => $product['name'],
             'price'         => $product['price'],
-            'visible'       => ($product['price'] > 0) ? 0 : 1,
+            'visible'       => ($product['price'] > 0) ? 1 : 0,
             'archived'      => ($product['price'] > 0) ? 0 : 1,
             'image'         => 'public/uploads/default.png',           
             'slot_plate'    => 1,           
