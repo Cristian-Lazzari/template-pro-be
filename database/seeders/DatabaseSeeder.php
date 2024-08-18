@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\DatesTableSeeder;
 use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\ProductsTableSeeder;
+use Database\Seeders\CategoriesTableSeeder;
 use Database\Seeders\SettingsTableSeeder;
 use Database\Seeders\IngredientsTableSeeder;
 
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UsersTableSeeder::class,
+            
             CategoriesTableSeeder::class,
             ProductsTableSeeder::class,
             SettingsTableSeeder::class,
