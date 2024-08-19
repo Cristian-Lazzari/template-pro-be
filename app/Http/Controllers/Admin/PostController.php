@@ -13,7 +13,7 @@ class PostController extends Controller
     
     private $validation = [
         'title'         => 'required|string|min:1|max:100|unique:posts,title',
-        'hashtag'       => 'string',
+        'hashtag'       => 'nullable|string',
         'description'   => 'required',
         'path'          => 'required',
         'image'         => 'required',
@@ -21,7 +21,7 @@ class PostController extends Controller
     ];
     private $validation1 = [
         'title'         => 'required|string|min:1|max:100',
-        'hashtag'       => 'string',
+        'hashtag'       => 'nullable|string',
         'description'   => 'required',
         'path'          => 'required',
         'link'          => 'nullable|string'
