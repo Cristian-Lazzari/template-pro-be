@@ -245,7 +245,7 @@
             </div>
         
         @elseif(config('configurazione.pack') == 1)
-        <div class="date-off">
+        <div class="date-off d-back-g">
             <a href="https://future-plus.it/#pacchetti">Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e <strong>prenota una call con i nostri consulenti</strong></a>
         </div>
         @else 

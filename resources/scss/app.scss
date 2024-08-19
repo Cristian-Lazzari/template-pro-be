@@ -18,6 +18,21 @@ $fs_sm: clamp(14px, 2.3vw, 16px);
 $fs_md: clamp(16px, 2.4vw, 24px);
 $fs_lg: clamp(20px, 3.2vw, 35px);
 $fs_xlg: clamp(28px, 3.8vw, 39px);
+ 
+.d-back-g{
+    background-image: url(../../public/images/back.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    aspect-ratio: 1.12;
+    a{
+        align-self: flex-start;
+        padding: 20px;
+        text-shadow: 0 0 10px $c2;
+        font-size: $fs_md;
+        color: #e3eaea !important;
+    }
+}
 
 .my_btn_1, .my_btn_2, .my_btn_3, .my_btn_4, .my_btn_5, .my_btn_6{
     text-decoration: none;
@@ -257,6 +272,7 @@ body{
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
+            width: 100%;
             .result-bar{
                 width: 100%;
                 flex-direction: row;
