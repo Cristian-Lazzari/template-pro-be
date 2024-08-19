@@ -1721,7 +1721,7 @@ class ProductsTableSeeder extends Seeder
         
         ];
         array_push($newproducts, $newproduct);
-        dump( $newproducts);
+        //dump( $newproducts);
     };
     
     
@@ -1731,8 +1731,7 @@ class ProductsTableSeeder extends Seeder
             'name'          => $product['name'],
             'price'         => $product['price'],
             'visible'       => ($product['price'] > 0) ? 1 : 0,
-            'archived'      => ($product['price'] > 0) ? 0 : 1,
-            'image'         => 'public/uploads/default.png',           
+            'archived'      => ($product['price'] > 0) ? 0 : 1,          
             'slot_plate'    => 1,           
             'type_plate'    => 0,           
             'tag_set'       => 1,           
