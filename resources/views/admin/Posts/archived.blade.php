@@ -102,7 +102,7 @@
                         <h4>Precedenza:</h4> 
                         <p>{{$item->order}}</p>       
                     </section>
-                    <h4 class="ell-c">Pagina: <span class="">{{$item->path == 1 ? 'News' : 'Story'}}</span></h4>
+                    <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
                     <div class="split_i">
                         <h4>{{$item->path}}</h4>
                         @if (isset($item->link))

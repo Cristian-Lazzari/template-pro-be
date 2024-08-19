@@ -115,7 +115,7 @@
 
                     <div class="split_i">
                         
-                        <h4 class="ell-c">Pagina: <span class="">{{$item->path == 1 ? 'News' : 'Story'}}</span></h4>
+                        <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
                         @if (isset($item->hashtag))
                             <div class="price">{{$item->hashtag}}</div>
                         @else
