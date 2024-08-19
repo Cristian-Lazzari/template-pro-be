@@ -99,21 +99,10 @@
 
                 <div class="info">
                     <section>
-                        <h4>Descrizione:</h4> 
-                        <p>{{$item->description}}</p>       
-                    </section>
-                    <section>
                         <h4>Precedenza:</h4> 
                         <p>{{$item->order}}</p>       
                     </section>
-                    <section>
-                        <h4>Link:</h4> 
-                        @if (isset($item->link))
-                            <p>{{$item->link}}</p>  
-                        @else
-                            <p>(nessun link impostato)</p>   
-                        @endif  
-                    </section>
+                    <h4 class="ell-c">Pagina: <span class="">{{$item->path == 1 ? 'News' : 'Story'}}</span></h4>
                     <div class="split_i">
                         <h4>{{$item->path}}</h4>
                         @if (isset($item->link))
@@ -121,10 +110,10 @@
                         @else
                             <p>(nessun link impostato)</p>   
                         @endif 
-                        @if (isset($item->link))
+                        @if (isset($item->hashtag))
                             <div class="price">{{$item->hashtag}}</div>
                         @else
-                            <div class="price">(nessun link impostato)</div>   
+                            <div class="price">(nessun hashtag impostato)</div>   
                         @endif 
                     </div>
                 </div>

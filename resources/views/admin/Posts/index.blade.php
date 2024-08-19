@@ -105,10 +105,6 @@
 
                 <div class="info">
                     <section>
-                        <h4>Descrizione:</h4> 
-                        <p>{{$item->description}}</p>       
-                    </section>
-                    <section>
                         <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
                         @if (isset($item->link)) 
                             <h4 class="ell-c">Link: <span class="ellips">{{$item->link}}</span></h4>
@@ -119,8 +115,8 @@
 
                     <div class="split_i">
                         
-                        <h4 class="ell-c">Pagina: <span class="ellips">{{$item->path == 1 ? 'News' : 'Story'}}</span></h4>
-                        @if (isset($item->link))
+                        <h4 class="ell-c">Pagina: <span class="">{{$item->path == 1 ? 'News' : 'Story'}}</span></h4>
+                        @if (isset($item->hashtag))
                             <div class="price">{{$item->hashtag}}</div>
                         @else
                             <div class="price">(nessun hashtag impostato)</div>   
