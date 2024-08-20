@@ -65,12 +65,12 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 .my_btn_3{
     background-color: $c3;
     color: $c2;
-    text-shadow: 1px 1px 4px #ff775877;
+    text-shadow: 1px 1px 4px $c2_op;
 }
 .my_btn_4{
     background-color: $c1;
     color: $c2;
-    text-shadow: 1px 1px 4px #ff775877;
+    text-shadow: 1px 1px 4px $c2_op;
 }
 .my_btn_5{
     background-color: $c1;
@@ -772,7 +772,7 @@ body{
     }
     .actions, .allergens{
         align-self: flex-end;
-        max-width: 270px;
+        //max-width: 270px;
         display: flex;
         justify-content: flex-end;
         gap: .8rem;
@@ -799,7 +799,38 @@ body{
     
     
 }
-
+.post{
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    h3{
+        a{
+            color: $c3;
+            text-decoration: none;
+        }
+    }
+    flex: 1 1 auto;
+    .card_{
+        border-radius: 15px;
+        padding: 8px;
+        color: $c1;
+        background-color: $c3;
+        flex-wrap: wrap;
+        img{
+            background-color: #10b793;
+            border-radius: 12px;
+            width: 100% !important;
+            height: 195px;
+            object-fit: cover;
+            border: 2px solid $c3_op;
+        }
+    }
+    .actions{
+        .my_btn{}
+        align-items: stretch;
+        width: 100% !important;
+    }
+}
 .slim_cont{
     display: flex;
     gap: 1.1rem;

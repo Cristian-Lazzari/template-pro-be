@@ -94,34 +94,26 @@
 <div class="object-container">
     @foreach ($posts as $item)
 
-        <div class="obj  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
+        <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
             <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
             <div class="card_">
-                @if (isset($item->image))
+                @if (!isset($item->image))
                     <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
                 @endif 
 
+                @if (isset($item->hashtag))
+                    <div class="price">{{$item->hashtag}}</div>
+                @endif 
+                <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
                 <div class="info">
                     <section>
                         <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
                         @if (isset($item->link)) 
-                            <h4 class="ell-c">Link: <span class="ellips">{{$item->link}}</span></h4>
-                        @else
-                            <p>(nessun link impostato)</p>   
+                            <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
                         @endif  
                     </section>
-
-                    <div class="split_i">
-                        
-                        <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
-                        @if (isset($item->hashtag))
-                            <div class="price">{{$item->hashtag}}</div>
-                        @else
-                            <div class="price">(nessun hashtag impostato)</div>   
-                        @endif 
-                    </div>
                 </div>
             </div>
             <div class="actions">
