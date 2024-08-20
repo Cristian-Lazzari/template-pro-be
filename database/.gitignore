@@ -1,2 +1,2 @@
 *.sqlite*
-/UsersTableSeeder.php
+UsersTableSeeder.php

@@ -27,11 +27,7 @@ class UsersTableSeeder extends Seeder
                 'email'     => 'future.plus@assistenza.it',
                 'password'  => Hash::make('sepT2921!?'),
             ],
-            [
-                'name'      => 'future-plus-assistance',
-                'email'     => 'future.plus@assistenza.it',
-                'password'  => Hash::make('sepT2921!?'),
-            ],
+
         ];
 
         foreach ($users as $user_data) {
