@@ -90,6 +90,28 @@ class IngredientController extends Controller
     }
     public function update(Request $request, $id)
     {
+        //funzione del cazzo di chat per controllare la questione glutine e senza glutine
+        function cleanArray($array) {
+            $hasGluten = false;
+            $hasNoGluten = false;
+            foreach ($array as $item) {     
+                if ($item == 1) {
+                    $hasGluten = true;
+                } elseif ($item == 4) {
+                    $hasNoGluten = true;
+                }     
+            } 
+            if ($hasGluten && $hasNoGluten) {
+                $filteredArray = array_filter($array, function($value) {
+                    return $value !== 1;
+                });
+            }else{
+                $filteredArray = $array;
+            }  
+            return array_values($filteredArray); // re-indicizzare l'array
+        }
+        //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
+        
         $data = $request->all();
         $request->validate($this->validations_ingredient1);
         
@@ -131,6 +153,37 @@ class IngredientController extends Controller
             $new_ing->allergens = '[]';
         }
         $new_ing->update();
+        $id_ing = $new_ing->id;
+        $prodotti = Product::whereHas('ingredients', function($query) use ($id_ing) {
+            $query->where('ingredient_id', $id_ing);
+        })->get();
+        //dd($prodotti);
+        foreach ($prodotti as $p) {
+            $allergens = [];
+            foreach ($p['ingredients'] as $i) {
+                $all = json_decode($i['allergens']);
+                if($all !== "[]" && $all !== NULL ){
+                    foreach($all as $a){
+                        array_push($allergens, $a);
+                    }  
+                }
+            }
+            if (count($allergens) > 0) {
+                $alldclen = array_unique($allergens);
+                dump($alldclen);
+                $rightall = array_map('intval', array_values($alldclen));   
+                //dd($rightall);
+                $cleanallergens = cleanArray($rightall);          
+                dump($cleanallergens);
+                $allergens = json_encode($cleanallergens);
+            }else{
+                $allergens = '[]';   
+            }
+            $p->allergens = $allergens;
+            $p->update(); 
+        }
+        
+        
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';
         return to_route('admin.ingredients.index')->with('ingredient_success', $m);
  
