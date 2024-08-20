@@ -18,4 +18,4 @@ yarn-error.log
 /.vscode
 /config/configurazione.php
 /database/seeders/SeederProductTable.php
-/database/seeders/SeederCategoryTable.php
+/database/seeders/SeederCategoriesTable.php

@@ -94,7 +94,7 @@ class ProductsTableSeeder extends Seeder
          'name'=> 'GUNKAN ITALIANO',
          'price'=> '6.00',
          'category_id'=> 'GUNKAN',
-         'ingredients'=> 'zucchina, burata, pomodoro sotto olio ',
+         'ingredients'=> 'zucchina, burrata, pomodoro sotto olio ',
         ],
         [
          'name'=> 'GAMBERONE',
@@ -636,7 +636,7 @@ class ProductsTableSeeder extends Seeder
          'name'=> 'SPAGHETTI DI SOIA CON FRUTTI DI MARE',
          'price'=> '9.00',
          'category_id'=> 'PRIMI',
-         'ingredients'=> 'spaghetti di soia, gamberetti, surimi, caramalli',
+         'ingredients'=> 'spaghetti di soia, gamberetti, surimi, calamari',
         ],
         [
          'name'=> 'TAGLIATELLE CON VERDURE',
@@ -678,7 +678,7 @@ class ProductsTableSeeder extends Seeder
          'name'=> 'UDON CON FRUTTI DI MARE',
          'price'=> '9.00',
          'category_id'=> 'PRIMI',
-         'ingredients'=> 'spaghetti di riso giapponesi, uova, gamberetti, surimi, caramalli',
+         'ingredients'=> 'spaghetti di riso giapponesi, uova, gamberetti, surimi, calamari',
         ],
         [
          'name'=> 'UDON CON MANZO',
@@ -702,7 +702,7 @@ class ProductsTableSeeder extends Seeder
          'name'=> 'POLLO IN AGRODOLCE',
          'price'=> '6.50',
          'category_id'=> 'SECONDI',
-         'ingredients'=> 'pollo fritto, pomodoro, farina di mais, piselli, annas',
+         'ingredients'=> 'pollo fritto, pomodoro, farina di mais, piselli, ananas',
         ],
         [
          'name'=> 'POLLO CON FUNGHI E BAMBÙ',
@@ -750,7 +750,7 @@ class ProductsTableSeeder extends Seeder
          'name'=> 'GAMBERI IN AGRODOLCE',
          'price'=> '8.00',
          'category_id'=> 'SECONDI',
-         'ingredients'=> 'gamberetti fritti, pomodoro, farina di mais, piselli, annas',
+         'ingredients'=> 'gamberetti fritti, pomodoro, farina di mais, piselli, ananas',
         ],
         [
          'name'=> 'GAMBERETTI PICCANTI',
@@ -1025,7 +1025,7 @@ class ProductsTableSeeder extends Seeder
          'name'=> 'GAMBERO ROSSO',
          'price'=> '15.00',
          'category_id'=> 'PIATTI SPECIALI',
-         'ingredients'=> 'Gamberi , buratta',
+         'ingredients'=> 'Gamberi , burrata',
         ],
         [
          'name'=> 'BAO con PULLEDPORK',
