@@ -17,5 +17,6 @@ yarn-error.log
 /.idea
 /.vscode
 /config/configurazione.php
-/database/seeders/SeederProductTable.php
-/database/seeders/SeederCategoriesTable.php
+/database/seeders/ProductTableSeeder.php
+/database/seeders/CategoriesTableSeeder.php
+/database/seeders/UsersTableSeeder.php
