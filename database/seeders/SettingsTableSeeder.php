@@ -104,6 +104,14 @@ class SettingsTableSeeder extends Seeder
                     'name' => 'Contatti',
                     'property' => [],
                 ],
+                [
+                    'name' => 'Possibilità di consegna a domicilio - non attivo',  
+                    'property' => []
+                ],
+                [
+                    'name' => 'Comuni per il domicilio - non attivo',
+                    'property' => []
+                ],
             ];
         }
 

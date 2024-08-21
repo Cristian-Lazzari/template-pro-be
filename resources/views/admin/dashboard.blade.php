@@ -18,7 +18,12 @@
     <div class="top-c">
         <div class="prod">
             <div class="top-p">
-                <a href="{{ route('admin.products.index') }}"> <h2>I tuoi prodotti</h2></a>
+                <a class="title" href="{{ route('admin.products.index') }}"> <h2>Prodotti</h2></a>
+                <a href="{{ route('admin.products.index') }}" class=" plus icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
+                        <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                    </svg>
+                </a>
                 <a href="{{ route('admin.products.create') }}" class="plus">
                     <div class="line"></div>
                     <div class="line l2"></div>
@@ -62,7 +67,12 @@
                 </div>
                 <div class="delivery-c">
                     <div class="top-p">
-                        <a href="{{ route('admin.orders.index') }}"> <h3>Ordini asporto/delivery</h3></a>
+                        <a class="title" href="{{ route('admin.orders.index') }}"> <h3>Ordini asporto/delivery</h3></a>
+                        <a href="{{ route('admin.orders.index') }}" class=" plus icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
+                                <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                            </svg>
+                        </a>
                         <a href="{{ route('admin.orders.index') }}" class="plus">
                             <div class="line"></div>
                             <div class="line l2"></div>
@@ -88,7 +98,12 @@
                     
                 <div class="delivery-c">
                     <div class="top-p">
-                        <a href="{{ route('admin.reservations.index') }}"> <h3>Prenotazioni Tavoli</h3></a>
+                        <a class="title" href="{{ route('admin.reservations.index') }}"> <h3>Prenotazioni Tavoli</h3></a>
+                        <a href="{{ route('admin.reservations.index') }}" class=" plus icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
+                                <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                            </svg>
+                        </a>
                         <a href="{{ route('admin.reservations.index') }}" class="plus">
                             <div class="line"></div>
                             <div class="line l2"></div>
@@ -114,11 +129,17 @@
         @endif
         <div class="prod post">  
             <div class="top-p">
-                <a href="{{ route('admin.posts.index') }}"> <h2>I tuoi post</h2></a>
+                <a class="title" href="{{ route('admin.posts.index') }}"> <h2>Post</h2></a>
+                <a href="{{ route('admin.posts.index') }}" class=" plus icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
+                        <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                    </svg>
+                </a>
                 <a href="{{ route('admin.posts.create') }}" class="plus">
                     <div class="line"></div>
                     <div class="line l2"></div>
                 </a>
+                
             </div>
             <div class="stat-p">
                 <div class="stat">

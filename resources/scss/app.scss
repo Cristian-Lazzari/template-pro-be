@@ -188,7 +188,7 @@ body{
 .dash-c{
     .plus{
         background-color: $c1;
-        height: 27px;
+        height: 30px;
         width: 40px;
         border-radius: 7px;
         position: relative;
@@ -197,7 +197,7 @@ body{
             background-color: $c3;
             height: 50%;
             width: 3px;
-            border-radius: 1px;
+            border-radius: 5px;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -206,6 +206,11 @@ body{
         .l2{
             transform: translate(-50%, -50%) rotateZ(90deg);
         }
+    }
+    .icon{
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     display: flex;
     flex-direction: column;
@@ -409,6 +414,12 @@ body{
             
         }
         
+    }
+    .top-c{
+        .title{
+            flex-grow: 1;
+        }
+        justify-content: flex-start;
     }
     
 }

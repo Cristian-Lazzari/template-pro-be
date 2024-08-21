@@ -5,14 +5,14 @@
   },
   "resources/js/app.js": {
     "file": "../public/build/assets/app.82c6a187.js",
-    "src": "resources/js/app.js",
+    "src": "../public/build/resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.9cdb3490.css"
+      "../public/build/assets/app.df6b08c8.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.9cdb3490.css",
+    "file": "../public/build/assets/app.df6b08c8.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }
