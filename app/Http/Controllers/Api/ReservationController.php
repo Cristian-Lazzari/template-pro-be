@@ -103,7 +103,7 @@ class ReservationController extends Controller
         Mail::to($newRes->email)->send($mail);
 
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-        Mail::to('test@dashboardristorante.it')->send($mailAdmin);
+        Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
 
         

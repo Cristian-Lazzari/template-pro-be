@@ -260,7 +260,7 @@ class OrderController extends Controller
             Mail::to($data['email'])->send($mail);
     
             $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-            Mail::to('test@dashboardristorante.it')->send($mailAdmin);
+            Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
             return response()->json([
                 'success' => true,
