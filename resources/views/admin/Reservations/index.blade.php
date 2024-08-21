@@ -124,25 +124,76 @@
                 </div>
                 <div class="actions">
                     @if($reservation->status !== 1)
-                    <form class="w-100" action="{{ route('admin.reservations.status') }}" method="POST">
-                        @csrf
-                        <input value="1" type="hidden" name="c_a">
-                        <input value="{{$reservation->id}}" type="hidden" name="id">
-                        
-                        <button type="submit" class="w-100 my_btn_6">Conferma</button>
-                    </form>
+                    <div class="w-100">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="w-100 my_btn_6">Conferma</button>
+                    </div>
                     @endif
-                    @if(!$reservation->status !== 0)
-                    <form class="w-100" action="{{ route('admin.reservations.status') }}" method="POST">
-                        @csrf
-                        <input value="0" type="hidden" name="c_a">
-                        <input value="{{$reservation->id}}" type="hidden" name="id">
-
-                        <button type="submit" class="w-100 my_btn_6">Annulla</button>
-                    </form>
+                    @if($reservation->status !== 0)
+                    <div class="w-100">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" class="w-100 my_btn_6">Annulla</button>                   
+                    </div>
                     @endif
                 </div>
             </section>
+        </div>
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header c-1">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Gestione notifica</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body c-1">
+                        <p>Vuoi inviare un messaggio whatsapp?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="{{ route('admin.reservations.status') }}" method="POST">
+                            @csrf
+                            <input value="1" type="hidden" name="wa">
+                            <input value="1" type="hidden" name="c_a">
+                            <input value="{{$reservation->id}}" type="hidden" name="id">
+                            <button type="submit" class="w-100 my_btn_6">Si</button>
+                        </form>
+                        <form action="{{ route('admin.reservations.status') }}" method="POST">
+                            @csrf
+                            <input value="0" type="hidden" name="wa">
+                            <input value="1" type="hidden" name="c_a">
+                            <input value="{{$reservation->id}}" type="hidden" name="id">
+                            <button type="submit" class="w-100 my_btn_6">NO</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header c-1">
+                        <h1 class="modal-title fs-5" id="staticBackdrop1Label">Gestione notifica</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body c-1">
+                        <p>Vuoi inviare un messaggio whatsapp?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="{{ route('admin.reservations.status') }}" method="POST">
+                            @csrf
+                            <input value="1" type="hidden" name="wa">
+                            <input value="0" type="hidden" name="c_a">
+                            <input value="{{$reservation->id}}" type="hidden" name="id">
+                            <button type="submit" class="w-100 my_btn_6">Si</button>
+                        </form>
+                        <form action="{{ route('admin.reservations.status') }}" method="POST">
+                            @csrf
+                            <input value="0" type="hidden" name="wa">
+                            <input value="0" type="hidden" name="c_a">
+                            <input value="{{$reservation->id}}" type="hidden" name="id">
+                            <button type="submit" class="w-100 my_btn_6">NO</button>
+                        </form>
+    
+                    </div>
+                </div>
+            </div>
         </div>
     @endforeach
         

@@ -14,6 +14,7 @@ class ReservationController extends Controller
 {
     
     public function status(Request $request){
+        $wa = $request->input('wa');
         $c_a = $request->input('c_a');
         $id = $request->input('id');
         $res = Reservation::where('id', $id)->firstOrFail();
@@ -92,7 +93,10 @@ class ReservationController extends Controller
         $data = [];
         array_push($data, $filters);
         array_push($data, $reservations);
-
+        if($wa){
+            return redirect("https://wa.me/" . '39' . $order->phone . "?text= . $message . ");
+        }
+        
         return redirect()->back()->with('filter', $data);
     }
 

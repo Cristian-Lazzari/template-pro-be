@@ -60,15 +60,18 @@ class OrderController extends Controller
     }
 
     public function status(Request $request){
+        $wa = $request->input('wa');
         $c_a = $request->input('c_a');
         $id = $request->input('id');
         $order = Order::where('id', $id)->firstOrFail();
         if($c_a){
             $order->status = 1;
             $m = 'La prenotazione e\' stata confermata correttamente';
+            $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;
         }else{
             $order->status = 0;
             $m = 'La prenotazione e\' stata annullata correttamente';
+            $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
         }
         $order->update();
         
@@ -101,6 +104,11 @@ class OrderController extends Controller
        
         $mail = new confermaOrdineAdmin($bodymail);
         Mail::to($order['email'])->send($mail);
+
+       
+        if($wa){
+            return redirect("https://wa.me/" . '39' . $order->phone . "?text= . $message . ");
+        }
         
         return redirect()->back()->with('success', $m);   
     }
