@@ -170,11 +170,11 @@ class IngredientController extends Controller
             }
             if (count($allergens) > 0) {
                 $alldclen = array_unique($allergens);
-                dump($alldclen);
+                //dump($alldclen);
                 $rightall = array_map('intval', array_values($alldclen));   
                 //dd($rightall);
                 $cleanallergens = cleanArray($rightall);          
-                dump($cleanallergens);
+                //dump($cleanallergens);
                 $allergens = json_encode($cleanallergens);
             }else{
                 $allergens = '[]';   
