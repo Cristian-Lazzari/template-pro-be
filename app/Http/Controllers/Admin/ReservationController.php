@@ -49,7 +49,9 @@ class ReservationController extends Controller
        
         $mail = new confermaOrdineAdmin($bodymail);
         Mail::to($res['email'])->send($mail);
-        
+        if($wa){
+            return redirect("https://wa.me/39" . $res->phone . "?text=" . $message);
+        }
         return redirect()->back()->with('success', $m);   
     }
     
@@ -93,9 +95,7 @@ class ReservationController extends Controller
         $data = [];
         array_push($data, $filters);
         array_push($data, $reservations);
-        if($wa){
-            return redirect("https://wa.me/" . '39' . $order->phone . "?text= . $message . ");
-        }
+      
         
         return redirect()->back()->with('filter', $data);
     }

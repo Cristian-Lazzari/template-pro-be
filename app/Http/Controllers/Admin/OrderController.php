@@ -107,7 +107,7 @@ class OrderController extends Controller
 
        
         if($wa){
-            return redirect("https://wa.me/" . '39' . $order->phone . "?text= . $message . ");
+            return redirect("https://wa.me/39" . $order->phone . "?text=" . $message);
         }
         
         return redirect()->back()->with('success', $m);   
