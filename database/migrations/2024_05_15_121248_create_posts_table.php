@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->string('title', 100);
             $table->text('description');
-            $table->tinyInteger('path');
+            $table->tinyInteger('path'); // 1 news 2 story
             $table->smallInteger('order');
             $table->string('image');
             $table->text('hashtag')->nullable();;

@@ -180,13 +180,20 @@
                     <label class="my_btn_1 my_btn_2 scale-none  " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
                         <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
-                                <input
+                                {{-- <input
                                     type="checkbox"
                                     class="btn-check"
                                     id="days_on_{{ $day }}"
                                     name="days_on[]"
                                     value="{{ $day }}">
-                                <label class="btn btn-outline-dark w-auto m-auto" for="days_on_{{ $day }}">Attiva</label>
+                                <label class="btn btn-outline-dark w-auto m-auto" for="days_on_{{ $day }}">Attiva</label> --}}
+
+                                <label class="theme-switch" for="days_on_{{ $day }}" id="themeswitch">
+                                    <input type="checkbox" id="days_on_{{ $day }}" name="days_on[]" value="{{ $day }}">
+                                    <div class="slider round"></div>
+                                    <span class="name"></span>
+                                    <div class="back"></div>
+                                </label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
                                 @foreach (config('configurazione.times') as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
