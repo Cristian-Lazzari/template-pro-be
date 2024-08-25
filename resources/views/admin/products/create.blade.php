@@ -106,7 +106,7 @@ $domain = 'https://future-plus.it/allergens/';
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-        <div class="modal-content my_btn_1">
+        <div class="modal-content my_bg_1">
             <div class="modal-header">
                 <h2>Crea e aggiungi Ingredienti mancanti</h2>
                 <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
