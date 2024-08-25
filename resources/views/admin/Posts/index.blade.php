@@ -97,7 +97,7 @@
         <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
             <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
             <div class="card_">
-                @if (!isset($item->image))
+                @if (isset($item->image))
                     <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">

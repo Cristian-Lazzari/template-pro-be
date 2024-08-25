@@ -12,19 +12,24 @@ class PostController extends Controller
 
     
     private $validation = [
-        'title'         => 'required|string|min:1|max:100|unique:posts,title',
+        'title'         => 'required|string|min:1|max:150|unique:posts,title',
         'hashtag'       => 'nullable|string',
+        'link'          => 'nullable|string',
+
         'description'   => 'required',
         'path'          => 'required',
+        'order'         => 'required',
+
         'image'         => 'required',
-        'link'          => 'nullable|string'
     ];
     private $validation1 = [
-        'title'         => 'required|string|min:1|max:100',
+        'title'         => 'required|string|min:1|max:150',
         'hashtag'       => 'nullable|string',
+        'link'          => 'nullable|string',
+
         'description'   => 'required',
         'path'          => 'required',
-        'link'          => 'nullable|string'
+        'order'         => 'required',
     ];
 
 

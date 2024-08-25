@@ -88,72 +88,58 @@
 <div class="object-container archived">
     @foreach ($posts as $item)
 
-        <div class="obj  @if (!$item->visible) not_v @endif" >
-            <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
-            <div class="card_">
-                @if (isset($item->image))
-                    <img onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}" src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
-                @else
-                    <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
-                @endif 
+    <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
+        <h3><a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a></h3>     
+        <div class="card_">
+            @if (isset($item->image))
+                <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
+            @else
+                <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
+            @endif 
 
-                <div class="info">
-                    <section>
-                        <h4>Precedenza:</h4> 
-                        <p>{{$item->order}}</p>       
-                    </section>
-                    <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
-                    <div class="split_i">
-                        <h4>{{$item->path}}</h4>
-                        @if (isset($item->link))
-                            <p>{{$item->link}}</p>  
-                        @else
-                            <p>(nessun link impostato)</p>   
-                        @endif 
-                        @if (isset($item->hashtag))
-                            <div class="price">{{$item->hashtag}}</div>
-                        @else
-                            <div class="price">(nessun hashtag impostato)</div>   
-                        @endif 
-                    </div>
-                </div>
+            @if (isset($item->hashtag))
+                <div class="price">{{$item->hashtag}}</div>
+            @endif 
+            <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
+            <div class="info">
+                <section>
+                    <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
+                    @if (isset($item->link)) 
+                        <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
+                    @endif  
+                </section>
             </div>
-            <div class="actions">
-                <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
-                <form action="{{ route('admin.posts.status') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="archive" value="1">
-                    <input type="hidden" name="v" value="0">
-                    <input type="hidden" name="a" value="1">
-                    <input type="hidden" name="id" value="{{$item->id}}">
-                    <button class="my_btn_1 d" type="submit">Ripristina</button>
-                </form>
-                <form action="{{ route('admin.posts.status') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="archive" value="1">
-                    <input type="hidden" name="v" value="1">
-                    <input type="hidden" name="a" value="0">
-                    <input type="hidden" name="id" value="{{$item->id}}">
-                    @if (!$item->visible)
-                        <button class="my_btn_1 v" type="submit">
-                            <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
-                                <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
-                                <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
-                            </svg>  
-                        </button>
-                    @else
-                        <button class="my_btn_1 v" type="submit">
-                            <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
-                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
-                            </svg>    
-                        </button>
-                    @endif
-                    
-                </form>
-            </div>
-
         </div>
+        <div class="actions">
+            <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
+            <form action="{{ route('admin.posts.status') }}" method="POST">
+                @csrf
+                <input type="hidden" name="archive" value="0">
+                <input type="hidden" name="v" value="0">
+                <input type="hidden" name="a" value="1">
+                <input type="hidden" name="id" value="{{$item->id}}">
+                <button class="my_btn_1 d" type="submit">Archivia</button>
+            </form>
+            <form action="{{ route('admin.posts.status') }}" method="POST">
+                @csrf
+                <input type="hidden" name="archive" value="0">
+                <input type="hidden" name="v" value="1">
+                <input type="hidden" name="a" value="0">
+                <input type="hidden" name="id" value="{{$item->id}}">
+                @if (!$item->visible)
+                    <button class="my_btn_5" type="submit">
+                        PUBBLICA
+                    </button>
+                @else
+                    <button class="my_btn_5" type="submit">
+                        Nascondi   
+                    </button>
+                @endif
+                
+            </form>
+        </div>
+
+    </div>
     @endforeach
 </div>
 @endsection
