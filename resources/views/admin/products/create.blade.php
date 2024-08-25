@@ -101,54 +101,72 @@ $domain = 'https://future-plus.it/allergens/';
         </div>
     </section>
     @endif
-    <section class="more_i">
-        <h2>Crea e aggiungi Ingredienti mancanti</h2>
-        <div class="split">
-            <div>
-                <label class="label_c" for="name_ing">Nome</label>
-                <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" inserisci il nome"></p>
-                @error('name_ing') <p class="error">{{ $message }}</p> @enderror
+
+  
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content my_btn_1">
+            <div class="modal-header">
+                <h2>Crea e aggiungi Ingredienti mancanti</h2>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div>
-                <label class="label_c" for="price_ing">Prezzo</label>
-                <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" inserisci il prezzo "></p>
-                @error('price_ing') <p class="error">{{ $message }}</p> @enderror
+            <div class="modal-body">
+                <section class="more_i">
+                    
+                    <div class="split">
+                        <div>
+                            <label class="label_c" for="name_ing">Nome</label>
+                            <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" inserisci il nome"></p>
+                            @error('name_ing') <p class="error">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="label_c" for="price_ing">Prezzo</label>
+                            <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" inserisci il prezzo "></p>
+                            @error('price_ing') <p class="error">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="label_c" for="file-input1">Immagine</label>
+                        <p><input type="file" id="file-input1" name="image_ing" ></p>
+                        @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
+                    </div> 
+                    <div class="check_c">
+                        <label class="label_c" for="type">Categorie abbinate</label>
+                        <p>
+                            
+                            @foreach ($categories as $c)
+                            
+                            <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
+                            <label class="btn btn-outline-light" for="a{{ $c->id }}">{{ $c['name'] }}</label>
+                            @endforeach
+                            
+                        </p>
+                        @error('type_ing') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+                    
+                    <div class="check_c">
+                        <label class="label_c" for="type">allergeni</label>
+                        <p>
+                            @foreach(  config('configurazione.allergens') as $a)
+                                @php $i = $loop->iteration; @endphp
+                                <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
+                                <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
+                            @endforeach
+                        </p>
+                    </div>
+                        <input type="submit" class="btn-check" id="newi" name="newi" value="1">
+                        <label class="my_btn_2 m-auto" for="newi">Crea Ingrediente</label>
+                </section>
             </div>
+            
         </div>
-        <div>
-            <label class="label_c" for="file-input1">Immagine</label>
-            <p><input type="file" id="file-input1" name="image_ing" ></p>
-            @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
-        </div> 
-        <div class="check_c">
-            <label class="label_c" for="type">Categorie abbinate</label>
-            <p>
-                
-                @foreach ($categories as $c)
-                
-                <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
-                <label class="btn btn-outline-light" for="a{{ $c->id }}">{{ $c['name'] }}</label>
-                @endforeach
-                
-            </p>
-            @error('type_ing') <p class="error">{{ $message }}</p> @enderror
         </div>
-        
-        <div class="check_c">
-            <label class="label_c" for="type">allergeni</label>
-            <p>
-                @foreach(  config('configurazione.allergens') as $a)
-                    @php $i = $loop->iteration; @endphp
-                    <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
-                    <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
-                @endforeach
-            </p>
-        </div>
-            <input type="submit" class="btn-check" id="newi" name="newi" value="1">
-            <label class="my_btn_1 w-50 m-auto" for="newi">Crea Ingrediente</label>
-    </section>
+    </div>
     <section class="cont_i">
         <h2>Abbina Ingredienti</h2>
+            <!-- Button trigger modal -->
+
         <div class="check_c">
             <p>
                 @foreach($ingredients as $ingredient)
@@ -169,6 +187,10 @@ $domain = 'https://future-plus.it/allergens/';
                 @endforeach
             </p>
         </div>
+        <h5 class="text-center" >Se non hai ancora creato tutti gli gli ingedienti per il tuo prodotto puoi farlo ora</h5>
+        <button type="button" class="my_btn_4" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Crea Ingredienti mancanti
+        </button>
         
 
     </section>
