@@ -26,7 +26,7 @@ $domain = 'https://future-plus.it/allergens/';
             </div>
             <div>
                 <label class="label_c" for="price_ing">Prezzo</label>
-                <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing" placeholder=" inserisci il prezzo "></p>
+                <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" inserisci il prezzo "></p>
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
