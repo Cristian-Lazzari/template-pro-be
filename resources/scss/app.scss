@@ -1783,3 +1783,41 @@ body{
         transition: 300ms ease;
       }
 }
+
+
+
+//ui star
+ 
+
+.container_star input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  .container_star {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .container_star svg {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 50px;
+    width: 50px;
+    transition: all 0.3s;
+    fill: #666;
+  }
+  
+  .container_star svg:hover {
+    transform: scale(1.1);
+  }
+  
+  .container_star input:checked ~ svg {
+    fill: #ffeb49;
+  }

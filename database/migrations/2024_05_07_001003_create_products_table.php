@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->string      ('name', 100);
             $table->bigInteger  ('price');
+            $table->bigInteger  ('old_price')->nullable();
             $table->string      ('image')->nullable();
             $table->text        ('description')->nullable(); 
             
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->tinyInteger ('tag_set')->nullable(); //indica se questo prodotto puo subire modifiche 0 nessuna, 1 togli ingredienti, 2 aggiungi e togli
             $table->boolean     ('visible')->default(true);
             $table->boolean     ('archived')->default(false);
+            $table->boolean     ('promotion')->default(false);
             $table->timestamps();
         });
     }

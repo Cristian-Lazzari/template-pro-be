@@ -442,9 +442,11 @@ class ProductController extends Controller
         $product->name          = $data['name'];
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
-
+        
         $product->allergens    = $allergens;
         
+        $product->promotion   = isset($data['promotion']) ? true : false;
+        $product->old_price   = $data['old_price'];
         
         if(config('configurazione.pack') > 2){
             $product->tag_set       = $data['tag_set'];
