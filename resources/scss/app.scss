@@ -1034,6 +1034,11 @@ body{
         font-weight: bolder;
         align-self: flex-end;
     }
+    .old-price{
+        align-self: flex-end;
+        font-size: clamp(16px, 2.5vw, 22px);
+        text-decoration:line-through;
+    }
     .prod-spec{
         width: 100%;
         display: flex;
@@ -1811,7 +1816,7 @@ body{
     height: 50px;
     width: 50px;
     transition: all 0.3s;
-    fill: #666;
+    fill: $c1;
   }
   
   .container_star svg:hover {
@@ -1819,5 +1824,14 @@ body{
   }
   
   .container_star input:checked ~ svg {
-    fill: #ffeb49;
+    fill: $c2;
+  }
+  .promotion_on{
+    fill: $c2;
+  }
+
+  .ml-auto{
+    width: fit-content !important;
+    display: block;
+    margin-left: auto ;
   }

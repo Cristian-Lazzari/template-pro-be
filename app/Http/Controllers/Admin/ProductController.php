@@ -430,6 +430,10 @@ class ProductController extends Controller
         $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
         $prezzo_float = floatval($prezzo_stringa);
 
+        $prezzo_stringa1 = str_replace(',', '.', $data['old_price']);
+        $prezzo_stringa1 = preg_replace('/[^0-9.]/', '', $prezzo_stringa1);
+        $prezzo_float1 = floatval($prezzo_stringa1);
+
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
             if ($product->image) {
@@ -446,7 +450,7 @@ class ProductController extends Controller
         $product->allergens    = $allergens;
         
         $product->promotion   = isset($data['promotion']) ? true : false;
-        $product->old_price   = $data['old_price'];
+        $product->old_price   = intval(round($prezzo_float1 * 100));
         
         if(config('configurazione.pack') > 2){
             $product->tag_set       = $data['tag_set'];
