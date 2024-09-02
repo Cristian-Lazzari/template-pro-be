@@ -121,9 +121,6 @@ class ProductController extends Controller
         
         $query = Product::query();
         
-        if ($archive == 1) {
-            $query->where('archived', true);
-        }
         if ($name) {
             $query->where('name', 'like', '%' . $name . '%');
         } 
@@ -141,7 +138,7 @@ class ProductController extends Controller
             $products = $query->orderBy('updated_at', 'desc')->get();    
         }        
         if ($archive == 1) {
-
+            $query->where('archived', true);
             return view('admin.products.archived', compact('products', 'categories', 'filters'));
         }
 
@@ -152,7 +149,7 @@ class ProductController extends Controller
     public function index()
     {
         
-        $products    = Product::where('archived', false)->get();
+        $products    = Product::where('archived', false)->orderBy('updated_at', 'desc')->get();
         $categories  = Category::all();
         return view('admin.products.index', compact('products', 'categories'));
     }
