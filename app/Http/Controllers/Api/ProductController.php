@@ -15,20 +15,27 @@ class ProductController extends Controller
 
         $query = Product::with('category', 'ingredients')->where('visible', 1);
 
-
         if ($categoryId !== null && $categoryId !== 0 && $categoryId !== '0') {
             $query = $query->where('category_id', $categoryId);
         } 
         
         $products = $query->where('archived', 0)->get();
         
-
-
-
         return response()->json([
             'success'   => true,
             'results'   => $products,
             'allergens'   => config('configurazione.allergens'),
+        ]);
+    }
+
+    public function promoHome(Request $request)
+    {
+        
+        $products = Product::with('category', 'ingredients')->where('promotion', 1)->get();
+        
+        return response()->json([
+            'success'   => true,
+            'results'   => $products,
         ]);
     }
 }
