@@ -110,6 +110,8 @@ class PostController extends Controller
         
         if ($archive == 1) {
             $query->where('archived', true);
+        }else{
+            $query->where('archived', false);
         }
         if ($title) {
             $query->where('title', 'like', '%' . $title . '%');
