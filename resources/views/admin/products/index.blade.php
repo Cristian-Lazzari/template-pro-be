@@ -102,7 +102,7 @@
                 @endif
                 <a href="{{ route('admin.products.show', $item) }}">{{$item->name}}</a></h3>     
             <div class="card_">
-                @if (isset($itme->image))
+                @if (isset($item->image))
                     <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->name }}">
