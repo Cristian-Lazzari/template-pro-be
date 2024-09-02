@@ -28,7 +28,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function promoHome(Request $request)
+    public function promoHome()
     {
         
         $products = Product::with('category', 'ingredients')->where('promotion', 1)->get();

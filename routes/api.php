@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ReservationController;
 
 Route::get('products',          [ProductController::class, 'index'])->name('api.products.index');
+Route::get('promoHome',         [ProductController::class, 'promoHome'])->name('api.promoHome.index');
 Route::get('categories',        [CategoryController::class, 'index'])->name('api.categories.index');
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
 Route::get('post',              [PostController::class, 'index'])->name('api.post.index');
