@@ -188,8 +188,8 @@
     @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
     @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
         <p>
-            <span>Contatta nome locale se desideri annullare la tua prenotazione:</span>
-            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare Nome locale</a>
+            <span>Contatta config('configurazione.name') se desideri annullare la tua prenotazione:</span>
+            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare config('configurazione.name')</a>
         </p>
     @elseif($content_mail['to'] == 'admin')
         <p>
@@ -219,8 +219,8 @@
     @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
     @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
         <p>
-            <span>Contatta nome locale se desideri annullare la tua prenotazione:</span>
-            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare Nome locale</a>
+            <span>Contatta config('configurazione.name') se desideri annullare la tua prenotazione:</span>
+            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare config('configurazione.name')</a>
         </p>
     @elseif($content_mail['to'] == 'admin')
         <p>
