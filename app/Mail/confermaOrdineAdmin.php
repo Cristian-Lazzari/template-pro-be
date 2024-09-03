@@ -26,7 +26,7 @@ class confermaOrdineAdmin extends Mailable
 
     public function build()
     {
-        return $this->subject('Notifica da config('configurazione.name')')
+        return $this->subject('Notifica da' . config('configurazione.name'))
             ->view('emails.confermaOrderAdmin');
     }
 

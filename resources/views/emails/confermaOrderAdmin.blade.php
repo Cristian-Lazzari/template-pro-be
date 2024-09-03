@@ -35,60 +35,22 @@
 <body>
     <p>* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
 @if ($content_mail['type'] == 'or')
+    <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
 
     @if ($content_mail['to'] == 'admin')
         <h1>Il sign/gr {{ $content_mail['name'] }}, ha prenotato un asporto!</h1>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)
-        <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
         <h1>Ciao {{ $content_mail['name'] }}, grazie per aver prenotato tramite il nostro servizio asporto!</h1>
         <h4>Il tuo ordine è nella nostra coda, a breve riceverai l'esito del processamento</h4>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-        <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
         <h1>Ciao {{ $content_mail['name'] }}, ti informiamo che il tuo ordine è stato confermato!</h1>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-        <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
+        
         <h1>Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato!</h1>
     @endif
     <p>Data prenotata: {{ $content_mail['date_slot'] }}</p>
     <h3>I prodotti:</h3>
     <div class="products" >
-        {{-- @foreach ($content_mail['cart'] as $p)
-            <div class="product" style="width: 100%; margin-top: 20px; margin-bottom: 5px">
-                <div class="line">
-                    <span class="counter">* {{$p['counter']}}</span>
-                    <span class="name">{{$p['name']}}</span>
-                    <span class="price">€{{$p['price'] / 100}}</span>
-                </div>
-                <br>
-                <div class="variation">
-                    @if (count($p['option']) !==0)
-                        <div class="option">
-                            <h5>Opzioni aggiunte al prodotto:</h5>      
-                            @foreach ($p['option'] as $var)
-                                    + {{$var}}
-                            @endforeach
-                        </div>
-                    @endif
-                    @if (count($p['remove']) !==0)
-                        <div class="remove">
-                            <h5>Ingredienti tolti:</h5>      
-                            @foreach ($p['remove'] as $var)
-                                    - {{$var}}
-                            @endforeach
-                        </div>
-                    @endif
-                    @if (count($p['add']) !==0)
-                        <div class="add">
-                            <h5>Ingredienti aggiunti:</h5>
-                            @foreach ($p['add'] as $var)
-                                + {{$var}}
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-            <hr>
-        @endforeach --}}
         @if ($content_mail['to'] == 'user' && ($content_mail['status'] == 0 || $content_mail['status'] == 1))
             @foreach ($content_mail['orderProduct'] as $i)          
                 @if ($content_mail['order_id'] == $i->order_id)
@@ -188,8 +150,8 @@
     @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
     @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
         <p>
-            <span>Contatta config('configurazione.name') se desideri annullare la tua prenotazione:</span>
-            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare config('configurazione.name')</a>
+            <span>Contatta {{config('configurazione.name')}} se desideri annullare la tua prenotazione:</span>
+            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare {{config('configurazione.name')}}</a>
         </p>
     @elseif($content_mail['to'] == 'admin')
         <p>
@@ -203,14 +165,14 @@
     @if ($content_mail['to'] == 'admin')
         <h1>Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)
-        <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
+        
         <h1>Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
         <h4>La tua prenotazione è nella nostra coda, a breve riceverai l'esito del processamento</h4>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-        <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
+        
         <h1>Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-        <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
+        
         <h1>Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
     @endif
     <p>Data prenotata: {{ $content_mail['date_slot'] }}</p>
@@ -219,8 +181,8 @@
     @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
     @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
         <p>
-            <span>Contatta config('configurazione.name') se desideri annullare la tua prenotazione:</span>
-            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare config('configurazione.name')</a>
+            <span>Contatta {{config('configurazione.name')}} se desideri annullare la tua prenotazione:</span>
+            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare {{config('configurazione.name')}}</a>
         </p>
     @elseif($content_mail['to'] == 'admin')
         <p>
