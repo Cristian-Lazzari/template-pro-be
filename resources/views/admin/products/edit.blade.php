@@ -198,7 +198,7 @@ $domain = 'https://future-plus.it/allergens/';
             </p>
         </div>
             <!-- Button trigger modal -->
-        <h5 class="text-center" >Se non hai ancora creato tutti gli gli ingedienti per il tuo prodotto puoi farlo ora</h5>
+        <h5 class="text-center" >Se non hai ancora creato tutti gli ingedienti per il tuo prodotto puoi farlo ora</h5>
         <button type="button" class="my_btn_4" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Crea Ingredienti mancanti
         </button>
