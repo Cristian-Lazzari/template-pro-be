@@ -208,6 +208,7 @@ class PostController extends Controller
         $post->path          = $data['path'];
         $post->order         = $data['order'];
         $post->link          = $data['link'];
+        $post->promo      = isset($data['promo']) ? true : false;
         
         $post->update();
       

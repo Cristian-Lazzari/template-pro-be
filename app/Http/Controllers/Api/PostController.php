@@ -16,16 +16,21 @@ class PostController extends Controller
 
         $query = Post::where('visible', 1);
 
-
         if ($path !== null) {
             $query = $query->where('path', $path);
         } 
         
         $posts = $query->where('archived', 0)->orderBy('order', 'desc')->get();
         
-
-
-
+        return response()->json([
+            'success'   => true,
+            'results'   => $posts,
+        ]);
+    }
+    public function postHome()
+    {      
+        $posts = Post::where('promo', 1)->get();
+        
         return response()->json([
             'success'   => true,
             'results'   => $posts,
