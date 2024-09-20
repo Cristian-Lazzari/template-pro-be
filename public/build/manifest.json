@@ -5,15 +5,15 @@
   },
   "resources/js/app.js": {
     "file": "../public/build/assets/app.82c6a187.js",
-    "src": "../public/build/resources/js/app.js",
+    "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.fe37404f.css"
+      "../public/build/assets/app.52348ef1.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.fe37404f.css",
-    "src": "../public/build/resources/scss/app.scss",
+    "file": "../public/build/assets/app.52348ef1.css",
+    "src": "resources/scss/app.scss",
     "isEntry": true
   }
 }
