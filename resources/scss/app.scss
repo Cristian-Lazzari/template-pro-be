@@ -728,13 +728,19 @@ body{
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        //align-items: flex-end;
         flex-wrap: wrap;
         flex-grow: 1;
-        gap: 1rem;
+        width: calc(50% - 1rem);
+        //align-items: flex-end;
+        //gap: .25rem;
         h3{
             text-align: left;
-            
+            background-color: $c2_op;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin-bottom: 0 !important;
+            margin: 0 .8rem 0;
+            padding: .5rem;
             a{
                 text-decoration: none;
                 color: $c3;
@@ -742,7 +748,7 @@ body{
         }
         .card_{
             color: $c1 ;
-            border-radius: 20px;
+            border-radius: 12px;
             background-color: $bg-p-p;
             padding: .8rem;
             display: flex !important;
@@ -784,6 +790,9 @@ body{
                     }
                 }
             }
+        }
+        .actions{
+            margin: .4rem .8rem 0;
         }
     }
     .actions, .allergens{
@@ -1287,6 +1296,9 @@ body{
                 max-width: 100% !important;
             }
         }
+    }
+    .obj{
+        width: 100% !important;
     }
     
 }
