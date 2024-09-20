@@ -26,6 +26,7 @@ $domain = 'https://future-plus.it/allergens/';
 <button onclick="history.back()" class="btn btn-outline-light my-5">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"/></svg>
 </button>
+<a class="my_btn_5 ml-auto" href="{{ route('admin.posts.index') }}">Torna ai Prodotti non archiviati</a>
 
 <h1>Prodotti - Archivio</h1>
  
@@ -147,7 +148,7 @@ $domain = 'https://future-plus.it/allergens/';
                     <input type="hidden" name="a" value="0">
                     <input type="hidden" name="id" value="{{$item->id}}">
                     @if (!$item->visible)
-                        <button class="my_btn_1 v" type="submit">
+                        <button class="my_btn_1 v op" type="submit">
                             <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
                                 <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
                                 <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>

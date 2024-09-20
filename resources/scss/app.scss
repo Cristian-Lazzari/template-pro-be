@@ -15,6 +15,10 @@ $c-new : $c1;
 $t : rgba(193, 206, 236, 0.43);
 $cfilter : $c2;
 
+.op{
+    opacity: .5;
+}
+
 $fs_xsm: clamp(12px, 2.1vw, 14px);
 $fs_sm: clamp(14px, 2.3vw, 16px);
 $fs_md: clamp(16px, 2.4vw, 24px);
@@ -836,7 +840,7 @@ body{
     }
     flex: 1 1 auto;
     .card_{
-        border-radius: 15px;
+        border-radius: 10px;
         padding: 8px;
         color: $c1;
         background-color: $c3;
@@ -851,7 +855,7 @@ body{
         }
     }
     .actions{
-        .my_btn{}
+        margin: 0 .3rem;
         align-items: stretch;
         width: 100% !important;
     }
