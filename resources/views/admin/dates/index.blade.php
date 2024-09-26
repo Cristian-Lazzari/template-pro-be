@@ -137,21 +137,34 @@
         @csrf
         
         @if ( config('configurazione.pack') == 2 ||  config('configurazione.pack') == 4)  
-            <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
-            <div class="input-group w-auto flex-nowrap py-2 ">
-                <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
-                <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
-            </div> @error('max_reservations') <p class="error">{{ $message }}</p> @enderror
+            @if (config('configurazione.double_t'))  
+                <h5 class="pt-4 ">Indica il numero di posti a sedere per la sala sushi per fascia oraria</h5>
+                <div class="input-group w-auto flex-nowrap py-2 ">
+                    <label for="max_reservations_1" class="input-group-text" >N° di posti a sedere Sushi</label>
+                    <input name="max_reservations_1" id="max_reservations_1" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
+                </div> @error('max_reservations_1') <p class="error">{{ $message }}</p> @enderror
+                <h5 class="pt-4 ">Indica il numero di posti a sedere per la sala ITA per fascia oraria</h5>
+                <div class="input-group w-auto flex-nowrap py-2 ">
+                    <label for="max_reservations_2" class="input-group-text" >N° di posti a sedere ITA</label>
+                    <input name="max_reservations_2" id="max_reservations_2" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
+                </div> @error('max_reservations_2') <p class="error">{{ $message }}</p> @enderror
+            @else
+                <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
+                <div class="input-group w-auto flex-nowrap py-2 ">
+                    <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
+                    <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
+                </div> @error('max_reservations') <p class="error">{{ $message }}</p> @enderror
+            @endif
         @endif
         @if ( config('configurazione.pack') == 3 ||  config('configurazione.pack') == 4)  
             @if (config('configurazione.typeOfOrdering'))  
-                <h5 class="pt-4 ">Indica il numero massimo di pezzi al taglio (cucina 1) per l'asporto</h5>
+                <h5 class="pt-4 ">Indica il numero massimo di {{config('configurazione.set_time')[1]}} (cucina 1) per asporto/delivery</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
                     <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" placeholder="N° di pezzi">
                 </div> @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
                 
-                <h5 class="pt-4 ">Indica il numero massimo di pizze al piatto (cucina 2) per l'asporto</h5>
+                <h5 class="pt-4 ">Indica il numero massimo di {{config('configurazione.set_time')[2]}} (cucina 2) per asporto/delivery</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_2" class="input-group-text" >N° di pizze</label>
                     <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" placeholder="N° di pezzi">

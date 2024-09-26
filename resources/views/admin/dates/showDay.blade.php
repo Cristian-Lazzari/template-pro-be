@@ -37,7 +37,36 @@
 
     <div class="slim_ slim_time ">
         <section class="s1">
-            <h3>{{$t->time}}</h3>   
+            <h3>{{$t->time}}</h3>
+            <div class="dati">
+                @if (isset($reserving->table) && $reserving->table !== 0)
+                    <p>Tavoli: {{$reserving->table}} / {{$availability->table}}</p>   
+                @endif
+
+                @if (isset($reserving->table_1) && $reserving->table_1 !== 0)
+                    <p> {{config('configurazione.set_time_dt')[0]}} : {{$reserving->table_1}} / {{$availability->table_1}}</p>   
+                @endif
+                @if (isset($reserving->table_2) && $reserving->table_2 !== 0)
+                    <p> {{config('configurazione.set_time_dt')[1]}} : {{$reserving->table_2}} / {{$availability->table_2}}</p>   
+                @endif
+
+                @if (isset($reserving->cucina_1) && $reserving->cucina_1 !== 0)
+                    <p>{{config('configurazione.set_time')[1]}}: {{$reserving->cucina_1}} / {{$availability->cucina_1}}</p>   
+                @endif
+                @if (isset($reserving->cucina_2) && $reserving->cucina_2 !== 0)
+                    <p>{{config('configurazione.set_time')[2]}}: {{$reserving->cucina_2}} / {{$availability->cucina_2}}</p>   
+                @endif
+                @if (isset($reserving->asporto) && $reserving->asporto !== 0)
+                    <p>{{config('configurazione.set_time_2')[1]}}: {{$reserving->asporto}} / {{$availability->asporto}}</p>   
+                @endif
+                
+                @if (isset($reserving->domicilio) && $reserving->domicilio !== 0)
+                    <p>Domicilio: {{$reserving->domicilio}} / {{$availability->domicilio}}</p>                
+                @endif
+                
+                
+            </div>
+            
             <button type="button" class="my_btn_1 d" data-bs-toggle="modal" data-bs-target="#exampleModal{{$t->id}}">
                 Vedi dettagli
             </button>
@@ -59,11 +88,18 @@
                             <div class="cont">
                                 @foreach ($reserving as $key => $value)
                                 <div class="not-set">
-                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3) <h5>{{config('configurazione.set_time')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
-                                        @else<h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
+                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3 && config('configurazione.double_t'))
+                                            <h5>{{config('configurazione.set_time_dt')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3 && config('configurazione.double_t'))
+                                            <h5>{{config('configurazione.set_time_dt')[$i + 1]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3)
+                                            <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
+                                            <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
+                                        @else
+                                            <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
                                         @endif
-                                        <span class=""> {{$value}}</span>
+                                        <span class="">{{$value}}</span>
                                     </div>
                                     @php $i ++ @endphp
                                 @endforeach
@@ -75,9 +111,16 @@
                             <div class="cont">
                                 @foreach ($availability as $key => $value)
                                     <div class="set">
-                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3) <h5>{{config('configurazione.set_time')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
-                                        @else<h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
+                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3 && config('configurazione.double_t'))
+                                            <h5>{{config('configurazione.set_time_dt')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3 && config('configurazione.double_t'))
+                                            <h5>{{config('configurazione.set_time_dt')[$i + 1]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3)
+                                            <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
+                                            <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
+                                        @else
+                                            <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
                                         @endif
                                         <input type="number" name="av{{$key}}" value="{{$value}}" class="">   
                                     </div>
@@ -91,9 +134,16 @@
                             <div class="cont">
                                 @foreach ($visible as $key => $value)
                                     <div class="set">
-                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3) <h5>{{config('configurazione.set_time')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
-                                        @else<h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
+                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3 && config('configurazione.double_t'))
+                                            <h5>{{config('configurazione.set_time_dt')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3 && config('configurazione.double_t'))
+                                            <h5>{{config('configurazione.set_time_dt')[$i + 1]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3)
+                                            <h5>{{config('configurazione.set_time')[$i]}}:</h5>
+                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
+                                            <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
+                                        @else
+                                            <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
                                         @endif
                                         <select name="vis{{$key}}" class="">
                                             <option @if ($value) selected @endif value="1">SI</option>

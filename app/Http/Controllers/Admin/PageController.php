@@ -78,83 +78,183 @@ class PageController extends Controller
                 $res = json_decode($d['reserving'], 1);
                 // dump($date . $time);
                 // dump($res);
+                if( config('configurazione.double_t')){
+                    if( config('configurazione.pack') == 2 ){        
+                        $day = [
+                            'day' => $d['day'],
+                            'day_w' => $d['day_w'],
+                            'date' => $date,
+                            'time' => [],
+                            
+                            'table' => $res['table_1'] + $res['table_2'],
+                        ];
+                        $time = [
+                            'time' => $d['time'],
+                            
+                            'table' => $res['table_1'] + $res['table_2'],
+                        ];
+                    }elseif( config('configurazione.pack') == 3){
+                        if(config('configurazione.typeOfOrdering')){
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+                                
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+                                
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }else{
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+                                
+                                'asporto' => $res['asporto'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+                                
+                                'asporto' => $res['asporto'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }
+                    }elseif( config('configurazione.pack') == 4){
+                        if(config('configurazione.typeOfOrdering')){ 
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+                                
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'table' => $res['table_1'] + $res['table_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+                                
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'table' => $res['table_1'] + $res['table_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }else{
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+                                
+                                'asporto' => $res['asporto'],
+                                'table' => $res['table_1'] + $res['table_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+                                
+                                'asporto' => $res['asporto'],
+                                'table' => $res['table_1'] + $res['table_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }
+                    }
+                }else{
+                    if( config('configurazione.pack') == 2 ){        
+                        $day = [
+                            'day' => $d['day'],
+                            'day_w' => $d['day_w'],
+                            'date' => $date,
+                            'time' => [],
+    
+                            'table' => $res['table'],
+                        ];
+                        $time = [
+                            'time' => $d['time'],
+    
+                            'table' => $res['table'],
+                        ];
+                    }elseif( config('configurazione.pack') == 3){
+                        if(config('configurazione.typeOfOrdering')){
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+    
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+    
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }else{
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+    
+                                'asporto' => $res['asporto'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+    
+                                'asporto' => $res['asporto'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }
+                    }elseif( config('configurazione.pack') == 4){
+                        if(config('configurazione.typeOfOrdering')){ 
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+    
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'table' => $res['table'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+    
+                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
+                                'table' => $res['table'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }else{
+                            $day = [
+                                'day' => $d['day'],
+                                'day_w' => $d['day_w'],
+                                'date' => $date,
+                                'time' => [],
+    
+                                'asporto' => $res['asporto'],
+                                'table' => $res['table'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                            $time = [
+                                'time' => $d['time'],
+    
+                                'asporto' => $res['asporto'],
+                                'table' => $res['table'],
+                                'domicilio' => $res['domicilio'],
+                            ];
+                        }
+                    }
 
-                if( config('configurazione.pack') == 2 ){        
-                    $day = [
-                        'day' => $d['day'],
-                        'day_w' => $d['day_w'],
-                        'date' => $date,
-                        'time' => [],
-                        'table' => $res['table'],
-                    ];
-                    $time = [
-                        'time' => $d['time'],
-                        'table' => $res['table'],
-                    ];
-                }elseif( config('configurazione.pack') == 3){
-                    if(config('configurazione.typeOfOrdering')){
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                    }else{
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-                            'asporto' => $res['asporto'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-                            'asporto' => $res['asporto'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                    }
-                }elseif( config('configurazione.pack') == 4){
-                    if(config('configurazione.typeOfOrdering')){ 
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                            'table' => $res['table'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-                            'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                            'table' => $res['table'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                    }else{
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-                            'asporto' => $res['asporto'],
-                            'table' => $res['table'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-                            'asporto' => $res['asporto'],
-                            'table' => $res['table'],
-                            'domicilio' => $res['domicilio'],
-                        ];
-                    }
                 }
             }
             

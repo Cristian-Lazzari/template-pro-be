@@ -866,11 +866,10 @@ body{
     flex-wrap: wrap;
     //align-items: flex-start;
     
-}
-
+} 
 .slim_{
+    width: calc(50% - 1.2rem) !important;
     flex-grow: 1;
-    width: calc(33% - 2rem);
     padding: .9rem;
     display: flex;
     flex-direction: column;
@@ -878,11 +877,13 @@ body{
     align-items: center;
     border-radius: 20px;
     background-color: $c3;
-    gap: 1rem;
+    gap: 1.2rem ;
     a{
         color: $c1;
         text-decoration: none;
         font-size: clamp(13px, 2.2vw, 22px);
+        line-height: 70% !important;
+        font-size: 12px;
     }
     h3{
         flex-shrink: 1;
@@ -891,8 +892,8 @@ body{
     }
     img{
         background-color: #FF7658;
-        flex-shrink: 0;
-        width: clamp(30px, 100%, 40px);
+        flex-shrink: 1;
+        width: clamp(28px, 100%, 30px);
         border-radius: 100%;
         aspect-ratio: 1;
         object-fit: cover;
@@ -949,6 +950,7 @@ body{
         }
     }
     .s1{
+        flex-wrap: wrap;
         align-items: flex-start !important;
         text-align: end;
     }
@@ -1531,23 +1533,7 @@ body{
         }
 
     }
-    .slim_cont{
-        .slim_{
-            
-            width: calc(50% - 1.2rem) !important;
-        }
-        img{
-            width: 28px !important;
-        }
-        h3{
 
-            a{
-                line-height: 70% !important;
-                font-size: 12px;
-            }
-        }
-        gap: 1.2rem !important;
-    }
     .day_form{
         label{
             width:90%!important;
