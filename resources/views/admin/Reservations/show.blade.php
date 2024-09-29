@@ -41,8 +41,21 @@
                     <div class="c_a">inviato alle: {{$reservation->created_at}}</div>
                 </section>
                 <section class="myres-center-res">
-                   <h5>Numero di Ospiti</h5> 
-                    <h4>{{$reservation->n_person}}</h4>
+                    <h5>Numero di Ospiti</h5> 
+                    @php $n_person = json_decode($reservation->n_person); @endphp
+                    <h4>Ospiti: </h4>
+                    @if ($n_person->adult > 0)
+                        <h3>
+                            {{$n_person->adult }} {{$n_person->adult > 1 ? 'adulti' : 'adulto'}}
+                        </h3>
+                    @endif
+                    @if ($n_person->child > 0)
+                        <h3>
+                            {{$n_person->child }} {{$n_person->child > 1 ? 'bambini' : 'bambino'}}
+                        </h3>
+                    @endif
+                       
+                  
                 </section>
                 <section class="myres-right">
                     @if(!$reservation->status !== 1)

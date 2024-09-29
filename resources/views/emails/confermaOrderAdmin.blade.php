@@ -164,19 +164,19 @@
 
     @if ($content_mail['to'] == 'admin')
         <h1>Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)
-        
+    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)        
         <h1>Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
         <h4>La tua prenotazione è nella nostra coda, a breve riceverai l'esito del processamento</h4>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-        
         <h1>Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-        
         <h1>Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
     @endif
+
     <p>Data prenotata: {{ $content_mail['date_slot'] }}</p>
-    <h3>Numer di ospiti: {{ $content_mail['n_person'] }}</h3>
+    
+    <h3>Numero di adulti: {{ $content_mail['n_person']['adult'] }}</h3>
+    <h3>Numero di bambini: {{ $content_mail['n_person']['child'] }}</h3>
     
     @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
     @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)

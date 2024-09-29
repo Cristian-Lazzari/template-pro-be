@@ -23,9 +23,11 @@ return new class extends Migration
             $table->string('email', 100);
             $table->string('phone', 20);
             
-            $table->tinyInteger('n_person');
+            $table->string('n_person'); // oggetto che ha chiave adult e child
+           // $table->tinyInteger('n_person');
             $table->string('message', 500)->nullable();
             
+            $table->boolean('take_away')->default(false);
             $table->boolean('news_letter');
             $table->timestamps();
         });

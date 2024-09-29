@@ -120,7 +120,16 @@
             <section>
                 <div class="name">
                     <h1 class="p">{{$time}}</h1>
-                    <h4>Ospiti: {{$reservation->n_person}}</h4>
+                    @php $n_person = json_decode($reservation->n_person); @endphp
+                    <h4>Ospiti:
+                        @if ($n_person->adult > 0)
+                            {{$n_person->adult }} {{$n_person->adult > 1 ? 'adulti' : 'adulto'}}
+                        @endif
+                        @if ($n_person->child > 0)
+                            {{$n_person->child }} {{$n_person->child > 1 ? 'bambini' : 'bambino'}}
+                        @endif
+                        
+                    </h4>
                 </div>
                 <div class="actions">
                     @if($reservation->status !== 1)
