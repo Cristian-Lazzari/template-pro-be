@@ -26,8 +26,13 @@ class DateController extends Controller
 
 
         $vis_a = '"asporto":1';
+        if (config('configurazione.double_t')) {
+            $vis_t_1 = '"table_1":1';
+            $vis_t_2 = '"table_2":1';
+        }else{
+            $vis_t = '"table":1';
+        }
 
-        $vis_t = '"table":1';
         $vis_c1 = '"cuina_1":1';
         $vis_c2 = '"cucina_2":1';
         $vis_d = '"domicilio":1';
@@ -35,6 +40,13 @@ class DateController extends Controller
         $query = Date::whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') BETWEEN ? AND ?", [$startDateTime, $endDateTime]);
 
         if ($filter == 1) {
+            if (config('configurazione.double_t')) {
+                $query->where('visible', 'like',  '%' . $vis_t . '%');
+                $dates = $query->get();
+            }else{
+                $query->where('visible', 'like',  '%' . $vis_t . '%');
+                $dates = $query->get();
+            }
             $query->where('visible', 'like',  '%' . $vis_t . '%');
             $dates = $query->get();
         }elseif($filter == 2){
