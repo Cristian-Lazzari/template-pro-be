@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\Api\PaymentController;
+
 
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
 
@@ -30,3 +32,6 @@ Route::get('getDays',           [DateController::class, 'getDays'])->name('api.d
 
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
+
+Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+Route::post('/checkout', [PaymentController::class, 'processPayment'])->name('checkout.process');
