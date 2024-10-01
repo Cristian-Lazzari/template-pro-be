@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Guests\PageController as GuestsPageController;
+use App\Http\Controllers\Api\PaymentController;
 
 
 Route::get('/', function () {
@@ -76,3 +77,7 @@ Route::middleware('auth')
 
 
 require __DIR__ . '/auth.php';
+
+
+Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+Route::post('/checkout', [PaymentController::class, 'processPayment'])->name('checkout.process');
