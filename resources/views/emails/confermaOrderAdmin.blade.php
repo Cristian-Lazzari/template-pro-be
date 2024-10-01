@@ -21,6 +21,10 @@
             font-size: 18px;
             font-weight: bold;
         }
+        h1{
+            text-align: center;
+            margin-bottom: 1rem;
+        }
 
         hr{
             height: 2px;
@@ -172,11 +176,26 @@
     @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
         <h1>Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
     @endif
-
+    @if (config('configurazione.double_t') && $content_mail['sala'] !== 0)
+        <h3>Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+    @endif
     <p>Data prenotata: {{ $content_mail['date_slot'] }}</p>
+
+    @if (is_string($content_mail['n_person']))
+        @php $n_person = json_decode($content_mail['n_person'], true); @endphp
+        <h3>Numero di adulti: {{ $n_person['adult'] }}</h3>
+        
+        <h3>Numero di bambini: {{ $n_person['child'] }}</h3>
+    @else
+        <h3>Numero di adulti: {{ $content_mail['n_person']['adult'] }}</h3>
+        
+        <h3>Numero di bambini: {{ $content_mail['n_person']['child'] }}</h3>
+
+    @endif
+
     
-    <h3>Numero di adulti: {{ $content_mail['n_person']['adult'] }}</h3>
-    <h3>Numero di bambini: {{ $content_mail['n_person']['child'] }}</h3>
+
+    
     
     @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
     @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)

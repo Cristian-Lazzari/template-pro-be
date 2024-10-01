@@ -18,6 +18,7 @@ class SettingController extends Controller
         return response()->json([
             'success' => true,
             'results' => $settings,
+            'double_t'=> config('configurazione.double_t'),
         ]);
     }
 }

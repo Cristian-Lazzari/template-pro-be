@@ -18,8 +18,8 @@ class DateController extends Controller
         'days_on'               => 'required',
     ];
     private $validations2dt = [
-        'max_reservations_1'      => 'required|integer',
-        'max_reservations_2'      => 'required|integer',
+        'max_reservations_1'    => 'required|integer',
+        'max_reservations_2'    => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations3t = [
@@ -48,16 +48,16 @@ class DateController extends Controller
     ];
     private $validations4tdt = [
         'max_domicilio'         => 'required|integer',
-        'max_reservations_1'      => 'required|integer',
-        'max_reservations_2'      => 'required|integer',
+        'max_reservations_1'    => 'required|integer',
+        'max_reservations_2'    => 'required|integer',
         'max_cucina_1'          => 'required|integer',
         'max_cucina_2'          => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations4fdt = [
         'max_domicilio'         => 'required|integer',
-        'max_reservations_1'      => 'required|integer',
-        'max_reservations_2'      => 'required|integer',
+        'max_reservations_1'    => 'required|integer',
+        'max_reservations_2'    => 'required|integer',
         'max_asporto'           => 'required|integer',
         'days_on'               => 'required',
     ];

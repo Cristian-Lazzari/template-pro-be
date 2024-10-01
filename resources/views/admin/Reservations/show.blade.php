@@ -32,6 +32,7 @@
             <div class="body">
                 <section class="myres-left">
                     <div class="name">{{$reservation->name}}</div>
+                    <div class="name">{{$reservation->surname}}</div>
                     <div  class="myres-left-c">
                         <div class="time">{{$ora_formatata}}</div>
 
@@ -39,23 +40,27 @@
                         <div class="date">{{$data_formatata}}</div>
                     </div>
                     <div class="c_a">inviato alle: {{$reservation->created_at}}</div>
+                    <div class="c_a">Marcketing sul contatto: {{$reservation->news_letter ? 'si' : 'no'}}</div>
+
                 </section>
                 <section class="myres-center-res">
+                    @if (config('configurazione.double_t') && $reservation->sala !== 0)
+                        <h3>Sala prenota: <strong>{{$reservation->sala == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+                    @endif
                     <h5>Numero di Ospiti</h5> 
                     @php $n_person = json_decode($reservation->n_person); @endphp
-                    <h4>Ospiti: </h4>
-                    @if ($n_person->adult > 0)
-                        <h3>
-                            {{$n_person->adult }} {{$n_person->adult > 1 ? 'adulti' : 'adulto'}}
-                        </h3>
-                    @endif
-                    @if ($n_person->child > 0)
-                        <h3>
-                            {{$n_person->child }} {{$n_person->child > 1 ? 'bambini' : 'bambino'}}
-                        </h3>
-                    @endif
-                       
-                  
+                    <h1>Ospiti: </h1>
+                        @if ($n_person->adult > 0)
+                            <h4>
+                                {{$n_person->adult }} {{$n_person->adult > 1 ? 'adulti' : 'adulto'}}
+                            </h4>
+                        @endif
+                        @if ($n_person->child > 0)
+                            <h4>
+                                {{$n_person->child }} {{$n_person->child > 1 ? 'bambini' : 'bambino'}}
+                            </h4>
+                        @endif
+                      
                 </section>
                 <section class="myres-right">
                     @if(!$reservation->status !== 1)

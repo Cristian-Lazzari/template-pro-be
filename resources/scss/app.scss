@@ -1266,8 +1266,11 @@ body{
             align-items: center;
             flex: 1 1 auto;
             flex-wrap: wrap;
-            h3,h4{
+            text-transform: lowercase;
+            h3{
+                text-transform: uppercase;
                 flex: 0 1 auto;
+
             }
         }
         .p{

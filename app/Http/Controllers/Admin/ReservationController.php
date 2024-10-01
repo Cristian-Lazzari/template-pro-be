@@ -21,9 +21,44 @@ class ReservationController extends Controller
         if($c_a){
             $res->status = 1;
             $m = 'La prenotazione e\' stata confermata correttamente';
+            $message = 'Siamo felici di informarti che la tua prenotazione e\' stata confermata, ti ricordo la data e l\'orario che hai scelto' . $res->date_slot ;
         }else{
+            $date = Date::where('date_slot', $res->date_slot)->firstOrFail();
+            $vis = json_decode($date->visible, 1); 
+            $reserving = json_decode($date->reserving, 1);
+            $_p = json_decode($res->n_person);
+            $tot_p = $_p->child + $_p->adult;
+            if(config('configurazione.double_t')){
+                if($res->sala == 1){
+                    if($vis['table_1'] == 0){
+                        $vis['table_1'] = 1;
+                    }
+                    $reserving['table_1'] = $reserving['table_1'] - $tot_p;
+                    $date->reserving = json_encode($reserving);
+                    $date->visible = json_encode($vis);
+                    $date->update();
+                }else{
+                    if($vis['table_2'] == 0){
+                        $vis['table_2'] = 1;
+                    }
+                    $reserving['table_2'] = $reserving['table_2'] - $tot_p;
+                    $date->reserving = json_encode($reserving);
+                    $date->visible = json_encode($vis);
+                    $date->update();
+                }
+            }else{
+                if($vis['table'] == 0){
+                    $vis['table'] = 1;
+                }
+                $reserving['table'] = $reserving['table'] - $tot_p;
+                $date->reserving = json_encode($reserving);
+                $date->visible = json_encode($vis);
+                $date->update();
+            }
+
             $res->status = 0;
             $m = 'La prenotazione e\' stata annullata correttamente';
+            $message = 'Ci spiace informarti che la tua prenotazione e\' stata annullata per la data e l\'orario che hai scelto... ' . $res->date_slot ;
         }
         $res->update();
         
@@ -39,6 +74,7 @@ class ReservationController extends Controller
             'email' => $res->email,
             'date_slot' => $res->date_slot,
             'message' => $res->message,
+            'sala' => $res->sala,
             'phone' => $res->phone,
             'admin_phone' => $p_set['telefono'],
                
@@ -48,6 +84,7 @@ class ReservationController extends Controller
 
        
         $mail = new confermaOrdineAdmin($bodymail);
+
         Mail::to($res['email'])->send($mail);
         if($wa){
             return redirect("https://wa.me/39" . $res->phone . "?text=" . $message);

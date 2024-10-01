@@ -27,6 +27,7 @@ class DateController extends Controller
 
         $vis_a = '"asporto":1';
         if (config('configurazione.double_t')) {
+            $double_t = $request->query('double_t');
             $vis_t_1 = '"table_1":1';
             $vis_t_2 = '"table_2":1';
         }else{
@@ -41,13 +42,17 @@ class DateController extends Controller
 
         if ($filter == 1) {
             if (config('configurazione.double_t')) {
-                $query->where('visible', 'like',  '%' . $vis_t . '%');
+                if($double_t == 1){
+                    $query->where('visible', 'like',  '%' . $vis_t_1 . '%');
+                }else{
+                    $query->where('visible', 'like',  '%' . $vis_t_2 . '%');
+                }
                 $dates = $query->get();
             }else{
                 $query->where('visible', 'like',  '%' . $vis_t . '%');
                 $dates = $query->get();
             }
-            $query->where('visible', 'like',  '%' . $vis_t . '%');
+            //$query->where('visible', 'like',  '%' . $vis_t . '%');
             $dates = $query->get();
         }elseif($filter == 2){
             if ( config('configurazione.typeOfOrdering') == false) {
@@ -103,10 +108,17 @@ class DateController extends Controller
                 $res = json_decode($d['reserving'], 1);
                 $vis = json_decode($d['visible'], 1);
                 $max = json_decode($d['availability'], 1);
-                if( config('configurazione.pack') == 2 ){        
-                    $av = [
-                        'table' => $max['table'] - $res['table'],
-                    ];
+                if( config('configurazione.pack') == 2 ){  
+                    if (config('configurazione.double_t')) {
+                        $av = [
+                            'table_1' => $max['table_1'] - $res['table_1'],
+                            'table_2' => $max['table_2'] - $res['table_2'],
+                        ];
+                    }else{
+                        $av = [
+                            'table' => $max['table'] - $res['table'],
+                        ]; 
+                    }   
                     
                 }elseif( config('configurazione.pack') == 3){
                     if ( config('configurazione.typeOfOrdering') == false) {
@@ -123,20 +135,39 @@ class DateController extends Controller
                     }
                     
                 }elseif( config('configurazione.pack') == 4){
-                    if ( config('configurazione.typeOfOrdering') == false) {
-                        $av = [
-                            'asporto' => $max['asporto'] - $res['asporto'],
-                            'table' => $max['table'] - $res['table'],
-                            'domicilio' => $max['domicilio'] - $res['domicilio'],
-                        ];   
+                    if (config('configurazione.double_t')) {
+                        if ( config('configurazione.typeOfOrdering') == false) {
+                            $av = [
+                                'table_1' => $max['table_1'] - $res['table_1'],
+                                'table_2' => $max['table_2'] - $res['table_2'],
+                                'asporto' => $max['asporto'] - $res['asporto'],
+                                'domicilio' => $max['domicilio'] - $res['domicilio'],
+                            ];   
+                        }else{
+                            $av = [
+                                'cucina_1' => $max['cucina_1'] - $res['cucina_1'],
+                                'cucina_2' => $max['cucina_1'] - $res['cucina_1'],
+                                'table_1' => $max['table_1'] - $res['table_1'],
+                                'table_2' => $max['table_2'] - $res['table_2'],
+                                'domicilio' => $max['domicilio'] - $res['domicilio'],
+                            ];
+                        }
                     }else{
-                        $av = [
-                            'cucina_1' => $max['cucina_1'] - $res['cucina_1'],
-                            'cucina_2' => $max['cucina_1'] - $res['cucina_1'],
-                            'table' => $max['table'] - $res['table'],
-                            'domicilio' => $max['domicilio'] - $res['domicilio'],
-                        ];
-                    }
+                        if ( config('configurazione.typeOfOrdering') == false) {
+                            $av = [
+                                'asporto' => $max['asporto'] - $res['asporto'],
+                                'table' => $max['table'] - $res['table'],
+                                'domicilio' => $max['domicilio'] - $res['domicilio'],
+                            ];   
+                        }else{
+                            $av = [
+                                'cucina_1' => $max['cucina_1'] - $res['cucina_1'],
+                                'cucina_2' => $max['cucina_1'] - $res['cucina_1'],
+                                'table' => $max['table'] - $res['table'],
+                                'domicilio' => $max['domicilio'] - $res['domicilio'],
+                            ];
+                        }
+                    }  
                 }
 
                 // dump($date . $time);
@@ -169,86 +200,136 @@ class DateController extends Controller
                     array_push($year[$cy]['days'], $day);
                     array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['times'], $time);
                 }elseif($d['day'] == $firstDay['day']){
+                    $d_y = count($year[$cy]['days']) - 1;
                     // prima correggo i dati del giorno in cui poi pusho l orario
-                    if( config('configurazione.pack') == 2 ){ 
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] += $day['vis']['table'];
-                        if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] >= 1){
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] = 1;
+                    if( config('configurazione.pack') == 2 ){
+                        if(config('configurazione.double_t')){
+                            $year[$cy]['days'][$d_y]['vis']['table_1'] += $day['vis']['table_1'];
+                            if($year[$cy]['days'][$d_y]['vis']['table_1'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['table_1'] = 1;
+                            }
+                            $year[$cy]['days'][$d_y]['vis']['table_2'] += $day['vis']['table_2'];
+                            if($year[$cy]['days'][$d_y]['vis']['table_2'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['table_2'] = 1;
+                            }
+                            //av       
+                            $year[$cy]['days'][$d_y]['av']['table_1'] += $day['av']['table_1'];   
+                            $year[$cy]['days'][$d_y]['av']['table_2'] += $day['av']['table_2'];   
+                            
+
+                        }else{
+                            $year[$cy]['days'][$d_y]['vis']['table'] += $day['vis']['table'];
+                            if($year[$cy]['days'][$d_y]['vis']['table'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['table'] = 1;
+                            }
+                            //av       
+                            $year[$cy]['days'][$d_y]['av']['table'] += $day['av']['table'];       
                         }
-                        //av       
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['table'] += $day['av']['table'];       
 
                     }elseif( config('configurazione.pack') == 3){
                         if ( config('configurazione.typeOfOrdering') == false) {
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['asporto'] += $day['vis']['asporto'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['asporto'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['asporto'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['asporto'] += $day['vis']['asporto'];
+                            if($year[$cy]['days'][$d_y]['vis']['asporto'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['asporto'] = 1;
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] += $day['vis']['domicilio'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['domicilio'] += $day['vis']['domicilio'];
+                            if($year[$cy]['days'][$d_y]['vis']['domicilio'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['domicilio'] = 1;
                             }
                             //av
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['asporto'] += $day['av']['asporto'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['domicilio'] += $day['av']['domicilio'];   
+                            $year[$cy]['days'][$d_y]['av']['asporto'] += $day['av']['asporto'];
+                            $year[$cy]['days'][$d_y]['av']['domicilio'] += $day['av']['domicilio'];   
                         }else{
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] += $day['vis']['domicilio'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['domicilio'] += $day['vis']['domicilio'];
+                            if($year[$cy]['days'][$d_y]['vis']['domicilio'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['domicilio'] = 1;
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_1'] += $day['vis']['cucina_1'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_1'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_1'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['cucina_1'] += $day['vis']['cucina_1'];
+                            if($year[$cy]['days'][$d_y]['vis']['cucina_1'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['cucina_1'] = 1;
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_2'] += $day['vis']['cucina_2'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_2'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_2'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['cucina_2'] += $day['vis']['cucina_2'];
+                            if($year[$cy]['days'][$d_y]['vis']['cucina_2'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['cucina_2'] = 1;
                             }
                             //av
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['cucina_1'] += $day['av']['cucina_1'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['cucina_2'] += $day['av']['cucina_2'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['domicilio'] += $day['av']['domicilio'];
+                            $year[$cy]['days'][$d_y]['av']['cucina_1'] += $day['av']['cucina_1'];
+                            $year[$cy]['days'][$d_y]['av']['cucina_2'] += $day['av']['cucina_2'];
+                            $year[$cy]['days'][$d_y]['av']['domicilio'] += $day['av']['domicilio'];
                         }
                         
                     }elseif( config('configurazione.pack') == 4){
                         if ( config('configurazione.typeOfOrdering') == false) {
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] = 1;
+                            if(config('configurazione.double_t')){
+                                $year[$cy]['days'][$d_y]['vis']['table_1'] += $day['vis']['table_1'];
+                                if($year[$cy]['days'][$d_y]['vis']['table_1'] >= 1){
+                                    $year[$cy]['days'][$d_y]['vis']['table_1'] = 1;
+                                }
+                                $year[$cy]['days'][$d_y]['vis']['table_2'] += $day['vis']['table_2'];
+                                if($year[$cy]['days'][$d_y]['vis']['table_2'] >= 1){
+                                    $year[$cy]['days'][$d_y]['vis']['table_2'] = 1;
+                                }
+                                //av       
+                                $year[$cy]['days'][$d_y]['av']['table_1'] += $day['av']['table_1'];   
+                                $year[$cy]['days'][$d_y]['av']['table_2'] += $day['av']['table_2'];   
+                            }else{
+                                $year[$cy]['days'][$d_y]['vis']['table'] += $day['vis']['table'];
+                                if($year[$cy]['days'][$d_y]['vis']['table'] >= 1){
+                                    $year[$cy]['days'][$d_y]['vis']['table'] = 1;
+                                }
+                                //av       
+                                $year[$cy]['days'][$d_y]['av']['table'] += $day['av']['table'];       
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['asporto'] += $day['vis']['asporto'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['asporto'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['asporto'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['asporto'] += $day['vis']['asporto'];
+                            if($year[$cy]['days'][$d_y]['vis']['asporto'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['asporto'] = 1;
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] += $day['vis']['domicilio'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['domicilio'] += $day['vis']['domicilio'];
+                            if($year[$cy]['days'][$d_y]['vis']['domicilio'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['domicilio'] = 1;
                             }
                             //av
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['table'] += $day['av']['table'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['asporto'] += $day['av']['asporto'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['domicilio'] += $day['av']['domicilio'];   
+                            
+                            $year[$cy]['days'][$d_y]['av']['asporto'] += $day['av']['asporto'];
+                            $year[$cy]['days'][$d_y]['av']['domicilio'] += $day['av']['domicilio'];   
                         }else{
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] += $day['vis']['table'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['table'] = 1;
+                            if(config('configurazione.double_t')){
+                                $year[$cy]['days'][$d_y]['vis']['table_1'] += $day['vis']['table_1'];
+                                if($year[$cy]['days'][$d_y]['vis']['table_1'] >= 1){
+                                    $year[$cy]['days'][$d_y]['vis']['table_1'] = 1;
+                                }
+                                $year[$cy]['days'][$d_y]['vis']['table_2'] += $day['vis']['table_2'];
+                                if($year[$cy]['days'][$d_y]['vis']['table_2'] >= 1){
+                                    $year[$cy]['days'][$d_y]['vis']['table_2'] = 1;
+                                }
+                                //av       
+                                $year[$cy]['days'][$d_y]['av']['table_1'] += $day['av']['table_1'];   
+                                $year[$cy]['days'][$d_y]['av']['table_2'] += $day['av']['table_2'];   
+                            }else{
+                                $year[$cy]['days'][$d_y]['vis']['table'] += $day['vis']['table'];
+                                if($year[$cy]['days'][$d_y]['vis']['table'] >= 1){
+                                    $year[$cy]['days'][$d_y]['vis']['table'] = 1;
+                                }
+                                //av       
+                                $year[$cy]['days'][$d_y]['av']['table'] += $day['av']['table'];       
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] += $day['vis']['domicilio'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['domicilio'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['domicilio'] += $day['vis']['domicilio'];
+                            if($year[$cy]['days'][$d_y]['vis']['domicilio'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['domicilio'] = 1;
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_1'] += $day['vis']['cucina_1'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_1'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_1'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['cucina_1'] += $day['vis']['cucina_1'];
+                            if($year[$cy]['days'][$d_y]['vis']['cucina_1'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['cucina_1'] = 1;
                             }
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_2'] += $day['vis']['cucina_2'];
-                            if($year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_2'] >= 1){
-                                $year[$cy]['days'][count($year[$cy]['days']) - 1]['vis']['cucina_2'] = 1;
+                            $year[$cy]['days'][$d_y]['vis']['cucina_2'] += $day['vis']['cucina_2'];
+                            if($year[$cy]['days'][$d_y]['vis']['cucina_2'] >= 1){
+                                $year[$cy]['days'][$d_y]['vis']['cucina_2'] = 1;
                             }
                             //av
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['table'] += $day['av']['table'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['cucina_1'] += $day['av']['cucina_1'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['cucina_2'] += $day['av']['cucina_2'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['av']['domicilio'] += $day['av']['domicilio'];
+                           
+                            $year[$cy]['days'][$d_y]['av']['cucina_1'] += $day['av']['cucina_1'];
+                            $year[$cy]['days'][$d_y]['av']['cucina_2'] += $day['av']['cucina_2'];
+                            $year[$cy]['days'][$d_y]['av']['domicilio'] += $day['av']['domicilio'];
                         }
                     }
                     array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['times'], $time);

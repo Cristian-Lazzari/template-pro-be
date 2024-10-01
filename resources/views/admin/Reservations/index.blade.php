@@ -110,7 +110,10 @@
             <section class="top">
                 <div class="name">
                     <h4>{{$date}}</h4>
-                    <h3>{{$reservation->surname}} {{$reservation->name}}</h3>
+                    @if (config('configurazione.double_t') && $reservation->sala !== 0)
+                        <h3><strong>{{$reservation->sala == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+                    @endif
+                    <h4>{{$reservation->surname}} {{$reservation->name}}</h4>
                 </div>
                 <div class="actions">
                     <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn_5">Dettagli</a>

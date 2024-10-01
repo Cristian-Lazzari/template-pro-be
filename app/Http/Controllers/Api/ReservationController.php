@@ -44,24 +44,61 @@ class ReservationController extends Controller
                 'adult' => $n_adult,
                 'child' => $n_child,
             ];
-
             // Controlla la disponibilità e aggiorna le prenotazioni
-            if(($res['table'] + $tot_p) < $av['table']){
-                $res['table'] = $res['table'] + $tot_p;
-                $date->reserving = json_encode($res);
-            } elseif(($res['table'] + $tot_p) == $av['table']) {
-                $res['table'] = $res['table'] + $tot_p;
-                $date->reserving = json_encode($res);
-                $vis['table'] = 0;
-                $date->visible = json_encode($vis);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                    'data' => $date
-                ]);
+            if(config('configurazione.double_t')){
+                $sala = $data['sala'];
+                if($sala == 1){
+                    if(($res['table_1'] + $tot_p) < $av['table_1']){
+                        $res['table_1'] = $res['table_1'] + $tot_p;
+                        $date->reserving = json_encode($res);
+                    } elseif(($res['table_1'] + $tot_p) == $av['table_1']) {
+                        $res['table_1'] = $res['table_1'] + $tot_p;
+                        $date->reserving = json_encode($res);
+                        $vis['table_1'] = 0;
+                        $date->visible = json_encode($vis);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                            'data' => $date
+                        ]);
+                    }
+                }else{
+                    if(($res['table_2'] + $tot_p) < $av['table_2']){
+                        $res['table_2'] = $res['table_2'] + $tot_p;
+                        $date->reserving = json_encode($res);
+                    } elseif(($res['table_2'] + $tot_p) == $av['table_2']) {
+                        $res['table_2'] = $res['table_2'] + $tot_p;
+                        $date->reserving = json_encode($res);
+                        $vis['table_2'] = 0;
+                        $date->visible = json_encode($vis);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                            'data' => $date
+                        ]);
+                    }
+                }
+            }else{
+                if(($res['table'] + $tot_p) < $av['table']){
+                    $res['table'] = $res['table'] + $tot_p;
+                    $date->reserving = json_encode($res);
+                } elseif(($res['table'] + $tot_p) == $av['table']) {
+                    $res['table'] = $res['table'] + $tot_p;
+                    $date->reserving = json_encode($res);
+                    $vis['table'] = 0;
+                    $date->visible = json_encode($vis);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                        'data' => $date
+                    ]);
+                }
             }
 
+        
             // Crea la nuova prenotazione
             $newRes = new Reservation();
             $newRes->name = $data['name'];
@@ -73,6 +110,9 @@ class ReservationController extends Controller
             $newRes->message = $data['message'];
             $newRes->status = 2;
             $newRes->news_letter = $data['news_letter'];
+            if(config('configurazione.double_t')){
+                $newRes->sala = $data['sala'];
+            }
             
             $date->update();
             $newRes->save();
@@ -90,11 +130,13 @@ class ReservationController extends Controller
             $bodymail_a = [
                 'type' => 'res',
                 'to' => 'admin',
+                
                 'name' => $newRes->name,
                 'surname' => $newRes->surname,
                 'email' => $newRes->email,
                 'date_slot' => $newRes->date_slot,
                 'message' => $newRes->message,
+                'sala' => $newRes->message,
                 'phone' => $newRes->phone,
                 'admin_phone' => $telefono,
                 'n_person' => $n_person,
@@ -103,11 +145,13 @@ class ReservationController extends Controller
             $bodymail_u = [
                 'type' => 'res',
                 'to' => 'user',
+
                 'name' => $newRes->name,
                 'surname' => $newRes->surname,
                 'email' => $newRes->email,
                 'date_slot' => $newRes->date_slot,
                 'message' => $newRes->message,
+                'sala' => $newRes->sala,
                 'phone' => $newRes->phone,
                 'admin_phone' => $telefono,
                 'n_person' => $n_person,

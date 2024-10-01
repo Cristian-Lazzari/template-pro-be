@@ -69,6 +69,55 @@ class OrderController extends Controller
             $m = 'La prenotazione e\' stata confermata correttamente';
             $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;
         }else{
+            $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
+            $vis = json_decode($date->visible, 1); 
+            $reserving = json_decode($date->reserving, 1);
+            if(config('configurazione.typeOfOrdering')){
+                $np_cucina_1 = 0;
+                $np_cucina_2 = 0;
+                foreach ($order->products as $p) {
+                    $qt = 0;
+                    $op = OrderProduct::where('product_id', $p->id)->where('order_id', $order->id)->firstOrFail();
+                    if($op !== null){
+                        $qt = $op->quantity;
+                    }
+                    if($p->type_plate == 1 && $qt !== 0){
+                        $np_cucina_1 += $p->slot_plate * $qt;
+                        if($vis['cucina_1'] == 0){
+                            $vis['cucina_1'] = 1;
+                        }
+                    }
+                    if($p->type_plate == 2){
+                        $np_cucina_2 += $p->slot_plate * $qt;
+                        if($vis['cucina_2'] == 0){
+                            $vis['cucina_2'] = 1;
+                        }
+                    }
+                }
+                $reserving['cucina_1'] = $reserving['cucina_1'] - $np_cucina_1;
+                $reserving['cucina_2'] = $reserving['cucina_2'] - $np_cucina_2;
+                if($order->address !== null){
+                    if($vis['domicilio'] == 0){
+                        $vis['domicilio'] = 1;
+                    }
+                    $reserving['domicilio'] --;
+                }
+            }else{
+                if($order->address !== null){
+                    if($vis['domicilio'] == 0){
+                        $vis['domicilio'] = 1;
+                    }
+                    $reserving['domicilio'] --;
+                }else{
+                    $reserving['asporto'] --;
+
+                }
+            }
+
+            $date->reserving = json_encode($reserving);
+            $date->visible = json_encode($vis);
+            $date->update();
+
             $order->status = 0;
             $m = 'La prenotazione e\' stata annullata correttamente';
             $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
