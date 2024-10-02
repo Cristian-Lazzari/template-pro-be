@@ -5,211 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Conferma Email</title>
-    <style>
-        *{
-            margin: 0;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-        .products{
-            width: 100%;
-        }
-        .line, .option, .add, .remove{
-            width: 100%
-        }
-        .name, .counter{
-            font-size: 18px;
-            font-weight: bold;
-        }
-        h1{
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        hr{
-            height: 2px;
-        }
-        img{
-            width: 20%;
-            margin: 0 auto;
-            border-radius: 10px
-        }
-    </style>
 </head>
-<body>
-    <p>* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
-@if ($content_mail['type'] == 'or')
-    <img src="https://db.dashboardristorante.it/public/images/or.png" alt="logo-locale">
-
-    @if ($content_mail['to'] == 'admin')
-        <h1>Il sign/gr {{ $content_mail['name'] }}, ha prenotato un asporto!</h1>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)
-        <h1>Ciao {{ $content_mail['name'] }}, grazie per aver prenotato tramite il nostro servizio asporto!</h1>
-        <h4>Il tuo ordine è nella nostra coda, a breve riceverai l'esito del processamento</h4>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-        <h1>Ciao {{ $content_mail['name'] }}, ti informiamo che il tuo ordine è stato confermato!</h1>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0;">
+    <div class="container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
         
-        <h1>Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato!</h1>
-    @endif
-    <p>Data prenotata: {{ $content_mail['date_slot'] }}</p>
-    <h3>I prodotti:</h3>
-    <div class="products" >
-        @if ($content_mail['to'] == 'user' && ($content_mail['status'] == 0 || $content_mail['status'] == 1))
-            @foreach ($content_mail['orderProduct'] as $i)          
-                @if ($content_mail['order_id'] == $i->order_id)
-                    @foreach ($content_mail['cart'] as $o)
-                        @if ($o->id == $i->product_id)
-                        <?php $name= $o->name ?>
-                        @endif
-                        
-                    @endforeach
-                    <?php
-                        $arrO= json_decode($i->option); 
-                        $arrA= json_decode($i->add); 
-                        $arrD= json_decode($i->remove); 
-                    ?>
-                    
-                    <div class="counter">* {{$i->quantity}}</div>              
-                    <div class="name">{{$name}}</div>
-                    <div class="variations">
-                        @if ($arrO !== [])
-                        <div class="options">
-                            <h5>Opzioni:</h5>
-                            @foreach ($arrO as $a)
-                            <span>+ {{$a}}</span>
+        <!-- Informazioni automatizzate -->
+        <p style="font-size: 16px; line-height: 1.8; margin: 5px;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
+        
+        @if ($content_mail['type'] == 'or')
+            <!-- Messaggi per tipo 'or' -->
+            @if ($content_mail['to'] == 'admin')
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">{{ $content_mail['name'] }}, ha prenotato un asporto!</h1>
+            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato tramite il nostro sito web!</h1>
+                <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">Il tuo ordine è nella nostra coda, a breve riceverai l'esito del processamento</h4>
+            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che il tuo ordine è stato confermato!</h1>
+            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato!</h1>
+            @endif
+
+            <!-- Data prenotata -->
+            <p style="font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
+            
+            <!-- Elenco prodotti -->
+            <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
+            <div class="products" style="width: 100%;">
+                @if ($content_mail['to'] == 'user' && ($content_mail['status'] == 0 || $content_mail['status'] == 1))
+                    @foreach ($content_mail['orderProduct'] as $i)          
+                        @if ($content_mail['order_id'] == $i->order_id)
+                            @foreach ($content_mail['cart'] as $o)
+                                @if ($o->id == $i->product_id)
+                                    <?php $name= $o->name ?>
+                                @endif
                             @endforeach
-                        </div>
+                            <?php
+                                $arrO= json_decode($i->option); 
+                                $arrA= json_decode($i->add); 
+                                $arrD= json_decode($i->remove); 
+                            ?>
+                            
+                            <!-- Quantità prodotto -->
+                            <div class="counter" style="font-size: 18px; font-weight: bold; margin: 5px;">* {{$i->quantity}}</div>              
+                            <!-- Nome prodotto -->
+                            <div class="name" style="font-size: 18px; font-weight: bold; margin: 5px;">{{$name}}</div>
+                            <div class="variations" style="margin: 5px;">
+                                <!-- Opzioni prodotto -->
+                                @if ($arrO !== [])
+                                    <div class="options" style="margin: 5px;">
+                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
+                                        @foreach ($arrO as $a)
+                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <div class="bottom-var" style="margin: 5px;">
+                                    <!-- Ingredienti extra -->
+                                    @if ($arrA !== [])
+                                        <div class="add" style="margin: 5px;">
+                                            <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
+                                            @foreach ($arrA as $a)
+                                                <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <!-- Ingredienti rimossi -->
+                                    @if ($arrD !== [])
+                                        <div class="removed" style="margin: 5px;">
+                                            <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
+                                            @foreach ($arrD as $a)
+                                                <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
+                                            @endforeach       
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
                         @endif
-                        <div class="bottom-var">
-                            @if ($arrA !== [])
-                            <div class="add">
-                                <h5>Ingredienti extra:</h5>
-                                @foreach ($arrA as $a)
-                                <span>+ {{$a}}</span>
-                                @endforeach
+                    @endforeach
+                @else
+                    @foreach ($content_mail['cart'] as $p)
+                        <div class="product" style="width: 100%; margin: 20px auto 5px auto;">
+                            <div class="line" style="width: 100%; margin: 5px 0;">
+                                <span class="counter" style="font-size: 18px; font-weight: bold;">* {{$p['counter']}}</span>
+                                <span class="name" style="font-size: 18px; font-weight: bold; margin-left: 10px;">{{$p['name']}}</span>
+                                <span class="price" style="font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$p['price'] / 100}}</span>
                             </div>
-                            @endif
-                            @if ($arrD !== [])
-                            <div class="removed">
-                                <h5>Ingredienti rimossi:</h5>
-                                @foreach ($arrD as $a)
-                                <span>- {{$a}}</span>
-                                @endforeach       
+                            <br>
+                            <div class="variation" style="margin: 5px;">
+                                <!-- Opzioni aggiunte al prodotto -->
+                                @if (count($p['option']) !==0)
+                                    <div class="option" style="margin: 5px;">
+                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni aggiunte al prodotto:</h5>      
+                                        @foreach ($p['option'] as $var)
+                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$var}}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <!-- Ingredienti tolti -->
+                                @if (count($p['remove']) !==0)
+                                    <div class="remove" style="margin: 5px;">
+                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti tolti:</h5>      
+                                        @foreach ($p['remove'] as $var)
+                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$var}}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <!-- Ingredienti aggiunti -->
+                                @if (count($p['add']) !==0)
+                                    <div class="add" style="margin: 5px;">
+                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti aggiunti:</h5>
+                                        @foreach ($p['add'] as $var)
+                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$var}}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
-                            @endif
                         </div>
-                    </div>
+                        <hr style="height: 2px; background-color: rgb(0, 0, 0); border: none; margin: 10px 0;">
+                    @endforeach
                 @endif
-            @endforeach
-        @else
-            @foreach ($content_mail['cart'] as $p)
-                <div class="product" style="width: 100%; margin-top: 20px; margin-bottom: 5px">
-                    <div class="line">
-                        <span class="counter">* {{$p['counter']}}</span>
-                        <span class="name">{{$p['name']}}</span>
-                        <span class="price">€{{$p['price'] / 100}}</span>
-                    </div>
-                    <br>
-                    <div class="variation">
-                        @if (count($p['option']) !==0)
-                            <div class="option">
-                                <h5>Opzioni aggiunte al prodotto:</h5>      
-                                @foreach ($p['option'] as $var)
-                                        + {{$var}}
-                                @endforeach
-                            </div>
-                        @endif
-                        @if (count($p['remove']) !==0)
-                            <div class="remove">
-                                <h5>Ingredienti tolti:</h5>      
-                                @foreach ($p['remove'] as $var)
-                                        - {{$var}}
-                                @endforeach
-                            </div>
-                        @endif
-                        @if (count($p['add']) !==0)
-                            <div class="add">
-                                <h5>Ingredienti aggiunti:</h5>
-                                @foreach ($p['add'] as $var)
-                                    + {{$var}}
-                                @endforeach
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                <hr>
-            @endforeach
+            </div>
+
+            <!-- Indirizzo per la consegna -->
+            @if (isset($content_mail['comune']))
+                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Indirizzo per la consegna:</h3>
+                <p style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
+                <p style="font-size: 16px; line-height: 1.8; margin: 5px;">L'importo verra pagato al momento della consegna.</p>
+            @endif
+
+            <!-- Totale carrello -->
+            <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">Totale carrello: €{{$content_mail['total_price'] / 100}}</h4>
+        
+        @elseif($content_mail['type'] == 'res')
+            <!-- Messaggi per tipo 'res' -->
+            @if ($content_mail['to'] == 'admin')
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
+            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)        
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
+                <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">La tua prenotazione è nella nostra coda, a breve riceverai l'esito del processamento</h4>
+            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
+            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
+            @endif
+
+            <!-- Sala prenotata (se applicabile) -->
+            @if (config('configurazione.double_t') && $content_mail['sala'] !== 0)
+                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+            @endif
+
+            <!-- Data prenotata -->
+            <p style="font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
+
+            <!-- Numero di persone -->
+            @if (is_string($content_mail['n_person']))
+                @php $n_person = json_decode($content_mail['n_person'], true); @endphp
+                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di adulti: {{ $n_person['adult'] }}</h3>
+                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di bambini: {{ $n_person['child'] }}</h3>
+            @else
+                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di adulti: {{ $content_mail['n_person']['adult'] }}</h3>
+                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di bambini: {{ $content_mail['n_person']['child'] }}</h3>
+            @endif
         @endif
+
+        <!-- Messaggio opzionale -->
+        @if($content_mail['message'] !== NULL)
+            <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">Messaggio:</h4>
+            <p style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['message']}}</p>
+        @endif
+
+        <!-- Se destinatario è admin -->
+        @if($content_mail['to'] == 'admin')
+            <p style="font-size: 16px; line-height: 1.8; margin: 5px;">Contatta {{$content_mail['name']}}</p>
+            
+            <!-- Bottone per chiamare -->
+            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #119b1a; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
+
+            <!-- Bottone per visualizzare nella dashboard -->
+            @if ($content_mail['type'] == 'or')
+                <a href="{{env('APP_URL')}}admin/orders/{{$content_mail['order_id']}}" target="_blank" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+            @elseif($content_mail['type'] == 'res')
+                <a href="{{env('APP_URL')}}admin/reservations/{{$content_mail['res_id']}}" target="_blank" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+            @endif
+        @endif
+
         
-       
     </div>
-    @if (isset($content_mail['comune']))
-        <h3>Indirizzo per la consegna:</h3>
-        <p>{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
-        <p>L'importo verra pagato al momento della consegna.</p>
-    @endif
-    <h4>Totale carrello: €{{$content_mail['total_price'] / 100}}</h4>
-    
-    @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
-    @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
-        <p>
-            <span>Contatta {{config('configurazione.name')}} se desideri annullare la tua prenotazione:</span>
-            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare {{config('configurazione.name')}}</a>
-        </p>
-    @elseif($content_mail['to'] == 'admin')
-        <p>
-            <span>Contatta {{$content_mail['name']}}</span>
-            <a href="tel:{{$content_mail['phone']}}" class="call-btn">tocca o tieni premuto per chiamare {{$content_mail['name']}}</a>
-        </p>
-    @endif
-    
-@elseif($content_mail['type'] == 'res')
-
-    @if ($content_mail['to'] == 'admin')
-        <h1>Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)        
-        <h1>Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
-        <h4>La tua prenotazione è nella nostra coda, a breve riceverai l'esito del processamento</h4>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-        <h1>Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
-    @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-        <h1>Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
-    @endif
-    @if (config('configurazione.double_t') && $content_mail['sala'] !== 0)
-        <h3>Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
-    @endif
-    <p>Data prenotata: {{ $content_mail['date_slot'] }}</p>
-
-    @if (is_string($content_mail['n_person']))
-        @php $n_person = json_decode($content_mail['n_person'], true); @endphp
-        <h3>Numero di adulti: {{ $n_person['adult'] }}</h3>
-        
-        <h3>Numero di bambini: {{ $n_person['child'] }}</h3>
-    @else
-        <h3>Numero di adulti: {{ $content_mail['n_person']['adult'] }}</h3>
-        
-        <h3>Numero di bambini: {{ $content_mail['n_person']['child'] }}</h3>
-
-    @endif
-
-    
-
-    
-    
-    @if($content_mail['message'] !== NULL) <h4>Messaggio:</h4> <p>{{$content_mail['message']}}</p> @endif
-    @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
-        <p>
-            <span>Contatta {{config('configurazione.name')}} se desideri annullare la tua prenotazione:</span>
-            <a href="tel:{{$content_mail['admin_phone']}}" class="call-btn">tocca o tieni premuto per chiamare {{config('configurazione.name')}}</a>
-        </p>
-    @elseif($content_mail['to'] == 'admin')
-        <p>
-            <span>Contatta {{$content_mail['name']}}</span>
-            <a href="tel:{{$content_mail['phone']}}" class="call-btn">tocca o tieni premuto per chiamare {{$content_mail['name']}}</a>
-        </p>
-    @endif
-@endif
-    
+    <!-- Footer -->
+    <div class="footer" style="width: 95%; margin: 100px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
+        @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
+            <p style="font-size: 12px; line-height: 1.5; margin: 5px;">
+                Contatta {{env('APP_NAME')}} Se desideri annullare o modificare la tua prenotazione:
+            </p>
+            <p style="line-height: 1.5; margin: 15px;">
+                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Chiama {{env('APP_NAME')}}</a>
+            </p>
+        @endif
+        <p style="font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2024 {{ env('APP_NAME') }}. Tutti i diritti riservati.</p>
+        <p style="font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
+    </div>
 </body>
 </html>

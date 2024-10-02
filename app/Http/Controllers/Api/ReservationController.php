@@ -119,18 +119,19 @@ class ReservationController extends Controller
 
             // Ottieni le impostazioni di contatto
             $set = Setting::where('name', 'Contatti')->firstOrFail();
+            $p_set = json_decode($set->property, true);
             if(isset($p_set['telefono'])){
                 $telefono = $p_set['telefono'];
             }else{
                 $telefono = '3332222333';
             }
-            $p_set = json_decode($set->property, true);
 
             // Prepara i dati per le email
             $bodymail_a = [
                 'type' => 'res',
                 'to' => 'admin',
                 
+                'res_id' => $newRes->id,
                 'name' => $newRes->name,
                 'surname' => $newRes->surname,
                 'email' => $newRes->email,
@@ -145,7 +146,8 @@ class ReservationController extends Controller
             $bodymail_u = [
                 'type' => 'res',
                 'to' => 'user',
-
+                
+                'res_id' => $newRes->id,
                 'name' => $newRes->name,
                 'surname' => $newRes->surname,
                 'email' => $newRes->email,

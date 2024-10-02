@@ -68,7 +68,8 @@ class ReservationController extends Controller
         $bodymail = [
             'type' => 'res',
             'to' => 'user',
-            
+
+            'res_id' => $res->id,
             'name' => $res->name,
             'surname' => $res->surname,
             'email' => $res->email,

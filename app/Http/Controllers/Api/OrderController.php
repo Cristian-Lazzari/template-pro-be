@@ -213,19 +213,27 @@ class OrderController extends Controller
             }
             $date->update();
 
+            // Ottieni le impostazioni di contatto
             $set = Setting::where('name', 'Contatti')->firstOrFail();
             $p_set = json_decode($set->property, true);
+            if(isset($p_set['telefono'])){
+                $telefono = $p_set['telefono'];
+            }else{
+                $telefono = '3332222333';
+            }
 
             $bodymail_a = [
                 'type' => 'or',
                 'to' => 'admin',
+
+                'order_id' => $newOrder->id,
                 'name' => $newOrder->name,
                 'surname' => $newOrder->surname,
                 'email' => $newOrder->email,
                 'date_slot' => $newOrder->date_slot,
                 'message' => $newOrder->message,
                 'phone' => $newOrder->phone,
-                'admin_phone' => $p_set['telefono'],
+                'admin_phone' => $telefono,
                 
                 'comune' => $newOrder->comune,
                 'address' => $newOrder->address,
@@ -238,13 +246,15 @@ class OrderController extends Controller
             $bodymail_u = [
                 'type' => 'or',
                 'to' => 'user',
+
+                'order_id' => $newOrder->id,
                 'name' => $newOrder->name,
                 'surname' => $newOrder->surname,
                 'email' => $newOrder->email,
                 'date_slot' => $newOrder->date_slot,
                 'message' => $newOrder->message,
                 'phone' => $newOrder->phone,
-                'admin_phone' => $p_set['telefono'],
+                'admin_phone' => $telefono,
                 
                 'comune' => $newOrder->comune,
                 'address' => $newOrder->address,

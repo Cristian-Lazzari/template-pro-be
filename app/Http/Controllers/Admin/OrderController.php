@@ -80,17 +80,17 @@ class OrderController extends Controller
                     $op = OrderProduct::where('product_id', $p->id)->where('order_id', $order->id)->firstOrFail();
                     if($op !== null){
                         $qt = $op->quantity;
-                    }
-                    if($p->type_plate == 1 && $qt !== 0){
-                        $np_cucina_1 += $p->slot_plate * $qt;
-                        if($vis['cucina_1'] == 0){
-                            $vis['cucina_1'] = 1;
+                        if($p->type_plate == 1 && $qt !== 0){
+                            $np_cucina_1 += ($p->slot_plate * $qt);
+                            if($vis['cucina_1'] == 0){
+                                $vis['cucina_1'] = 1;
+                            }
                         }
-                    }
-                    if($p->type_plate == 2){
-                        $np_cucina_2 += $p->slot_plate * $qt;
-                        if($vis['cucina_2'] == 0){
-                            $vis['cucina_2'] = 1;
+                        if($p->type_plate == 2){
+                            $np_cucina_2 += ($p->slot_plate * $qt);
+                            if($vis['cucina_2'] == 0){
+                                $vis['cucina_2'] = 1;
+                            }
                         }
                     }
                 }
