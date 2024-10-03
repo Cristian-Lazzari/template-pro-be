@@ -141,7 +141,7 @@ class OrderController extends Controller
             'admin_phone' => $p_set['telefono'],
             
             'comune' => $order->comune,
-            'addres' => $order->address,
+            'address' => $order->address,
             'address_n' => $order->address_n,
             'orderProduct' => $orderProduct,
             

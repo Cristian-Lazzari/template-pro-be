@@ -578,11 +578,12 @@ body{
             background-color: $c1;
             text-decoration: none;
             width: auto;
+            height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
-            aspect-ratio: 1;
-            border-radius: 10px;
+            //aspect-ratio: 1;
+            border-radius: 8px;
             position: relative;
             .b{
                 background: none;
@@ -595,30 +596,40 @@ body{
             p{
                 display: flex;
                 position: absolute;
-                font-size: clamp(5px , 80% , 12px);
+                font-size: clamp(5px , 90% , 13px);
                 //background-color: black;
                 //color: $white;
                 border-radius: 100px;
-                width: 30%;
-                justify-content: center;
+                width: 40%;
+                
+                justify-content: flex-start;
                 align-items: center;
                 gap: 3px;
                 margin: 2px;
                 svg{
-                    width: 20px;
+                    width: 35%;
+                    //flex-shrink: .1;
+                    font-size: 20px !important;
+                    
+                }
+                span{
+                    text-shadow: 0 0 4px $c2;
+                    flex-shrink: 0;
+
                 }
             }
             .pop1{
-                top: 0;
-                left: 0;
+                top: 2px;
+                left: 2px;
             }
             .pop2{
-                top: 0;
-                right: 0;
+                top: 2px;
+                right: 2px;
+                justify-content: flex-end;
             }
             .pop3{
-                bottom: 0;
-                left: 0;
+                bottom: 2px;
+                left: 2px;
             }
         }
         .day-off{
@@ -1555,12 +1566,34 @@ body{
         }
     }
     .day{
+        height: 70px;
+        //aspect-ratio: .5 !important;
         border-radius: 5px !important;
         p{
+            gap: 2px !important;
+            margin: 0 !important;
+            width: 80% !important;
+            justify-content: flex-end !important;
 
             svg{
-                display: none;
+                //max-width: 9px !important;
+                //flex-shrink: .7 !important;
+                width: 30% !important;
+                //display: none;
             }
+        }
+        .pop2{
+            top: 1.3rem !important;
+            right: 3px !important;
+            left: unset !important;
+        }
+        .pop1{
+            left: unset !important;
+            right: 3px !important;
+        }
+        .pop3{
+            left: unset !important;
+            right: 3px !important;
         }
     }
     .myres-c{

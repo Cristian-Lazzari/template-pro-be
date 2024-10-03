@@ -76,7 +76,7 @@
                             <form action="{{ route('admin.dates.showDay') }}" class="day {{ 'd' . $d['day_w']}} @if(!isset($d['time'])) day-off @endif @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) day-active @endif " style="grid-column-start:{{$d['day_w'] }}" method="get">
                                 @csrf
                                 <input type="hidden" name="date" value="{{$d['date']}}">
-                                @if(isset($d['asporto']) )
+                                @if(isset($d['asporto']) && $d['asporto'] !== 0)
                                     <p class="pop1">
                                         <span>{{$d['asporto']}}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-inboxes" viewBox="0 0 16 16">
@@ -84,7 +84,7 @@
                                         </svg> 
                                     </p>
                                 @endif
-                                @if(isset($d['domicilio']) )
+                                @if(isset($d['domicilio'])  && $d['domicilio'] !== 0)
                                 <p class="pop2">
                                     <span>{{$d['domicilio']}}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
@@ -93,7 +93,7 @@
                                         </svg> 
                                     </p>
                                 @endif
-                                @if(isset($d['table']) )
+                                @if(isset($d['table']) && $d['table'] !== 0)
                                     <p class="pop3">
                                         <span>{{$d['table']}}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">

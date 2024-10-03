@@ -93,121 +93,127 @@
 
 
         
-    @foreach ($reservations as $reservation)
-        
-        @php
-         $parts = explode(" ", $reservation->date_slot);
-         $date = $parts[0];
-         $time = $parts[1];
-        @endphp 
-        @if ($reservation->status == 2)
-        <div class="or-res my_2 my-4">
-        @elseif ($reservation->status == 1)
-        <div class="or-res my_1 my-4">
-        @elseif ($reservation->status == 0)
-        <div class="or-res my_0 my-4">
-        @endif
-            <section class="top">
-                <div class="name">
-                    <h4>{{$date}}</h4>
-                    @if (config('configurazione.double_t') && $reservation->sala !== 0)
-                        <h3><strong>{{$reservation->sala == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+@foreach ($reservations as $reservation)
+    @php
+     $parts = explode(" ", $reservation->date_slot);
+     $date = $parts[0];
+     $time = $parts[1];
+    @endphp 
+    @if ($reservation->status == 2)
+    <div class="or-res my_2 my-4">
+    @elseif ($reservation->status == 1)
+    <div class="or-res my_1 my-4">
+    @elseif ($reservation->status == 0)
+    <div class="or-res my_0 my-4">
+    @endif
+        <section class="top">
+            <div class="name">
+                <h4>{{$date}}</h4>
+                @if (config('configurazione.double_t') && $reservation->sala !== 0)
+                    <h3><strong>{{$reservation->sala == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+                @endif
+                <h4>{{$reservation->surname}} {{$reservation->name}}</h4>
+            </div>
+            <div class="actions">
+                <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn_5">Dettagli</a>
+                <div class="my_btn_5">Contatta</div>
+            </div>
+        </section>
+        <section>
+            <div class="name">
+                <h1 class="p">{{$time}}</h1>
+                @php $n_person = json_decode($reservation->n_person); @endphp
+                <h4>Ospiti:
+                    @if ($n_person->adult > 0)
+                        {{$n_person->adult }} {{$n_person->adult > 1 ? 'adulti' : 'adulto'}}
                     @endif
-                    <h4>{{$reservation->surname}} {{$reservation->name}}</h4>
-                </div>
-                <div class="actions">
-                    <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="my_btn_5">Dettagli</a>
-                    <div class="my_btn_5">Contatta</div>
-                </div>
-            </section>
-            <section>
-                <div class="name">
-                    <h1 class="p">{{$time}}</h1>
-                    @php $n_person = json_decode($reservation->n_person); @endphp
-                    <h4>Ospiti:
-                        @if ($n_person->adult > 0)
-                            {{$n_person->adult }} {{$n_person->adult > 1 ? 'adulti' : 'adulto'}}
-                        @endif
-                        @if ($n_person->child > 0)
-                            {{$n_person->child }} {{$n_person->child > 1 ? 'bambini' : 'bambino'}}
-                        @endif
-                        
-                    </h4>
-                </div>
-                <div class="actions">
-                    @if($reservation->status !== 1)
-                    <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="w-100 my_btn_6">Conferma</button>
-                    </div>
+                    @if ($n_person->child > 0)
+                        {{$n_person->child }} {{$n_person->child > 1 ? 'bambini' : 'bambino'}}
                     @endif
-                    @if($reservation->status !== 0)
-                    <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" class="w-100 my_btn_6">Annulla</button>                   
-                    </div>
-                    @endif
+                </h4>
+            </div>
+            <div class="actions">
+                @if($reservation->status !== 1)
+                <div class="w-100">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal{{$reservation->id}}" class="w-100 my_btn_6">Conferma</button>
                 </div>
-            </section>
-        </div>
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header c-1">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Gestione notifica</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body c-1">
-                        <p>Vuoi inviare un messaggio whatsapp?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form action="{{ route('admin.reservations.status') }}" method="POST">
-                            @csrf
-                            <input value="1" type="hidden" name="wa">
-                            <input value="1" type="hidden" name="c_a">
-                            <input value="{{$reservation->id}}" type="hidden" name="id">
-                            <button type="submit" class="w-100 my_btn_6">Si</button>
-                        </form>
-                        <form action="{{ route('admin.reservations.status') }}" method="POST">
-                            @csrf
-                            <input value="0" type="hidden" name="wa">
-                            <input value="1" type="hidden" name="c_a">
-                            <input value="{{$reservation->id}}" type="hidden" name="id">
-                            <button type="submit" class="w-100 my_btn_6">NO</button>
-                        </form>
-                    </div>
+                @endif
+                @if($reservation->status !== 0)
+                <div class="w-100">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$reservation->id}}" class="w-100 my_btn_6">Annulla</button>                   
+                </div>
+                @endif
+            </div>
+        </section>
+    </div>
+
+    {{-- Modale per conferma --}}
+    <div class="modal fade" id="confirmModal{{$reservation->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel{{$reservation->id}}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header c-1">
+                    <h1 class="modal-title fs-5" id="confirmModalLabel{{$reservation->id}}">Gestione notifica conferma</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body c-1">
+                    Ordine di: {{$reservation->name}} 
+                    per il: {{$reservation->date_slot}}
+                    <p>Vuoi inviare un messaggio whatsapp?</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="1" type="hidden" name="wa">
+                        <input value="1" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">Si</button>
+                    </form>
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="0" type="hidden" name="wa">
+                        <input value="1" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">NO</button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header c-1">
-                        <h1 class="modal-title fs-5" id="staticBackdrop1Label">Gestione notifica</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body c-1">
-                        <p>Vuoi inviare un messaggio whatsapp?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form action="{{ route('admin.reservations.status') }}" method="POST">
-                            @csrf
-                            <input value="1" type="hidden" name="wa">
-                            <input value="0" type="hidden" name="c_a">
-                            <input value="{{$reservation->id}}" type="hidden" name="id">
-                            <button type="submit" class="w-100 my_btn_6">Si</button>
-                        </form>
-                        <form action="{{ route('admin.reservations.status') }}" method="POST">
-                            @csrf
-                            <input value="0" type="hidden" name="wa">
-                            <input value="0" type="hidden" name="c_a">
-                            <input value="{{$reservation->id}}" type="hidden" name="id">
-                            <button type="submit" class="w-100 my_btn_6">NO</button>
-                        </form>
-    
-                    </div>
+    </div>
+
+    {{-- Modale per annullamento --}}
+    <div class="modal fade" id="cancelModal{{$reservation->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cancelModalLabel{{$reservation->id}}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header c-1">
+                    <h1 class="modal-title fs-5" id="cancelModalLabel{{$reservation->id}}">Gestione notifica annullamento</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body c-1">
+                    Ordine di: {{$reservation->name}} 
+                    per il: {{$reservation->date_slot}}
+                    <p>Vuoi inviare un messaggio whatsapp?</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="1" type="hidden" name="wa">
+                        <input value="0" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">Si</button>
+                    </form>
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="0" type="hidden" name="wa">
+                        <input value="0" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">NO</button>
+                    </form>
                 </div>
             </div>
         </div>
-    @endforeach
+    </div>
+@endforeach
+
         
       
 
