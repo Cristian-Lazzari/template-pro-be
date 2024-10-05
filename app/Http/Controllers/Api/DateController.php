@@ -129,7 +129,7 @@ class DateController extends Controller
                     }else{
                         $av = [
                             'cucina_1' => $max['cucina_1'] - $res['cucina_1'],
-                            'cucina_2' => $max['cucina_1'] - $res['cucina_1'],
+                            'cucina_2' => $max['cucina_2'] - $res['cucina_2'],
                             'domicilio' => $max['domicilio'] - $res['domicilio'],
                         ];
                     }
@@ -146,7 +146,7 @@ class DateController extends Controller
                         }else{
                             $av = [
                                 'cucina_1' => $max['cucina_1'] - $res['cucina_1'],
-                                'cucina_2' => $max['cucina_1'] - $res['cucina_1'],
+                                'cucina_2' => $max['cucina_2'] - $res['cucina_2'],
                                 'table_1' => $max['table_1'] - $res['table_1'],
                                 'table_2' => $max['table_2'] - $res['table_2'],
                                 'domicilio' => $max['domicilio'] - $res['domicilio'],
@@ -162,7 +162,7 @@ class DateController extends Controller
                         }else{
                             $av = [
                                 'cucina_1' => $max['cucina_1'] - $res['cucina_1'],
-                                'cucina_2' => $max['cucina_1'] - $res['cucina_1'],
+                                'cucina_2' => $max['cucina_2'] - $res['cucina_2'],
                                 'table' => $max['table'] - $res['table'],
                                 'domicilio' => $max['domicilio'] - $res['domicilio'],
                             ];
