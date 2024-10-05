@@ -183,9 +183,9 @@
             <!-- Bottone per visualizzare nella dashboard -->
             @if ($content_mail['type'] == 'or')
             {{env('APP_URL')}}admin/orders/{{$content_mail['order_id']}}
-                <a href="{{env('APP_URL')}}admin/orders/{{$content_mail['order_id']}}" target="_blank" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{env('APP_URL')}}admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @elseif($content_mail['type'] == 'res')
-                <a href="{{env('APP_URL')}}admin/reservations/{{$content_mail['res_id']}}" target="_blank" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{env('APP_URL')}}admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
 
