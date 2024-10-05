@@ -5,13 +5,36 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use App\Http\Controllers\Controller;
+
 
 class PaymentController extends Controller
 {
     public function checkout()
     {
-        
-        return view('checkout');
+
+        $YOUR_DOMAIN = 'http://localhost:8000';
+
+        $stripe = new \Stripe\StripeClient(config('configurazione.secret_stripe'));
+
+        $checkout_session = $stripe->checkout->sessions->create([
+            'line_items' => [[
+                'price_data' => [
+                'currency' => 'eur',
+                'product_data' => [
+                    'name' => 'T-shirt',
+                ],
+                'unit_amount' => 9000,
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => 'http://localhost:5173/',
+            'cancel_url' => 'http://localhost:8000/',
+        ]);
+     
+        return redirect()->away($checkout_session->url);
+
     }
 
     public function processPayment(Request $request)
