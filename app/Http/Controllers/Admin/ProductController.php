@@ -17,28 +17,24 @@ class ProductController extends Controller
     private $validationsTrue = [
         'name'          => 'required|string|min:1|max:50|unique:products,name',
         'image'         => 'nullable|image',
-        'price'         => 'required',
         'slot_plate'    => 'required',
     ];
 
     private $validationsFalse = [
         'name'          => 'required|string|min:1|max:50|unique:products,name',
         'image'         => 'nullable|image',
-        'price'         => 'required',
     ];
 
 
     private $validationsTrue1 = [
         'name'          => 'required|string|min:1|max:50',
         'image'         => 'nullable|image',
-        'price'         => 'required',
         'slot_plate'    => 'required',
     ];
 
     private $validationsFalse1 = [
         'name'          => 'required|string|min:1|max:50',
         'image'         => 'nullable|image',
-        'price'         => 'required',
     ];
 
 

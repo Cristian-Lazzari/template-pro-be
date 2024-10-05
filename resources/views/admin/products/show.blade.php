@@ -70,7 +70,7 @@ $domain = 'https://future-plus.it/allergens/';
                     @if($product->type_plate == 0) <p>Altro</p> @elseif($product->type_plate == 1) <p>Cucina 1</p> @else <p>Cucina 2</p> @endif
                 @endif
                 @if($product->tag_set == 0)
-                <p> Nessuma </p>  @elseif($product->tag_set == 1)
+                <p> Nessuna </p>  @elseif($product->tag_set == 1)
                 <p> Togliere </p> @elseif($product->tag_set == 2)
                 <p> Aggiungiere </p>
                 @else
