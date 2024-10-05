@@ -182,10 +182,10 @@
             <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #119b1a; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
             <!-- Bottone per visualizzare nella dashboard -->
             @if ($content_mail['type'] == 'or')
-            {{env('APP_URL')}}admin/orders/{{$content_mail['order_id']}}
-                <a href="{{env('APP_URL')}}admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+            {{config('configurazione.APP_URL')}}admin/orders/{{$content_mail['order_id']}}
+                <a href="{{config('configurazione.APP_URL')}}admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @elseif($content_mail['type'] == 'res')
-                <a href="{{env('APP_URL')}}admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
 
@@ -195,13 +195,13 @@
     <div class="footer" style="width: 95%; margin: 100px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="font-size: 12px; line-height: 1.5; margin: 5px;">
-                Contatta {{env('APP_NAME')}} Se desideri annullare o modificare la tua prenotazione:
+                Contatta {{config('configurazione.APP_NAME')}} Se desideri annullare o modificare la tua prenotazione:
             </p>
             <p style="line-height: 1.5; margin: 15px;">
-                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Chiama {{env('APP_NAME')}}</a>
+                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
             </p>
         @endif
-        <p style="font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2024 {{ env('APP_NAME') }}. Tutti i diritti riservati.</p>
+        <p style="font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
         <p style="font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
     </div>
 </body>

@@ -120,7 +120,7 @@ class OrderController extends Controller
                     }else{
                         return response()->json([
                             'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
                             'data' => $date
                         ]);
                     }
@@ -157,11 +157,10 @@ class OrderController extends Controller
                     }else{
                         return response()->json([
                             'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
                             'data' => $date
                         ]);
                     }
-    
                 }
             }
             $total_price = 0;
