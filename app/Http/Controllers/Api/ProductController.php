@@ -40,7 +40,7 @@ class ProductController extends Controller
     public function promoHome()
     {
         
-        $products = Product::with('category', 'ingredients')->where('promotion', 1)->get();
+        $products = Product::with('category', 'ingredients')->where('promotion', 1)->orderBy('updated_at')->get();
         
         return response()->json([
             'success'   => true,
