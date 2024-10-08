@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Api\PaymentController;
 
 class OrderController extends Controller
 {
@@ -23,8 +24,9 @@ class OrderController extends Controller
     ];
 
     public function store(Request $request)
-    {
-        
+    { 
+        $payment_controller = new PaymentController();
+
         $request->validate($this->validations);
         
         $data = $request->all();
@@ -167,21 +169,28 @@ class OrderController extends Controller
             $total_price = 0;
             for ($i = 0; $i < count($cart); ++$i) {
                 $product = Product::where('id', $cart[$i]['id'])->first();
-                // Calcolo il prezzo totale (senza aggiunte)
                 $total_price += $product->price * $cart[$i]['counter'];
-            }
-    
-            // Considero le aggiunte nel prezzo totale
-            for ($i = 0; $i < count($cart); ++$i) {
+                $cart[$i]['price'] = $product->price;
+                //$cart[$i]['name'] = $product->name;
+                
                 for ($z = 0; $z < count($cart[$i]['add']); $z++) {
                     $ingredient = Ingredient::where('name', $cart[$i]['add'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
+
+                    $cart[$i]['price'] +=  $ingredient->price;
                 }
+                $cart[$i]['tot_price'];
                 for ($z = 0; $z < count($cart[$i]['option']); $z++) {
                     $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
+                    
+                    $cart[$i]['price'] +=  $ingredient->price;
                 }
             }
+    
+            
+
+            $status_payment = $payment_controller->checkout($cart);
     
             $newOrder = new Order();
             $newOrder->name = $data['name'];
