@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Api\PaymentController;
 
+
+
 class OrderController extends Controller
 {
     private $validations = [
@@ -25,6 +27,7 @@ class OrderController extends Controller
 
     public function store(Request $request)
     { 
+        
         $payment_controller = new PaymentController();
 
         $request->validate($this->validations);
@@ -178,7 +181,7 @@ class OrderController extends Controller
 
                     $cart[$i]['price'] +=  $ingredient->price;
                 }
-                $cart[$i]['tot_price'];
+               // $cart[$i]['tot_price'];
                 for ($z = 0; $z < count($cart[$i]['option']); $z++) {
                     $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
@@ -285,6 +288,8 @@ class OrderController extends Controller
                 'prenotazione' => $newOrder,
                 'data' => $date
             ]);
+
+            //return $status_payment;
         } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
