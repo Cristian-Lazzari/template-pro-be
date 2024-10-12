@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhooks;
 
 use Stripe\Stripe;
 use Stripe\Webhook;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
