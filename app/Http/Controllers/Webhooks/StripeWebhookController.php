@@ -12,12 +12,13 @@ class StripeWebhookController extends Controller
 {
     
    
-
+    
     public function handleStripeWebhook(Request $request)
     {
         // La tua chiave segreta di Stripe
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
-
+        
+        Log::warning(" SESSIONE CONTROLLER");
         // Imposta la chiave segreta di Stripe
         Stripe::setApiKey($stripeSecretKey);
 
@@ -63,6 +64,7 @@ class StripeWebhookController extends Controller
 
     protected function handleCheckoutSessionCompleted($session)
     {
+        Log::warning(" SESSIONE DI COMPLETAMENT0");
         // Aggiorna il tuo database per segnare l'ordine come completato
         // Assicurati di usare l'ID dell'ordine per aggiornare correttamente il record
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
