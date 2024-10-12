@@ -33,5 +33,4 @@ Route::get('getDays',           [DateController::class, 'getDays'])->name('api.d
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 
-Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('checkout');
-Route::post('/orderSuccess',    [OrderController::class, 'orderSuccess'])->name('api.orders.orderSuccess');
+Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');

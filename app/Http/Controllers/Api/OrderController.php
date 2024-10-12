@@ -409,14 +409,14 @@ class OrderController extends Controller
                 //$cart[$i]['name'] = $product->name;
                 
                 for ($z = 0; $z < count($cart[$i]['add']); $z++) {
-                    $ingredient = Ingredient::where('name', $cart[$i]['add'][$z])->first();
+                    $ingredient = Ingredient::where('name', $cart[$i]['add'][$z])->firstOrFail();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
 
                     $cart[$i]['price'] +=  $ingredient->price;
                 }
                // $cart[$i]['tot_price'];
                 for ($z = 0; $z < count($cart[$i]['option']); $z++) {
-                    $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->first();
+                    $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->firstOrFail();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
                     
                     $cart[$i]['price'] +=  $ingredient->price;
@@ -536,14 +536,5 @@ class OrderController extends Controller
         }
 
     }
-    public function orderSuccess($orderData){
-            
-        $product = Product::where('id', $orderData)->first();
-
-        $product->status = 3;
-
-        $product->update();
-
-        return redirect('http://localhost:5174/');
-    }
+    
 }
