@@ -15,55 +15,52 @@ class StripeWebhookController extends Controller
     
     public function handleStripeWebhook(Request $request)
     {
-        return dump('ciao');
-    }
-    // {
-    //     // La tua chiave segreta di Stripe
-    //     $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
+        // La tua chiave segreta di Stripe
+        $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
         
-    //     Log::warning(" SESSIONE CONTROLLER");
-    //     // Imposta la chiave segreta di Stripe
-    //     Stripe::setApiKey($stripeSecretKey);
+        Log::warning(" SESSIONE CONTROLLER");
+        // Imposta la chiave segreta di Stripe
+        Stripe::setApiKey($stripeSecretKey);
 
-    //     // Ottieni il corpo della richiesta
-    //     $payload = $request->getContent();
-    //     $sigHeader = $request->header('Stripe-Signature');
+        // Ottieni il corpo della richiesta
+        $payload = $request->getContent();
+        $sigHeader = $request->header('Stripe-Signature');
 
-    //     // Il tuo endpoint segreto (ottenuto quando configuri il webhook)
-    //     $endpointSecret = config('configurazione.STRIPE_WEBHOOK_SECRET'); // Inserisci il tuo endpoint segreto
+        // Il tuo endpoint segreto (ottenuto quando configuri il webhook)
+        $endpointSecret = config('configurazione.STRIPE_WEBHOOK_SECRET'); // Inserisci il tuo endpoint segreto
 
-    //     try {
-    //         // Verifica il webhook
-    //         $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
-    //     } catch (UnexpectedValueException $e) {
-    //         // Il payload non è valido
-    //         return response()->json(['error' => 'Invalid payload'], 400);
-    //     } catch (\Stripe\Exception\SignatureVerificationException $e) {
-    //         // La firma non è valida
-    //         return response()->json(['error' => 'Invalid signature'], 400);
-    //     }
+        try {
+            // Verifica il webhook
+            $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
+        } catch (UnexpectedValueException $e) {
+            // Il payload non è valido
+            return response()->json(['error' => 'Invalid payload'], 400);
+        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            // La firma non è valida
+            return response()->json(['error' => 'Invalid signature'], 400);
+        }
 
-    //     // Gestisci gli eventi pertinenti
-    //     switch ($event->type) {
-    //         case 'checkout.session.completed':
-    //             $session = $event->data->object; // contiene i dettagli della sessione
-    //             $this->handleCheckoutSessionCompleted($session);
-    //             break;
-    //         case 'payment_intent.succeeded':
-    //             $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-    //             $this->handlePaymentIntentSucceeded($paymentIntent);
-    //             break;
-    //         case 'payment_intent.payment_failed':
-    //             $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-    //             $this->handlePaymentIntentFailed($paymentIntent);
-    //             break;
-    //         // Aggiungi altri eventi se necessario
-    //         default:
-    //             Log::warning("Unhandled event type: {$event->type}");
-    //     }
+        // Gestisci gli eventi pertinenti
+        switch ($event->type) {
+            case 'checkout.session.completed':
+                $session = $event->data->object; // contiene i dettagli della sessione
+                $this->handleCheckoutSessionCompleted($session);
+                break;
+            case 'payment_intent.succeeded':
+                $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
+                $this->handlePaymentIntentSucceeded($paymentIntent);
+                break;
+            case 'payment_intent.payment_failed':
+                $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
+                $this->handlePaymentIntentFailed($paymentIntent);
+                break;
+            // Aggiungi altri eventi se necessario
+            default:
+                Log::warning("Unhandled event type: {$event->type}");
+        }
 
-    //     return response()->json(['status' => 'success'], 200);
-    // }
+        return response()->json(['status' => 'success'], 200);
+    }
 
     protected function handleCheckoutSessionCompleted($session)
     {
