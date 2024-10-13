@@ -108,6 +108,8 @@
     my_0
     @elseif ($reservation->status == 3)
     my_3
+    @elseif ($reservation->status == 5)
+    my_5
     @endif
     or-res my-4"
     >

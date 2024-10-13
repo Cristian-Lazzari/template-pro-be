@@ -100,6 +100,8 @@
     my_0
     @elseif ($order->status == 3)
     my_3
+    @elseif ($order->status == 5)
+    my_5
     @endif
     or-res my-4"
     >

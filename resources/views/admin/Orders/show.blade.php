@@ -24,6 +24,7 @@
             @elseif ($order->status == 1) my_1
             @elseif ($order->status == 0) my_0
             @elseif ($order->status == 3) my_3
+            @elseif ($order->status == 5) my_5
             @endif myres"
         >
 

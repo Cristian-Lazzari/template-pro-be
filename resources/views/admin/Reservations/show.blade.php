@@ -22,6 +22,7 @@
             @elseif ($reservation->status == 1) my_1
             @elseif ($reservation->status == 0) my_0
             @elseif ($reservation->status == 3) my_3
+            @elseif ($reservation->status == 5) my_5
             @endif myres"
         >
 
