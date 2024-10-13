@@ -1545,7 +1545,7 @@ body{
 .my_0::after{
     content: 'Annullata';
     position: absolute;
-    top: 0;
+    bottom: 0;
     right: 0;
     text-align: center;
     z-index: 12;
@@ -1556,7 +1556,7 @@ body{
     color: rgba(255, 0, 0, 0.852);
     text-shadow: 0 0 20px black;
     width: 100%;
-    height: 100%;
+    height: 70%;
 }
 
 
