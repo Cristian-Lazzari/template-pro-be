@@ -42,17 +42,17 @@ class PageController extends Controller
             3 => Post::where('visible', 1)->where('archived', 0)->count(),
             4 => Post::where('archived', 1)->count(),
         ];
-        $confirmed_order = Order::where('status', 1)->count() + Order::where('status', 5)->count();
         $order = [ 
-            1 =>  $confirmed_order,
+            1 => Order::where('status', 1)->count() + Order::where('status', 5)->count(),
             2 => Order::where('status', 2)->count(),
             3 => Order::where('status', 0)->count(),
             4 => Order::where('status', 3)->count(),
         ];
         $reservation = [
-            1 => Reservation::where('status', 1)->count(),
+            1 => Reservation::where('status', 1)->count() + Reservation::where('status', 5)->count(),
             2 => Reservation::where('status', 2)->count(),
             3 => Reservation::where('status', 0)->count(),
+            4 => Reservation::where('status', 3)->count(),
         ];
         
 

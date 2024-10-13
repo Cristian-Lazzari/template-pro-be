@@ -91,6 +91,9 @@
                             <h3>{{$order[3]}}</h3>
                             <span>annullate</span>
                         </div>
+                        <div class="stat">
+                            <h3>{{$order[4]}}</h3>
+                            <span>pagate</span>
                     </div>
                 </div>
                 @endif
