@@ -19,13 +19,16 @@
 
 
 
+        <div
         @if ($order->status == 2)
-        <div class="myres my_2">
+        class="my_2"
         @elseif ($order->status == 1)
-        <div class="myres my_1 ">
+        class="my_1"
         @elseif ($order->status == 0)
-        <div class="myres my_0">
+        class="my_0"
         @endif
+        class="myres"
+        >
 
             <div class="mail-tel">
                 <a href="{{'mailto:' . $order->email}}" class="mail">{{$order->email}}</a>

@@ -208,7 +208,26 @@
                                     <div class="back"></div>
                                 </label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
-                                @foreach (config('configurazione.times') as $time)
+                                @php
+                                    $day_time = [];
+                                    $start = new DateTime(config('configurazione.times_start'));
+                                    $end = new DateTime(config('configurazione.times_end'));
+                                    $index = 1;
+                                    $interval = config('configurazione.times_interval');
+
+                                    // Loop finché l'orario di inizio è inferiore all'orario di fine
+                                    while ($start <= $end) {
+                                        $day_time[$index] = [
+                                            'time' => $start->format('H:i'),
+                                            'set' => ''
+                                        ];
+                                        // Incrementa l'orario di inizio con l'intervallo specificato
+                                        $start->modify("+$interval minutes");
+                                        $index++;
+                                    }
+                                @endphp
+
+                                @foreach ($day_time as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
                                         @if ( config('configurazione.pack') == 2)
                                             <option value="0">{{ $time['time'] }} - ND</option>
@@ -229,17 +248,11 @@
                                             <option value="7">{{ $time['time'] }} - tutti</option>
                                         @endif
                                     </select>
-                                
                                 @endforeach                    
-                            
                             </div>
                         </div>
-                    
-                
                     </label>
-
                 @endforeach
-
             </div>
         </div>
         @error('days_on') <p class="error m-2">seleziona "Attiva" nei giorni i cui sei operativo</p> @enderror

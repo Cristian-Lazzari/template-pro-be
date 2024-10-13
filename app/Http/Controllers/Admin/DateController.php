@@ -616,7 +616,26 @@ class DateController extends Controller
         $times_slot6 = $request->input("times_slot_6");
         $times_slot7 = $request->input("times_slot_7");
         $timesDay = [];
-        $day = config('configurazione.times');
+
+        $day = [];
+        $start = new DateTime(config('configurazione.times_start'));
+        $end = new DateTime(config('configurazione.times_end'));
+        $index = 1;
+        $interval = config('configurazione.times_interval');
+
+        // Loop finché l'orario di inizio è inferiore all'orario di fine
+        while ($start <= $end) {
+            $day[$index] = [
+                'time' => $start->format('H:i'),
+                'set' => ''
+            ];
+            // Incrementa l'orario di inizio con l'intervallo specificato
+            $start->modify("+$interval minutes");
+            $index++;
+        }
+
+
+        //$day = config('configurazione.times');
         
         for ($i = 0; $i < 7; $i++) { 
             array_push($timesDay, $day);
