@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('email', 100);
             $table->string('phone', 20);
 
+            $table->string('checkout_session_id')->nullable();
+
             $table->string('address', 120)->nullable();
             $table->string('address_n', 4)->nullable();
             $table->string('comune', 30)->nullable();

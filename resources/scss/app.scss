@@ -1482,6 +1482,36 @@ body{
     }
     
 }
+.my_3{
+    
+    background-color: #0e7640b0;
+    color: $c2 ;
+    .top{
+        border-bottom: 1px $c2 dotted !important;
+    } 
+    .mail-tel{
+        border-bottom: 6px solid $c2 !important ;
+        div{
+            border: 2px solid $c2 !important ;
+        }
+    }
+    
+}
+.my_5{
+    
+    background-color: #1da34c;
+    color: $c2 ;
+    .top{
+        border-bottom: 1px $c2 dotted !important;
+    } 
+    .mail-tel{
+        border-bottom: 6px solid $c2 !important ;
+        div{
+            border: 2px solid $c2 !important ;
+        }
+    }
+    
+}
 .my_2{
     background-color: $c1;
     color: $c3 ;

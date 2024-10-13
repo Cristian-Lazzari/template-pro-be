@@ -173,15 +173,13 @@ class OrderController extends Controller
                 $product = Product::where('id', $cart[$i]['id'])->first();
                 $total_price += $product->price * $cart[$i]['counter'];
                 $cart[$i]['price'] = $product->price;
-                //$cart[$i]['name'] = $product->name;
-                
+       
                 for ($z = 0; $z < count($cart[$i]['add']); $z++) {
                     $ingredient = Ingredient::where('name', $cart[$i]['add'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
 
                     $cart[$i]['price'] +=  $ingredient->price;
                 }
-               // $cart[$i]['tot_price'];
                 for ($z = 0; $z < count($cart[$i]['option']); $z++) {
                     $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->first();
                     $total_price += $ingredient->price * $cart[$i]['counter'];
@@ -189,6 +187,7 @@ class OrderController extends Controller
                     $cart[$i]['price'] +=  $ingredient->price;
                 }
             }
+            $date->update();
     
             
 
@@ -211,6 +210,7 @@ class OrderController extends Controller
                 $newOrder->address_n = $data['cv'];
             }
             $newOrder->save();
+            //$date->update();
 
             $payment_url = $payment_controller->checkout($cart, $newOrder->id);
             
@@ -224,7 +224,7 @@ class OrderController extends Controller
                 $item_order->option = json_encode($e['option']);
                 $item_order->save();
             }
-            $date->update();
+            
 
             // Ottieni le impostazioni di contatto
             $set = Setting::where('name', 'Contatti')->firstOrFail();

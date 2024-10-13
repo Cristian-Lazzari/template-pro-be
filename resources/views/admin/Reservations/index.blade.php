@@ -99,13 +99,18 @@
      $date = $parts[0];
      $time = $parts[1];
     @endphp 
+    <div class="
     @if ($reservation->status == 2)
-    <div class="or-res my_2 my-4">
+    my_2
     @elseif ($reservation->status == 1)
-    <div class="or-res my_1 my-4">
+    my_1
     @elseif ($reservation->status == 0)
-    <div class="or-res my_0 my-4">
+    my_0
+    @elseif ($reservation->status == 3)
+    my_3
     @endif
+    or-res my-4"
+    >
         <section class="top">
             <div class="name">
                 <h4>{{$date}}</h4>

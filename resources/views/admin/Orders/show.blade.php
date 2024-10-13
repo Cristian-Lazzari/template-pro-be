@@ -19,15 +19,12 @@
 
 
 
-        <div
-        @if ($order->status == 2)
-        class="my_2"
-        @elseif ($order->status == 1)
-        class="my_1"
-        @elseif ($order->status == 0)
-        class="my_0"
-        @endif
-        class="myres"
+        <div class="
+            @if ($order->status == 2) my_2
+            @elseif ($order->status == 1) my_1
+            @elseif ($order->status == 0) my_0
+            @elseif ($order->status == 3) my_3
+            @endif myres"
         >
 
             <div class="mail-tel">

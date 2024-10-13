@@ -78,13 +78,116 @@ class StripeWebhookController extends Controller
     protected function handlePaymentIntentSucceeded($paymentIntent)
     {
 
+
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $paymentIntent->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        $order = Order::where('id', $orderId)->firstOrFail();
+        $order = Order::where('id', $orderId)->with('products')->firstOrFail();
+        $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
+
+        $vis = json_decode($date->visible, true);
+        $av = json_decode($date->availability, true);
+        $res = json_decode($date->reserving, true);
+
+        $arrvar = str_replace('\\', '', $order->cart);
+        $cart = json_decode($arrvar, true);
+
+        if(config('configurazione.typeOfOrdering')){
+            $res_c1 = $res['cucina_1'];
+            $res_c2 = $res['cucina_2'];
+            $av_c1  = $av['cucina_1'];
+            $av_c2  = $av['cucina_2'];
+            // Inizializza i contatori
+            $np_c1  = 0;
+            $np_c2  = 0;
+            // Cicla sui prodotti associati all'ordine
+            foreach ($order->products as $product) {
+                // Controlla il tipo di cucina del prodotto
+                if ($product->type_slot == 1) {
+                    $np_c1++;
+                } elseif ($product->type_slot == 2) {
+                    $np_c2++;
+                }
+            }
+            if(isset($order->comune)){
+                if( ($res['domicilio'] + 1) < $av['domicilio']){
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                } elseif (($res['domicilio'] + 1) == $av['domicilio']){
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                    $vis['domicilio'] = 0;
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                        'data' => $date
+                    ]);
+                }
+            }
+
+            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
+                $res['cucina_1'] = $res['cucina_1'] + $np_c1;
+                $res['cucina_2'] = $res['cucina_2'] + $np_c2;
+            }elseif(($res_c1 + $np_c1) == $av_c1){
+                $res['cucina_1'] = $res['cucina_1'] + $np_c1;
+                $vis['cucina_1'] = 0;
+            }elseif(($res_c2 + $np_c2) == $av_c2){
+                $res['cucina_2'] = $res['cucina_2'] + $np_c2;
+                $vis['cucina_2'] = 0;
+            }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
+                $res['cucina_1'] = $res['cucina_1'] + $np_c1;
+                $vis['cucina_1'] = 0;
+                $res['cucina_2'] = $res['cucina_2'] + $np_c2;
+                $vis['cucina_2'] = 0;
+            }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                    'data' => $date
+                ]);
+            }
+
+            $date->visible = json_encode($vis);
+            $date->reserving = json_encode($res);
+        }else{
+            if(isset($order->comune)){
+                if(($res['domicilio'] + 1) < $av['domicilio']){
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                    $date->reserving = json_encode($res);  
+                }elseif(($res['domicilio'] + 1) == $av['domicilio']){
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                    $date->reserving = json_encode($res);
+                    $vis['domicilio'] = 0;
+                    $date->visible = json_encode($vis);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                        'data' => $date
+                    ]);
+                }
+            }else{
+                if(($res['asporto'] + 1) < $av['asporto']){
+                    $res['asporto'] = $res['asporto'] + 1;
+                    $date->reserving = json_encode($res);  
+                }elseif(($res['asporto'] + 1) == $av['asporto']){
+                    $res['asporto'] = $res['asporto'] + 1;
+                    $date->reserving = json_encode($res);
+                    $vis['asporto'] = 0;
+                    $date->visible = json_encode($vis);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                        'data' => $date
+                    ]);
+                }
+            }
+        }
+ 
         $order->status = 3;
+        $date->update();
         $order->update();
     
     }

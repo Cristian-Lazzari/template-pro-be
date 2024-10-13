@@ -91,16 +91,18 @@
     $date = $parts[0];
     $time = $parts[1];
 @endphp 
-<div
-@if ($order->status == 2)
- class="my_2"
-@elseif ($order->status == 1)
- class="my_1"
-@elseif ($order->status == 0)
- class="my_0"
-@endif
-class="or-res my-4"
->
+    <div class="
+    @if ($order->status == 2)
+    my_2
+    @elseif ($order->status == 1)
+    my_1
+    @elseif ($order->status == 0)
+    my_0
+    @elseif ($order->status == 3)
+    my_3
+    @endif
+    or-res my-4"
+    >
     <section class="top">
         <div class="name">
             <h4>{{$date}}</h4>

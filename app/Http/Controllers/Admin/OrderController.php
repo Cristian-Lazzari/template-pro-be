@@ -65,10 +65,18 @@ class OrderController extends Controller
         $id = $request->input('id');
         $order = Order::where('id', $id)->firstOrFail();
         if($c_a){
-            $order->status = 1;
+            if($order->status == 2){
+                $order->status = 1;
+            }elseif($order->status == 3){
+                $order->status = 5;
+            }
             $m = 'La prenotazione e\' stata confermata correttamente';
             $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;
         }else{
+            if($order->status == 3){
+                $m = 'La prenotazione e\' stata annullata e RIMBORSATA correttamente';
+                //codice per rimborso
+            }
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
             $reserving = json_decode($date->reserving, 1);

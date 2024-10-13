@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Stripe\Stripe;
+use App\Models\Order;
 use Stripe\PaymentIntent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -10,15 +11,12 @@ use App\Http\Controllers\Controller;
 
 class PaymentController extends Controller
 {        
-    //     return redirect()->away($checkout_session->url);
-
     public function checkout($cart, $id) 
     {
         
         $YOUR_DOMAIN = 'http://127.0.0.1:8000/';
         $final_destination = 'http://localhost:5173/'; 
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
-       
 
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
  
@@ -48,9 +46,16 @@ class PaymentController extends Controller
 
         Log::info($line_items);
         
-        return $checkout_session->url;
+        // Qui puoi salvare l'ID della sessione nel database
+        $checkoutSessionId = $checkout_session->id;
 
-        //return response()->json(['id' => $checkoutSession->id]);
+        $order = Order::find($id);
+        if ($order) {
+            $order->checkout_session_id = $checkoutSessionId; // Salva l'ID della sessione
+            $order->save();
+        }
+        
+        return $checkout_session->url;
 
     }
 
