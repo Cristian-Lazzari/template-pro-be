@@ -37,6 +37,10 @@
                             $arrO= json_decode($i->pivot->option); 
                             $arrA= json_decode($i->pivot->add); 
                             $arrD= json_decode($i->pivot->remove); 
+                            // dd($i->pivot->option);
+                            // dd($i->pivot->add);
+                            //dd($i->pivot->quantity);
+
                         ?>
                         <div style="width: 100%; margin: 5px 0;">
                             <span style="font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
@@ -46,7 +50,7 @@
                         <br>
                         <div style="margin: 5px;">
                             <!-- Opzioni prodotto -->
-                            @if ($arrO !== [])
+                            @if (count($arrO))
                                 <div style="margin: 5px;">
                                     <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
                                     @foreach ($arrO as $a)
@@ -56,7 +60,7 @@
                             @endif
                             <div style="margin: 5px;">
                                 <!-- Ingredienti extra -->
-                                @if ($arrA !== [])
+                                @if (count($arrA))
                                     <div style="margin: 5px;">
                                         <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
                                         @foreach ($arrA as $a)
@@ -65,7 +69,7 @@
                                     </div>
                                 @endif
                                 <!-- Ingredienti rimossi -->
-                                @if ($arrD !== [])
+                                @if (count($arrD))
                                     <div style="margin: 5px;">
                                         <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
                                         @foreach ($arrD as $a)

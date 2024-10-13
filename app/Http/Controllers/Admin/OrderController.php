@@ -63,7 +63,8 @@ class OrderController extends Controller
         $wa = $request->input('wa');
         $c_a = $request->input('c_a');
         $id = $request->input('id');
-        $order = Order::where('id', $id)->firstOrFail();
+        $order = Order::where('id', $id)->with('products')->firstOrFail();
+        //dd($order);
         if($c_a){
             if($order->status == 2){
                 $order->status = 1;
@@ -135,7 +136,6 @@ class OrderController extends Controller
 
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
-        $orderProduct = OrderProduct::all();
         $bodymail = [
             'type' => 'or',
             'to' => 'user',
@@ -151,7 +151,6 @@ class OrderController extends Controller
             'comune' => $order->comune,
             'address' => $order->address,
             'address_n' => $order->address_n,
-            'orderProduct' => $orderProduct,
             
             'status' => $order->status,
             'cart' => $order->products,
