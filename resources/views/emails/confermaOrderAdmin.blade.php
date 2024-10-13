@@ -7,7 +7,7 @@
     <title>Conferma Email</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0;">
-    <div class="container" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
         
         <!-- Informazioni automatizzate -->
         <p style="font-size: 16px; line-height: 1.8; margin: 5px;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
@@ -30,98 +30,52 @@
             
             <!-- Elenco prodotti -->
             <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
-            <div class="products" style="width: 100%;">
-                @if ($content_mail['to'] == 'user' && ($content_mail['status'] == 0 || $content_mail['status'] == 1))
-                    @foreach ($content_mail['orderProduct'] as $i)          
-                        @if ($content_mail['order_id'] == $i->order_id)
-                            @foreach ($content_mail['cart'] as $o)
-                                @if ($o->id == $i->product_id)
-                                    <?php $name= $o->name ?>
-                                @endif
-                            @endforeach
-                            <?php
-                                $arrO= json_decode($i->option); 
-                                $arrA= json_decode($i->add); 
-                                $arrD= json_decode($i->remove); 
-                            ?>
-                            
-                            <!-- Quantità prodotto -->
-                            <div class="counter" style="font-size: 18px; font-weight: bold; margin: 5px;">* {{$i->quantity}}</div>              
-                            <!-- Nome prodotto -->
-                            <div class="name" style="font-size: 18px; font-weight: bold; margin: 5px;">{{$name}}</div>
-                            <div class="variations" style="margin: 5px;">
-                                <!-- Opzioni prodotto -->
-                                @if ($arrO !== [])
-                                    <div class="options" style="margin: 5px;">
-                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
-                                        @foreach ($arrO as $a)
+            <div style="width: 100%;">
+                @if ($content_mail['to'] == 'user')
+                    @foreach ($content_mail['cart'] as $i)               
+                        <?php
+                            $arrO= json_decode($i->pivot->option); 
+                            $arrA= json_decode($i->pivot->add); 
+                            $arrD= json_decode($i->pivot->remove); 
+                        ?>
+                        <div style="width: 100%; margin: 5px 0;">
+                            <span style="font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                            <span style="font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->pivot->name}}</span>
+                            <span style="font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->pivot->price / 100 }}</span>
+                        </div>
+                        <br>
+                        <div style="margin: 5px;">
+                            <!-- Opzioni prodotto -->
+                            @if ($arrO !== [])
+                                <div style="margin: 5px;">
+                                    <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
+                                    @foreach ($arrO as $a)
+                                        <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div style="margin: 5px;">
+                                <!-- Ingredienti extra -->
+                                @if ($arrA !== [])
+                                    <div style="margin: 5px;">
+                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
+                                        @foreach ($arrA as $a)
                                             <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
                                         @endforeach
                                     </div>
                                 @endif
-                                <div class="bottom-var" style="margin: 5px;">
-                                    <!-- Ingredienti extra -->
-                                    @if ($arrA !== [])
-                                        <div class="add" style="margin: 5px;">
-                                            <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
-                                            @foreach ($arrA as $a)
-                                                <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                    <!-- Ingredienti rimossi -->
-                                    @if ($arrD !== [])
-                                        <div class="removed" style="margin: 5px;">
-                                            <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
-                                            @foreach ($arrD as $a)
-                                                <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
-                                            @endforeach       
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                @else
-                    @foreach ($content_mail['cart'] as $p)
-                        <div class="product" style="width: 100%; margin: 20px auto 5px auto;">
-                            <div class="line" style="width: 100%; margin: 5px 0;">
-                                <span class="counter" style="font-size: 18px; font-weight: bold;">* {{$p['counter']}}</span>
-                                <span class="name" style="font-size: 18px; font-weight: bold; margin-left: 10px;">{{$p['name']}}</span>
-                                <span class="price" style="font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$p['price'] / 100}}</span>
-                            </div>
-                            <br>
-                            <div class="variation" style="margin: 5px;">
-                                <!-- Opzioni aggiunte al prodotto -->
-                                @if (count($p['option']) !==0)
-                                    <div class="option" style="margin: 5px;">
-                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni aggiunte al prodotto:</h5>      
-                                        @foreach ($p['option'] as $var)
-                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$var}}</span>
-                                        @endforeach
-                                    </div>
-                                @endif
-                                <!-- Ingredienti tolti -->
-                                @if (count($p['remove']) !==0)
-                                    <div class="remove" style="margin: 5px;">
-                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti tolti:</h5>      
-                                        @foreach ($p['remove'] as $var)
-                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$var}}</span>
-                                        @endforeach
-                                    </div>
-                                @endif
-                                <!-- Ingredienti aggiunti -->
-                                @if (count($p['add']) !==0)
-                                    <div class="add" style="margin: 5px;">
-                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti aggiunti:</h5>
-                                        @foreach ($p['add'] as $var)
-                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$var}}</span>
-                                        @endforeach
+                                <!-- Ingredienti rimossi -->
+                                @if ($arrD !== [])
+                                    <div style="margin: 5px;">
+                                        <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
+                                        @foreach ($arrD as $a)
+                                            <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
+                                        @endforeach       
                                     </div>
                                 @endif
                             </div>
                         </div>
-                        <hr style="height: 2px; background-color: rgb(0, 0, 0); border: none; margin: 10px 0;">
+                        <hr style="height: 2px; background-color: rgb(75, 81, 88); border: none; margin: 10px 0; order-radius: 20px">
                     @endforeach
                 @endif
             </div>
@@ -191,7 +145,7 @@
         
     </div>
     <!-- Footer -->
-    <div class="footer" style="width: 95%; margin: 100px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
+    <div style="width: 95%; margin: 100px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="font-size: 12px; line-height: 1.5; margin: 5px;">
                 Contatta {{config('configurazione.APP_NAME')}} se desideri annullare o modificare la tua prenotazione:
