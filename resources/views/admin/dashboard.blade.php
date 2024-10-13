@@ -94,6 +94,7 @@
                         <div class="stat">
                             <h3>{{$order[4]}}</h3>
                             <span>pagate</span>
+                        </div>
                     </div>
                 </div>
                 @endif
@@ -165,10 +166,8 @@
                     <h2>{{$post[4]}}</h2>
                     <span>archiviati</span>
                 </div>
-            </div>
-           
+            </div>   
         </div>
-        
     </div>
     <div class="bottom-c">
        <div class="date">
