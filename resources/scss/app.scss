@@ -301,7 +301,7 @@ body{
                 .stat-p{
                     background-color: $c2;
                     color: $c3;
-                    //flex-wrap: nowrap !important;
+                    flex-wrap: wrap !important;
                     justify-content: space-around;
                     display: flex;
                     
