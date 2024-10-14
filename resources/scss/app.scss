@@ -1332,7 +1332,6 @@ body{
         flex-direction: column;
         gap: 5px;
         border-radius: 10px;
-        position: relative;
         .mail-tel {
             border-bottom: 2px solid $c3;
             display: flex;
@@ -1469,6 +1468,7 @@ body{
     }
 }
 .my_1{
+    position: relative;
     
     background-color: #f4f4efbc;
     color: $c1 ;
@@ -1484,6 +1484,7 @@ body{
     
 }
 .my_3{
+    position: relative;
     
     background-color: #91bc2cb0;
     color: $c3 ;
@@ -1499,6 +1500,7 @@ body{
     
 }
 .my_5{
+    position: relative;
     
     background-color: #1da37def;
     color: $c3 ;
@@ -1514,6 +1516,7 @@ body{
     
 }
 .my_2{
+    position: relative;
     background-color: $c1;
     color: $c3 ;
     .top{
