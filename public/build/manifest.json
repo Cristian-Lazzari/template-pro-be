@@ -8,12 +8,12 @@
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app.5f036727.css"
+      "../public/build/assets/app.5f036727.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "assets/app.5f036727.css",
-    "src": "../public/build/resources/scss/app.scss",
+    "file": "../public/build/assets/app.5f036727.css",
+    "src": "resources/scss/app.scss",
     "isEntry": true
   }
 }
