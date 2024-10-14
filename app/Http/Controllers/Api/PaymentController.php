@@ -49,7 +49,7 @@ class PaymentController extends Controller
         // Qui puoi salvare l'ID della sessione nel database
         $checkoutSessionId = $checkout_session->id;
 
-        $order = Order::where('id', $id)->firsOrFail();
+        $order = Order::where('id', $id)->firstOrFail();
         if ($order) {
             $order->checkout_session_id = $checkoutSessionId; // Salva l'ID della sessione
             $order->update();
