@@ -181,6 +181,13 @@ class OrderController extends Controller
         return view('admin.Orders.index', compact('orders'));
     }
 
+    public function show($id)
+    {
+        $order = Order::where('id', $id)->firstOrFail();
+
+        return view('admin.Orders.show', compact('order'));
+    }
+
     
     public function destroy($id)
     {
