@@ -7,7 +7,7 @@
     <title>Conferma Email</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0;">
-    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+    <div style="max-width: 600px; margin: 10px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
         
         <!-- Informazioni automatizzate -->
         <p style="font-size: 16px; line-height: 1.8; margin: 5px;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
@@ -149,7 +149,7 @@
         
     </div>
     <!-- Footer -->
-    <div style="width: 95%; margin: 100px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
+    <div style="width: 95%; margin: 50px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="font-size: 12px; line-height: 1.5; margin: 5px;">
                 Contatta {{config('configurazione.APP_NAME')}} se desideri annullare o modificare la tua prenotazione:
