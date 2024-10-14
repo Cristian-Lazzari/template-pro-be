@@ -50,9 +50,9 @@ class OrderController extends Controller
             $query->where('date_slot', 'like', '%' . $formattedDate . '%');
         }
         if($order){
-            $orders = $query->orderBy('date_slot', 'asc')->get();
+            $orders = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
         }else{
-            $orders = $query->orderBy('created_at', 'desc')->get();    
+            $orders = $query->where('status', '!=', 4)->orderBy('created_at', 'desc')->get();    
         }        
     
 

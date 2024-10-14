@@ -1484,7 +1484,7 @@ body{
 }
 .my_3{
     
-    background-color: #5d5512b0;
+    background-color: #91bc2cb0;
     color: $c3 ;
     .top{
         border-bottom: 1px $c3 dotted !important;
@@ -1554,6 +1554,38 @@ body{
     align-items: center;
     font-size: $fs_lg;
     color: rgba(255, 0, 0, 0.852);
+    text-shadow: 0 0 20px black;
+    width: 100%;
+    height: 70%;
+}
+.my_5::after{
+    content: 'Confermata e Pagata';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    z-index: 12;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $fs_lg;
+    color: rgba(207, 218, 241, 0.907);
+    text-shadow: 0 0 20px black;
+    width: 100%;
+    height: 70%;
+}
+.my_1::after{
+    content: 'Confermata';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    z-index: 12;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $fs_lg;
+    color: rgba(207, 218, 241, 0.907);
     text-shadow: 0 0 20px black;
     width: 100%;
     height: 70%;
