@@ -1332,6 +1332,7 @@ body{
         flex-direction: column;
         gap: 5px;
         border-radius: 10px;
+        position: relative;
         .mail-tel {
             border-bottom: 2px solid $c3;
             display: flex;
