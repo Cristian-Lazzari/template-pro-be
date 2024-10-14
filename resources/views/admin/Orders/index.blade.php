@@ -124,12 +124,12 @@
             <h4>Totale ordine: € {{$order->tot_price / 100}}</h4>
         </div>
         <div class="actions">
-            @if($order->status !== 1)
+            @if (!in_array($order->status, [0, 1, 5]))
             <div class="w-100">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal{{$order->id}}" class="w-100 my_btn_6">Conferma</button>
             </div>
             @endif
-            @if($order->status !== 0)
+            @if(!in_array($order->status, [0, 1, 5]))
             <div class="w-100">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">Annulla</button>                   
             </div>

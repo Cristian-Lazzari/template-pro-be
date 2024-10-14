@@ -1288,6 +1288,8 @@ body{
             flex-grow: 1;
         }
         .actions{
+            position: relative;
+            z-index: 100;
             max-width: 300px;
             width: 30%;
             flex: 1 0 auto;
@@ -1455,6 +1457,8 @@ body{
             .myres-right {
                 margin-top: 20px;
                 button {
+                    position: relative;
+                    z-index: 100;
                     box-shadow: 0 0 15px rgba(0, 0, 0, 0.431);
                 }
             }

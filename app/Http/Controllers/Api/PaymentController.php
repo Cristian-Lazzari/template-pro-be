@@ -15,7 +15,8 @@ class PaymentController extends Controller
     {
         
         $YOUR_DOMAIN = 'http://127.0.0.1:8000/';
-        $final_destination = 'http://localhost:5173/'; 
+        $final_destination = config('configurazione.domain') . '/success-pay'; 
+        $final_destination_error = config('configurazione.domain') . '/error-pay'; 
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
 
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
@@ -40,8 +41,8 @@ class PaymentController extends Controller
             'metadata' => [
                 'order_id' => $id,
             ],
-            'success_url' => 'http://localhost:5173/',
-            'cancel_url' => 'http://localhost:8000/',
+            'success_url' => $final_destination,
+            'cancel_url' => $final_destination_error,
         ]);
 
         Log::info($line_items);
