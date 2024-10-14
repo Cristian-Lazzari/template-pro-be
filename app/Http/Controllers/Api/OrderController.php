@@ -239,19 +239,19 @@ class OrderController extends Controller
             }else{
                 $telefono = '3332222333';
             }
-            
+
             if($data['paying']){     
                 return response()->json([
+                    'success'   => true,
                     'payment'   => true,
                     'url'       => $payment_url,
                     'orderId'   => $newOrder->id,
                 ]);
             }else{
                 return response()->json([
+                    'success'   => true,
                     'payment'   => false,
-                    'success' => true,
-                    'prenotazione' => $newOrder,
-                    'data' => $date
+                    'order'     => $newOrder,
                 ]);
             }
 
