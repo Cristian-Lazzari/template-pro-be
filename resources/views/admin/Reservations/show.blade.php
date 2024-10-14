@@ -64,23 +64,15 @@
                       
                 </section>
                 <section class="myres-right">
-                    @if(!$reservation->status !== 1)
-                    <form class="w-100" action="{{ route('admin.reservations.status') }}" method="POST">
-                        @csrf
-                        <input value="1" type="hidden" name="c_a">
-                        <input value="{{$reservation->id}}" type="hidden" name="id">
-
-                        <button type="submit" class="my_btn_3 w-100">Conferma</button>
-                    </form>
+                    @if (!in_array($reservation->status, [0, 1, 5]))
+                        <div class="w-100">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_6">Conferma</button>
+                        </div>
                     @endif
-                    @if(!$reservation->status == 0)
-                    <form class="w-100" action="{{ route('admin.reservations.status') }}" method="POST">
-                        @csrf
-                        <input value="0" type="hidden" name="c_a">
-                        <input value="{{$reservation->id}}" type="hidden" name="id">
-                        
-                        <button type="submit" class="my_btn_2 w-100">Annulla</button>
-                    </form>
+                    @if(!in_array($reservation->status, [0, 1]))
+                        <div class="w-100">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_6">{{$reservation->status == 5 ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
+                        </div>
                     @endif
                 </section>
             </div>
@@ -96,6 +88,72 @@
         </div>
 
         
+    </div>
+
+      {{-- Modale per conferma --}}
+      <div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header c-1">
+                    <h1 class="modal-title fs-5" id="confirmModalLabel">Gestione notifica conferma</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body c-1">
+                    Ordine di: {{$reservation->name}} 
+                    per il: {{$reservation->date_slot}}
+                    <p>Vuoi inviare un messaggio whatsapp?</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="1" type="hidden" name="wa">
+                        <input value="1" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">Si</button>
+                    </form>
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="0" type="hidden" name="wa">
+                        <input value="1" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">NO</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modale per annullamento --}}
+    <div class="modal fade" id="cancelModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header c-1">
+                    <h1 class="modal-title fs-5" id="cancelModalLabel">Gestione notifica annullamento</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body c-1">
+                    Ordine di: {{$reservation->name}} 
+                    per il: {{$reservation->date_slot}}
+                    <p>Vuoi inviare un messaggio whatsapp?</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="1" type="hidden" name="wa">
+                        <input value="0" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">Si</button>
+                    </form>
+                    <form action="{{ route('admin.reservations.status') }}" method="POST">
+                        @csrf
+                        <input value="0" type="hidden" name="wa">
+                        <input value="0" type="hidden" name="c_a">
+                        <input value="{{$reservation->id}}" type="hidden" name="id">
+                        <button type="submit" class="w-100 my_btn_6">NO</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection

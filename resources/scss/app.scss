@@ -1537,7 +1537,7 @@ body{
 .my_0{
     
     opacity: .7;
-    background-color: rgba(149, 34, 34, 0.504);
+    background-color: rgb(219, 92, 92);
     color: $c3 ;
     position: relative;
     .top{
@@ -1567,12 +1567,13 @@ body{
     opacity: .3;
 }
 .my_0::after{
+    opacity: .6 !important;
     content: 'Annullata';
-    color: rgba(255, 0, 0);
+    color: rgb(94, 43, 43);
 }
 .my_5::after{
     content: 'Confermata e Pagata';
-    color: rgba(6, 72, 81);
+    color: $c3;
 }
 .my_1::after{
     content: 'Confermata';

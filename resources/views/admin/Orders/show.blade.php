@@ -110,18 +110,19 @@
                     @endif
                     @if(!in_array($order->status, [0, 1]))
                     <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_6">Annulla</button>                   
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_6">{{$order->status == 5 ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
                     </div>
                     @endif
+                    
                     @if (isset($order->comune))
-                    <h3>
-                        Consegnare a domicilio
-                        <p>{{$order->comune}}, {{$order->address}}, {{$order->address_n}}</p>
-                    </h3>
+                        <h3>
+                            Consegnare a domicilio
+                            <p>{{$order->comune}}, {{$order->address}}, {{$order->address_n}}</p>
+                        </h3>
                     @else
-                    <h3>
-                        Ritiro d'asporto
-                    </h3>
+                        <h3>
+                            Ritiro d'asporto
+                        </h3>
                     @endif
                 </section>
             </div>
