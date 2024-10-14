@@ -142,12 +142,12 @@
                 </h4>
             </div>
             <div class="actions">
-                @if($reservation->status !== 1)
+                @if (!in_array($reservation->status, [0, 1, 5]))
                 <div class="w-100">
                     <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal{{$reservation->id}}" class="w-100 my_btn_6">Conferma</button>
                 </div>
                 @endif
-                @if($reservation->status !== 0)
+                @if(!in_array($reservation->status, [0, 1, 5]))
                 <div class="w-100">
                     <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$reservation->id}}" class="w-100 my_btn_6">Annulla</button>                   
                 </div>
