@@ -103,23 +103,15 @@
                      --}}
                 </section>
                 <section class="myres-right">
-                    @if(!$order->status !== 1)
-                    <form class="w-100" action="{{ route('admin.orders.status') }}" method="POST">
-                        @csrf
-                        <input value="1" type="hidden" name="c_a">
-                        <input value="{{$order->id}}" type="hidden" name="id">
-
-                        <button type="submit" class="my_btn_3 w-100">Conferma</button>
-                    </form>
+                    @if (!in_array($order->status, [0, 1, 5]))
+                    <div class="w-100">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_6">Conferma</button>
+                    </div>
                     @endif
-                    @if(!$order->status == 0)
-                    <form class="w-100" action="{{ route('admin.orders.status') }}" method="POST">
-                        @csrf
-                        <input value="0" type="hidden" name="c_a">
-                        <input value="{{$order->id}}" type="hidden" name="id">
-                        
-                        <button type="submit" class="my_btn_2 w-100">Annulla</button>
-                    </form>
+                    @if(!in_array($order->status, [0, 1]))
+                    <div class="w-100">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_6">Annulla</button>                   
+                    </div>
                     @endif
                     @if (isset($order->comune))
                     <h3>
@@ -146,5 +138,71 @@
 
         
     </div>
+
+<!-- Modale per la conferma -->
+<div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header c-1">
+                <h1 class="modal-title fs-5" id="confirmModalLabel">Gestione notifica per conferma</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body c-1">
+                Ordine di: {{$order->name}} 
+                per il: {{$order->date_slot}}
+                <p>Vuoi inviare un messaggio whatsapp?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @csrf
+                    <input value="1" type="hidden" name="wa">
+                    <input value="1" type="hidden" name="c_a">
+                    <input value="{{$order->id}}" type="hidden" name="id">
+                    <button type="submit" class="w-100 my_btn_6">Si</button>
+                </form>
+                <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @csrf
+                    <input value="0" type="hidden" name="wa">
+                    <input value="1" type="hidden" name="c_a">
+                    <input value="{{$order->id}}" type="hidden" name="id">
+                    <button type="submit" class="w-100 my_btn_6">NO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale per l'annullamento -->
+<div class="modal fade" id="cancelModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header c-1">
+                <h1 class="modal-title fs-5" id="cancelModalLabel">Gestione notifica per annullamento</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body c-1">
+                Ordine di: {{$order->name}} 
+                per il: {{$order->date_slot}}
+                <p>Vuoi inviare un messaggio whatsapp?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @csrf
+                    <input value="1" type="hidden" name="wa">
+                    <input value="0" type="hidden" name="c_a">
+                    <input value="{{$order->id}}" type="hidden" name="id">
+                    <button type="submit" class="w-100 my_btn_6">Si</button>
+                </form>
+                <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @csrf
+                    <input value="0" type="hidden" name="wa">
+                    <input value="0" type="hidden" name="c_a">
+                    <input value="{{$order->id}}" type="hidden" name="id">
+                    <button type="submit" class="w-100 my_btn_6">NO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection

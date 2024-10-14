@@ -129,7 +129,7 @@
                 <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal{{$order->id}}" class="w-100 my_btn_6">Conferma</button>
             </div>
             @endif
-            @if(!in_array($order->status, [0, 1, 5]))
+            @if(!in_array($order->status, [0, 1]))
             <div class="w-100">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">Annulla</button>                   
             </div>
