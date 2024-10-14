@@ -1590,6 +1590,22 @@ body{
     width: 100%;
     height: 70%;
 }
+.my_3::after{
+    content: 'Pagata';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    z-index: 12;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $fs_lg;
+    color: rgba(255, 254, 238, 0.907);
+    text-shadow: 0 0 20px black;
+    width: 100%;
+    height: 70%;
+}
 
 
 //-- end
