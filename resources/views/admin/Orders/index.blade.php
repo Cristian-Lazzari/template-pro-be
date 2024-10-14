@@ -41,9 +41,9 @@
         <div class="s-name">
             <label for="date" class="fw-semibold">Data</label>
             <div>
-                <input type="date" class="" id="name" name="date"
+                <input type="date" class="" id="date" name="date"
                     @if (isset($filters))
-                        value="{{  $filters['name'] }}"  
+                        value="{{  $filters['date'] }}"  
                     @endif > 
                 
             </div>
@@ -53,17 +53,19 @@
         <div>
             <label for="status" class="form-label fw-semibold">Status</label>
             <select class="" id="status" name="status" >
+                <option selected disabled value="null">seleziona uno status</option>
                 <option @if (isset($filters) && $filters['status'] == '2') selected @endif value="2">In Elaborazione</option>
                 <option @if (isset($filters) && $filters['status'] == '1') selected @endif value="1">Confermate</option>
                 <option @if (isset($filters) && $filters['status'] == '0') selected @endif value="0">Annullate</option>
+                <option @if (isset($filters) && $filters['status'] == '5') selected @endif value="5">Pagate</option>
                 <option @if (isset($filters) && $filters['status'] == '3') selected @endif value="3">Tutte</option>
             </select>
         </div>
         <div>
             <label for="order" class="form-label fw-semibold">Ordina</label>
             <select class="" id="order" name="order" >
-                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Data di prenotazione</option>
-                <option @if (isset($filters) && $filters['order'] == '1') selected @endif value="1">Data di creazione</option>
+                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Data di creazione</option>
+                <option @if (isset($filters) && $filters['order'] == '1') selected @endif value="1">Data di prenotazione</option>
             </select>
         </div>
         

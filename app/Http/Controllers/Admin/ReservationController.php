@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use DateTime;
 use App\Models\Date;
 use App\Models\Setting;
 use App\Models\Reservation;
@@ -112,7 +113,8 @@ class ReservationController extends Controller
         $query = Reservation::query();
        
         if ($name) {
-            $query->where('name', 'like', '%' . $name . '%');
+            $query->where('name', 'like', '%' . $name . '%')
+            ->orWhere('surname', 'like', '%' . $name . '%');
         } 
         if ($status == 0) {
             $query->where('status', '=', 0);
@@ -122,7 +124,8 @@ class ReservationController extends Controller
             $query->where('status', '=', 1);
         }
         if($date){
-            $query->where('date_slot', 'like', '%' . $date . '%');
+            $formattedDate = DateTime::createFromFormat('Y-m-d', $date)->format('d/m/Y');
+            $query->where('date_slot', 'like', '%' . $formattedDate . '%');
         }
         if($order){
             $reservations = $query->orderBy('updated_at', 'desc')->get();    
@@ -143,15 +146,15 @@ class ReservationController extends Controller
 
     public function index()
     {
-        $reservations = Reservation::where('status', '=', 2)->orderBy('date_slot', 'asc')->get();
-        $dates = Date::all();
-        return view('admin.Reservations.index', compact('reservations', 'dates'));
+        $query = Reservation::whereRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) >= ?", [now()->toDateString()]);
+
+        $reservation = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
+        return view('admin.Reservations.index', compact('reservations'));
     }
 
     public function show($id)
     {
         $reservation = Reservation::where('id', $id)->firstOrFail();
-       
 
         return view('admin.Reservations.show', compact('reservation'));
     }
