@@ -6,8 +6,10 @@ use Stripe\Stripe;
 use Stripe\Webhook;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class StripeWebhookController extends Controller
 {
@@ -93,7 +95,7 @@ class StripeWebhookController extends Controller
 
         $arrvar = str_replace('\\', '', $order->cart);
         $cart = json_decode($arrvar, true);
-
+        // aggiorno la disponibilità in date
         if(config('configurazione.typeOfOrdering')){
             $res_c1 = $res['cucina_1'];
             $res_c2 = $res['cucina_2'];
@@ -185,11 +187,64 @@ class StripeWebhookController extends Controller
                 }
             }
         }
- 
+        
         $order->status = 3;
         $date->update();
         $order->update();
-    
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        
+        $bodymail_a = [
+            'type' => 'or',
+            'to' => 'admin',
+
+            'order_id' => $order->id,
+            'name' => $order->name,
+            'surname' => $order->surname,
+            'email' => $order->email,
+            'date_slot' => $order->date_slot,
+            'message' => $order->message,
+            'phone' => $order->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'comune' => $order->comune,
+            'address' => $order->address,
+            'address_n' => $order->address_n,
+            
+            'status' => $order->status,
+            'cart' => $order->products,
+            'total_price' => $order->tot_price,
+
+            
+        ];
+        $bodymail_u = [
+            'type' => 'or',
+            'to' => 'user',
+
+            'order_id' => $order->id,
+            'name' => $order->name,
+            'surname' => $order->surname,
+            'email' => $order->email,
+            'date_slot' => $order->date_slot,
+            'message' => $order->message,
+            'phone' => $order->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'comune' => $order->comune,
+            'address' => $order->address,
+            'address_n' => $order->address_n,
+            
+            'status' => $order->status,
+            'cart' => $order->products,
+            'total_price' => $order->tot_price,
+
+            
+        ];
+        $mail = new confermaOrdineAdmin($bodymail_u);
+        Mail::to($data['email'])->send($mail);
+
+        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        Mail::to(config('configurazione.mail'))->send($mailAdmin);
     }
 
     protected function handlePaymentIntentFailed($paymentIntent)

@@ -189,10 +189,6 @@ class OrderController extends Controller
             }
             $date->update();
     
-            
-
-            
-    
             $newOrder = new Order();
             
             $newOrder->name = $data['name'];
@@ -203,21 +199,13 @@ class OrderController extends Controller
             $newOrder->tot_price = $total_price;
             $newOrder->message = $data['message'];
             $newOrder->news_letter = $data['news_letter'];
-            if($data['paying']){
-                $newOrder->status = 4;
-            }else{
-                $newOrder->status = 2;
-            }
+            $newOrder->status = $data['paying'] ? 4 : 2;
             if (isset($data['comune'])) {
                 $newOrder->comune = $data['comune'];
                 $newOrder->address = $data['via'];
                 $newOrder->address_n = $data['cv'];
             }
             $newOrder->save();
-            //$date->update();
-            if($data['paying']){     
-                $payment_url = $payment_controller->checkout($cart, $newOrder->id);
-            }
             
             foreach ($cart as $e) {
                 $item_order = new OrderProduct();
@@ -240,20 +228,84 @@ class OrderController extends Controller
                 $telefono = '3332222333';
             }
 
-            if($data['paying']){     
+            if($data['paying']){   
+
+                $payment_url = $payment_controller->checkout($cart, $newOrder->id);
+
                 return response()->json([
                     'success'   => true,
                     'payment'   => true,
                     'url'       => $payment_url,
                     'orderId'   => $newOrder->id,
                 ]);
+                
             }else{
+                $set = Setting::where('name', 'Contatti')->firstOrFail();
+                $p_set = json_decode($set->property, true);
+                
+                $bodymail_a = [
+                    'type' => 'or',
+                    'to' => 'admin',
+        
+                    'order_id' => $newOrder->id,
+                    'name' => $newOrder->name,
+                    'surname' => $newOrder->surname,
+                    'email' => $newOrder->email,
+                    'date_slot' => $newOrder->date_slot,
+                    'message' => $newOrder->message,
+                    'phone' => $newOrder->phone,
+                    'admin_phone' => $p_set['telefono'],
+                    
+                    'comune' => $newOrder->comune,
+                    'address' => $newOrder->address,
+                    'address_n' => $newOrder->address_n,
+                    
+                    'status' => $newOrder->status,
+                    'cart' => $newOrder->products,
+                    'total_price' => $newOrder->tot_price,
+        
+                    
+                ];
+                $bodymail_u = [
+                    'type' => 'or',
+                    'to' => 'user',
+        
+                    'order_id' => $newOrder->id,
+                    'name' => $newOrder->name,
+                    'surname' => $newOrder->surname,
+                    'email' => $newOrder->email,
+                    'date_slot' => $newOrder->date_slot,
+                    'message' => $newOrder->message,
+                    'phone' => $newOrder->phone,
+                    'admin_phone' => $p_set['telefono'],
+                    
+                    'comune' => $newOrder->comune,
+                    'address' => $newOrder->address,
+                    'address_n' => $newOrder->address_n,
+                    
+                    'status' => $newOrder->status,
+                    'cart' => $newOrder->products,
+                    'total_price' => $newOrder->tot_price,
+        
+                    
+                ];
+                $mail = new confermaOrdineAdmin($bodymail_u);
+                Mail::to($data['email'])->send($mail);
+        
+                $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+                Mail::to(config('configurazione.mail'))->send($mailAdmin);
+
                 return response()->json([
                     'success'   => true,
                     'payment'   => false,
                     'order'     => $newOrder,
                 ]);
             }
+
+
+
+
+
 
         } catch (QueryException $e) {
             return response()->json([

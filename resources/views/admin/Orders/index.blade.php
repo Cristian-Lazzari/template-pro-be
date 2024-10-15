@@ -131,7 +131,7 @@
             @endif
             @if(!in_array($order->status, [0, 1]))
             <div class="w-100">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">{{$order->status == 5 ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
+                <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">{{!in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
             </div>
             @endif
         </div>
