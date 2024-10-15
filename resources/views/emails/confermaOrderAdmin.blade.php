@@ -46,8 +46,8 @@
                         ?>
                         <div style="width: 100%; margin: 5px 0;">
                             <span style="font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
-                            <span style="font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->pivot->name}}</span>
-                            <span style="font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->pivot->price / 100 }}</span>
+                            <span style="font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
+                            <span style="font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->price / 100 }}</span>
                         </div>
                         <br>
                         <div style="margin: 5px;">
@@ -56,7 +56,7 @@
                                 <div style="margin: 5px;">
                                     <h5 style="font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
                                     @foreach ($arrO as $a)
-                                        <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                        <span style="font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
                                     @endforeach
                                 </div>
                             @endif
@@ -163,5 +163,6 @@
         <p style="font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
         <p style="font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
     </div>
+    @dd('cece')
 </body>
 </html>

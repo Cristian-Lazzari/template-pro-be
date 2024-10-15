@@ -1490,7 +1490,7 @@ body{
 .my_3{
     position: relative;
     
-    background-color: #91bc2cb0;
+    background-color: $c2;
     color: $c3 ;
     .top{
         border-bottom: 1px $c3 dotted !important;
@@ -1506,7 +1506,7 @@ body{
 .my_5{
     position: relative;
     
-    background-color: #1da37def;
+    background-color: $c2_op;
     color: $c3 ;
     .top{
         border-bottom: 1px $c3 dotted !important;
