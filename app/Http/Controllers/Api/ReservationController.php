@@ -161,20 +161,14 @@ class ReservationController extends Controller
             ];
 
             // Invia le email
-            try {
+
+
                 $mail = new confermaOrdineAdmin($bodymail_u);
-                Mail::to($newRes->email)->send($mail);
-                
+                Mail::to($data['email'])->send($mail);
+        
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Errore durante l\'invio delle email: ' . $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                ], 200);
-            }
+            
 
             // Risposta di successo
             return response()->json([
