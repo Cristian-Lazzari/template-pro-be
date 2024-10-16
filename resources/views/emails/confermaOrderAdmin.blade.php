@@ -163,6 +163,6 @@
         <p style="font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
         <p style="font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
     </div>
-    @dd('cece')
+    
 </body>
 </html>
