@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use DateTime;
+use Stripe\Stripe;
 use App\Models\Date;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
@@ -81,6 +83,13 @@ class OrderController extends Controller
             if($order->status == 3){
                 $m = 'La prenotazione e\' stata annullata e RIMBORSATA correttamente';
                 //codice per rimborso
+                $this->refund($order);
+                $m = 'La prenotazione e\' stata annullata e rimborsato correttamente';
+                $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
+            }else{
+                $m = 'La prenotazione e\' stata annullata correttamente';
+                $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
+                $order->status = 0;
             }
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
@@ -131,9 +140,8 @@ class OrderController extends Controller
             $date->visible = json_encode($vis);
             $date->update();
 
-            $order->status = 0;
-            $m = 'La prenotazione e\' stata annullata correttamente';
-            $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
+            
+            
         }
         $order->update();
         
@@ -194,5 +202,31 @@ class OrderController extends Controller
     public function destroy($id)
     {
         //
+    }
+    protected function refund($order)
+    {
+        try {
+            $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
+        
+            Log::warning(" SESSIONE CONTROLLER");
+            // Imposta la chiave segreta di Stripe
+            Stripe::setApiKey($stripeSecretKey);
+
+            if ($order->payment_intent_id !== null) {
+                return response()->json(['error' => 'Payment not found'], 404);
+            }
+
+            // Effettua il rimborso
+            $refund = Refund::create([
+                'payment_intent' => $order->payment_intent_id, // Questo è l'ID dell'intent di pagamento
+            ]);
+
+            // Aggiorna lo stato del rimborso nella tua tabella
+            $order->update(['status' => 6]);
+
+            return ;
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -12,10 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
 class StripeWebhookController extends Controller
-{
-    
-   
-    
+{   
     public function handleStripeWebhook(Request $request)
     {
         // La tua chiave segreta di Stripe
@@ -67,14 +64,13 @@ class StripeWebhookController extends Controller
 
     protected function handleCheckoutSessionCompleted($session)
     {
-        Log::warning(" SESSIONE DI COMPLETAMENT0");
         // Aggiorna il tuo database per segnare l'ordine come completato
         // Assicurati di usare l'ID dell'ordine per aggiornare correttamente il record
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        $order = Order::where('id', $orderId)->firstOrFail();
-        $order->status = 3;
-        $order->update();
+        // $order = Order::where('id', $orderId)->firstOrFail();
+        // $order->status = 3;
+        // $order->update();
     }
 
     protected function handlePaymentIntentSucceeded($paymentIntent)
@@ -259,4 +255,5 @@ class StripeWebhookController extends Controller
         $order->update();
     
     }
+
 }
