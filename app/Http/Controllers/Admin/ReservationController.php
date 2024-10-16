@@ -148,7 +148,7 @@ class ReservationController extends Controller
     {
         $query = Reservation::whereRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) >= ?", [now()->toDateString()]);
 
-        $reservation = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
+        $reservations = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
         return view('admin.Reservations.index', compact('reservations'));
     }
 
