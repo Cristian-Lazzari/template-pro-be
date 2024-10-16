@@ -1522,12 +1522,12 @@ body{
 }
 .my_2{
     position: relative;
-    background-color: $c3_op;
+    background-color: $c3;
     color: $c1 ;
     .top{
-        border-bottom: 1px $c1 dotted !important;
+        border-bottom: 1px $c2 dotted !important;
     }
-    border: 2px solid $c1 !important ;
+    border: 2px solid $c2 !important ;
     .mail-tel{
         border-bottom: 6px solid $c1 !important ;
         div{
