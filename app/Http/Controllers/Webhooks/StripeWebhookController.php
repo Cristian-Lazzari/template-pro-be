@@ -86,16 +86,16 @@ class StripeWebhookController extends Controller
         
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->first();
-        if($order){
+        //if($order){
             $date = Date::where('date_slot', $order->date_slot)->first();
-        }else{
-            return 'no-order' . $orderId;
-        }
-        if(!$date){
-            return 'no-data';
-        }else{
+       // }else{
+      //      return 'no-order' . $orderId;
+      //  }
+     //   if(!$date){
+      //      return 'no-data';
+     //   }else{
             
-        }
+   //     }
 
             
             
