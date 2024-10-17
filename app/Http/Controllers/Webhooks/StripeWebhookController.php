@@ -43,23 +43,22 @@ class StripeWebhookController extends Controller
         }
 
         // Gestisci gli eventi pertinenti
-        switch ($event->type) {
-            case 'checkout.session.completed':
-                $session = $event->data->object; // contiene i dettagli della sessione
-                $this->handleCheckoutSessionCompleted($session);
-                break;
-            case 'payment_intent.succeeded':
-                $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-                $this->handlePaymentIntentSucceeded($paymentIntent);
-                break;
-            case 'payment_intent.payment_failed':
-                $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-                $this->handlePaymentIntentFailed($paymentIntent);
-                break;
-            // Aggiungi altri eventi se necessario
-            default:
-                Log::warning("Unhandled event type: {$event->type}");
+        if($event->type == 'checkout.session.completed'){
+            $session = $event->data->object; // contiene i dettagli della sessione
+            return $this->handleCheckoutSessionCompleted($session);
+               
         }
+        elseif($event->type == 'payment_intent.succeeded'){
+            $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
+            return $this->handlePaymentIntentSucceeded($paymentIntent);
+            
+        }
+        elseif($event->type == 'payment_intent.payment_failed'){
+            $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
+            $this->handlePaymentIntentFailed($paymentIntent);
+        }
+
+        
 
         //return response()->json(['status' => 'success'], 200);
         } catch (QueryException $e) {
