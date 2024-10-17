@@ -80,11 +80,11 @@ class OrderController extends Controller
             $m = 'La prenotazione e\' stata confermata correttamente';
             $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;
         }else{
-            if($order->status == 3){
+            if(in_array($order->status, [3, 5])){
                 $m = 'La prenotazione e\' stata annullata e RIMBORSATA correttamente';
                 //codice per rimborso
                 $this->refund($order);
-                $m = 'La prenotazione e\' stata annullata e rimborsato correttamente';
+                $m = 'La prenotazione e\' stata annullata e rimborsata correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
             }else{
                 $m = 'La prenotazione e\' stata annullata correttamente';
