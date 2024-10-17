@@ -44,7 +44,8 @@ class OrderController extends Controller
             $query->where('status', '=', 0)
             ->orWhere('status','=', 6);
         } else if ($status === 2) {
-            $query->where('status', '=', 2);
+            $query->where('status', '=', 2)
+            ->orWhere('status','=', 3);
         } else if ($status === 1) {
             $query->where('status', '=', 1)
             ->orWhere('status','=', 5);
