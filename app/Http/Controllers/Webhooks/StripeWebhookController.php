@@ -77,9 +77,20 @@ class StripeWebhookController extends Controller
             $orderId = $paymentIntent->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
             
             // Esegui la logica per aggiornare lo stato dell'ordine nel database
-            $order = Order::where('id', $orderId)->with('products')->firstOrFail();
-            $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
-            return 'success';
+            $order = Order::where('id', $orderId)->with('products')->first();
+            if($order){
+                $date = Date::where('date_slot', $order->date_slot)->first();
+            }else{
+                return 'no-order';
+            }
+            if(!$date){
+                return 'no-data';
+            }else{
+                
+            }
+
+            
+            
             $vis = json_decode($date->visible, true);
             $av = json_decode($date->availability, true);
             $res = json_decode($date->reserving, true);
