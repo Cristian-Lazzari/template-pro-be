@@ -229,12 +229,13 @@ class StripeWebhookController extends Controller
 
             
         ];
-        $mail = new confermaOrdineAdmin($bodymail_u);
-        Mail::to($data['email'])->send($mail);
-
-        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-        Mail::to(config('configurazione.mail'))->send($mailAdmin);
         return 'success';
+        // $mail = new confermaOrdineAdmin($bodymail_u);
+        // Mail::to($data['email'])->send($mail);
+
+        // $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        // Mail::to(config('configurazione.mail'))->send($mailAdmin);
+        
     }
 
     protected function handlePaymentIntentFailed($paymentIntent)
