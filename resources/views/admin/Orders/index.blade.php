@@ -111,7 +111,7 @@
     >
     <section class="top">
         <div class="name">
-            <h4>{{$date}}</h4>
+            <h4>{{$date}} <strong>#o-{{$order->id}}</strong></h4>
             <h3>{{$order->surname}} {{$order->name}}</h3>
         </div>
         

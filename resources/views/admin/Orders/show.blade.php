@@ -41,6 +41,7 @@
             </div>
             <div class="body">
                 <section class="myres-left">
+                    <h5><strong>#o-{{$order->id}}</h5>
                     <div class="name">{{$order->name}}</div>
                     <div  class="myres-left-c">
                         <div class="time">{{$ora_formatata}}</div>
