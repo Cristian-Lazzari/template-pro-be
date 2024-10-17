@@ -16,6 +16,7 @@ class StripeWebhookController extends Controller
 {   
     public function handleStripeWebhook(Request $request)
     {
+        try {
         // La tua chiave segreta di Stripe
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
         
@@ -60,7 +61,22 @@ class StripeWebhookController extends Controller
                 Log::warning("Unhandled event type: {$event->type}");
         }
 
-        return response()->json(['status' => 'success'], 200);
+        //return response()->json(['status' => 'success'], 200);
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Errore del database: ' . $e->getMessage(),
+            ]);
+        } catch (Exception $e) {
+            $trace = $e->getTrace();
+            $errorInfo = [
+                'success' => false,
+                'error' => 'Si è verificato un errore durante l\'elaborazione della richiesta: ' . $e->getMessage(),
+
+            ];
+
+            return response()->json($errorInfo, 500);
+        }
     }
 
     protected function handleCheckoutSessionCompleted($session)
