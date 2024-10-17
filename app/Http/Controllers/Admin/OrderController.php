@@ -83,9 +83,31 @@ class OrderController extends Controller
         }else{
             if(in_array($order->status, [3, 5])){
                 $m = 'La prenotazione e\' stata annullata e RIMBORSATA correttamente';
-                //codice per rimborso
-                $this->refund($order);
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
+                //codice per rimborso
+                try {
+                    $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
+                 
+                    // Imposta la chiave segreta di Stripe
+                    Stripe::setApiKey($stripeSecretKey);
+        
+                    if ($order->payment_intent_id !== null) {
+                        return response()->json(['error' => 'Payment not found'], 404);
+                    }
+        
+                    // Effettua il rimborso
+                    $refund = Refund::create([
+                        'payment_intent' => $order->payment_intent_id, // Questo è l'ID dell'intent di pagamento
+                    ]);
+        
+                    // Aggiorna lo stato del rimborso nella tua tabella
+                    $order->status = 6;
+        
+                    
+                } catch (\Exception $e) {
+                    return response()->json(['error' => $e->getMessage()], 500);
+                }
+                
             }else{
                 $m = 'La prenotazione e\' stata annullata correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
@@ -209,29 +231,5 @@ class OrderController extends Controller
     {
         //
     }
-    protected function refund($order)
-    {
-        try {
-            $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
-         
-            // Imposta la chiave segreta di Stripe
-            Stripe::setApiKey($stripeSecretKey);
-
-            if ($order->payment_intent_id !== null) {
-                return response()->json(['error' => 'Payment not found'], 404);
-            }
-
-            // Effettua il rimborso
-            $refund = Refund::create([
-                'payment_intent' => $order->payment_intent_id, // Questo è l'ID dell'intent di pagamento
-            ]);
-
-            // Aggiorna lo stato del rimborso nella tua tabella
-            $order->update(['status' => 6]);
-
-            return ;
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+    
 }
