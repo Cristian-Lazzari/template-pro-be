@@ -43,7 +43,7 @@
                 <section class="myres-left">
                     <h5><strong>#o-{{$order->id}}</h5>
                     <div class="name">{{$order->name}}</div>
-                    <div  class="myres-left-c">
+                    <div class="myres-left-c">
                         <div class="time">{{$ora_formatata}}</div>
 
                         <div class="day_w">{{config('configurazione.days_name')[$giorno_settimana]}}</div>
