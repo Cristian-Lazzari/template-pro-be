@@ -87,7 +87,7 @@ class StripeWebhookController extends Controller
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->first();
         //if($order){
-            $date = Date::where('date_slot', $order->date_slot)->first();
+        $date = Date::where('date_slot', $order->date_slot)->first();
        // }else{
       //      return 'no-order' . $orderId;
       //  }
@@ -252,7 +252,7 @@ class StripeWebhookController extends Controller
             
         ];
         $mail = new confermaOrdineAdmin($bodymail_u);
-        Mail::to($data['email'])->send($mail);
+        Mail::to($order->email)->send($mail);
 
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
