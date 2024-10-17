@@ -70,7 +70,7 @@ class StripeWebhookController extends Controller
 
     protected function handlePaymentIntentSucceeded($paymentIntent)
     {
-        return 'success';
+        
 
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $paymentIntent->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
@@ -234,6 +234,7 @@ class StripeWebhookController extends Controller
 
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
+        return 'success';
     }
 
     protected function handlePaymentIntentFailed($paymentIntent)
