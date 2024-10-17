@@ -91,7 +91,7 @@ class OrderController extends Controller
                     // Imposta la chiave segreta di Stripe
                     Stripe::setApiKey($stripeSecretKey);
         
-                    if ($order->checkout_session_id =sd== null) {
+                    if ($order->checkout_session_id === null) {
                         return response()->json(['error' => 'Payment not found'], 404);
                     }
         
