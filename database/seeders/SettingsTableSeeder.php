@@ -13,7 +13,7 @@ class SettingsTableSeeder extends Seeder
     {
         
         
-        if(config('configurazione.pack') == 3 || config('configurazione.pack') == 4){
+        if(config('configurazione.pack') > 2 ){
             $settings = [
                 [
                     'name' => 'Prenotaione Tavoli',  
@@ -26,7 +26,8 @@ class SettingsTableSeeder extends Seeder
                     'name' => 'Prenotazione Asporti',  
                     'status' => 1,
                     'property' => [
-                        'empty' => 0
+                        'pay' => 1, // 0 dis - 1 ab - 2 ob
+                        'min_price' => 0,
                     ],
                 ],
                 [
@@ -53,7 +54,9 @@ class SettingsTableSeeder extends Seeder
                     'name' => 'Possibilità di consegna a domicilio',  
                     'status' => 1,
                     'property' => [
-                        'empty' => 0
+                        'pay' => 1, // 0 dis - 1 ab - 2 ob
+                        'min_price' => 0,
+                        'delivery_cost' => 0,
                     ],
                 ],
                 [
@@ -79,7 +82,8 @@ class SettingsTableSeeder extends Seeder
                     'name' => 'Prenotazione Asporti',  
                     'status' => 1,
                     'property' => [
-                        'empty' => 0
+                        'pay' => 1, // 0 dis - 1 ab - 2 ob
+                        'min_price' => 0,
                     ],
                 ],
                 [
@@ -88,8 +92,6 @@ class SettingsTableSeeder extends Seeder
                     'property' => [
                         'from' => '',
                         'to' => '',
-                        'messagge' => '',
-                        'style' => '',
                     ]
                 ],
                 [

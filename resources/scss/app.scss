@@ -345,7 +345,7 @@ body{
             .top-set{
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
+                gap: 1.2rem;
             }
             .bottom-set{
                 h4{
@@ -387,15 +387,42 @@ body{
                 }
             }
             .set{
+                $brr-set : 8px;
                 display: flex;
                 gap: 8px;
                 justify-content: space-between;
                 align-items: center;
                 width: 100%;
-                .radio-inputs{
+                .set-cont{
                     width: 72%;
-                    
+                    display: flex;
+                    flex-direction: column;
+                    h5{
+                        text-align: end;
+                        margin: 1rem 0 .3rem;
+                    }
+                    //gap: 1rem;
+                    .radio-inputs{
+                        width: 100% !important;
+                        border-radius: $brr-set;
+                    }
+                    .input-group-text{
+                        background-color: $c2 !important;
+                        color: $c3 !important;
+                        border: $c2 solid 3px;
+                        border-top-left-radius: $brr-set;
+                        border-bottom-left-radius: $brr-set;
+                    }
+                    input.form-control{
+                        border-radius: $brr-set;
+                        border: $c2 solid 3px;
+                    }
                 }
+                .radio-inputs{
+                    border-radius: $brr-set;
+                    width: 72%;
+                }
+
                 .sets{
                     width: 72%;
                     
@@ -448,7 +475,10 @@ body{
         .set{
             flex-direction: column;
             
-            .radio-inputs, .sets{
+            .radio-inputs, .sets, .set-cont{
+                h5{
+                    margin-top: 10px;
+                }
                 width: 100% !important;
             }
         }

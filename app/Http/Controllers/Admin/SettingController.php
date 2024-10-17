@@ -58,28 +58,31 @@ class SettingController extends Controller
     {
         $setting = Setting::all();
 
-        foreach ($setting as $s) {
-            // Decodificare 'property' se non è null
-            if (!is_null($s->property)) {
-                $s->property = json_decode($s->property, true);
-            } else {
-                $s->property = [];
-            }
-        }
     
         $tavoli = $request->tavoli_status;
         $asporto = $request->asporto_status;
         $ferie = $request->ferie_status;
         $ferie_from = $request->from;
         $ferie_to = $request->to;
+
+        $delivery_cost = $request->delivery_cost;
+        $min_price_a = $request->min_price_a;
+        $min_price_d = $request->min_price_d;
+        $pay_a = $request->asporto_pay;
+        $pay_d = $request->domicilio_pay;
     
         $setting[0]->status = $tavoli;
         $setting[0]->save();
-    
+        
         $setting[1]->status = $asporto;
+        $prop_apsorto = [
+            'pay' => $pay_a,
+            'min_price' => $min_price_a * 100,
+        ];
+        $setting[1]->property = json_encode($prop_apsorto);
         $setting[1]->save();
         
-            // Aggiornare il terzo setting
+        // Aggiornare il terzo setting
         $setting[2]->status = $ferie;
         $propertyArray = [
             'from' => $ferie_from,
@@ -103,18 +106,19 @@ class SettingController extends Controller
         $setting[3]->save();
         //dd( $request['foto_maps']);
 
-         $oldPosition = $setting[4]['property'];
+        $oldPosition = json_decode($setting[4]['property'], 1);
+
         if(isset($oldPosition['foto_maps'])){
             $posizione = [
-                'foto_maps' =>  "",
+                'foto_maps' =>  $oldPosition['foto_maps'],
                 'link_maps' =>  $request->link_maps,
                 'indirizzo' =>  $request->indirizzo,
-            ];     
+            ]; 
+            
+        
             if (isset($request->foto_maps)) {
                 $imagePath = $request->file('foto_maps')->store('public/uploads');
                 $posizione['foto_maps'] = $imagePath;
-            }else{
-                $posizione['foto_maps'] = $oldPosition['foto_maps'];
             }
         }else{
             $posizione = [
@@ -139,10 +143,16 @@ class SettingController extends Controller
         
         if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4) {
             $setting[7]->property = json_encode($setting[7]->property);
-            $domicilio = $request->domicilio_status;
-            $setting[6]->status = $domicilio;
+            $setting[6]->status = $request->domicilio_status;
+            $prop_domicilio = [
+                'pay' => $pay_d,
+                'min_price' => $min_price_d * 100,
+                'delivery_cost' => $delivery_cost * 100,
+            ];
+            $setting[6]->property = json_encode($prop_domicilio);
             $setting[6]->save();
         }
+        
         $m = 'Le impostazioni sono state ggiornate correttamente';
 
         return redirect()->back()->with('success', $m);   
