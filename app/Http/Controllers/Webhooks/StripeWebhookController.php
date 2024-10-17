@@ -198,6 +198,7 @@ class StripeWebhookController extends Controller
             }
         }
         
+        $order->checkout_session_id = $session->payment_intent;
         $order->status = 3;
         $date->update();
         $order->update();

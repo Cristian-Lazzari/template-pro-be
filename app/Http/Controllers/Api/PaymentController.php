@@ -50,7 +50,7 @@ class PaymentController extends Controller
 
         $order = Order::where('id', $id)->firstOrFail();
         if ($order) {
-            $order->checkout_session_id = $checkoutSessionId; // Salva l'ID della sessione
+           // $order->checkout_session_id = $checkoutSessionId; // Salva l'ID della sessione
             $order->update();
         }
         
