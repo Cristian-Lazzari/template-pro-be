@@ -293,7 +293,7 @@
                 <div class="set">
                     <h4>Asporto</h4>
                     <div class="set-cont">
-                        <h5>Servizio</h5>    
+                        @if (config('configurazione.pack') > 2) <h5>Servizio</h5> @endif   
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 0) checked  @endif value="0" >
@@ -310,26 +310,28 @@
                             </label>
                             @endif
                         </div>
-                        <h5>Pagamento online</h5>
-                        <div class="radio-inputs">
-                            <label class="radio">
-                                <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 0) checked  @endif value="0" >
-                                <span class="name">Off</span>
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 1) checked  @endif value="1" >
-                                <span class="name">Facoltativo</span>
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 2) checked  @endif value="2" >
-                                <span class="name">Obbligatorio</span>
-                            </label>
-                        </div>
-                        <h5>Generali</h5>
-                        <div class="input-group mb-3">
-                            <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
-                            <input type="number" class="form-control" aria-describedby="basic-addon1" name="min_price_a" value="{{$asporto_p['min_price'] / 100}}">
-                        </div>
+                        @if (config('configurazione.pack') > 2)
+                            <h5>Pagamento online</h5>
+                            <div class="radio-inputs">
+                                <label class="radio">
+                                    <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 0) checked  @endif value="0" >
+                                    <span class="name">Off</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 1) checked  @endif value="1" >
+                                    <span class="name">Facoltativo</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 2) checked  @endif value="2" >
+                                    <span class="name">Obbligatorio</span>
+                                </label>
+                            </div>
+                            <h5>Generali</h5>
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
+                                <input type="number" class="form-control" aria-describedby="basic-addon1" name="min_price_a" value="{{$asporto_p['min_price'] / 100}}">
+                            </div>
+                        @endif
                         
                     </div>
                 </div>

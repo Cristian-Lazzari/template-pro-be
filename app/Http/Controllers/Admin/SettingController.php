@@ -73,17 +73,22 @@ class SettingController extends Controller
     
         $setting[0]->status = $tavoli;
         $setting[0]->save();
+
+        
         
         $setting[1]->status = $asporto;
-        $prop_apsorto = [
-            'pay' => $pay_a,
-            'min_price' => $min_price_a * 100,
-        ];
-        $setting[1]->property = json_encode($prop_apsorto);
+        if (config('configurazione.pack') > 2) {
+            $prop_apsorto = [
+                'pay' => $pay_a,
+                'min_price' => $min_price_a * 100,
+            ];
+            $setting[1]->property = json_encode($prop_apsorto);
+        }
         $setting[1]->save();
         
         // Aggiornare il terzo setting
         $setting[2]->status = $ferie;
+        
         $propertyArray = [
             'from' => $ferie_from,
             'to' => $ferie_to,
