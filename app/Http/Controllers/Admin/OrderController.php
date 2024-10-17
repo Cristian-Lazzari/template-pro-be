@@ -40,12 +40,17 @@ class OrderController extends Controller
             $query->where('name', 'like', '%' . $name . '%')
             ->orWhere('surname', 'like', '%' . $name . '%');
         } 
-        if ($status == 0) {
-            $query->where('status', '=', 0);
-        } else if ($status == 2) {
+        if ($status === 0) {
+            $query->where('status', '=', 0)
+            ->orWhere('status','=', 6);
+        } else if ($status === 2) {
             $query->where('status', '=', 2);
-        } else if ($status == 1) {
-            $query->where('status', '=', 1);
+        } else if ($status === 1) {
+            $query->where('status', '=', 1)
+            ->orWhere('status','=', 5);
+        } else if ($status === 5) {
+            $query->where('status', '=', 3)
+            ->orWhere('status','=', 5);
         }
         if($date){
             $formattedDate = DateTime::createFromFormat('Y-m-d', $date)->format('d/m/Y');
