@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhooks;
 
 use Stripe\Stripe;
 use Stripe\Webhook;
+use App\Models\Date;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
@@ -44,7 +45,7 @@ class StripeWebhookController extends Controller
         switch ($event->type) {
             case 'checkout.session.completed':
                 $session = $event->data->object; // contiene i dettagli della sessione
-                $this->handlePaymentIntentSucceeded($paymentIntent);
+                $this->handleCheckoutSessionCompleted($session);
                 break;
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
@@ -64,13 +65,7 @@ class StripeWebhookController extends Controller
 
     protected function handleCheckoutSessionCompleted($session)
     {
-        // Aggiorna il tuo database per segnare l'ordine come completato
-        // Assicurati di usare l'ID dell'ordine per aggiornare correttamente il record
-        $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        // $order = Order::where('id', $orderId)->firstOrFail();
-        // $order->status = 3;
-        // $order->update();
+        return 'success';
     }
 
     protected function handlePaymentIntentSucceeded($paymentIntent)
