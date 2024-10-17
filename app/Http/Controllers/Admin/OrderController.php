@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use DateTime;
+use Stripe\Refund;
 use Stripe\Stripe;
 use App\Models\Date;
 use App\Models\Order;
@@ -208,7 +209,6 @@ class OrderController extends Controller
         try {
             $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
         
-            Log::warning(" SESSIONE CONTROLLER");
             // Imposta la chiave segreta di Stripe
             Stripe::setApiKey($stripeSecretKey);
 

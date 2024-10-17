@@ -44,7 +44,7 @@ class StripeWebhookController extends Controller
         switch ($event->type) {
             case 'checkout.session.completed':
                 $session = $event->data->object; // contiene i dettagli della sessione
-                $this->handleCheckoutSessionCompleted($session);
+                $this->handlePaymentIntentSucceeded($paymentIntent);
                 break;
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object; // contiene i dettagli del pagamento

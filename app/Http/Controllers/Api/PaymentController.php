@@ -44,8 +44,6 @@ class PaymentController extends Controller
             'success_url' => $final_destination,
             'cancel_url' => $final_destination_error,
         ]);
-
-        Log::info($line_items);
         
         // Qui puoi salvare l'ID della sessione nel database
         $checkoutSessionId = $checkout_session->id;
