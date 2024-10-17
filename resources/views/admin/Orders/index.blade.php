@@ -104,6 +104,8 @@
     my_3
     @elseif ($order->status == 5)
     my_5
+    @elseif ($order->status == 6)
+    my_6
     @endif
     or-res my-4"
     >
@@ -129,9 +131,9 @@
                 <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal{{$order->id}}" class="w-100 my_btn_6">Conferma</button>
             </div>
             @endif
-            @if(!in_array($order->status, [0, 1]))
+            @if(in_array($order->status, [2, 3, 5]))
             <div class="w-100">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">{{!in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
+                <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
             </div>
             @endif
         </div>

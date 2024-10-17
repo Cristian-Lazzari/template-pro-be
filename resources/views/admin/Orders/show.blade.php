@@ -20,11 +20,18 @@
 
 
         <div class="
-            @if ($order->status == 2) my_2
-            @elseif ($order->status == 1) my_1
-            @elseif ($order->status == 0) my_0
-            @elseif ($order->status == 3) my_3
-            @elseif ($order->status == 5) my_5
+            @if ($order->status == 2)
+                my_2
+                @elseif ($order->status == 1)
+                my_1
+                @elseif ($order->status == 0)
+                my_0
+                @elseif ($order->status == 3)
+                my_3
+                @elseif ($order->status == 5)
+                my_5
+                @elseif ($order->status == 6)
+                my_6
             @endif myres"
         >
 
@@ -108,9 +115,9 @@
                         <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_6">Conferma</button>
                     </div>
                     @endif
-                    @if(!in_array($order->status, [0, 1]))
+                    @if(in_array($order->status, [2, 3, 5]))
                     <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_6">{{$order->status == 5 ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal{{$order->id}}" class="w-100 my_btn_6">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
                     </div>
                     @endif
                     

@@ -8,11 +8,11 @@
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.96e5463e.css"
+      "../public/build/assets/app.6fe182c4.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.96e5463e.css",
+    "file": "../public/build/assets/app.6fe182c4.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }

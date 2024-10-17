@@ -15,16 +15,17 @@
         @if ($content_mail['type'] == 'or')
             <!-- Messaggi per tipo 'or' -->
             @if ($content_mail['to'] == 'admin')
-                <h1 style="color: #1d4efe; font-size: 24px; text-align: center; margin: 5px;">{{ $content_mail['name'] }}{{$content_mail['status'] == 3 ? 'ha prenotato E PAGATO un ordine' :', ha prenotato un ordine!'}}</h1>
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">{{ $content_mail['name'] }}{{$content_mail['status'] == 3 ? 'ha prenotato E PAGATO un ordine' :', ha prenotato un ordine!'}}</h1>
             @elseif($content_mail['to'] == 'user' && ($content_mail['status'] == 2 || $content_mail['status'] == 3))
                 <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato tramite il nostro sito web!</h1>
                 <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">Il tuo ordine è nella nostra coda, a breve riceverai l'esito del processamento</h4>
-
             @elseif($content_mail['to'] == 'user' && ($content_mail['status'] == 1 || $content_mail['status'] == 5))
                 <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che il tuo ordine è stato confermato!</h1>
 
             @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
                 <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato!</h1>
+            @elseif($content_mail['to'] == 'user' && in_array($content_mail['status'], [3, 5]))
+                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato e rimborsato!</h1>
             @endif
 
             <!-- Data prenotata -->

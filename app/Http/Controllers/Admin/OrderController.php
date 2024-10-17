@@ -85,7 +85,6 @@ class OrderController extends Controller
                 $m = 'La prenotazione e\' stata annullata e RIMBORSATA correttamente';
                 //codice per rimborso
                 $this->refund($order);
-                $m = 'La prenotazione e\' stata annullata e rimborsata correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
             }else{
                 $m = 'La prenotazione e\' stata annullata correttamente';
@@ -130,8 +129,14 @@ class OrderController extends Controller
                     if($vis['domicilio'] == 0){
                         $vis['domicilio'] = 1;
                     }
+                    if($vis['asporto'] == 0){
+                        $vis['asporto'] = 1;
+                    }
                     $reserving['domicilio'] --;
                 }else{
+                    if($vis['asporto'] == 0){
+                        $vis['asporto'] = 1;
+                    }
                     $reserving['asporto'] --;
 
                 }
@@ -208,7 +213,7 @@ class OrderController extends Controller
     {
         try {
             $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
-        
+         
             // Imposta la chiave segreta di Stripe
             Stripe::setApiKey($stripeSecretKey);
 
