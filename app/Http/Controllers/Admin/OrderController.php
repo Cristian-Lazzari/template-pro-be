@@ -91,13 +91,13 @@ class OrderController extends Controller
                     // Imposta la chiave segreta di Stripe
                     Stripe::setApiKey($stripeSecretKey);
         
-                    if ($order->payment_intent_id !== null) {
+                    if ($order->checkout_session_id =sd== null) {
                         return response()->json(['error' => 'Payment not found'], 404);
                     }
         
                     // Effettua il rimborso
                     $refund = Refund::create([
-                        'payment_intent' => $order->payment_intent_id, // Questo è l'ID dell'intent di pagamento
+                        'payment_intent' => $order->checkout_session_id, // Questo è l'ID dell'intent di pagamento
                     ]);
         
                     // Aggiorna lo stato del rimborso nella tua tabella
