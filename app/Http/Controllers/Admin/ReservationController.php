@@ -116,21 +116,29 @@ class ReservationController extends Controller
             $query->where('name', 'like', '%' . $name . '%')
             ->orWhere('surname', 'like', '%' . $name . '%');
         } 
-        if ($status == 0) {
-            $query->where('status', '=', 0);
-        } else if ($status == 2) {
-            $query->where('status', '=', 2);
+        if ($status == 4) {
+            $query->where('status', 0)
+            ->orWhere('status', 6);
         } else if ($status == 1) {
-            $query->where('status', '=', 1);
+            $query->where('status', 1)
+            ->orWhere('status', 5);
+        } else if ($status == 2) {
+            $query->where('status', 2)
+            ->orWhere('status', 3);
+        } else if ($status == 5) {
+            $query->where('status', 3)
+            ->orWhere('status', 5);
+        }else{ 
+            $query->where('status', '!=', 4);
         }
         if($date){
             $formattedDate = DateTime::createFromFormat('Y-m-d', $date)->format('d/m/Y');
             $query->where('date_slot', 'like', '%' . $formattedDate . '%');
         }
         if($order){
-            $reservations = $query->where('status', '!=', 4)->orderBy('updated_at', 'desc')->get();    
+            $reservations = $query->orderBy('updated_at', 'desc')->get();    
         }else{
-            $reservations = $query->where('status', '!=', 4)->orderBy('date_slot', 'desc')->get();
+            $reservations = $query->orderBy('date_slot', 'desc')->get();
         }        
     
         $data = [];
