@@ -57,7 +57,7 @@
                 <option @if (isset($filters) && $filters['status'] == '1') selected @endif value="1">Confermate</option>
                 <option @if (isset($filters) && $filters['status'] == '2') selected @endif value="2">In Elaborazione</option>
                 <option @if (isset($filters) && $filters['status'] == '5') selected @endif value="5">Pagate</option>
-                <option @if (isset($filters) && $filters['status'] == '4') selected @endif value="0">Annullate</option>
+                <option @if (isset($filters) && $filters['status'] == '4') selected @endif value="4">Annullate</option>
                 <option @if (isset($filters) && $filters['status'] == '3') selected @endif value="3">Tutte</option>
             </select>
         </div>
