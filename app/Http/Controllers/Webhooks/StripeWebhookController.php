@@ -80,8 +80,6 @@ class StripeWebhookController extends Controller
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $paymentIntent->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->firstOrFail();
         $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
 
