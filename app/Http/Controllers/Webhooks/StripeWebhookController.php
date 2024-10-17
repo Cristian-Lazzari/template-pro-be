@@ -87,7 +87,7 @@ class StripeWebhookController extends Controller
     protected function handlePaymentIntentSucceeded($paymentIntent)
     {
     
-        try {
+        //try {
 
             // Aggiorna il tuo database per segnare l'ordine come completato
             $orderId = $paymentIntent->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
@@ -263,21 +263,21 @@ class StripeWebhookController extends Controller
 
             $mailAdmin = new confermaOrdineAdmin($bodymail_a);
             Mail::to(config('configurazione.mail'))->send($mailAdmin);
-        } catch (QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Errore del database: ' . $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            $trace = $e->getTrace();
-            $errorInfo = [
-                'success' => false,
-                'error' => 'Si è verificato un errore durante l\'elaborazione della richiesta: ' . $e->getMessage(),
+        // } catch (QueryException $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Errore del database: ' . $e->getMessage(),
+        //     ]);
+        // } catch (Exception $e) {
+        //     $trace = $e->getTrace();
+        //     $errorInfo = [
+        //         'success' => false,
+        //         'error' => 'Si è verificato un errore durante l\'elaborazione della richiesta: ' . $e->getMessage(),
 
-            ];
+        //     ];
 
-            return response()->json($errorInfo, 500);
-        }
+        //     return response()->json($errorInfo, 500);
+        // }
         
         
     }
