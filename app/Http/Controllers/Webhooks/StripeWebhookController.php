@@ -128,7 +128,8 @@ class StripeWebhookController extends Controller
                 }
             }
             
-            if((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
+            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
+            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
                 $vis['cucina_1'] = 0;
             }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
                 $vis['cucina_2'] = 0;
@@ -148,7 +149,8 @@ class StripeWebhookController extends Controller
             
         }else{
             if(isset($order->comune)){
-                if(($res['domicilio'] + 1) == $av['domicilio']){
+                if(($res['domicilio'] + 1) < $av['domicilio']){}
+                elseif(($res['domicilio'] + 1) == $av['domicilio']){
                     $vis['domicilio'] = 0;
                 }else{
                     return response()->json([
@@ -160,7 +162,8 @@ class StripeWebhookController extends Controller
                 }
                 $res['domicilio'] = $res['domicilio'] + 1;
             }else{
-                if(($res['asporto'] + 1) == $av['asporto']){
+                if(($res['asporto'] + 1) < $av['asporto']){}
+                elseif(($res['asporto'] + 1) == $av['asporto']){
                     $vis['asporto'] = 0;
                 }else{
                     return response()->json([
