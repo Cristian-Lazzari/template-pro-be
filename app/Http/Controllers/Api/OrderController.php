@@ -196,7 +196,6 @@ class OrderController extends Controller
             $newOrder->date_slot = $data['date_slot'];
             $newOrder->phone = $data['phone'];
             $newOrder->email = $data['email'];
-            $newOrder->tot_price = $total_price;
             $newOrder->message = $data['message'];
             $newOrder->news_letter = $data['news_letter'];
             $newOrder->status = $data['paying'] ? 4 : 2;
@@ -205,6 +204,12 @@ class OrderController extends Controller
                 $newOrder->address = $data['via'];
                 $newOrder->address_n = $data['cv'];
                 $delivery = true;
+
+                $setting = Setting::where('name', 'Possibilità di consegna a domicilio')->first();
+                $shipping_cost = json_decode($setting->property, 1);
+                $newOrder->tot_price = $total_price + $shipping_cost['delivery_cost'] ;
+            }else{
+                $newOrder->tot_price = $total_price;
             }
             $newOrder->save();
             
