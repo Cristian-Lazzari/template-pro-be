@@ -128,9 +128,9 @@ class StripeWebhookController extends Controller
                 }
             }
             
-            if(($res_c1 + $np_c1) == $av_c1 && (($res_c2 + $np_c2) < $av_c2)){
+            if((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
                 $vis['cucina_1'] = 0;
-            }elseif(($res_c2 + $np_c2) == $av_c2 && (($res_c1 + $np_c1) < $av_c1)){
+            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
                 $vis['cucina_2'] = 0;
             }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
                 $vis['cucina_1'] = 0;
