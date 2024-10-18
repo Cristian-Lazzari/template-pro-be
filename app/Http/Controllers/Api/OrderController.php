@@ -225,19 +225,12 @@ class OrderController extends Controller
             }
             
 
-            // Ottieni le impostazioni di contatto
-            $set = Setting::where('name', 'Contatti')->firstOrFail();
-            $p_set = json_decode($set->property, true);
-            if(isset($p_set['telefono'])){
-                $telefono = $p_set['telefono'];
-            }else{
-                $telefono = '3332222333';
-            }
-
+            
+            
             if($data['paying']){   
-
+                
                 $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $delivery);
-
+                
                 return response()->json([
                     'success'   => true,
                     'payment'   => true,
@@ -246,9 +239,17 @@ class OrderController extends Controller
                 ]);
                 
             }else{
+                
                 $date->update();
+                
+                // Ottieni le impostazioni di contatto
                 $set = Setting::where('name', 'Contatti')->firstOrFail();
                 $p_set = json_decode($set->property, true);
+                if(isset($p_set['telefono'])){
+                    $telefono = $p_set['telefono'];
+                }else{
+                    $telefono = '3332222333';
+                }
                 
                 $bodymail_a = [
                     'type' => 'or',

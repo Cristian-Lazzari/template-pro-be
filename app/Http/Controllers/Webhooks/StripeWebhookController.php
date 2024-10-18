@@ -93,8 +93,6 @@ class StripeWebhookController extends Controller
         $av = json_decode($date->availability, true);
         $res = json_decode($date->reserving, true);
     
-        $arrvar = str_replace('\\', '', $order->cart);
-        $cart = json_decode($arrvar, true);
         // aggiorno la disponibilità in date
         if(config('configurazione.typeOfOrdering')){
             $res_c1 = $res['cucina_1'];
@@ -128,20 +126,13 @@ class StripeWebhookController extends Controller
                     ]);
                 }
             }
-
-            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-            }elseif(($res_c1 + $np_c1) == $av_c1){
-                $res['cucina_1'] = $res['cucina_1'] + $np_c1;
+            
+            if(($res_c1 + $np_c1) == $av_c1 && (($res_c2 + $np_c2) < $av_c2)){
                 $vis['cucina_1'] = 0;
-            }elseif(($res_c2 + $np_c2) == $av_c2){
-                $res['cucina_2'] = $res['cucina_2'] + $np_c2;
+            }elseif(($res_c2 + $np_c2) == $av_c2 && (($res_c1 + $np_c1) < $av_c1)){
                 $vis['cucina_2'] = 0;
             }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
-                $res['cucina_1'] = $res['cucina_1'] + $np_c1;
                 $vis['cucina_1'] = 0;
-                $res['cucina_2'] = $res['cucina_2'] + $np_c2;
                 $vis['cucina_2'] = 0;
             }else{
                 return response()->json([
@@ -150,19 +141,13 @@ class StripeWebhookController extends Controller
                     'data' => $date
                 ]);
             }
-
-            $date->visible = json_encode($vis);
-            $date->reserving = json_encode($res);
+            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
+            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
+            
         }else{
             if(isset($order->comune)){
-                if(($res['domicilio'] + 1) < $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                    $date->reserving = json_encode($res);  
-                }elseif(($res['domicilio'] + 1) == $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                    $date->reserving = json_encode($res);
+                if(($res['domicilio'] + 1) == $av['domicilio']){
                     $vis['domicilio'] = 0;
-                    $date->visible = json_encode($vis);
                 }else{
                     return response()->json([
                         'success' => false,
@@ -170,15 +155,10 @@ class StripeWebhookController extends Controller
                         'data' => $date
                     ]);
                 }
+                $res['domicilio'] = $res['domicilio'] + 1;
             }else{
-                if(($res['asporto'] + 1) < $av['asporto']){
-                    $res['asporto'] = $res['asporto'] + 1;
-                    $date->reserving = json_encode($res);  
-                }elseif(($res['asporto'] + 1) == $av['asporto']){
-                    $res['asporto'] = $res['asporto'] + 1;
-                    $date->reserving = json_encode($res);
+                if(($res['asporto'] + 1) == $av['asporto']){
                     $vis['asporto'] = 0;
-                    $date->visible = json_encode($vis);
                 }else{
                     return response()->json([
                         'success' => false,
@@ -186,8 +166,11 @@ class StripeWebhookController extends Controller
                         'data' => $date
                     ]);
                 }
+                $res['asporto'] = $res['asporto'] + 1;
             }
         }
+        $date->visible = json_encode($vis);
+        $date->reserving = json_encode($res);
         
         $order->checkout_session_id = $session->payment_intent;
         $order->status = 3;
