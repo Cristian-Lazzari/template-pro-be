@@ -106,10 +106,10 @@ class StripeWebhookController extends Controller
             foreach ($order->products as $product) {
                 return $product;
                 // Controlla il tipo di cucina del prodotto
-                if ($product->type_slot == 1) {
-                    $np_c1 += $product->pivot->quantity;
-                } elseif ($product->type_slot == 2) {
-                    $np_c2 += $product->pivot->quantity;
+                if ($product->type_plate == 1) {
+                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
+                } elseif ($product->type_plate == 2) {
+                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
                 }
             }
             
