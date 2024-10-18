@@ -106,9 +106,9 @@ class StripeWebhookController extends Controller
             foreach ($order->products as $product) {
                 // Controlla il tipo di cucina del prodotto
                 if ($product->type_slot == 1) {
-                    $np_c1++;
+                    $np_c1 += $product->pivot->quantity;
                 } elseif ($product->type_slot == 2) {
-                    $np_c2++;
+                    $np_c2 += $product->pivot->quantity;
                 }
             }
             
@@ -237,7 +237,7 @@ class StripeWebhookController extends Controller
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-        return $date;
+        return [$date, $np_c1, $np_c2];
     
         
     }
