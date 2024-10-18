@@ -88,17 +88,7 @@ class StripeWebhookController extends Controller
         $order = Order::where('id', $orderId)->with('products')->first();
         //if($order){
         $date = Date::where('date_slot', $order->date_slot)->first();
-       // }else{
-      //      return 'no-order' . $orderId;
-      //  }
-     //   if(!$date){
-      //      return 'no-data';
-     //   }else{
-            
-   //     }
-
-            
-            
+                        
         $vis = json_decode($date->visible, true);
         $av = json_decode($date->availability, true);
         $res = json_decode($date->reserving, true);
@@ -123,6 +113,7 @@ class StripeWebhookController extends Controller
                     $np_c2++;
                 }
             }
+            
             if(isset($order->comune)){
                 if( ($res['domicilio'] + 1) < $av['domicilio']){
                     $res['domicilio'] = $res['domicilio'] + 1;
