@@ -31,7 +31,7 @@ class OrderController extends Controller
         $payment_controller = new PaymentController();
 
         $request->validate($this->validations);
-        
+        $delivery = false;
         $data = $request->all();
         try {
 
@@ -187,7 +187,7 @@ class OrderController extends Controller
                     $cart[$i]['price'] +=  $ingredient->price;
                 }
             }
-            $date->update();
+            
     
             $newOrder = new Order();
             
@@ -204,6 +204,7 @@ class OrderController extends Controller
                 $newOrder->comune = $data['comune'];
                 $newOrder->address = $data['via'];
                 $newOrder->address_n = $data['cv'];
+                $delivery = true;
             }
             $newOrder->save();
             
@@ -230,7 +231,7 @@ class OrderController extends Controller
 
             if($data['paying']){   
 
-                $payment_url = $payment_controller->checkout($cart, $newOrder->id);
+                $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $delivery);
 
                 return response()->json([
                     'success'   => true,
@@ -240,6 +241,7 @@ class OrderController extends Controller
                 ]);
                 
             }else{
+                $date->update();
                 $set = Setting::where('name', 'Contatti')->firstOrFail();
                 $p_set = json_decode($set->property, true);
                 

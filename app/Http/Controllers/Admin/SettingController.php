@@ -79,7 +79,7 @@ class SettingController extends Controller
         $setting[1]->status = $asporto;
         if (config('configurazione.pack') > 2) {
             $prop_apsorto = [
-                'pay' => $pay_a,
+                'pay' => intval($pay_a),
                 'min_price' => $min_price_a * 100,
             ];
             $setting[1]->property = json_encode($prop_apsorto);
@@ -150,7 +150,7 @@ class SettingController extends Controller
             $setting[7]->property = json_encode($setting[7]->property);
             $setting[6]->status = $request->domicilio_status;
             $prop_domicilio = [
-                'pay' => $pay_d,
+                'pay' => intval($pay_d),
                 'min_price' => $min_price_d * 100,
                 'delivery_cost' => $delivery_cost * 100,
             ];

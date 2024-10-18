@@ -4,17 +4,18 @@ namespace App\Http\Controllers\Api;
 
 use Stripe\Stripe;
 use App\Models\Order;
+use App\Models\Setting;
 use Stripe\PaymentIntent;
+use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class PaymentController extends Controller
 {        
-    public function checkout($cart, $id) 
+    public function checkout($cart, $id, $delivery) 
     {
-        
-        $YOUR_DOMAIN = 'http://127.0.0.1:8000/';
+       
         $final_destination = config('configurazione.domain') . '/success-pay'; 
         $final_destination_error = config('configurazione.domain') . '/error-pay'; 
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
@@ -22,17 +23,103 @@ class PaymentController extends Controller
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
  
         $line_items = [];
-        foreach ($cart as $item) {
+        foreach ($cart as $orderProduct) {
+            //return [$orderProduct->quantity, $orderProduct->price];
             $line_items[] = [
                 'price_data' => [
                     'currency' => 'eur',
                     'product_data' => [
-                        'name' => $item['name'],
+                        'name' => $orderProduct->name,
                     ],
-                    'unit_amount' => $item['price'],
+                    'unit_amount' => $orderProduct->price, // Prezzo totale del prodotto con gli extra
                 ],
-                'quantity' => $item['counter'],
+                'quantity' => $orderProduct->pivot->quantity,
             ];
+
+            // Calcola i prezzi degli ingredienti aggiunti
+            $added_ingredients = json_decode($orderProduct->pivot->add, true); // Decodifica la stringa add
+            $option_ingredients = json_decode($orderProduct->pivot->option, true); // Decodifica la stringa option
+            $removed_ingredients = json_decode($orderProduct->pivot->remove, true); // Decodifica la stringa remove
+
+
+
+            // Aggiungi prezzi ingredienti 'add'
+            if ($added_ingredients) {
+                foreach ($added_ingredients as $ingredient_name) {
+                    $ingredient = Ingredient::where('name', $ingredient_name)->first();
+                    if ($ingredient) {
+                        $line_items[] = [
+                            'price_data' => [
+                                'currency' => 'eur',
+                                'product_data' => [
+                                    'name' => $ingredient_name . '(EXTRA)',
+                                ],
+                                'unit_amount' => $ingredient->price, 
+                            ],
+                            'quantity' => $orderProduct->pivot->quantity,
+                        ];
+                        
+                    }
+                }
+            }
+
+            // Aggiungi prezzi ingredienti 'option'
+            if ($option_ingredients) {      
+                foreach ($option_ingredients as $option_name) {
+                    $option = Ingredient::where('name', $option_name)->first();
+                    if ($option) {
+                        $line_items[] = [
+                            'price_data' => [
+                                'currency' => 'eur',
+                                'product_data' => [
+                                    'name' => $option_name . '(EXTRA)',
+                                ],
+                                'unit_amount' => $option->price, 
+                            ],
+                            'quantity' => $orderProduct->pivot->quantity,
+                        ];
+                        
+
+                    }
+                }
+            }
+            
+
+            if ($removed_ingredients) {
+                foreach ($removed_ingredients as $option_name) {
+                    $option = Ingredient::where('name', $option_name)->first();
+                    if ($option) {
+                        $line_items[] = [
+                            'price_data' => [
+                                'currency' => 'eur',
+                                'product_data' => [
+                                    'name' => $option_name . '(RIMOSSO)',
+                                ],
+                                'unit_amount' => 0, 
+                            ],
+                            'quantity' => $orderProduct->pivot->quantity,
+                        ];
+
+                    }
+                }
+            }
+        }
+        if($delivery){
+            $setting = Setting::where('name', 'Possibilità di consegna a domicilio')->first();
+            $shipping_cost = json_decode($setting->property, 1);
+            // Aggiungi costo di spedizione come item separato se non è 0
+            if($shipping_cost['delivery_cost'] > 0) {
+                $line_items[] = [
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => 'Spese di spedizione',
+                        ],
+                        'unit_amount' => $shipping_cost['delivery_cost'], // Costo di spedizione in centesimi
+                    ],
+                    'quantity' => 1,
+                ];
+            }
         }
 
         $checkout_session = $stripe->checkout->sessions->create([
@@ -44,15 +131,7 @@ class PaymentController extends Controller
             'success_url' => $final_destination,
             'cancel_url' => $final_destination_error,
         ]);
-        
-        // Qui puoi salvare l'ID della sessione nel database
-        $checkoutSessionId = $checkout_session->id;
 
-        $order = Order::where('id', $id)->firstOrFail();
-        if ($order) {
-           // $order->checkout_session_id = $checkoutSessionId; // Salva l'ID della sessione
-            $order->update();
-        }
         
         return $checkout_session->url;
 
