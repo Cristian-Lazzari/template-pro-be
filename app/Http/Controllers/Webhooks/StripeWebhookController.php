@@ -127,7 +127,6 @@ class StripeWebhookController extends Controller
                     ]);
                 }
             }
-            
             if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
             elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
                 $vis['cucina_1'] = 0;
@@ -144,8 +143,8 @@ class StripeWebhookController extends Controller
                     'data' => $date
                 ]);
             }
-            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
+            $res['cucina_1'] += $np_c1;
+            $res['cucina_2'] += $np_c2;
             
         }else{
             if(isset($order->comune)){
@@ -237,6 +236,8 @@ class StripeWebhookController extends Controller
 
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
+
+        return $date;
     
         
     }
