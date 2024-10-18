@@ -120,6 +120,7 @@ class StripeWebhookController extends Controller
                     $vis['domicilio'] = 0;
                 }else{
                     return response()->json([
+                        'false' => 1,
                         'success' => false,
                         'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
                         'data' => $date
@@ -136,6 +137,7 @@ class StripeWebhookController extends Controller
                 $vis['cucina_2'] = 0;
             }else{
                 return response()->json([
+                    'false' => 2,
                     'success' => false,
                     'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
                     'data' => $date
@@ -150,6 +152,7 @@ class StripeWebhookController extends Controller
                     $vis['domicilio'] = 0;
                 }else{
                     return response()->json([
+                        'false' => 3,
                         'success' => false,
                         'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
                         'data' => $date
@@ -161,6 +164,7 @@ class StripeWebhookController extends Controller
                     $vis['asporto'] = 0;
                 }else{
                     return response()->json([
+                        'false' => 4,
                         'success' => false,
                         'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
                         'data' => $date
