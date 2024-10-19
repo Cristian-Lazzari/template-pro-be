@@ -50,7 +50,7 @@
                         <div class="date">{{$data_formatata}}</div>
                     </div>
                     <div class="c_a">inviato alle: {{$order->created_at}}</div>
-                    <div class="c_a">Marcketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}</div>
+                    <div class="c_a">Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}</div>
                 </section>
                 <section class="myres-center">
                     <h3>Prodotti</h3>

@@ -45,7 +45,7 @@ class PageController extends Controller
         $order = [ 
             1 => Order::where('status', 1)->count() + Order::where('status', 5)->count(),
             2 => Order::where('status', 2)->count(),
-            3 => Order::where('status', 0)->count(),
+            3 => Order::where('status', 0)->count() + Order::where('status', 6)->count(),
             4 => Order::where('status', 3)->count(),
         ];
         $reservation = [

@@ -42,7 +42,7 @@
                         <div class="date">{{$data_formatata}}</div>
                     </div>
                     <div class="c_a">inviato alle: {{$reservation->created_at}}</div>
-                    <div class="c_a">Marcketing sul contatto: {{$reservation->news_letter ? 'si' : 'no'}}</div>
+                    <div class="c_a">Marketing sul contatto: {{$reservation->news_letter ? 'si' : 'no'}}</div>
 
                 </section>
                 <section class="myres-center-res">
