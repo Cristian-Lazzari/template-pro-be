@@ -10,6 +10,62 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
+<script>
+    const alertContainer = document.createElement('div');
+    alertContainer.setAttribute('id', 'alert-container');
+    document.body.appendChild(alertContainer);
+    
+    const eventSource = new EventSource('/notifica');
+    
+    eventSource.onmessage = function(event) {
+        console.log('cont')
+        
+        let ac=JSON.parse(event.data);
+ 
+        // $.notify(ac.nomeCliente, 'success');
+        function createAlert(order) {
+        // Creazione dell'elemento div principale
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show fixed-alert'; // Aggiungi la classe 'fixed-alert'
+            alertDiv.setAttribute('role', 'alert');
+
+            // Creazione del messaggio parametrizzato
+            const alertText = document.createTextNode(`L'ordine con ID: ${order.id} per ${order.name} richiede attenzione.`);
+
+            // Aggiunta del messaggio al div principale
+            alertDiv.appendChild(alertText);
+
+            // Creazione del pulsante di chiusura
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'btn-close';
+            closeButton.setAttribute('data-bs-dismiss', 'alert');
+            closeButton.setAttribute('aria-label', 'Close');
+
+            // Aggiunta del pulsante di chiusura al div principale
+            alertDiv.appendChild(closeButton);
+
+            return alertDiv;
+        }
+        // Ciclo per generare più alert per ogni ordine
+        ac.forEach((order) => {
+            const newAlert = createAlert(order);
+            alertContainer.appendChild(newAlert); // Aggiungi gli alert al container
+            setTimeout(() => {
+                newAlert.remove();
+            }, 10000);
+        });
+
+        //Rimuovi la notifica dopo 5 secondi
+        
+    };
+
+    // eventSource.onerror = function(event) {
+    //     console.error("Errore nella connessione SSE", event);
+    // };
+</script>
+
+
 <div class="dash-c">
     @php
         $pack = ['', 'Essetians', 'Cene & Pranzi', 'Delivery & Asporto', 'Premium' ]
@@ -602,7 +658,7 @@
             </form>
         </div>
     </div>
-
+    
 
 </div>
 @endsection

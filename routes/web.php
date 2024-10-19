@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Webhooks\StripeWebhookController;
+use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Guests\PageController as GuestsPageController;
 
@@ -79,4 +80,21 @@ Route::middleware('auth')
 require __DIR__ . '/auth.php';
 
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWebhook']);
+Route::get('/notifica',        [ApiOrderController::class, 'sendNotification']);
 
+// Route::get('/notifiche-sse', function () {
+//     header('Content-Type: text/event-stream');
+//     header('Cache-Control: no-cache');
+//     header('Connection: keep-alive');
+
+//    // Ottieni le notifiche dalla cache
+//    $notifications = Cache::get('notifications', []);
+
+//    foreach ($notifications as $notification) {
+//        echo "data: {$notification['message']}\n\n";
+//        flush();
+//    }
+
+//    // Resetta le notifiche
+//    Cache::put('notifications', []);
+// });

@@ -10,7 +10,9 @@ use App\Models\Ingredient;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use App\Events\NewOrderNotification;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Api\PaymentController;
 
@@ -303,7 +305,10 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                
+                //$this->sendNotification();
+                // $ordineId = $newOrder->id/* ID dell'ordine creato */;
+                // $nomeCliente = $newOrder->name/* Nome del cliente */;
+                // event(new NewOrderNotification($nomeCliente, $ordineId));
 
                 return response()->json([
                     'success'   => true,
@@ -335,6 +340,34 @@ class OrderController extends Controller
 
         
 
+    }
+
+    public function sendNotification()
+    {
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache');
+        header('Connection: keep-alive');
+
+        $order = Order::where('notificated', 0)->where('status' ,'!=', 4)->get();
+        if(count($order)){
+            $eventData = [];
+            foreach ($order as $o) {
+                $eventData[] =[
+                    'name'  => $o->name,
+                    'id'    => $o->id,
+                ];
+                $o->notificated = 1;
+                $o->update();
+            }
+    
+            echo 'data:' . json_encode($eventData) . "\n\n";
+
+    
+        
+        }
+        ob_flush();
+        flush();
+        
     }
     
 }

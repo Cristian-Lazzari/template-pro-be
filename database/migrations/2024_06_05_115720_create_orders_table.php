@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('message', 500)->nullable();
             
             $table->boolean('news_letter');
+            $table->boolean('notificated')->default(false);
 
             $table->timestamps();
         });

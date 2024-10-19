@@ -17,7 +17,7 @@ class confermaOrdineAdmin extends Mailable
      *
      * @return void
      */
-    public function __construct($content_mail, )
+    public function __construct($content_mail)
     {
         $this->content_mail = $content_mail;
 

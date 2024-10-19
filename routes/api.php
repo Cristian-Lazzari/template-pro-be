@@ -34,3 +34,7 @@ Route::post('reservations',     [ReservationController::class, 'store'])->name('
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 
 Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');
+
+
+
+

@@ -1984,3 +1984,16 @@ body{
     display: block;
     margin-left: auto ;
   }
+  #alert-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    z-index: 1050;
+}
+
+.fixed-alert {
+    margin-bottom: 12px; /* Spazio tra gli alert */
+    box-shadow: 0 0 10px $c2_op;
+}
