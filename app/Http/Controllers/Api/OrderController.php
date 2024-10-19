@@ -303,6 +303,8 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
+                
+
                 return response()->json([
                     'success'   => true,
                     'payment'   => false,
