@@ -238,6 +238,9 @@ class StripeWebhookController extends Controller
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
+
+        
+
         return [$date, $np_c1, $np_c2];
     
         
