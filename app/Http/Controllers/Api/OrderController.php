@@ -347,7 +347,7 @@ class OrderController extends Controller
         header('Content-Type: text/event-stream');
         header('Cache-Control: no-cache');
         header('Connection: keep-alive');
-
+        ob_start();
         $order = Order::where('notificated', 0)->where('status' ,'!=', 4)->get();
         if(count($order)){
             $eventData = [];

@@ -37,6 +37,21 @@
         body.loading .container, body.loading header {
             display: none;
         }
+        /* @keyframes scrollBody {
+            0% {
+                
+            }
+            10% {
+                transform: translateY(0); 
+            }
+            100% {
+                transform: translateY(-100vh); 
+            }
+        }
+
+        body {
+            animation: scrollBody 15s ease-in-out infinite; 
+        } */
     </style>
 </head>
 <body class="loading">
