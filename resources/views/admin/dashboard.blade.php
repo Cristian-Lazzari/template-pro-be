@@ -18,9 +18,10 @@
     const eventSource = new EventSource('/notifica');
     
     eventSource.onmessage = function(event) {
-        console.log('cont')
         
+        console.log('event-control')
         let ac=JSON.parse(event.data);
+        console.log(ac)
  
         // $.notify(ac.nomeCliente, 'success');
         function createAlert(order) {
