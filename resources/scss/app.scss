@@ -19,6 +19,11 @@ $cfilter : $c2;
 .op{
     opacity: .5;
 }
+.main-container-page{
+    padding: 5px;
+    max-width: 1500px;
+    margin: 0 auto;
+}
 
 $fs_xsm: clamp(12px, 2.1vw, 14px);
 $fs_sm: clamp(14px, 2.3vw, 16px);

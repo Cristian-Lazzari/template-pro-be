@@ -101,7 +101,7 @@
         @include('admin.includes.nav')
     </header>
 
-    <div class="p-3 container">
+    <div class="main-container-page">
         @yield('contents')
     </div>
 
