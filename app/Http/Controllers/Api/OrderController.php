@@ -344,30 +344,43 @@ class OrderController extends Controller
 
     public function sendNotification()
     {
+        // Imposta le intestazioni per SSE
         header('Content-Type: text/event-stream');
         header('Cache-Control: no-cache');
         header('Connection: keep-alive');
-        ob_start();
-        $order = Order::where('notificated', 0)->where('status' ,'!=', 4)->get();
-        if(count($order)){
-            $eventData = [];
-            foreach ($order as $o) {
-                $eventData[] =[
-                    'name'  => $o->name,
-                    'id'    => $o->id,
-                ];
-                $o->notificated = 1;
-                $o->update();
+        
+        // Mantieni attivo il ciclo per continuare a inviare dati
+        while (true) {
+            if (connection_aborted()) {
+                break; // Esce dal ciclo se la connessione viene interrotta
+            }
+            
+            // Ottieni ordini non notificati
+            $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
+    
+            if (count($order)) {
+                $eventData = [];
+                foreach ($order as $o) {
+                    $eventData[] = [
+                        'name'  => $o->name,
+                        'id'    => $o->id,
+                    ];
+                    // Imposta notificato a 1 per evitare notifiche duplicate
+                    $o->notificated = 1;
+                    $o->update();
+                }
+    
+                // Invia i dati formattati secondo lo standard SSE
+                echo 'data: ' . json_encode($eventData) . "\n\n";
+                
+                // Forza l'invio immediato dei dati al client
+                ob_flush();
+                flush();
             }
     
-            echo 'data:' . json_encode($eventData) . "\n\n";
-
-    
-        
+            // Intervallo di attesa per ridurre il carico sul server
+            sleep(7); // 5 secondi di pausa tra le verifiche
         }
-        ob_flush();
-        flush();
-        
-    }
+    }    
     
 }
