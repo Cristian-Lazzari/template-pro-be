@@ -64,6 +64,7 @@
         <div>
             <label for="order" class="form-label fw-semibold">Ordina</label>
             <select class="" id="order" name="order" >
+                <option selected disabled value="1">seleziona uno ordine</option>
                 <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Data di creazione</option>
                 <option @if (isset($filters) && $filters['order'] == '1') selected @endif value="1">Data di prenotazione</option>
             </select>
@@ -126,7 +127,7 @@
             <h4>Totale ordine: € {{$order->tot_price / 100}}</h4>
         </div>
         <div class="actions">
-            @if (!in_array($order->status, [0, 1, 5]))
+            @if (in_array($order->status, [2, 3]))
             <div class="w-100">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal{{$order->id}}" class="w-100 my_btn_6">Conferma</button>
             </div>
