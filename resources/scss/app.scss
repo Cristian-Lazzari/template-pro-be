@@ -520,6 +520,7 @@ body{
     gap: .3rem;
     align-items: center;
     input, label{
+        display: block !important;
         width: 44%;
         flex-grow: 1;
         max-height: 40vh;
