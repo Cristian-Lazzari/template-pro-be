@@ -58,6 +58,9 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.367);
     box-shadow: 1px 1px 7px rgba(0, 0, 0, 0.301);
     transition: all .2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     a, button{
         box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: $white;
@@ -758,6 +761,7 @@ body{
         align-items: stretch;
     }
 }
+
 .action-page{
     padding: 1rem 0;
     width: 100%;
@@ -765,6 +769,20 @@ body{
     justify-content: flex-end;
     align-items: flex-end;
     gap: .2rem;
+}
+@media (max-width: 600px ) {
+    .top-bar-product{
+        padding: 10px;
+        .bar{
+            gap: .3rem !important;
+            .buttons{
+                margin-top: .4rem;
+            }
+        }
+    }
+    .action-page{
+        padding: .6rem !important
+    }
 }
 
 .object-container{

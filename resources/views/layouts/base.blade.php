@@ -73,9 +73,10 @@
             overflow: hidden;
         }
 
-        body.loading .container, body.loading header {
+        body.loading .main-container-page, body.loading header {
             display: none;
         }
+
         /* @keyframes scrollBody {
             0% {
                 
@@ -95,7 +96,7 @@
 </head>
 <body class="loading">
 
-    <div class="loader"></div>
+    <span class="loader"></span>
 
     <header>
         @include('admin.includes.nav')

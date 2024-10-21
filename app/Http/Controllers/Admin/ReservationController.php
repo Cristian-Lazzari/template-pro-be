@@ -22,7 +22,7 @@ class ReservationController extends Controller
         if($c_a){
             $res->status = 1;
             $m = 'La prenotazione e\' stata confermata correttamente';
-            $message = 'Siamo felici di informarti che la tua prenotazione e\' stata confermata, ti ricordo la data e l\'orario che hai scelto' . $res->date_slot ;
+            $message = 'Siamo felici di informarti che la tua prenotazione e\' stata confermata, ti ricordo la data e l\'orario che hai scelto: ' . $res->date_slot ;
         }else{
             $date = Date::where('date_slot', $res->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
