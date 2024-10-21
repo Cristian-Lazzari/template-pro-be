@@ -20,9 +20,15 @@ $cfilter : $c2;
     opacity: .5;
 }
 .main-container-page{
-    padding: 5px;
+    padding: 25px;
     max-width: 1500px;
     margin: 0 auto;
+}
+@media (max-width: 500px) {
+    .main-container-page{
+        padding: 5px;
+    }
+    
 }
 
 $fs_xsm: clamp(12px, 2.1vw, 14px);
