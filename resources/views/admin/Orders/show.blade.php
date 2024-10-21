@@ -54,6 +54,7 @@
                 </section>
                 <section class="myres-center">
                     <h3>Prodotti</h3>
+                    
 
                     @foreach ($orderProduct as $i)
                     
@@ -105,6 +106,8 @@
                             </div>
                         @endif
                     @endforeach
+                    
+                    <div class="price">Costo di consegna €{{$delivery_cost / 100}}</div>
                     <div class="t_price">€{{$order->tot_price / 100}}</div>
                     {{-- <div class="t_price">{{$order->total_pz_q}} pezzi taglio</div>
                     <div class="t_price">{{$order->total_pz_t}} pizze piatte</div>

@@ -227,11 +227,26 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::where('id', $id)->firstOrFail();
+        $order = Order::where('id', $id)->with('products')->firstOrFail();
         $orderProduct = OrderProduct::all();
+        $cart = 0;
+        foreach ($order->products as $o) {
+            $add = json_decode( $o->pivot->add , 1);
+            $option = json_decode( $o->pivot->option , 1);
+            foreach ($add as $a) {
+                $ing = Ingredient::where('name', $a)->first();
+                $cart += $ing->price * $o->pivot->quantity;
+            }
+            foreach ($option as $a) {
+                $ing = Ingredient::where('name', $a)->first();
+                $cart += $ing->price * $o->pivot->quantity;
+            }
+            $cart += $o->price * $o->pivot->quantity;
+        }
+        $delivery_cost = $order->tot_price - $cart;
         
 
-        return view('admin.Orders.show', compact('order', 'orderProduct'));
+        return view('admin.Orders.show', compact('order', 'orderProduct', 'delivery_cost'));
     }
 
     
