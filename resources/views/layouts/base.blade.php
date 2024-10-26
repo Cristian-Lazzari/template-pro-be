@@ -8,6 +8,7 @@
     <link rel="shortcut icon" href="{{ asset('public/favicon.png') }}" type="image/x-icon">
     <title>Dashboard +</title>
     @vite('resources/js/app.js')
+    
     <style>
         /* CSS per il loader */
         /* .loader {
@@ -105,7 +106,8 @@
     <div class="main-container-page">
         @yield('contents')
     </div>
-
+    
+    
     <script>
         //Rimuovi il loader e mostra il contenuto della pagina quando tutto è caricato
         window.addEventListener('load', function() {
@@ -115,7 +117,7 @@
    
         
     </script>
-    
+    @yield('scripts')
 
 </body>
 </html>

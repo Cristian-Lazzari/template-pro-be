@@ -343,7 +343,7 @@ class PageController extends Controller
             ->get()
             ->pluck('total_revenue', 'month');
 
-        return view('dashboard.stats', compact('topProducts', 'ordersOverTime', 'revenueOverTime'));
+        return view('admin.statistics', compact('topProducts', 'ordersOverTime', 'revenueOverTime'));
     }
 
 
