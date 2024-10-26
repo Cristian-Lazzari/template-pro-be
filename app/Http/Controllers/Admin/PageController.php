@@ -313,6 +313,38 @@ class PageController extends Controller
        // dd($year);
         return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post'));
     }
+    public function statistics()
+    {
+        // Grafico a torta: Prodotti più ordinati
+        $topProducts = DB::table('order_product')
+            ->select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_quantity')
+            ->take(5) // Puoi variare questo valore per vedere più prodotti
+            ->get()
+            ->mapWithKeys(function ($item) {
+                $product = Product::find($item->product_id);
+                return [$product->name => $item->total_quantity];
+            });
+
+        // Grafico a colonne: Ordinazioni nel tempo
+        $ordersOverTime = DB::table('order_product')
+            ->join('orders', 'order_product.order_id', '=', 'orders.id')
+            ->join('products', 'order_product.product_id', '=', 'products.id')
+            ->select(DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), 'products.name', DB::raw('SUM(order_product.quantity) as quantity'))
+            ->groupBy('month', 'products.name')
+            ->orderBy('month')
+            ->get();
+
+        // Grafico a linee: Ricavi nel tempo
+        $revenueOverTime = Order::select(DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), DB::raw('SUM(tot_price) as total_revenue'))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->pluck('total_revenue', 'month');
+
+        return view('dashboard.stats', compact('topProducts', 'ordersOverTime', 'revenueOverTime'));
+    }
 
 
 }

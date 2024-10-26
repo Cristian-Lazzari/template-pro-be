@@ -116,10 +116,13 @@ class OrderController extends Controller
                     return response()->json(['error' => $e->getMessage()], 500);
                 }
                 
-            }else{
+            }elseif(in_array($order->status, [2, 1])){
                 $m = 'La prenotazione e\' stata annullata correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
                 $order->status = 0;
+            }else{
+                $m = 'L\'ordine erag gia stato annullato!';
+                return redirect()->back()->with('success', $m); 
             }
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 

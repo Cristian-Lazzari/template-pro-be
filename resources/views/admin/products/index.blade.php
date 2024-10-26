@@ -108,22 +108,22 @@
                 @endif 
 
                 <div class="info">
-                    <section>
-                        <h4>Ingredienti:</h4>
-                        <p>
-                            @foreach ($item->ingredients as $ingredient)     
-                                {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
-                            @endforeach
-                        </p>
-                    </section>
-                    <section>
-                        <h4>Descrizione:</h4>
-                        @if ($item->description)
+                    @if (count($item->ingredients))
+                        <section>
+                            <h4>Ingredienti:</h4>
+                            <p>
+                                @foreach ($item->ingredients as $ingredient)     
+                                    {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
+                                @endforeach
+                            </p>
+                        </section>
+                    @endif
+                    @if ($item->description)
+                        <section>
+                            <h4>Descrizione:</h4>
                             <p>{{$item->description}}</p>
-                        @else
-                            <p>(nessuna)</p>
-                        @endif
-                    </section>
+                        </section>
+                    @endif
                     <div class="split_i">
                         <h4>{{$item->category->name}}</h4>
                         <div class="price">€{{$item->price / 100}}</div>

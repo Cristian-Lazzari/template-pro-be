@@ -25,8 +25,9 @@ Route::middleware(['auth', 'verified'])
     ->prefix('admin')
     ->group(function () {
 
-        Route::get('/',        [AdminPageController::class, 'dashboard'])->name('dashboard');
+        Route::get('/',           [AdminPageController::class, 'dashboard'])->name('dashboard');
    
+        Route::get('/statistics', [AdminPageController::class, 'statistics'])->name('statistics');
         // Rotte setting
 
         Route::post('settings/updateAll',  [SettingController::class, 'updateAll'])->name('settings.updateAll');
