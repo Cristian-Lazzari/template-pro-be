@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Ingredient;
+use App\Models\Reservation;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
