@@ -380,11 +380,13 @@ class OrderController extends Controller
                 }
                 if (count($res)){
                     foreach ($res as $o) {
+                        $person = json_decode($o->n_person, 1);
                         $eventData[] = [
                             'set'  => 'res',
                             'name'  => $o->name,
                             'data'  => $o->date_slot,
-                            'person'  => $o->n_person,
+                            'adult'  => $person['adult'],
+                            'child'  => $person['child'],
                         ];
                         // Imposta notificato a 1 per evitare notifiche duplicate
                         $o->notificated = 1;
