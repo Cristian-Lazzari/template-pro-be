@@ -31,8 +31,8 @@ $cfilter : $c2;
     
 }
 
-$fs_xsm: clamp(12px, 2.1vw, 14px);
-$fs_sm: clamp(14px, 2.3vw, 16px);
+$fs_xsm: clamp(12px, 1.6vw, 14px);
+$fs_sm: clamp(14px, 2vw, 16px);
 $fs_md: clamp(16px, 2.4vw, 24px);
 $fs_lg: clamp(20px, 3.2vw, 35px);
 $fs_xlg: clamp(28px, 3.8vw, 39px);
@@ -2027,16 +2027,17 @@ body{
 .fixed-alert-or, .fixed-alert-res  {
     margin-bottom: 12px; /* Spazio tra gli alert */
     box-shadow: 0 0 10px $c2_op;
+    font-size: $fs_sm;
 }
 
 .fixed-alert-or{
-    background-color: $c2_op !important;
+    background-color: $c2 !important;
     color: $c3 !important;
     border: none !important;
 }
 .fixed-alert-res{
-    background-color: $c3_op !important;
-    color: $c2 !important;
+    background-color: $c3 !important;
+    color: $c1 !important;
     border: none !important;
 }
 
