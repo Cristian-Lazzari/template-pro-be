@@ -371,6 +371,7 @@ class OrderController extends Controller
                             'set'  => 'or',
                             'name'  => $o->name,
                             'data'  => $o->date_slot,
+                            'price'  => $o->tot_price / 100,
                         ];
                         // Imposta notificato a 1 per evitare notifiche duplicate
                         $o->notificated = 1;
@@ -383,6 +384,7 @@ class OrderController extends Controller
                             'set'  => 'res',
                             'name'  => $o->name,
                             'data'  => $o->date_slot,
+                            'person'  => $o->n_person,
                         ];
                         // Imposta notificato a 1 per evitare notifiche duplicate
                         $o->notificated = 1;

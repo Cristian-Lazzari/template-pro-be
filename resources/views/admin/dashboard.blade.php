@@ -637,13 +637,13 @@
             // Creazione del messaggio parametrizzato
             if(order.set == 'res'){
                 alertDiv.className = 'alert alert-dismissible fade show fixed-alert-res';
-                const alertText = document.createTextNode(`È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}.`);
+                const alertText = document.createTextNode(`È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.person.adult} adulti e ${order.person.child} bambini.`);
+                alertDiv.appendChild(alertText);
             }else if(order.set == 'or'){
                 alertDiv.className = 'alert alert-dismissible fade show fixed-alert-or';
-                const alertText = document.createTextNode(`È stato appena concluso un ordine: da ${order.name} per il ${order.data}.`);
+                const alertText = document.createTextNode(`È stato appena concluso un ordine: da ${order.name} per il ${order.data} di € ${order.data.price}.`);
+                alertDiv.appendChild(alertText);
             } 
-            // Aggiunta del messaggio al div principale
-            alertDiv.appendChild(alertText);
             // Creazione del pulsante di chiusura
             const closeButton = document.createElement('button');
             closeButton.type = 'button';
