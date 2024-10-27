@@ -402,7 +402,7 @@ class OrderController extends Controller
             }
     
             // Intervallo di attesa per ridurre il carico sul server
-            sleep(7); // 5 secondi di pausa tra le verifiche
+            //sleep(7); // 5 secondi di pausa tra le verifiche
         }
     }    
     
