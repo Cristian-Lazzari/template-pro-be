@@ -24,6 +24,10 @@ class ReservationController extends Controller
             $m = 'La prenotazione e\' stata confermata correttamente';
             $message = 'Siamo felici di informarti che la tua prenotazione e\' stata confermata, ti ricordo la data e l\'orario che hai scelto: ' . $res->date_slot ;
         }else{
+            if($res->status == 0){
+                $m = 'La prenotazione e\' stata gia annullata correttamente';
+                return redirect()->back()->with('success', $m);
+            }
             $date = Date::where('date_slot', $res->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
             $reserving = json_decode($date->reserving, 1);
