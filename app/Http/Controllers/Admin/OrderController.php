@@ -222,6 +222,14 @@ class OrderController extends Controller
 
     public function index()
     {
+        $order_remove = Order::where('status', 4)
+            ->where('created_at', '<', Carbon::now()->subHours(2))
+            ->get();
+            if (!$order_remove->isEmpty()) {
+                foreach ($order_remove as $k) {
+                    $k->delete();
+                }
+            }
         $query = Order::whereRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) >= ?", [now()->toDateString()]);
 
         $orders = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();

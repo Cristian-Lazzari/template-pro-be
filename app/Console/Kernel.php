@@ -10,7 +10,7 @@ class Kernel extends ConsoleKernel
     
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(new \App\Jobs\DeletePending)->evertMinute();
+        //$schedule->job(new \App\Jobs\DeletePending)->evertMinute();
     }
 
    

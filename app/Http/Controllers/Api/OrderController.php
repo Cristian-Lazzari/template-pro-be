@@ -225,6 +225,8 @@ class OrderController extends Controller
                 $item_order->option = json_encode($e['option']);
                 $item_order->save();
             }
+
+            
             
 
             
@@ -309,6 +311,7 @@ class OrderController extends Controller
                 // $ordineId = $newOrder->id/* ID dell'ordine creato */;
                 // $nomeCliente = $newOrder->name/* Nome del cliente */;
                 // event(new NewOrderNotification($nomeCliente, $ordineId));
+
 
                 return response()->json([
                     'success'   => true,

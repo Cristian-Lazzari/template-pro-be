@@ -36,6 +36,6 @@ class DeletePending implements ShouldQueue
             ->where('status', 4)
             ->where('created_at', '<=', Carbon::now()->subMinutes(20))
             ->delete();
-         Log::info('ciao');
+         
     }
 }
