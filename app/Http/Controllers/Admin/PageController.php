@@ -320,7 +320,7 @@ class PageController extends Controller
             ->select('product_id', DB::raw('SUM(quantity) as total_quantity'))
             ->groupBy('product_id')
             ->orderByDesc('total_quantity')
-            ->take(5) // Puoi variare questo valore per vedere più prodotti
+            ->take(10) // Puoi variare questo valore per vedere più prodotti
             ->get()
             ->mapWithKeys(function ($item) {
                 $product = Product::find($item->product_id);
@@ -329,12 +329,17 @@ class PageController extends Controller
 
         // Grafico a colonne: Ordinazioni nel tempo
         $ordersOverTime = DB::table('order_product')
-            ->join('orders', 'order_product.order_id', '=', 'orders.id')
-            ->join('products', 'order_product.product_id', '=', 'products.id')
-            ->select(DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), 'products.name', DB::raw('SUM(order_product.quantity) as quantity'))
-            ->groupBy('month', 'products.name')
-            ->orderBy('month')
-            ->get();
+        ->join('orders', 'order_product.order_id', '=', 'orders.id')
+        ->join('products', 'order_product.product_id', '=', 'products.id')
+        ->select(
+            DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as day"), 
+            DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"),
+            'products.name', 
+            DB::raw('SUM(order_product.quantity) as quantity')
+        )
+        ->groupBy('day', 'month', 'products.name')
+        ->orderBy('day')
+        ->get();
 
         // Grafico a linee: Ricavi nel tempo
         $revenueOverTime = Order::select(DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), DB::raw('SUM(tot_price) as total_revenue'))
@@ -345,6 +350,5 @@ class PageController extends Controller
 
         return view('admin.statistics', compact('topProducts', 'ordersOverTime', 'revenueOverTime'));
     }
-
 
 }

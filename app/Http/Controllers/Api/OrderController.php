@@ -357,19 +357,34 @@ class OrderController extends Controller
             
             // Ottieni ordini non notificati
             $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
+            $res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
     
-            if (count($order)) {
-                $eventData = [];
-                foreach ($order as $o) {
-                    $eventData[] = [
-                        'name'  => $o->name,
-                        'id'    => $o->id,
-                    ];
-                    // Imposta notificato a 1 per evitare notifiche duplicate
-                    $o->notificated = 1;
-                    $o->update();
+            $eventData = [];
+            if (count($order) || count($res)) {
+                if (count($order)){
+                    foreach ($order as $o) {
+                        $eventData[] = [
+                            'set'  => 'or',
+                            'name'  => $o->name,
+                            'data'  => $o->date_slot,
+                        ];
+                        // Imposta notificato a 1 per evitare notifiche duplicate
+                        $o->notificated = 1;
+                        $o->update();
+                    }
                 }
-    
+                if (count($res)){
+                    foreach ($res as $o) {
+                        $eventData[] = [
+                            'set'  => 'res',
+                            'name'  => $o->name,
+                            'data'  => $o->date_slot,
+                        ];
+                        // Imposta notificato a 1 per evitare notifiche duplicate
+                        $o->notificated = 1;
+                        $o->update();
+                    }
+                }
                 // Invia i dati formattati secondo lo standard SSE
                 echo 'data: ' . json_encode($eventData) . "\n\n";
                 

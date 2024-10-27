@@ -29,6 +29,7 @@ return new class extends Migration
             
             $table->boolean('take_away')->default(false);
             $table->boolean('news_letter');
+            $table->boolean('notificated')->default(false);
             $table->timestamps();
         });
     }
