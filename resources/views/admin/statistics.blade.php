@@ -10,8 +10,8 @@
         <h3>Prodotti più ordinati</h3>
         <div class="chart">
             <canvas id="topProductsChart"></canvas>
-            <div class="list bg-light">
-                <table class="mytable table table-striped "> 
+            <div class="list">
+                <table class=" table table mytable"> 
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -32,15 +32,34 @@
             </div>
         </div>
 
-        <h3>Ordinazioni nel tempo</h3>
+        <h3>Come vengono ordinati i prodotti nel tempo</h3>
         <div class="chart">
             <canvas id="ordersOverTimeChart"></canvas>
+            <div class="list">
+                <table class="mytable table table-striped "> 
+                    <thead>
+                        <tr>
+                            <th scope="col">Prodotto</th>
+                            <th scope="col">Data</th>
+                            <th scope="col">Quantità</th>
+                        </tr>
+                    </thead>
+                    @foreach ($ordersOverTime as $key => $value)
+                    <tr>
+                        <td>{{$value->name}}</td>
+                        <td>{{$value->day}}</td>
+                        <td>{{$value->quantity}}</td>
+                       
+                    </tr>
+                    @endforeach
+                </table>
+            </div>
         </div>
 
         <h3>Ricavi nel tempo</h3>
         <div class="chart">
             <canvas id="revenueOverTimeChart"></canvas>
-            <div class="list bg-light">
+            <div class="list">
                 <table class="mytable table table-striped "> 
                     <thead>
                         <tr>
@@ -61,11 +80,36 @@
                 </table>
             </div>
         </div>
+        <h3>Prenotazioni ai tavoli nel tempo</h3>
+        <div class="chart">
+            <canvas id="reservationsOverTimeChart"></canvas>
+
+            <div class="list">
+                <table class="mytable table table-striped "> 
+                    <thead>
+                        <tr>
+                            
+                            <th scope="col">Data</th>
+                            <th scope="col">Adulti</th>
+                            <th scope="col">Bambini</th>
+                        </tr>
+                    </thead>
+                    @foreach ($reservationsOverTime as $key => $value)
+                    <tr>
+                        <td>{{$value->formatted_date}}</td>
+                        <td>{{$value->total_adults}}</td>
+                        <td>{{$value->total_children}}</td>
+                    </tr>
+                    @endforeach
+                </table>
+            </div>
+        </div>
     </div>
 @endsection
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
         const colors = [
@@ -144,10 +188,124 @@
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true
-                    }
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Ricavi in €'
+                        },
+                    },
                 }
             }
         });
+        // const reservationsData = @json($reservationsOverTime);
+    
+        // const days = [...new Set(reservationsData.map(item => item.day))];
+        // const hours = [...new Set(reservationsData.map(item => item.hour))];
+        
+        // const adultsData = days.flatMap(day => hours.map(hour => {
+        //     const reservation = reservationsData.find(item => item.day === day && item.hour === hour);
+        //     return reservation ? reservation.total_adults : 0;
+        // }));
+
+        // const childrenData = days.flatMap(day => hours.map(hour => {
+        //     const reservation = reservationsData.find(item => item.day === day && item.hour === hour);
+        //     return reservation ? reservation.total_children : 0;
+        // }));
+
+        // new Chart(document.getElementById('reservationsOverTimeChart').getContext('2d'), {
+        //     type: 'bar',
+        //     data: {
+        //         labels: days.map((day, index) => `${day} ${hours[index % hours.length]}:00`),
+        //         datasets: [
+        //             {
+        //                 label: 'Adulti',
+        //                 data: adultsData,
+        //                 backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        //             },
+        //             {
+        //                 label: 'Bambini',
+        //                 data: childrenData,
+        //                 backgroundColor: 'rgba(255, 99, 132, 0.7)',
+        //             }
+        //         ]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         scales: {
+        //             x: {
+        //                 type: 'time',
+        //                 time: {
+        //                     unit: 'day',
+        //                     displayFormats: {
+        //                         hour: 'MMM dd, H:mm' // Modificato "DD" in "dd"
+        //                     }
+        //                 },
+        //                 title: {
+        //                     display: true,
+        //                     text: 'Data'
+        //                 },
+        //                 ticks: {
+        //                     maxRotation: 45,
+        //                     minRotation: 45
+        //                 }
+        //             },
+        //             y: {
+        //                 beginAtZero: true,
+        //                 title: {
+        //                     display: true,
+        //                     text: 'Numero di persone'
+        //                 },
+        //                 ticks: {
+        //                     stepSize: 1,
+        //                     callback: function(value) { return Number.isInteger(value) ? value : ''; }
+        //                 }
+        //             }
+        //         }
+        //     }
+
+        // });
+        const labels = @json($reservationsOverTime->pluck('formatted_date'));
+        const totalAdults = @json($reservationsOverTime->pluck('total_adults'));
+        const totalChildren = @json($reservationsOverTime->pluck('total_children'));
+
+        const ctx = document.getElementById('reservationsOverTimeChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Adulti',
+                        data: totalAdults,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Bambini',
+                        data: totalChildren,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Numero di persone'
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value) { return Number.isInteger(value) ? value : ''; }
+                    }
+                }
+            },
+        });
+
     });
 </script>
+
+

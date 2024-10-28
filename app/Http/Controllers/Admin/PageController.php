@@ -333,22 +333,41 @@ class PageController extends Controller
         ->join('products', 'order_product.product_id', '=', 'products.id')
         ->select(
             DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as day"), 
-            DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"),
             'products.name', 
             DB::raw('SUM(order_product.quantity) as quantity')
         )
-        ->groupBy('day', 'month', 'products.name')
+        ->groupBy('day', 'products.name')
         ->orderBy('day')
         ->get();
 
         // Grafico a linee: Ricavi nel tempo
         $revenueOverTime = Order::select(DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), DB::raw('SUM(tot_price) as total_revenue'))
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->pluck('total_revenue', 'month');
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get()
+        ->pluck('total_revenue', 'month');
 
-        return view('admin.statistics', compact('topProducts', 'ordersOverTime', 'revenueOverTime'));
+        $reservationsOverTime = DB::table('reservations')
+        ->select(
+            DB::raw("UNIX_TIMESTAMP(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) as timestamp"), // Timestamp UNIX
+            DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%d %M, %W') as formatted_date"), // Data formattata
+            DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.adult')), 0) as total_adults"), // Totale adulti
+            DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.child')), 0) as total_children") // Totale bambini
+        )
+        ->groupBy('timestamp', 'formatted_date') // Raggruppa per timestamp e data formattata
+        ->orderBy('timestamp', 'asc') // Ordina per timestamp
+        ->get();
+        
+        
+
+        
+
+        return view('admin.statistics', [
+            'topProducts' => $topProducts,
+            'ordersOverTime' => $ordersOverTime,
+            'revenueOverTime' => $revenueOverTime,
+            'reservationsOverTime' => $reservationsOverTime,
+        ]);
     }
 
 }

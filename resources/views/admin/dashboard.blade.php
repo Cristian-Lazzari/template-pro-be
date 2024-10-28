@@ -621,52 +621,52 @@
     alertContainer.setAttribute('id', 'alert-container');
     document.body.appendChild(alertContainer);
     
-    const eventSource = new EventSource('/notifica');
+    // const eventSource = new EventSource('/notifica');
     
-    eventSource.onmessage = function(event) {
+    // eventSource.onmessage = function(event) {
         
-        console.log('event-control')
-        let ac = JSON.parse(event.data);
-        console.log(ac)
+    //     console.log('event-control')
+    //     let ac = JSON.parse(event.data);
+    //     console.log(ac)
     
-        // $.notify(ac.nomeCliente, 'success');
-        function createAlert(order) {
-        // Creazione dell'elemento div principale
-            const alertDiv = document.createElement('div'); 
-            alertDiv.setAttribute('role', 'alert');
-            // Creazione del messaggio parametrizzato
-            if(order.set == 'res'){
-                alertDiv.className = 'alert alert-dismissible fade show fixed-alert-res';
-                const alertText = document.createTextNode(`È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.`);
-                alertDiv.appendChild(alertText);
-            }else if(order.set == 'or'){
-                alertDiv.className = 'alert alert-dismissible fade show fixed-alert-or';
-                const alertText = document.createTextNode(`È stato appena concluso un ordine: da ${order.name} per il ${order.data} di € ${order.price}.`);
-                alertDiv.appendChild(alertText);
-            } 
-            // Creazione del pulsante di chiusura
-            const closeButton = document.createElement('button');
-            closeButton.type = 'button';
-            closeButton.className = 'btn-close';
-            closeButton.setAttribute('data-bs-dismiss', 'alert'); closeButton.setAttribute('aria-label', 'Close');
-            // Aggiunta del pulsante di chiusura al div principale
-            alertDiv.appendChild(closeButton);
-            return alertDiv;
-        }
-        // Ciclo per generare più alert per ogni ordine
-        ac.forEach((order) => {
-            const newAlert = createAlert(order);
-            alertContainer.appendChild(newAlert); // Aggiungi gli alert al container
-            // setTimeout(() => {
-            //     newAlert.remove();
-            // }, 10000);
-        });
+    //     // $.notify(ac.nomeCliente, 'success');
+    //     function createAlert(order) {
+    //     // Creazione dell'elemento div principale
+    //         const alertDiv = document.createElement('div'); 
+    //         alertDiv.setAttribute('role', 'alert');
+    //         // Creazione del messaggio parametrizzato
+    //         if(order.set == 'res'){
+    //             alertDiv.className = 'alert alert-dismissible fade show fixed-alert-res';
+    //             const alertText = document.createTextNode(`È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.`);
+    //             alertDiv.appendChild(alertText);
+    //         }else if(order.set == 'or'){
+    //             alertDiv.className = 'alert alert-dismissible fade show fixed-alert-or';
+    //             const alertText = document.createTextNode(`È stato appena concluso un ordine: da ${order.name} per il ${order.data} di € ${order.price}.`);
+    //             alertDiv.appendChild(alertText);
+    //         } 
+    //         // Creazione del pulsante di chiusura
+    //         const closeButton = document.createElement('button');
+    //         closeButton.type = 'button';
+    //         closeButton.className = 'btn-close';
+    //         closeButton.setAttribute('data-bs-dismiss', 'alert'); closeButton.setAttribute('aria-label', 'Close');
+    //         // Aggiunta del pulsante di chiusura al div principale
+    //         alertDiv.appendChild(closeButton);
+    //         return alertDiv;
+    //     }
+    //     // Ciclo per generare più alert per ogni ordine
+    //     ac.forEach((order) => {
+    //         const newAlert = createAlert(order);
+    //         alertContainer.appendChild(newAlert); // Aggiungi gli alert al container
+    //         // setTimeout(() => {
+    //         //     newAlert.remove();
+    //         // }, 10000);
+    //     });
         
-    };
+    // };
 
-    eventSource.onerror = function(event) {
-        console.error("Errore nella connessione SSE", event);
-    };
+    // eventSource.onerror = function(event) {
+    //     console.error("Errore nella connessione SSE", event);
+    // };
 </script>
 
 @endsection
