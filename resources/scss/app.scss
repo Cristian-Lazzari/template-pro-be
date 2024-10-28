@@ -713,6 +713,10 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    position: sticky;
+    top: 4rem;
+    z-index: 101;
+
     
     .bar{
         flex-wrap: wrap;
@@ -799,7 +803,7 @@ body{
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    gap: 2rem;
+    gap: 1.2rem;
     justify-content: center;
     align-items: stretch;
     .obj{
@@ -838,7 +842,7 @@ body{
             //width: auto;
             img{
                 border-radius: 18px;
-                width: clamp(100px, 100%, 160px);
+                width: clamp(100px, 10vw, 160px);
                 aspect-ratio: 1;
                 object-fit: cover;
                 background-position: center;
@@ -2043,6 +2047,9 @@ body{
 }
 
 .stat{
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
     text-align: center;
     h1{
         margin-bottom: 2rem;
@@ -2052,6 +2059,7 @@ body{
         text-align: left;
     }
     .chart{
+        // /max-width: 600px ;
         padding: .8rem;
         color: $c1 !important;
         margin-bottom: 2rem;
