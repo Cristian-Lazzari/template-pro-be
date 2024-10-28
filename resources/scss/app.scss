@@ -785,6 +785,7 @@ body{
 }
 @media (max-width: 600px ) {
     .top-bar-product{
+        position: static;
         padding: 10px;
         .bar{
             gap: .3rem !important;
