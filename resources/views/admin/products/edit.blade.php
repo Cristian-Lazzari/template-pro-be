@@ -159,7 +159,13 @@
                             @foreach(  config('configurazione.allergens') as $a)
                                 @php $i = $loop->iteration; @endphp
                                 <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
-                                <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
+                                <label class="btn 
+                                @if($a['special'])
+                                btn-outline-info
+                                @else
+                                btn-outline-light
+                                @endif
+                                " for="b{{ $i }}">{{ $a['name'] }}</label>
                             @endforeach
                         </p>
                     </div>
@@ -170,6 +176,7 @@
         </div>
         </div>
     </div>
+    {{-- ingedienti --}}
     <section class="cont_i">
         <h2>Abbina Ingredienti</h2>
         <div class="check_c">
@@ -199,6 +206,30 @@
         <button type="button" class="my_btn_4" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Crea Ingredienti mancanti
         </button>
+    </section>
+    <section class="check_c">
+        <label class="label_c" for="type">Allergeni</label>
+        <p>
+            @foreach(  config('configurazione.allergens') as $a)
+                @php 
+                    $i = $loop->iteration;
+                    if ($product->allergens) {
+                        $al = json_decode($product->allergens);
+                    }else{
+                        $al = [];
+                    }
+                @endphp
+                <input type="checkbox" class="btn-check" id="ab{{ $i }}" name="allergens[]" value="{{ $i }}" 
+                @if (in_array($i, old('allergens', $al, []))) checked @endif>
+                <label class="btn 
+                @if($a['special'])
+                btn-outline-info
+                @else
+                btn-outline-light
+                @endif
+                " for="ab{{ $i }}">{{ $a['name'] }}</label>
+            @endforeach
+        </p>
     </section>
     <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Prodotto</button>
 

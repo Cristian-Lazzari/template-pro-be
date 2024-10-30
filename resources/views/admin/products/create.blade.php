@@ -144,7 +144,13 @@
                             @foreach(  config('configurazione.allergens') as $a)
                                 @php $i = $loop->iteration; @endphp
                                 <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
-                                <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
+                                <label class="btn 
+                                @if($a['special'])
+                                btn-outline-info
+                                @else
+                                btn-outline-light
+                                @endif
+                                " for="b{{ $i }}">{{ $a['name'] }}</label>
                             @endforeach
                         </p>
                     </div>
@@ -186,6 +192,28 @@
         </button>
         
 
+    </section>
+    <section class="check_c">
+        <label class="label_c" for="type">Allergeni</label>
+        <p>
+            @foreach(  config('configurazione.allergens') as $a)
+                @php 
+                    $i = $loop->iteration;
+                    
+                    $al = [];
+                    
+                @endphp
+                <input type="checkbox" class="btn-check" id="ab{{ $i }}" name="allergens[]" value="{{ $i }}" 
+                @if (in_array($i, old('allergens', $al, []))) checked @endif>
+                <label class="btn 
+                @if($a['special'])
+                btn-outline-info
+                @else
+                btn-outline-light
+                @endif
+                " for="ab{{ $i }}">{{ $a['name'] }}</label>
+            @endforeach
+        </p>
     </section>
     <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Prodotto</button>
 

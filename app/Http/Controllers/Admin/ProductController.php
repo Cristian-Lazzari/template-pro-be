@@ -179,7 +179,7 @@ class ProductController extends Controller
         }else{
             $filteredArray = $array;
         }  
-        return array_values($filteredArray); // re-indicizzare l'array
+        return array_values($filteredArray);
     }
     public function store(Request $request)
     {   
@@ -245,32 +245,47 @@ class ProductController extends Controller
         }
         
         $product = new Product();
+        // controllo se l utente ha inserito gli allergens 
+        if (isset($data['allergens'])){
+            $allergens = $data['allergens'];
+            $allergens = array_map('intval', array_values($data['allergens']));
+        }else{
+            $allergens = '[]';
+        }
         
+       // controllo se ci sono allergien dagli ingredient
+        
+        $allergens_from_i = [];
         if(isset($data['ingredients'])){     
-            $allergens = [];
             foreach ($data['ingredients'] as $i) {
                 $all = Ingredient::where('id', $i)->firstOrFail();
                 $isall = json_decode($all['allergens']);
                 if($isall !== "[]" && $isall !== NULL ){
                     foreach($isall as $ia){
-                        array_push($allergens, $ia);
+                        array_push($allergens_from_i, $ia);
                     }  
                 }
             }
-
-            if (count($allergens) > 0) {
-                $alldclen = array_unique($allergens);
+            if (count($allergens_from_i) > 0) {
+                $alldclen = array_unique($allergens_from_i);
                 $rightall = array_map('intval', array_values($alldclen));   
-                $cleanallergens = $this->cleanArray($rightall);          
-                $allergens = json_encode($cleanallergens);
+                $allergens_from_i = $this->cleanArray($rightall);
             }else{
-                $allergens = '[]';   
+                $allergens_from_i = '[]';   
             }
         }else{
-            $allergens = '[]';   
+            $allergens_from_i = '[]';   
         }
-        
 
+        //mergio
+        if ($allergens_from_i !== '[]' && $allergens !== '[]' ) {
+            //dd($allergens_from_i);
+            $allergens_m = array_unique(array_merge($allergens_from_i, $allergens));
+        }elseif ($allergens_from_i == '[]') {
+            $allergens_m = $allergens;
+        }elseif ($allergens == '[]') {
+            $allergens_m = $allergens_from_i;
+        }
        
         $prezzo_stringa = str_replace(',', '.', $data['price']);
         $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
@@ -286,7 +301,7 @@ class ProductController extends Controller
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
 
-        $product->allergens    = $allergens;
+        $product->allergens    = json_encode($this->cleanArray($allergens_m));
         
         
         
@@ -377,30 +392,50 @@ class ProductController extends Controller
             $request->validate($this->validationsTrue1);
         }else{
             $request->validate($this->validationsFalse1);
-        }    
-        $allergens = [];
+        } 
+        // controllo se l utente ha inserito gli allergens 
+        if (isset($data['allergens'])){
+            $allergens = $data['allergens'];
+            $allergens = array_map('intval', array_values($data['allergens']));
+        }else{
+            $allergens = '[]';
+        }
+        // controllo se ci sono allergien dagli ingredient
+        
+        $allergens_from_i = [];
         if(isset($data['ingredients'])){     
             foreach ($data['ingredients'] as $i) {
                 $all = Ingredient::where('id', $i)->firstOrFail();
                 $isall = json_decode($all['allergens']);
                 if($isall !== "[]" && $isall !== NULL ){
                     foreach($isall as $ia){
-                        array_push($allergens, $ia);
+                        array_push($allergens_from_i, $ia);
                     }  
                 }
             }
-            if (count($allergens) > 0) {
-                $alldclen = array_unique($allergens);
+            if (count($allergens_from_i) > 0) {
+                $alldclen = array_unique($allergens_from_i);
                 $rightall = array_map('intval', array_values($alldclen));   
-                $cleanallergens = $this->cleanArray($rightall);          
-                $allergens = json_encode($cleanallergens);
+                $allergens_from_i = $this->cleanArray($rightall);          
             }else{
-                $allergens = '[]';   
+                $allergens_from_i = '[]';   
             }
         }else{
-            $allergens = '[]';   
+            $allergens_from_i = '[]';   
+        }
+
+        //mergio
+        if ($allergens_from_i !== '[]' && $allergens !== '[]' ) {
+            $allergens_m = array_unique(array_merge($allergens_from_i, $allergens));
+        }elseif ($allergens_from_i == '[]') {
+            $allergens_m = $allergens;
+        }elseif ($allergens == '[]') {
+            $allergens_m = $allergens_from_i;
         }
         
+
+
+
         $prezzo_stringa = str_replace(',', '.', $data['price']);
         $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
         $prezzo_float = floatval($prezzo_stringa);
@@ -422,7 +457,7 @@ class ProductController extends Controller
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
         
-        $product->allergens    = $allergens;
+        $product->allergens    = json_encode($this->cleanArray($allergens_m));
         
         $product->promotion   = isset($data['promotion']) ? true : false;
         $product->old_price   = intval(round($prezzo_float1 * 100));

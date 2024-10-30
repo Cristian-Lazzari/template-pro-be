@@ -73,7 +73,13 @@ $domain = 'https://future-plus.it/allergens/';
                         }
                     @endphp
                     <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', $al, []))) checked @endif>
-                    <label class="btn btn-outline-light" for="b{{ $i }}">{{ $a['name'] }}</label>
+                    <label class="btn 
+                        @if($a['special'])
+                        btn-outline-info
+                        @else
+                        btn-outline-light
+                        @endif
+                        " for="b{{ $i }}">{{ $a['name'] }}</label>
                 @endforeach
             </p>
         </div>

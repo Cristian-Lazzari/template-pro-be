@@ -88,28 +88,29 @@ class IngredientController extends Controller
         $categories    = Category::all();
         return view('admin.Ingredients.edit', compact('categories', 'ingredient'));
     }
+    protected function cleanArray($array) {
+        $hasGluten = false;
+        $hasNoGluten = false;
+        foreach ($array as $item) {     
+            if ($item == 1) {
+                $hasGluten = true;
+            } elseif ($item == 4) {
+                $hasNoGluten = true;
+            }     
+        } 
+        if ($hasGluten && $hasNoGluten) {
+            $filteredArray = array_filter($array, function($value) {
+                return $value !== 1;
+            });
+        }else{
+            $filteredArray = $array;
+        }  
+        return array_values($filteredArray); // re-indicizzare l'array
+    }
     public function update(Request $request, $id)
     {
         //funzione del cazzo di chat per controllare la questione glutine e senza glutine
-        function cleanArray($array) {
-            $hasGluten = false;
-            $hasNoGluten = false;
-            foreach ($array as $item) {     
-                if ($item == 1) {
-                    $hasGluten = true;
-                } elseif ($item == 4) {
-                    $hasNoGluten = true;
-                }     
-            } 
-            if ($hasGluten && $hasNoGluten) {
-                $filteredArray = array_filter($array, function($value) {
-                    return $value !== 1;
-                });
-            }else{
-                $filteredArray = $array;
-            }  
-            return array_values($filteredArray); // re-indicizzare l'array
-        }
+        
         //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
         
         $data = $request->all();
@@ -160,7 +161,8 @@ class IngredientController extends Controller
                         $allergens[] = $a;
                     }
                 }
-                $p->allergens = json_encode($allergens); 
+                $cleanallergens = $this->cleanArray($allergens);
+                $p->allergens = json_encode($cleanallergens); 
                 $p->update(); 
             }
         }else{

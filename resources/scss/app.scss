@@ -1073,7 +1073,7 @@ body{
             flex-direction: column;
             align-items: flex-start;
             justify-content: flex-start;
-            gap: 1.8rem;
+            gap: .4rem;
             flex-grow: 1;
             
             flex-shrink: 1;
@@ -1085,6 +1085,7 @@ body{
                 aspect-ratio: 1.5;
                 object-fit: cover;
                 max-width: 650px;
+                background-color: $c2_op;
             }
             .allergens{
                 max-width: 350px;
@@ -1096,7 +1097,7 @@ body{
                 img{
                     padding: 5px;
                     border: black solid 1px;
-                    background-color: $white;
+                    background-color: $c1_op;
                     width: 40px;
                     border-radius: 100% ;
                     aspect-ratio: 1;
@@ -1137,17 +1138,23 @@ body{
         width: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         gap: 1rem;
         flex-wrap: wrap;
         
         .set_plate, .actions{
+            flex: 1;
             align-items: center;
             display: flex;
             gap: 1rem;
-            
+            background-color: $c2;
+            padding: 1rem;
+            border-radius: 10px;
+            //color: $c3;
         }
-        
+        .actions{
+            justify-content: center;
+        }
         .set_plate{
             justify-content:flex-start;
             gap: 3rem;
@@ -1163,13 +1170,25 @@ body{
                 gap: .6rem;
             }
             .title{
-                
+                color: $c3;  
                 font-size: clamp(18px, 3.5vw, 30px) !important;
             }
             .res{
                 font-size: clamp(15px, 2.5vw, 25px) !important;            
                 flex-grow: 1;
             }
+        }
+    }
+    @media (max-width: 500px) {
+        .prod-spec{
+            flex-direction: column;
+        }
+        .set_plate, .actions{
+            width: 100%;
+            justify-content: space-between;
+        }
+        .actions{       
+            justify-content: center ;
         }
     }
 
@@ -1296,12 +1315,15 @@ body{
         }
 
     }
+
     .check_c{
         p{
             display: flex;
             flex-wrap: wrap;
             gap: .4rem;
             label{
+                flex: 1 ;
+                white-space: nowrap;
                 margin-bottom: 0;
                 font-size: clamp(14px, 2.2vw, 16px);
             }
