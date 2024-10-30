@@ -146,42 +146,30 @@ class IngredientController extends Controller
         $new_ing->price = intval(round($prezzo_float * 100));
         $new_ing->type = json_encode($type_ing);
     
-         if($ingredient_allergens !== '[]'){
+        if($ingredient_allergens !== '[]'){
             $rightall = array_map('intval', array_values($ingredient_allergens));
             $new_ing->allergens = json_encode($rightall);
+            $id_ing = $new_ing->id;
+            $prodotti = Product::whereHas('ingredients', function($query) use ($id_ing) {
+                $query->where('ingredient_id', $id_ing);
+            })->get();
+            foreach ($prodotti as $p) {
+                $allergens = json_decode($p['allergens'], 1);
+                foreach ($rightall as $a) {
+                    if(in_array($a, $allergens)){
+                        $allergens[] = $a;
+                    }
+                }
+                $p->allergens = json_encode($allergens); 
+                $p->update(); 
+            }
         }else{
             $new_ing->allergens = '[]';
         }
         $new_ing->update();
-        $id_ing = $new_ing->id;
-        $prodotti = Product::whereHas('ingredients', function($query) use ($id_ing) {
-            $query->where('ingredient_id', $id_ing);
-        })->get();
+        
         //dd($prodotti);
-        foreach ($prodotti as $p) {
-            $allergens = [];
-            foreach ($p['ingredients'] as $i) {
-                $all = json_decode($i['allergens']);
-                if($all !== "[]" && $all !== NULL ){
-                    foreach($all as $a){
-                        array_push($allergens, $a);
-                    }  
-                }
-            }
-            if (count($allergens) > 0) {
-                $alldclen = array_unique($allergens);
-                //dump($alldclen);
-                $rightall = array_map('intval', array_values($alldclen));   
-                //dd($rightall);
-                $cleanallergens = cleanArray($rightall);          
-                //dump($cleanallergens);
-                $allergens = json_encode($cleanallergens);
-            }else{
-                $allergens = '[]';   
-            }
-            $p->allergens = $allergens;
-            $p->update(); 
-        }
+        
         
         
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';
