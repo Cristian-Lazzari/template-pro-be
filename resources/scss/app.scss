@@ -1315,6 +1315,16 @@ body{
         }
 
     }
+    .cont_i{
+        .check_c{
+
+            max-height: 50vh;
+            border-radius: 12px;
+            border: 2px solid $c3_op;
+            padding: 10px;
+            overflow: scroll;
+        }
+    }
 
     .check_c{
         p{
