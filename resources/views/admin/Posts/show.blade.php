@@ -5,7 +5,7 @@
  
 <a class="my_btn_5 ml-auto" href="{{ route('admin.posts.index') }}">Torna ai Post</a>
 
-<h1>Dettagli de Post</h1>
+<h1>Dettagli del Post</h1>
 <div class="show_p">
     <h2>
         @if ($post->promo)

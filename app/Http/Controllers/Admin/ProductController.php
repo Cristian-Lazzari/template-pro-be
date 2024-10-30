@@ -162,29 +162,29 @@ class ProductController extends Controller
         
         return view('admin.products.create', compact('categories', 'ingredients'));
     }
-
+    protected function cleanArray($array) {
+        $hasGluten = false;
+        $hasNoGluten = false;
+        foreach ($array as $item) {     
+            if ($item == 1) {
+                $hasGluten = true;
+            } elseif ($item == 4) {
+                $hasNoGluten = true;
+            }     
+        } 
+        if ($hasGluten && $hasNoGluten) {
+            $filteredArray = array_filter($array, function($value) {
+                return $value !== 1;
+            });
+        }else{
+            $filteredArray = $array;
+        }  
+        return array_values($filteredArray); // re-indicizzare l'array
+    }
     public function store(Request $request)
     {   
         //funzione del cazzo di chat per controllare la questione glutine e senza glutine
-        function cleanArray($array) {
-            $hasGluten = false;
-            $hasNoGluten = false;
-            foreach ($array as $item) {     
-                if ($item == 1) {
-                    $hasGluten = true;
-                } elseif ($item == 4) {
-                    $hasNoGluten = true;
-                }     
-            } 
-            if ($hasGluten && $hasNoGluten) {
-                $filteredArray = array_filter($array, function($value) {
-                    return $value !== 1;
-                });
-            }else{
-                $filteredArray = $array;
-            }  
-            return array_values($filteredArray); // re-indicizzare l'array
-        }
+        
         //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
         $data = $request->all();
      
@@ -261,7 +261,7 @@ class ProductController extends Controller
             if (count($allergens) > 0) {
                 $alldclen = array_unique($allergens);
                 $rightall = array_map('intval', array_values($alldclen));   
-                $cleanallergens = cleanArray($rightall);          
+                $cleanallergens = $this->cleanArray($rightall);          
                 $allergens = json_encode($cleanallergens);
             }else{
                 $allergens = '[]';   
@@ -331,29 +331,6 @@ class ProductController extends Controller
     
     public function update(Request $request, $id){
 
-        //funzione del cazzo di chat per controllare la questione glutine e senza glutine
-        function cleanArray($array) {
-            $hasGluten = false;
-            $hasNoGluten = false;
-            foreach ($array as $item) {     
-                if ($item == 1) {
-                    $hasGluten = true;
-                } elseif ($item == 4) {
-                    $hasNoGluten = true;
-                }     
-            } 
-            if ($hasGluten && $hasNoGluten) {
-                $filteredArray = array_filter($array, function($value) {
-                    return $value !== 1;
-                });
-            }else{
-                $filteredArray = $array;
-            }  
-            return array_values($filteredArray); // re-indicizzare l'array
-        }
-        //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
-
-
         $product = Product::where('id', $id)->firstOrFail();
         $data = $request->all();
         if (isset($data['newi'])){
@@ -415,7 +392,7 @@ class ProductController extends Controller
             if (count($allergens) > 0) {
                 $alldclen = array_unique($allergens);
                 $rightall = array_map('intval', array_values($alldclen));   
-                $cleanallergens = cleanArray($rightall);          
+                $cleanallergens = $this->cleanArray($rightall);          
                 $allergens = json_encode($cleanallergens);
             }else{
                 $allergens = '[]';   

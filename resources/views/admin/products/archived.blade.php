@@ -24,7 +24,7 @@ $domain = 'https://future-plus.it/allergens/';
     </div>
 @endif
  
-<a class="my_btn_5 ml-auto" href="{{ route('admin.posts.index') }}">Torna ai Prodotti non archiviati</a>
+<a class="my_btn_5 ml-auto" href="{{ route('admin.products.index') }}">Torna ai Prodotti non archiviati</a>
 
 <h1>Prodotti - Archivio</h1>
  
