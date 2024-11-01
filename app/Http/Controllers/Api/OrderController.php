@@ -74,7 +74,7 @@ class OrderController extends Controller
                         }else{
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                                'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
                                 'data' => $date
                             ]);
                         }
@@ -98,14 +98,14 @@ class OrderController extends Controller
                         }else{
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                                'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
                                 'data' => $date
                             ]);
                         }
                     }else{
                         return response()->json([
                             'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                            'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
                             'data' => $date
                         ]);
     
@@ -149,7 +149,7 @@ class OrderController extends Controller
                     }else{
                         return response()->json([
                             'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata,  ci dispiace per l\'inconveniente... provate di nuovo',
+                            'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
                             'data' => $date
                         ]);
                     }
