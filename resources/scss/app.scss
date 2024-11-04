@@ -69,6 +69,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     justify-content: center;
     align-items: center;
     gap: .5rem;
+    white-space: nowrap;
     a, button{
         //box-shadow: -1px -1px 8px rgba(0, 0, 0, 0.277);
         color: $white;
