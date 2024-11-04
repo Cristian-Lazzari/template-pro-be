@@ -79,7 +79,7 @@
     <p>*2 per andare a capo riportare i caratteri: <strong>/**/</strong> , per mettere in grassetto del testo invece basta racchiudere la porzione di testo che si vuole mettere in grassetto tra 3 asterischi in questo modo: <strong>***</strong> parola da mettere in grassetto <strong>***</strong> .  </p>
     <p>*3 campi facoltativi</p>
    
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modificas Post</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Post</button>
 
 </form>
 
