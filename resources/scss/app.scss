@@ -1654,7 +1654,7 @@ body{
 }
 .my_0::after, .my_5::after, .my_1::after, .my_3::after, .my_6::after {
     position: absolute;
-    bottom: 0;
+    bottom: -4px;
     right: 0;
     text-align: center;
     z-index: 12;
@@ -1662,21 +1662,22 @@ body{
     justify-content: center;
     align-items: center;
     font-size: $fs_sm;
+    font-weight: bolder;
     text-transform: uppercase;
     text-shadow: 0 0 20px black;
     width: 100%;
-    height: 80%;
     opacity: .5;
+
 }
 .my_0::after{
     opacity: .6 !important;
     content: 'Annullata';
-    color: $c_red;
+    color: $c3;
 }
 .my_6::after{
     opacity: .6 !important;
     content: 'Annullata e Rimborsata';
-    color: $c_red;
+    color: $c3;
 }
 .my_5::after{
     content: 'Confermata e Pagata';
@@ -1684,7 +1685,7 @@ body{
 }
 .my_1::after{
     content: 'Confermata';
-    color: $c3;
+    color: $c2;
 }
 .my_3::after{
     content: 'Pagata';
