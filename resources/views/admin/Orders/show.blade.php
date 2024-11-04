@@ -137,7 +137,7 @@
                     @endif
                 </section>
             </div>
-            <div class="visible">
+            {{-- <div class="visible">
                 @if ($order->status == 2)
                 <span>in elaborazione</span>
                 @elseif ($order->status == 1)
@@ -145,7 +145,7 @@
                 @elseif ($order->status == 0)
                 <span>annullato</span>
                 @endif
-            </div>
+            </div> --}}
         </div>
 
         

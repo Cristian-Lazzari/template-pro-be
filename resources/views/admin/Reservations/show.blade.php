@@ -77,7 +77,7 @@
                     @endif
                 </section>
             </div>
-            <div class="visible">
+            {{-- <div class="visible">
                 @if ($reservation->status == 2)
                 <span>in elaborazione</span>
                 @elseif ($reservation->status == 1)
@@ -85,7 +85,7 @@
                 @elseif ($reservation->status == 0)
                 <span>annullato</span>
                 @endif
-            </div>
+            </div> --}}
         </div>
 
         
