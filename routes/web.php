@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DateController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Webhooks\WaController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -81,21 +82,12 @@ Route::middleware('auth')
 require __DIR__ . '/auth.php';
 
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWebhook']);
-Route::get('/notifica',        [ApiOrderController::class, 'sendNotification']);
 
-// Route::get('/notifiche-sse', function () {
-//     header('Content-Type: text/event-stream');
-//     header('Cache-Control: no-cache');
-//     header('Connection: keep-alive');
+Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);
 
-//    // Ottieni le notifiche dalla cache
-//    $notifications = Cache::get('notifications', []);
 
-//    foreach ($notifications as $notification) {
-//        echo "data: {$notification['message']}\n\n";
-//        flush();
-//    }
 
-//    // Resetta le notifiche
-//    Cache::put('notifications', []);
-// });
+Route::post('/wa', [WaController::class, 'handle']);
+Route::get('/wa', [WaController::class, 'verify']); 
+
+

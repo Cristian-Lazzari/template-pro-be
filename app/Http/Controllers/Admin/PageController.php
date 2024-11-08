@@ -369,5 +369,65 @@ class PageController extends Controller
             'reservationsOverTime' => $reservationsOverTime,
         ]);
     }
+    public function sendNotification()
+    {
+        // Imposta le intestazioni per SSE
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache');
+        header('Connection: keep-alive');
+        
+        // Mantieni attivo il ciclo per continuare a inviare dati
+        while (true) {
+            if (connection_aborted()) {
+                break; // Esce dal ciclo se la connessione viene interrotta
+            }
+            
+            // Ottieni ordini non notificati
+            $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
+            $res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
+    
+            $eventData = [];
+            if (count($order) || count($res)) {
+                if (count($order)){
+                    foreach ($order as $o) {
+                        $eventData[] = [
+                            'set'  => 'or',
+                            'name'  => $o->name,
+                            'data'  => $o->date_slot,
+                            'price'  => $o->tot_price / 100,
+                        ];
+                        // Imposta notificato a 1 per evitare notifiche duplicate
+                        $o->notificated = 1;
+                        $o->update();
+                    }
+                }
+                if (count($res)){
+                    foreach ($res as $o) {
+                        $person = json_decode($o->n_person, 1);
+                        $eventData[] = [
+                            'set'  => 'res',
+                            'name'  => $o->name,
+                            'data'  => $o->date_slot,
+                            'adult'  => $person['adult'],
+                            'child'  => $person['child'],
+                        ];
+                        // Imposta notificato a 1 per evitare notifiche duplicate
+                        $o->notificated = 1;
+                        $o->update();
+                    }
+                }
+                // Invia i dati formattati secondo lo standard SSE
+                echo 'data: ' . json_encode($eventData) . "\n\n";
+                
+                // Forza l'invio immediato dei dati al client
+                ob_flush();
+                flush();
+            }
+    
+            // Intervallo di attesa per ridurre il carico sul server
+            //sleep(7); // 5 secondi di pausa tra le verifiche
+        }
+    }    
 
 }
+

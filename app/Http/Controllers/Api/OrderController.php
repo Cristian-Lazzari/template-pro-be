@@ -313,12 +313,110 @@ class OrderController extends Controller
                 // $nomeCliente = $newOrder->name/* Nome del cliente */;
                 // event(new NewOrderNotification($nomeCliente, $ordineId));
 
+                $info =  $newOrder->name . 'che ha ordinato per il ' . $newOrder->date_slot . ': ';
+                // Itera sui prodotti dell'ordine
+                foreach ($newOrder->products as $product) {
+                    // Aggiungi il nome e la quantità del prodotto
+                    $info .= "Prodotto: {$product->name} ";
+                    $info .= "Quantità: {$product->pivot->quantity} ";
+                    // Gestisci le opzioni del prodotto
+                    if (!empty($product->pivot->option)) {
+                        $options = json_decode($product->pivot->option);
+                        $info .= "Opzioni: " . implode(', ', $options) . " ";
+                    }
+                    // Gestisci gli ingredienti aggiunti
+                    if (!empty($product->pivot->add)) {
+                        $addedIngredients = json_decode($product->pivot->add);
+                        $info .= "Aggiunti: " . implode(', ', $addedIngredients) . " ";
+                    }
+                    // Gestisci gli ingredienti rimossi
+                    if (!empty($product->pivot->remove)) {
+                        $removedIngredients = json_decode($product->pivot->remove);
+                        $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
+                    }
+                    // Separatore tra i prodotti
+                    $info .= "--------------------- ";
+                }
+                
+                // Definisci l'URL della richiesta
+                $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
+                $number = config('configurazione.WA_N');
+                // Imposta i dati da inviare
+                // $data = [
+                //     'messaging_product' => 'whatsapp',
+                //     'to' => '393271622244',
+                //     "type" => "interactive",
+                //     "interactive" => [
+                //         "type" => "button",
+                //         "body" => [
+                //             "text" => 'ordine',
+                //         ],
+                //         "action" => [
+                //             "buttons" => [
+                //                 [
+                //                     "type" => "reply",
+                //                     "reply" => [
+                //                         "id" => "confirm-button",
+                //                         "title" => "Conferma"
+                //                     ]
+                //                 ],
+                //                 [
+                //                     "type" => "reply",
+                //                     "reply" => [
+                //                         "id" => "cancel-button",
+                //                         "title" => "Annulla"
+                //                     ]
+                //                 ]
+                //             ]
+                //         ]
+                //     ]
+                // ];
+                $data = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => '393271622244',
+                    'type' => 'template',
+                    'template' => [
+                        'name' => 'order',
+                        'language' => [
+                            'code' => 'it'
+                        ],
+                        'components' => [
+                            [
+                                'type' => 'body',
+                                'parameters' => [
+                                    [
+                                        'type' => 'text',
+                                        'text' => $info  // Questo sostituirà {{1}} nel template
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                // Effettua la richiesta HTTP POST con le intestazioni necessarie
+                $response = Http::withHeaders([
+                    'Authorization' => config('configurazione.WA_TO'),
+                    'Content-Type' => 'application/json'
+                ])->post($url, $data);
+    
+                // Gestisci la risposta
+                if ($response->successful()) {
+                    // return response()->json([
+                    //     'success'   => true,
+                    //     'payment'   => false,
+                    //     'order'     => $newOrder,
+                    // ]);
+                    return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response], 200);
+                } else {
+                    return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
+                }
 
-                return response()->json([
-                    'success'   => true,
-                    'payment'   => false,
-                    'order'     => $newOrder,
-                ]);
+
+                // return response()->json([
+                //     'success'   => true,
+                //     'payment'   => false,
+                //     'order'     => $newOrder,
+                // ]);
             }
 
 
@@ -346,64 +444,5 @@ class OrderController extends Controller
 
     }
 
-    public function sendNotification()
-    {
-        // Imposta le intestazioni per SSE
-        header('Content-Type: text/event-stream');
-        header('Cache-Control: no-cache');
-        header('Connection: keep-alive');
-        
-        // Mantieni attivo il ciclo per continuare a inviare dati
-        while (true) {
-            if (connection_aborted()) {
-                break; // Esce dal ciclo se la connessione viene interrotta
-            }
-            
-            // Ottieni ordini non notificati
-            $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
-            $res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
-    
-            $eventData = [];
-            if (count($order) || count($res)) {
-                if (count($order)){
-                    foreach ($order as $o) {
-                        $eventData[] = [
-                            'set'  => 'or',
-                            'name'  => $o->name,
-                            'data'  => $o->date_slot,
-                            'price'  => $o->tot_price / 100,
-                        ];
-                        // Imposta notificato a 1 per evitare notifiche duplicate
-                        $o->notificated = 1;
-                        $o->update();
-                    }
-                }
-                if (count($res)){
-                    foreach ($res as $o) {
-                        $person = json_decode($o->n_person, 1);
-                        $eventData[] = [
-                            'set'  => 'res',
-                            'name'  => $o->name,
-                            'data'  => $o->date_slot,
-                            'adult'  => $person['adult'],
-                            'child'  => $person['child'],
-                        ];
-                        // Imposta notificato a 1 per evitare notifiche duplicate
-                        $o->notificated = 1;
-                        $o->update();
-                    }
-                }
-                // Invia i dati formattati secondo lo standard SSE
-                echo 'data: ' . json_encode($eventData) . "\n\n";
-                
-                // Forza l'invio immediato dei dati al client
-                ob_flush();
-                flush();
-            }
-    
-            // Intervallo di attesa per ridurre il carico sul server
-            //sleep(7); // 5 secondi di pausa tra le verifiche
-        }
-    }    
     
 }

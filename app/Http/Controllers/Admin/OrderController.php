@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -76,10 +77,8 @@ class OrderController extends Controller
         return redirect()->back()->with('filter', $data);
     }
 
-    public function status(Request $request){
-        $wa = $request->input('wa');
-        $c_a = $request->input('c_a');
-        $id = $request->input('id');
+    protected function statusF($wa, $c_a, $id){
+
         $order = Order::where('id', $id)->with('products')->firstOrFail();
         //dd($order);
         if($c_a){
@@ -88,11 +87,11 @@ class OrderController extends Controller
             }elseif($order->status == 3){
                 $order->status = 5;
             }
-            $m = 'La prenotazione e\' stata confermata correttamente';
-            $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;
+            $m = 'L\'ordine è stata confermato correttamente';
+            $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;    
         }else{
             if(in_array($order->status, [3, 5])){
-                $m = 'La prenotazione e\' stata annullata e RIMBORSATA correttamente';
+                $m = 'L\'ordine è stata annullato e RIMBORSATO correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
                 //codice per rimborso
                 try {
@@ -119,7 +118,7 @@ class OrderController extends Controller
                 }
                 
             }elseif(in_array($order->status, [2, 1])){
-                $m = 'La prenotazione e\' stata annullata correttamente';
+                $m = 'L\'ordine è stata annullato correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
                 $order->status = 0;
             }else{
@@ -218,8 +217,30 @@ class OrderController extends Controller
         if($wa){
             return redirect("https://wa.me/39" . $order->phone . "?text=" . $message);
         }
+        return $m;
+    }
+
+    public function status(Request $request){
+        $wa = $request->input('wa');
+        $c_a = $request->input('c_a');
+        $id = $request->input('id');
+        
+        $m = $this->statusF($wa, $c_a, $id);
         
         return redirect()->back()->with('success', $m);   
+    }
+    public function status_mail(){
+        $id = request()->query('id');
+        $c_a = request()->query('c_a');
+        $wa = false;
+
+        $this->statusF($wa, $c_a, $id);
+        
+
+//...
+        // dump("https://chat.whatsapp.com/" . config('configurazione.id_group') . "?text=" . $info);
+        // return redirect("https://wa.me/" . config('configurazione.id_group') . "?text=" . $info);
+        //return redirect("https://chat.whatsapp.com/" . config('configurazione.id_group') . "?text=" . $info);
     }
 
     public function index()
