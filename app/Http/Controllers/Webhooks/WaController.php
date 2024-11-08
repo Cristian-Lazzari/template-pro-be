@@ -10,7 +10,8 @@ class WaController extends Controller
     // Metodo per gestire la verifica del webhook
     public function verify(Request $request)
     {
-        $verifyToken = config('configurazione.WA_TO');
+        //$verifyToken = config('configurazione.WA_TO');
+        $verifyToken = 'ciao1234qwqwqwqwmqwjqwjj32j23i2h32iu3hu';
 
         if ($request->query('hub_verify_token') === $verifyToken) {
             return response($request->query('hub_challenge'), 200);
