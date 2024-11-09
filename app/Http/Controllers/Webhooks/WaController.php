@@ -37,27 +37,29 @@ class WaController extends Controller
                 $buttonText = $message['button']['text']; // Testo del pulsante premuto
                 $messageId = $message['id']; // ID del messaggio ricevuto
 
-                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
-
+                
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
                 $order = Order::where('whatsapp_message_id', $messageId)->firstOrFail();
-
+                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
+                
                 if ($order) {
                     if ($buttonText === 'Conferma') {
                         // Aggiorna lo stato dell'ordine a "Confermato"
                         $order->status = 5;
+                        Log::warning("Confermato");
                     } elseif ($buttonText === 'Annulla') {
                         // Aggiorna lo stato dell'ordine a "Annullato"
                         $order->status = 0;
+                        Log::warning("Annullato");
                     }
 
                     $order->update();
                 }
             } else {
-                Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
+                //Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
             }
         } else {
-            Log::warning("Struttura del messaggio non valida o messaggio mancante.");
+            //Log::warning("Struttura del messaggio non valida o messaggio mancante.");
         }
 
         return response()->json(['status' => 'success']);
