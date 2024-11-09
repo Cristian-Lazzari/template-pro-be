@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Webhooks;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class WaController extends Controller
 {
@@ -11,7 +12,7 @@ class WaController extends Controller
     public function verify(Request $request)
     {
         //$verifyToken = config('configurazione.WA_TO');
-        $verifyToken = 'ciao1234qwqwqwqwmqwjqwjj32j23i2h32iu3hu';
+        $verifyToken = 'diocane';
 
         if ($request->query('hub_verify_token') === $verifyToken) {
             return response($request->query('hub_challenge'), 200);
