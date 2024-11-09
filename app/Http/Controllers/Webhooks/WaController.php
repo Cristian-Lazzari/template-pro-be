@@ -43,7 +43,8 @@ class WaController extends Controller
             $order = Order::where('whatsapp_message_id', $messageId)->firstOrFail();
 
             if ($order) {
-                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId", $order);
+                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId, $order");
+
                 if ($buttonText === 'Conferma') {
                     // Aggiorna lo stato dell'ordine a "Confermato"
                     $order->status = 5;
