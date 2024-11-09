@@ -27,29 +27,41 @@ class WaController extends Controller
         $data = $request->all();
         Log::warning("Webhook ricevuto", $data);
 
-        // Controlla se il webhook è un evento di risposta con un ID messaggio
-        if (isset($data['message']) && isset($data['message']['interactive'])) {
-            $buttonText = $data['message']['interactive']['button_reply']['title']; // Testo del pulsante premuto
-            $messageId = $data['message']['id']; // ID del messaggio ricevuto
+        // Naviga nella struttura del webhook
+        if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
+            $message = $data['entry'][0]['changes'][0]['value']['messages'][0];
 
-            // Trova l'ordine corrispondente tramite l'ID del messaggio
-            $order = Order::where('whatsapp_message_id', $messageId)->first();
+            // Controlla se il messaggio ha un'interazione con pulsante
+            if (isset($message['button']) && isset($message['button']['text'])) {
+                $buttonText = $message['button']['text']; // Testo del pulsante premuto
+                $messageId = $message['id']; // ID del messaggio ricevuto
 
-            if ($order) {
-                if ($buttonText === 'Conferma') {
-                    // Aggiorna lo stato dell'ordine a "Confermato"
-                    $order->status = 5;
-                } elseif ($buttonText === 'Annulla') {
-                    // Aggiorna lo stato dell'ordine a "Annullato"
-                    $order->status = 0;
+                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
+
+                // Trova l'ordine corrispondente tramite l'ID del messaggio
+                $order = Order::where('whatsapp_message_id', $messageId)->first();
+
+                if ($order) {
+                    if ($buttonText === 'Conferma') {
+                        // Aggiorna lo stato dell'ordine a "Confermato"
+                        $order->status = 5;
+                    } elseif ($buttonText === 'Annulla') {
+                        // Aggiorna lo stato dell'ordine a "Annullato"
+                        $order->status = 0;
+                    }
+
+                    $order->save();
                 }
-
-                $order->save();
+            } else {
+                Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
             }
+        } else {
+            Log::warning("Struttura del messaggio non valida o messaggio mancante.");
         }
 
         return response()->json(['status' => 'success']);
     }
+
 
 
 }
