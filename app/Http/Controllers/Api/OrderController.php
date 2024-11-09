@@ -385,7 +385,7 @@ class OrderController extends Controller
                     //     'payment'   => false,
                     //     'order'     => $newOrder,
                     // ]);
-                    return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response], 200);
+                    return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response, 'id' => $messageId], 200);
                 } else {
                     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
                 }
