@@ -313,24 +313,24 @@ class OrderController extends Controller
                 // $nomeCliente = $newOrder->name/* Nome del cliente */;
                 // event(new NewOrderNotification($nomeCliente, $ordineId));
 
-                $info =  $newOrder->name . 'che ha ordinato per il ' . $newOrder->date_slot . ': ';
+                $info =  $newOrder->name . ' ha ordinato per il ' . $newOrder->date_slot . ': ';
                 // Itera sui prodotti dell'ordine
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "Prodotto: {$product->name} ";
                     $info .= "Quantità: {$product->pivot->quantity} ";
                     // Gestisci le opzioni del prodotto
-                    if (!empty($product->pivot->option)) {
+                    if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
                         $info .= "Opzioni: " . implode(', ', $options) . " ";
                     }
                     // Gestisci gli ingredienti aggiunti
-                    if (!empty($product->pivot->add)) {
+                    if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
                         $info .= "Aggiunti: " . implode(', ', $addedIngredients) . " ";
                     }
                     // Gestisci gli ingredienti rimossi
-                    if (!empty($product->pivot->remove)) {
+                    if ($product->pivot->remove !== '[]') {
                         $removedIngredients = json_decode($product->pivot->remove);
                         $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
                     }
@@ -341,42 +341,12 @@ class OrderController extends Controller
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
-                // Imposta i dati da inviare
-                // $data = [
-                //     'messaging_product' => 'whatsapp',
-                //     'to' => '393271622244',
-                //     "type" => "interactive",
-                //     "interactive" => [
-                //         "type" => "button",
-                //         "body" => [
-                //             "text" => 'ordine',
-                //         ],
-                //         "action" => [
-                //             "buttons" => [
-                //                 [
-                //                     "type" => "reply",
-                //                     "reply" => [
-                //                         "id" => "confirm-button",
-                //                         "title" => "Conferma"
-                //                     ]
-                //                 ],
-                //                 [
-                //                     "type" => "reply",
-                //                     "reply" => [
-                //                         "id" => "cancel-button",
-                //                         "title" => "Annulla"
-                //                     ]
-                //                 ]
-                //             ]
-                //         ]
-                //     ]
-                // ];
                 $data = [
                     'messaging_product' => 'whatsapp',
                     'to' => '393271622244',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'order',
+                        'name' => 'or',
                         'language' => [
                             'code' => 'it'
                         ],
@@ -398,6 +368,15 @@ class OrderController extends Controller
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
+
+                // Estrai l'ID del messaggio dalla risposta di WhatsApp
+                $messageId = $response->json()['messages'][0]['id'] ?? null;
+
+                if ($messageId) {
+                    // Salva il message_id nell'ordine
+                    $newOrder->whatsapp_message_id = $messageId;
+                    $newOrder->update();
+                }
     
                 // Gestisci la risposta
                 if ($response->successful()) {

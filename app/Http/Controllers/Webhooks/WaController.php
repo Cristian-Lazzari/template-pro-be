@@ -23,29 +23,32 @@ class WaController extends Controller
     // Metodo per gestire i webhook
     public function handle(Request $request)
     {
-        Log::info('Webhook ricevuto: ', $request->all());
+        $data = $request->all();
+        Log::warning(" SESSIONE CONTROLLER");
 
-        $entry = $request->input('entry')[0] ?? [];
-        $changes = $entry['changes'][0] ?? [];
-        $value = $changes['value'] ?? [];
-        $messages = $value['messages'][0] ?? [];
+        // Controlla se il webhook è un evento di risposta con un ID messaggio
+        if (isset($data['message']) && isset($data['message']['interactive'])) {
+            $buttonText = $data['message']['interactive']['button_reply']['title']; // Testo del pulsante premuto
+            $messageId = $data['message']['id']; // ID del messaggio ricevuto
 
-        // Verifica se è un messaggio interattivo con pulsante
-        if (isset($messages['type']) && $messages['type'] === 'button') {
-            $buttonResponse = $messages['interactive']['button_reply']['id'] ?? null;
+            // Trova l'ordine corrispondente tramite l'ID del messaggio
+            $order = Order::where('whatsapp_message_id', $messageId)->first();
 
-            // Azione in base alla risposta del pulsante
-            if ($buttonResponse === 'confirm_button') {
-                // Esegui azione per conferma
-                Log::info('L’utente ha cliccato su: Confermo');
-                // Logica per la conferma, ad esempio aggiornare il database o inviare un messaggio di conferma
-            } elseif ($buttonResponse === 'cancel_button') {
-                // Esegui azione per annullamento
-                Log::info('L’utente ha cliccato su: Annulla');
-                // Logica per l'annullamento, come inviare una notifica o annullare una prenotazione
+            if ($order) {
+                if ($buttonText === 'Conferma') {
+                    // Aggiorna lo stato dell'ordine a "Confermato"
+                    $order->status = 5;
+                } elseif ($buttonText === 'Annulla') {
+                    // Aggiorna lo stato dell'ordine a "Annullato"
+                    $order->status = 0;
+                }
+
+                $order->save();
             }
         }
 
-        return response()->json(['status' => 'success'], 200);
+        return response()->json(['status' => 'success']);
     }
+
+
 }
