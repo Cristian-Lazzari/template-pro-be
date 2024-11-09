@@ -43,6 +43,7 @@ class WaController extends Controller
             $order = Order::where('whatsapp_message_id', $messageId)->firstOrFail();
 
             if ($order) {
+                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
                 if ($buttonText === 'Conferma') {
                     // Aggiorna lo stato dell'ordine a "Confermato"
                     $order->status = 5;
@@ -54,10 +55,10 @@ class WaController extends Controller
                 $order->save();
             }
         } else {
-            Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
+            //Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
         }
     } else {
-        Log::warning("Struttura del messaggio non valida o messaggio mancante.");
+        //Log::warning("Struttura del messaggio non valida o messaggio mancante.");
     }
 
     return response()->json(['status' => 'success']);
