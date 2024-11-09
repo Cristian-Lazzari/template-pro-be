@@ -31,11 +31,12 @@ class WaController extends Controller
     // Naviga nella struttura del webhook
     if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
         $message = $data['entry'][0]['changes'][0]['value']['messages'][0];
+        
 
         // Controlla se il messaggio ha un'interazione con pulsante
         if (isset($message['button']) && isset($message['button']['text'])) {
             $buttonText = $message['button']['text']; // Testo del pulsante premuto
-            $messageId = $message['id']; // ID del messaggio ricevuto
+            $messageId = $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null;
 
             Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
 
