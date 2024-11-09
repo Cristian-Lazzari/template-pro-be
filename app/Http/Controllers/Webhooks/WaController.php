@@ -40,7 +40,7 @@ class WaController extends Controller
                 Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
 
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
-                $order = Order::where('whatsapp_message_id', $messageId)->first();
+                $order = Order::where('whatsapp_message_id', $messageId)->firstOrFail();
 
                 if ($order) {
                     if ($buttonText === 'Conferma') {
@@ -51,7 +51,7 @@ class WaController extends Controller
                         $order->status = 0;
                     }
 
-                    $order->save();
+                    $order->update();
                 }
             } else {
                 Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
