@@ -52,7 +52,7 @@ class WaController extends Controller
                     $order->status = 0;
                 }
 
-                $order->save();
+                $order->update();
             }
         } else {
             //Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
