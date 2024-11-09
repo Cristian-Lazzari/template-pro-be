@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Webhooks;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -39,7 +40,7 @@ class WaController extends Controller
             Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
 
             // Trova l'ordine corrispondente tramite l'ID del messaggio
-            $order = Order::where('whatsapp_message_id', $messageId)->first();
+            $order = Order::where('whatsapp_message_id', $messageId)->firstOrFail();
 
             if ($order) {
                 if ($buttonText === 'Conferma') {
