@@ -25,7 +25,7 @@ class WaController extends Controller
     public function handle(Request $request)
     {
         $data = $request->all();
-        Log::warning(" SESSIONE CONTROLLER");
+        Log::warning("Webhook ricevuto", $data);
 
         // Controlla se il webhook è un evento di risposta con un ID messaggio
         if (isset($data['message']) && isset($data['message']['interactive'])) {
