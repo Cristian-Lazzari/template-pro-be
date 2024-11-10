@@ -114,8 +114,9 @@ class StripeWebhookController extends Controller
             $info .= "- - -";
         }
         if($product->comune){
-            $info .= "Ritiro asporto";
             $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
+        }else{
+            $info .= "Ritiro asporto";
         }
         
         // Definisci l'URL della richiesta
@@ -126,7 +127,7 @@ class StripeWebhookController extends Controller
             'to' => '393271622244',
             'type' => 'template',
             'template' => [
-                'name' => 'or',
+                'name' => 'ord',
                 'language' => [
                     'code' => 'it'
                 ],
