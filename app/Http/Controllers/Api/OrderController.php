@@ -330,7 +330,7 @@ class OrderController extends Controller
                     // Gestisci gli ingredienti aggiunti
                     if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
-                        $info .= "Aggiunti: " . implode(', ', $addedIngredients) . " ";
+                        $info .= "Aggiunte: " . implode(', ', $addedIngredients) . " ";
                     }
                     // Gestisci gli ingredienti rimossi
                     if ($product->pivot->remove !== '[]') {
@@ -338,7 +338,12 @@ class OrderController extends Controller
                         $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
                     }
                     // Separatore tra i prodotti
-                    $info .= "--------------------- ";
+                    $info .= "- - -";
+                }
+                if($product->comune){
+                    $info .= "Ritiro asporto";
+                    $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
+
                 }
                 
                 // Definisci l'URL della richiesta
@@ -349,7 +354,7 @@ class OrderController extends Controller
                     'to' => '393271622244',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'or',1
+                        'name' => 'or',
                         'language' => [
                             'code' => 'it'
                         ],

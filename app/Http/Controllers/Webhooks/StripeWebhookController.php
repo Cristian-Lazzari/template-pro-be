@@ -78,14 +78,94 @@ class StripeWebhookController extends Controller
 
     protected function handleCheckoutSessionCompleted($session)
     {
-    
-       
+               
 
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        $order = Order::where('id', $orderId)->with('products')->first();
+        $order = Order::where('id', $orderId)->with('products')->firstOrFail();
+
+        $info =  $order->name . ' ha ordinato e PAGATO per il ' . $order->date_slot . ': ';
+        // Itera sui prodotti dell'ordine
+        foreach ($order->products as $product) {
+            // Aggiungi il nome e la quantità del prodotto
+            $info .= "Prodotto: {$product->name} ";
+            if ($product->pivot->quantity !== 1) {
+                $info .= "** {$product->pivot->quantity}*";
+            }
+
+            // Gestisci le opzioni del prodotto
+            if ($product->pivot->option !== '[]') {
+                $options = json_decode($product->pivot->option);
+                $info .= "Opzioni: " . implode(', ', $options) . " ";
+            }
+            // Gestisci gli ingredienti aggiunti
+            if ($product->pivot->add !== '[]') {
+                $addedIngredients = json_decode($product->pivot->add);
+                $info .= "Aggiunte: " . implode(', ', $addedIngredients) . " ";
+            }
+            // Gestisci gli ingredienti rimossi
+            if ($product->pivot->remove !== '[]') {
+                $removedIngredients = json_decode($product->pivot->remove);
+                $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
+            }
+            // Separatore tra i prodotti
+            $info .= "- - -";
+        }
+        if($product->comune){
+            $info .= "Ritiro asporto";
+            $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
+        }
+        
+        // Definisci l'URL della richiesta
+        $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
+        $number = config('configurazione.WA_N');
+        $data = [
+            'messaging_product' => 'whatsapp',
+            'to' => '393271622244',
+            'type' => 'template',
+            'template' => [
+                'name' => 'or',
+                'language' => [
+                    'code' => 'it'
+                ],
+                'components' => [
+                    [
+                        'type' => 'body',
+                        'parameters' => [
+                            [
+                                'type' => 'text',
+                                'text' => $info  // Questo sostituirà {{1}} nel template
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        // Effettua la richiesta HTTP POST con le intestazioni necessarie
+        $response = Http::withHeaders([
+            'Authorization' => config('configurazione.WA_TO'),
+            'Content-Type' => 'application/json'
+        ])->post($url, $data);
+
+        // Estrai l'ID del messaggio dalla risposta di WhatsApp
+        $messageId = $response->json()['messages'][0]['id'] ?? null;
+
+        if ($messageId) {
+            // Salva il message_id nell'ordine
+            $order->whatsapp_message_id = $messageId;
+            $order->update();
+        }
+
+        // // Gestisci la risposta
+        // if ($response->successful()) {
+        //     return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response, 'id' => $messageId], 200);
+        // } else {
+        //     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
+        // }
+
+
         //if($order){
         $date = Date::where('date_slot', $order->date_slot)->first();
                         

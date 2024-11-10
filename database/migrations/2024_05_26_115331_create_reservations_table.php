@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('sala')->nullable();
             $table->string('message', 500)->nullable();
             
+            $table->string('whatsapp_message_id')->nullable();
+
             $table->boolean('take_away')->default(false);
             $table->boolean('news_letter');
             $table->boolean('notificated')->default(false);
