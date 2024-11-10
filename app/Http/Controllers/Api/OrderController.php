@@ -318,7 +318,10 @@ class OrderController extends Controller
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "Prodotto: {$product->name} ";
-                    $info .= "Quantità: {$product->pivot->quantity} ";
+                    if ($product->pivot->quantity !== 1) {
+                        $info .= "** {$product->pivot->quantity}*";
+                    }
+
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
@@ -346,7 +349,7 @@ class OrderController extends Controller
                     'to' => '393271622244',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'or',
+                        'name' => 'or',1
                         'language' => [
                             'code' => 'it'
                         ],
@@ -380,11 +383,6 @@ class OrderController extends Controller
     
                 // Gestisci la risposta
                 if ($response->successful()) {
-                    // return response()->json([
-                    //     'success'   => true,
-                    //     'payment'   => false,
-                    //     'order'     => $newOrder,
-                    // ]);
                     return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response, 'id' => $messageId], 200);
                 } else {
                     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
