@@ -162,13 +162,60 @@ class ReservationController extends Controller
 
             // Invia le email
 
-
-                $mail = new confermaOrdineAdmin($bodymail_u);
-                Mail::to($data['email'])->send($mail);
+            $info = $newRes->name . 'ha prenotato per il: ' . $newRes->date_slot . ', gli ospiti sono: ';
+            if($n_adult && $n_child){
+                $info .= $n_adult . ' adulti e ' . $n_child . ' bambini';
+            }elseif($n_adult){
+                $info .= $n_adult . ' adulti';
+            }elseif($n_child){
+                $info .= $n_child . ' bambini';
+            }
         
-                $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-                Mail::to(config('configurazione.mail'))->send($mailAdmin);
-            
+            $mail = new confermaOrdineAdmin($bodymail_u);
+            Mail::to($data['email'])->send($mail);
+    
+            $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+            Mail::to(config('configurazione.mail'))->send($mailAdmin);
+
+            $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
+            $number = config('configurazione.WA_N');
+            $data = [
+                'messaging_product' => 'whatsapp',
+                'to' => '393271622244',
+                'type' => 'template',
+                'template' => [
+                    'name' => 'res',
+                    'language' => [
+                        'code' => 'it'
+                    ],
+                    'components' => [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => $info  // Questo sostituirà {{1}} nel template
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+            // Effettua la richiesta HTTP POST con le intestazioni necessarie
+            $response = Http::withHeaders([
+                'Authorization' => config('configurazione.WA_TO'),
+                'Content-Type' => 'application/json'
+            ])->post($url, $data);
+
+            // Estrai l'ID del messaggio dalla risposta di WhatsApp
+            $messageId = $response->json()['messages'][0]['id'] ?? null;
+
+            if ($messageId) {
+                // Salva il message_id nell'ordine
+                $newRes->whatsapp_message_id = $messageId;
+                $newRes->update();
+            }
+        
 
             // Risposta di successo
             return response()->json([
