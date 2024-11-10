@@ -49,9 +49,10 @@ class WaController extends Controller
 
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
             
-                $order = Order::where('whatsapp_message_id', $messageId)->first();
-
-                if ($order) {
+                $order_ex = Order::where('whatsapp_message_id', $messageId)->exists();
+                
+                if ($order_ex) {
+                    $order = Order::where('whatsapp_message_id', $messageId)->first();
                     Log::info("Ordine trovato per il Message ID: " . $messageId);
                     if($buttonText === 'Conferma'){
                         $this->statusOr(1, $order);
@@ -59,7 +60,7 @@ class WaController extends Controller
                         $this->statusOr(0, $order);
                     }
                 } else {
-                    // Se non trovato in Orders, cerca nella tabella Orervations
+                    // Se non trovato in Orders, cerca nella tabella rervations
                     $reservation = Reservation::where('whatsapp_message_id', $messageId)->first();
                     if ($reservation) {
                         Log::info("Prenotazione trovata per il Message ID: " . $messageId);

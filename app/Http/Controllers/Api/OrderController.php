@@ -308,16 +308,12 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                //$this->sendNotification();
-                // $ordineId = $newOrder->id/* ID dell'ordine creato */;
-                // $nomeCliente = $newOrder->name/* Nome del cliente */;
-                // event(new NewOrderNotification($nomeCliente, $ordineId));
-
                 $info =  $newOrder->name . ' ha ordinato per il ' . $newOrder->date_slot . ': ';
                 // Itera sui prodotti dell'ordine
+                $lastProduct = end($newOrder->products);
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
-                    $info .= "Prodotto: {$product->name} ";
+                    $info .= "{$product->name} ";
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}*";
                     }
@@ -338,7 +334,7 @@ class OrderController extends Controller
                         $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
                     }
                     // Separatore tra i prodotti
-                    $info .= "- - -";
+                    $info .= ($product === $lastProduct) ? "." : ", ";
                 }
                 if($product->comune){
                     $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
