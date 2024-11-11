@@ -38,34 +38,44 @@ class WaController extends Controller
 
         // Naviga nella struttura del webhook
         if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
+
+
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0];
+            $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['id'];
             $messageId = $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null;
             //$messageId = $message['id'];
 
+            $order_ex_tc = Order::where('whatsapp_message_id', $messageId)->exists();
+            $res_ex_tc = Reservation::where('whatsapp_message_id', $messageId)->exists();
 
-            // Controlla se il messaggio ha un'interazione con pulsante
-            if (isset($message['button']) && isset($message['button']['text'])) {
-                $buttonText = $message['button']['text']; // Testo del pulsante premuto
-
+            if ($order_ex_tc) {
+                $order = Order::where('whatsapp_message_id', $messageId)->first();
+                $order->whatsapp_message_id = $new_messageId;
+                $order->update();
+            }elseif($res_ex_tc){
+                $res = Reservation::where('whatsapp_message_id', $messageId)->first();
+                $res->whatsapp_message_id = $new_messageId;
+                $res->update();
+            }elseif(isset($message['button']) && isset($message['button']['text']))
+            {
+                $buttonText = $message['button']['text']; 
                 Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
-
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
-            
-                $order_ex = Order::where('whatsapp_message_id', $messageId)->exists();
+                $order_ex = Order::where('whatsapp_message_id', $new_messageId)->exists();
                 
                 if ($order_ex) {
-                    $order = Order::where('whatsapp_message_id', $messageId)->first();
-                    Log::info("Ordine trovato per il Message ID: " . $messageId);
+                    $order = Order::where('whatsapp_message_id', $new_messageId)->first();
+                    Log::info("Ordine trovato per il Message ID: " . $new_messageId);
                     if($buttonText === 'Conferma'){
                         $this->statusOrder(1, $order);
                     }elseif($buttonText === 'Annulla'){
                         $this->statusOrder(0, $order);
                     }
-                } else {
+                } elseif (Reservation::where('whatsapp_message_id', $new_messageId)->exists()) {
                     // Se non trovato in Orders, cerca nella tabella rervations
-                    $reservation = Reservation::where('whatsapp_message_id', $messageId)->first();
+                    $reservation = Reservation::where('whatsapp_message_id', $new_messageId)->first();
                     if ($reservation) {
-                        Log::info("Prenotazione trovata per il Message ID: " . $messageId);
+                        Log::info("Prenotazione trovata per il Message ID: " . $new_messageId);
                         if($buttonText === 'Conferma'){
                             $this->statusRes(1, $reservation);
                         }elseif($buttonText === 'Annulla'){
