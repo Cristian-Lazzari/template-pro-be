@@ -36,7 +36,7 @@ class WaController extends Controller
         Log::warning("Webhook ricevuto");
         Log::warning("changes:" , $data['entry'][0]['changes']);
         Log::warning("id_staus:" . $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null);
-        Log::warning("qulcosa.. value:" . $data['entry'][0]['changes'][0]['value'] ?? null);
+        Log::warning("qulcosa.. value:" , $data['entry'][0]['changes'][0]['value'] ?? null);
         
 
         // Naviga nella struttura del webhook
