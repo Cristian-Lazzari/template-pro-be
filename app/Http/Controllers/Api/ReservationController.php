@@ -209,7 +209,7 @@ class ReservationController extends Controller
             ])->post($url, $data);
 
             // Estrai l'ID del messaggio dalla risposta di WhatsApp
-            $messageId = $response->json()['messages'][0]['message_status'] ?? null;
+            $messageId = $response->json()['messages'][0]['id'] ?? null;
             if ($messageId) {
                 // Salva il message_id nell'ordine
                 $newRes->whatsapp_message_id = $messageId;
