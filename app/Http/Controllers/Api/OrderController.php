@@ -373,6 +373,7 @@ class OrderController extends Controller
                     "type"=> "interactive",
                     "interactive"=> [
                         "type"=> "button",
+                        "header"=> 'Hai una nuova notifica!',
                         "body"=> [
                         "text"=> $info,
                         ],

@@ -126,19 +126,27 @@ class StripeWebhookController extends Controller
         $data = [
             'messaging_product' => 'whatsapp',
             'to' => '393271622244',
-            'type' => 'template',
-            'template' => [
-                'name' => 'ord',
-                'language' => [
-                    'code' => 'it'
+            "type"=> "interactive",
+            "interactive"=> [
+                "type"=> "button",
+                "header"=> 'Hai una nuova notifica!',
+                "body"=> [
+                "text"=> $info,
                 ],
-                'components' => [
-                    [
-                        'type' => 'body',
-                        'parameters' => [
+                    "action"=> [
+                    "buttons"=> [
+                        [
+                            "type"=> "reply",
+                            "reply"=> [
+                                "id"=> "confirm_button",
+                                "title"=> "Conferma"
+                            ]
+                        ],
                             [
-                                'type' => 'text',
-                                'text' => $info  // Questo sostituirà {{1}} nel template
+                            "type"=> "reply",
+                            "reply"=> [
+                                "id"=> "cancel_button",
+                                "title"=> "Annulla"
                             ]
                         ]
                     ]

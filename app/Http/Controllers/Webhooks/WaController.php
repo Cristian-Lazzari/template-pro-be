@@ -137,7 +137,7 @@ class WaController extends Controller
                 $order->status = 0;
             }else{
                 $m = 'L\'ordine era già stato annullato!';
-                return redirect()->back()->with('success', $m); 
+                return; 
             }
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
@@ -243,7 +243,7 @@ class WaController extends Controller
         }else{
             if($res->status == 0){
                 $m = 'La prenotazione e\' stata gia annullata correttamente';
-                return redirect()->back()->with('success', $m);
+                return;
             }
             $date = Date::where('date_slot', $res->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
