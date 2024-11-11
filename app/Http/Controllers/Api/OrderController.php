@@ -375,6 +375,7 @@ class OrderController extends Controller
 
                 // Estrai l'ID del messaggio dalla risposta di WhatsApp
                 $messageId = $response->json()['messages'][0]['message_status'] ?? null;
+                $response_j = $response->json();
 
                 if ($messageId) {
                     // Salva il message_id nell'ordine
@@ -384,7 +385,7 @@ class OrderController extends Controller
     
                 // Gestisci la risposta
                 if ($response->successful()) {
-                    return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response, 'id' => $messageId], 200);
+                    return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response_j, 'id' => $messageId], 200);
                 } else {
                     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
                 }
