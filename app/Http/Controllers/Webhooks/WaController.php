@@ -33,10 +33,10 @@ class WaController extends Controller
     public function handle(Request $request)
     {
         $data = $request->all();
-        Log::warning("Webhook ricevuto");
-        Log::warning("changes:" , $data['entry'][0]['changes']);
+        // Log::warning("Webhook ricevuto");
+        // Log::warning("changes:" , $data['entry'][0]['changes']);
        
-        Log::warning("qulcosa.. value:" , $data['entry'][0]['changes'][0]['value'] ?? null);
+        Log::warning("value:" , $data['entry'][0]['changes'][0]['value'] ?? null);
         
 
         // Naviga nella struttura del webhook
@@ -45,23 +45,6 @@ class WaController extends Controller
 
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
             
-            //$messageId = $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null;
-            //$messageId = $message['id'];
-
-            // $order_ex_tc = Order::where('whatsapp_message_id', $messageId)->exists();
-            // $res_ex_tc = Reservation::where('whatsapp_message_id', $messageId)->exists();
-
-            // if ($order_ex_tc) {
-            //     $order = Order::where('whatsapp_message_id', $messageId)->first();
-            //     $order->whatsapp_message_id = $new_messageId;
-            //     $order->update();
-            //     Log::warning("Modifica dell'id:$new_messageId ");
-            // }elseif($res_ex_tc){
-            //     Log::warning("Modifica dell'id:");
-            //     $res = Reservation::where('whatsapp_message_id', $messageId)->first();
-            //     $res->whatsapp_message_id = $new_messageId;
-            //     $res->update();
-            // }
             if(isset($message['interactive']))
             {
                 $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
@@ -96,7 +79,7 @@ class WaController extends Controller
                     Log::warning("Nessun ordine o prenotazione trovati per il Message ID: " . $new_messageId);
                 }
             } else {
-                //Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
+                Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
             }
         } else {
             //Log::warning("Struttura del messaggio non valida o messaggio mancante.");
