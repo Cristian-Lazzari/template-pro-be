@@ -374,6 +374,9 @@ class OrderController extends Controller
                     "interactive"=> [
                         "type"=> "button",
                         "header"=> 'Hai una nuova notifica!',
+                        "footer"=> [
+                            "text"=> "Powered by Future+"
+                        ],
                         "body"=> [
                         "text"=> $info,
                         ],
