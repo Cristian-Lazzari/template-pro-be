@@ -39,7 +39,8 @@ class WaController extends Controller
         // Naviga nella struttura del webhook
         if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0];
-            $messageId = $message['id'];
+            $messageId = $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null;
+            //$messageId = $message['id'];
 
 
             // Controlla se il messaggio ha un'interazione con pulsante
