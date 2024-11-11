@@ -368,13 +368,13 @@ class OrderController extends Controller
                 //     ]
                 // ];
                 $data = [
-                    "messaging_product"=> "whatsapp",
-                    "to"=> "numero_telefono_utente",
+                    'messaging_product' => 'whatsapp',
+                    'to' => '393271622244',
                     "type"=> "interactive",
                     "interactive"=> [
                         "type"=> "button",
                         "body"=> [
-                        "text"=> "Vuoi confermare l'appuntamento?"
+                        "text"=> $info,
                         ],
                             "action"=> [
                             "buttons"=> [
