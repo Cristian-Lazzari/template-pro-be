@@ -64,7 +64,8 @@ class WaController extends Controller
             // }
             if(isset($message['button']) && isset($message['button']))
             {
-                Log::warning("Pulsante premuto:". $message['button']);
+                Log::warning("Pulsante premuto:");
+                Log::warning($message['button']);
                 $buttonText = $message['button']['text']; 
                 Log::warning("Pulsante premuto: $buttonText, ID messaggio: $new_messageId");
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
