@@ -51,17 +51,17 @@ class WaController extends Controller
                 $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
                 Log::warning("Pulsante premuto:");
                 Log::warning($message['interactive']);
-                $buttonText = $message['interactive']['button_reply']['title']; 
-                Log::warning("Pulsante premuto: $buttonText, ID messaggio: $new_messageId");
+                $buttonId = $message['interactive']['button_reply']['id']; 
+                Log::warning("Pulsante premuto: $buttonId, ID messaggio: $new_messageId");
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
                 $order_ex = Order::where('whatsapp_message_id', $new_messageId)->exists();
                 
                 if ($order_ex) {
                     $order = Order::where('whatsapp_message_id', $new_messageId)->first();
                     Log::info("Ordine trovato per il Message ID: " . $new_messageId);
-                    if($buttonText === 'Conferma'){
+                    if($buttonId === 'confirm_button'){
                         $this->statusOrder(1, $order);
-                    }elseif($buttonText === 'Annulla'){
+                    }elseif($buttonId === 'cancel_button'){
                         $this->statusOrder(0, $order);
                     }
                 } elseif (Reservation::where('whatsapp_message_id', $new_messageId)->exists()) {
@@ -69,9 +69,9 @@ class WaController extends Controller
                     $reservation = Reservation::where('whatsapp_message_id', $new_messageId)->first();
                     if ($reservation) {
                         Log::info("Prenotazione trovata per il Message ID: " . $new_messageId);
-                        if($buttonText === 'Conferma'){
+                        if($buttonId === 'confirm_button'){
                             $this->statusRes(1, $reservation);
-                        }elseif($buttonText === 'Annulla'){
+                        }elseif($buttonId === 'cancel_button'){
                             $this->statusRes(0, $reservation);
                         }
                     }

@@ -146,7 +146,7 @@ class StripeWebhookController extends Controller
                             "type"=> "reply",
                             "reply"=> [
                                 "id"=> "cancel_button",
-                                "title"=> "Annulla"
+                                "title"=> "Annulla e Rimborsa"
                             ]
                         ]
                     ]
