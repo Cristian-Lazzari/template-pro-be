@@ -94,7 +94,7 @@ class WaController extends Controller
         }elseif(in_array($order->status, [1, 5])){
             return;
         }
-        if($c_a){
+        if($c_a == 1){
             if($order->status == 2 || $order->status == 0){
                 $order->status = 1;
             }elseif($order->status == 3){
@@ -135,7 +135,7 @@ class WaController extends Controller
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
                 $order->status = 0;
             }else{
-                $m = 'L\'ordine erag gia stato annullato!';
+                $m = 'L\'ordine era già stato annullato!';
                 return redirect()->back()->with('success', $m); 
             }
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
@@ -235,7 +235,7 @@ class WaController extends Controller
         }elseif(in_array($res->status, [1, 5])){
             return;
         }
-        if($c_a){
+        if($c_a == 1){
             $res->status = 1;
             $m = 'La prenotazione e\' stata confermata correttamente';
             $message = 'Siamo felici di informarti che la tua prenotazione e\' stata confermata, ti ricordo la data e l\'orario che hai scelto: ' . $res->date_slot ;
