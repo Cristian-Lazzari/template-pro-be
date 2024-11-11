@@ -163,7 +163,7 @@ class ReservationController extends Controller
 
             // Invia le email
 
-            $info = $newRes->name . 'ha prenotato per il: ' . $newRes->date_slot . ', gli ospiti sono: ';
+            $info = $newRes->name . ' ' . $newRes->surname .' ha prenotato per il: ' . $newRes->date_slot . ', gli ospiti sono: ';
             if($n_adult && $n_child){
                 $info .= $n_adult . ' adulti e ' . $n_child . ' bambini';
             }elseif($n_adult){
