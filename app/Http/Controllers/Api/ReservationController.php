@@ -187,8 +187,9 @@ class ReservationController extends Controller
                 "interactive"=> [
                     "type"=> "button",
                     "header"=> [
-                            "text"=>'Hai una nuova notifica!',
-                        ],
+                        "type" => "text",
+                        "text"=>'Hai una nuova notifica!',
+                    ],
                     "footer"=> [
                         "text"=> "Powered by Future+"
                     ],
