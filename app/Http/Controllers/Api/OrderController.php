@@ -374,7 +374,7 @@ class OrderController extends Controller
                 ])->post($url, $data);
 
                 // Estrai l'ID del messaggio dalla risposta di WhatsApp
-                $messageId = $response->json()['messages'][0]['id'] ?? null;
+                $messageId = $response->json()['messages'][0]['message_status'] ?? null;
 
                 if ($messageId) {
                     // Salva il message_id nell'ordine
