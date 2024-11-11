@@ -44,7 +44,7 @@ class WaController extends Controller
 
 
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
-            $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['id'] ?? null;
+            
             //$messageId = $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null;
             //$messageId = $message['id'];
 
@@ -64,6 +64,7 @@ class WaController extends Controller
             // }
             if(isset($message['interactive']))
             {
+                $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
                 Log::warning("Pulsante premuto:");
                 Log::warning($message['interactive']);
                 $buttonText = $message['interactive']['button_reply']['title']; 
@@ -89,10 +90,10 @@ class WaController extends Controller
                         }elseif($buttonText === 'Annulla'){
                             $this->statusRes(0, $reservation);
                         }
-                    } else {
-                        // Nessun ordine o prenotazione trovato per il Message ID
-                        Log::warning("Nessun ordine o prenotazione trovati per il Message ID: " . $new_messageId);
                     }
+                } else {
+                    // Nessun ordine o prenotazione trovato per il Message ID
+                    Log::warning("Nessun ordine o prenotazione trovati per il Message ID: " . $new_messageId);
                 }
             } else {
                 //Log::warning("Nessun pulsante trovato nel messaggio interattivo.");
