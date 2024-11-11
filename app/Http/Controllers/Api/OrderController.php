@@ -334,7 +334,7 @@ class OrderController extends Controller
                         $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
                     }
                     // Separatore tra i prodotti
-                    $info .= ($product === $lastProduct) ? "." : ", ";
+                    $info .= ($product === $lastProduct) ? ". \n" : ", ";
                 }
                 if($product->comune){
                     $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
