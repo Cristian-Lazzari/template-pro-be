@@ -345,28 +345,58 @@ class OrderController extends Controller
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
+                // $data = [
+                //     'messaging_product' => 'whatsapp',
+                //     'to' => '393271622244',
+                //     'type' => 'template',
+                //     'template' => [
+                //         'name' => 'ord',
+                //         'language' => [
+                //             'code' => 'it'
+                //         ],
+                //         'components' => [
+                //             [
+                //                 'type' => 'body',
+                //                 'parameters' => [
+                //                     [
+                //                         'type' => 'text',
+                //                         'text' => $info  // Questo sostituirà {{1}} nel template
+                //                     ]
+                //                 ]
+                //             ]
+                //         ]
+                //     ]
+                // ];
                 $data = [
-                    'messaging_product' => 'whatsapp',
-                    'to' => '393271622244',
-                    'type' => 'template',
-                    'template' => [
-                        'name' => 'ord',
-                        'language' => [
-                            'code' => 'it'
+                    "messaging_product"=> "whatsapp",
+                    "to"=> "numero_telefono_utente",
+                    "type"=> "interactive",
+                    "interactive"=> [
+                        "type"=> "button",
+                        "body"=> [
+                        "text"=> "Vuoi confermare l'appuntamento?"
                         ],
-                        'components' => [
-                            [
-                                'type' => 'body',
-                                'parameters' => [
+                            "action"=> [
+                            "buttons"=> [
+                                [
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "confirm_button",
+                                        "title"=> "Conferma"
+                                    ]
+                                ],
                                     [
-                                        'type' => 'text',
-                                        'text' => $info  // Questo sostituirà {{1}} nel template
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "cancel_button",
+                                        "title"=> "Annulla"
                                     ]
                                 ]
                             ]
                         ]
                     ]
                 ];
+                  
                 // Effettua la richiesta HTTP POST con le intestazioni necessarie
                 $response = Http::withHeaders([
                     'Authorization' => config('configurazione.WA_TO'),

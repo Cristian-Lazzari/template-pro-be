@@ -40,8 +40,8 @@ class WaController extends Controller
         if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
 
 
-            $message = $data['entry'][0]['changes'][0]['value']['messages'][0];
-            $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['id'];
+            $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
+            $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['id'] ?? null;
             $messageId = $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null;
             //$messageId = $message['id'];
 
@@ -52,11 +52,15 @@ class WaController extends Controller
                 $order = Order::where('whatsapp_message_id', $messageId)->first();
                 $order->whatsapp_message_id = $new_messageId;
                 $order->update();
+                Log::warning("Modifica dell'id:$new_messageId ");
             }elseif($res_ex_tc){
+                Log::warning("Modifica dell'id:");
                 $res = Reservation::where('whatsapp_message_id', $messageId)->first();
                 $res->whatsapp_message_id = $new_messageId;
                 $res->update();
-            }elseif(isset($message['button']) && isset($message['button']['text']))
+            }
+            Log::warning("Pulsante premuto:". $message['button']);
+            if(isset($message['button']) && isset($message['button']['text']))
             {
                 $buttonText = $message['button']['text']; 
                 Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
