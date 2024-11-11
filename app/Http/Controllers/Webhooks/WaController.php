@@ -62,11 +62,11 @@ class WaController extends Controller
             //     $res->whatsapp_message_id = $new_messageId;
             //     $res->update();
             // }
-            if(isset($message['button']) && isset($message['button']))
+            if(isset($message['interactive']))
             {
                 Log::warning("Pulsante premuto:");
-                Log::warning($message['button']);
-                $buttonText = $message['button']['text']; 
+                Log::warning($message['interactive']);
+                $buttonText = $message['interactive']['button_replay']['title']; 
                 Log::warning("Pulsante premuto: $buttonText, ID messaggio: $new_messageId");
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
                 $order_ex = Order::where('whatsapp_message_id', $new_messageId)->exists();
