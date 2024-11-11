@@ -33,7 +33,10 @@ class WaController extends Controller
     public function handle(Request $request)
     {
         $data = $request->all();
-        Log::warning("Webhook ricevuto", $data);
+        Log::warning("Webhook ricevuto");
+        Log::warning("changes:", $data['entry'][0]['changes']);
+        Log::warning("id_staus:", $data['entry'][0]['changes'][0]['value']['statuses'][0]['id'] ?? null);
+        Log::warning("id_normale:", $data['entry'][0]['changes'][0]['value']['messages'][0]['id'] ?? null);
         
 
         // Naviga nella struttura del webhook
@@ -59,9 +62,9 @@ class WaController extends Controller
                 $res->whatsapp_message_id = $new_messageId;
                 $res->update();
             }
-            Log::warning("Pulsante premuto:". $message['button']);
-            if(isset($message['button']) && isset($message['button']['text']))
+            if(isset($message['button']) && isset($message['button']))
             {
+                Log::warning("Pulsante premuto:". $message['button']);
                 $buttonText = $message['button']['text']; 
                 Log::warning("Pulsante premuto: $buttonText, ID messaggio: $messageId");
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
