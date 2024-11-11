@@ -145,14 +145,14 @@
                 <a href="{{config('configurazione.APP_URL')}}/api/orders/status?id={{$content_mail['order_id']}}&c_a=true" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #0a5c2d; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Inoltra su WA e conferma</a>
                 <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @elseif($content_mail['type'] == 'res')
-                <form action="{{config('configurazione.APP_URL') }}api/reservations/status" method="POST">
+                {{-- <form action="{{config('configurazione.APP_URL') }}api/reservations/status" method="POST">
                     @csrf
                     <input value="0" type="hidden" name="wa">
                     <input value="1" type="hidden" name="c_a">
                     <input value="1" type="hidden" name="wa_group">
                     <input value="{{$content_mail['res_id']}}" type="hidden" name="id">
                     <button type="submit" style="font-size: 16px; line-height: 1.8; margin: 5px;">Conferma e inoltra nel gruppo</button>
-                </form>
+                </form> --}}
                 <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
