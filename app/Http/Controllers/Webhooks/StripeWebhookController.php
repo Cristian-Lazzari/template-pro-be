@@ -87,11 +87,12 @@ class StripeWebhookController extends Controller
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->firstOrFail();
 
-        $info =  $order->name . ' ha ordinato e PAGATO per il ' . $order->date_slot . ': ';
+        $info =  $order->name . ' ' . $order->surname . ' ha ordinato e PAGATO per il ' . $order->date_slot . ': ';
         // Itera sui prodotti dell'ordine
-        foreach ($order->products as $product) {
+        $lastProduct = end($newOrder->products);
+        foreach ($newOrder->products as $product) {
             // Aggiungi il nome e la quantità del prodotto
-            $info .= "Prodotto: {$product->name} ";
+            $info .= "{$product->name} ";
             if ($product->pivot->quantity !== 1) {
                 $info .= "** {$product->pivot->quantity}*";
             }
@@ -99,23 +100,23 @@ class StripeWebhookController extends Controller
             // Gestisci le opzioni del prodotto
             if ($product->pivot->option !== '[]') {
                 $options = json_decode($product->pivot->option);
-                $info .= "Opzioni: " . implode(', ', $options) . " ";
+                $info .= "Opzioni: " . implode(', ', $options);
             }
             // Gestisci gli ingredienti aggiunti
             if ($product->pivot->add !== '[]') {
                 $addedIngredients = json_decode($product->pivot->add);
-                $info .= "Aggiunte: " . implode(', ', $addedIngredients) . " ";
+                $info .= "Aggiunte: " . implode(', ', $addedIngredients);
             }
             // Gestisci gli ingredienti rimossi
             if ($product->pivot->remove !== '[]') {
                 $removedIngredients = json_decode($product->pivot->remove);
-                $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
+                $info .= "Rimossi: " . implode(', ', $removedIngredients);
             }
             // Separatore tra i prodotti
-            $info .= "- - -";
+            $info .= ($product === $lastProduct) ? ". " : ", ";
         }
-        if($product->comune){
-            $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
+        if($order->comune){
+            $info .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
         }else{
             $info .= "Ritiro asporto";
         }

@@ -171,6 +171,14 @@ class ReservationController extends Controller
             }elseif($n_child){
                 $info .= $n_child . ' bambini';
             }
+            if (config('configurazione.double_t') && $res->sala ) {
+                $info .= 'Sala prenota: ';
+                if ($res->sala == 1) {
+                    $info .= config('configurazione.set_time_dt')[0];
+                }else{
+                    $info .= config('configurazione.set_time_dt')[1];
+                }
+            }
         
             $mail = new confermaOrdineAdmin($bodymail_u);
             Mail::to($data['email'])->send($mail);

@@ -321,23 +321,23 @@ class OrderController extends Controller
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
-                        $info .= "Opzioni: " . implode(', ', $options) . " ";
+                        $info .= "Opzioni: " . implode(', ', $options);
                     }
                     // Gestisci gli ingredienti aggiunti
                     if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
-                        $info .= "Aggiunte: " . implode(', ', $addedIngredients) . " ";
+                        $info .= "Aggiunte: " . implode(', ', $addedIngredients);
                     }
                     // Gestisci gli ingredienti rimossi
                     if ($product->pivot->remove !== '[]') {
                         $removedIngredients = json_decode($product->pivot->remove);
-                        $info .= "Rimossi: " . implode(', ', $removedIngredients) . " ";
+                        $info .= "Rimossi: " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
-                    $info .= ($product === $lastProduct) ? ". \n" : ", ";
+                    $info .= ($product === $lastProduct) ? ". " : ", ";
                 }
-                if($product->comune){
-                    $info .= "Consegna a domicilio: {$product->address}, {$product->cv}, {$product->comune} ";
+                if($order->comune){
+                    $info .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
                 }else{
                     $info .= "Ritiro asporto";
                 }
