@@ -57,9 +57,9 @@ class WaController extends Controller
                     $order = Order::where('whatsapp_message_id', $messageId)->first();
                     Log::info("Ordine trovato per il Message ID: " . $messageId);
                     if($buttonText === 'Conferma'){
-                        $this->statusOr(1, $order);
+                        $this->statusOrder(1, $order);
                     }elseif($buttonText === 'Annulla'){
-                        $this->statusOr(0, $order);
+                        $this->statusOrder(0, $order);
                     }
                 } else {
                     // Se non trovato in Orders, cerca nella tabella rervations
