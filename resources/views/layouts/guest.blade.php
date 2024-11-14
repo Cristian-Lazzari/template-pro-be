@@ -18,7 +18,7 @@
             <p>
                 Esegui l'accesso per vedere i tuoi contenuti!
             </p>
-            <p>Le credenziali per accedere alla demo sono email: <strong>demo</strong> password: <strong>demo</strong> </p>
+            <p>Le credenziali per accedere alla demo sono email: <strong>demo@demo.it</strong> password: <strong>demo1</strong> </p>
         </div>
     </header>
 
