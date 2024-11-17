@@ -171,9 +171,9 @@ class ReservationController extends Controller
             }elseif($n_child){
                 $info .= $n_child . ' bambini';
             }
-            if (config('configurazione.double_t') && $res->sala ) {
+            if (config('configurazione.double_t') && $newRes->sala ) {
                 $info .= '*__Sala prenota: ';
-                if ($res->sala == 1) {
+                if ($newRes->sala == 1) {
                     $info .= config('configurazione.set_time_dt')[0];
                 }else{
                     $info .= config('configurazione.set_time_dt')[1];
