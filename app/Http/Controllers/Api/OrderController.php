@@ -336,8 +336,8 @@ class OrderController extends Controller
                     // Separatore tra i prodotti
                     $info .= ($product === $lastProduct) ? ". " : ", ";
                 }
-                if($order->comune){
-                    $info .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
+                if($newOrder->comune){
+                    $info .= "Consegna a domicilio: {$newOrder->address}, {$newOrder->address_n}, {$newOrder->comune} ";
                 }else{
                     $info .= "Ritiro asporto";
                 }

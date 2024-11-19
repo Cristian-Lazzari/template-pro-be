@@ -616,7 +616,7 @@
     
 
 </div>
-{{-- <script>
+<script>
     const alertContainer = document.createElement('div');
     alertContainer.setAttribute('id', 'alert-container');
     document.body.appendChild(alertContainer);
@@ -667,7 +667,7 @@
     eventSource.onerror = function(event) {
         console.error("Errore nella connessione SSE", event);
     };
-</script> --}}
+</script>
 
 @endsection
 
