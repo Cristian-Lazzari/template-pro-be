@@ -349,12 +349,12 @@ class PageController extends Controller
 
         $reservationsOverTime = DB::table('reservations')
         ->select(
-            DB::raw("UNIX_TIMESTAMP(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) as timestamp"), // Timestamp UNIX
-            DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%d %M, %W') as formatted_date"), // Data formattata
+            DB::raw("UNIX_TIMESTAMP(STR_TO_DATE(date_slot, '%d/%m/%Y')) as timestamp"), // Timestamp UNIX
+            DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y'), '%d %M, %W') as formatted_date"), // Data formattata
             DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.adult')), 0) as total_adults"), // Totale adulti
             DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.child')), 0) as total_children") // Totale bambini
         )
-        ->groupBy('timestamp', 'formatted_date') // Raggruppa per timestamp e data formattata
+        ->groupBy( 'timestamp', 'formatted_date') // Raggruppa per timestamp e data formattata
         ->orderBy('timestamp', 'asc') // Ordina per timestamp
         ->get();
         

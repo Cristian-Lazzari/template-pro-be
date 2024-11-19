@@ -1869,7 +1869,8 @@ body{
            flex-direction: column;
            padding: 1.2rem;
            border-radius: 11px;
-           h3{
+           h2{
+            margin: 4rem 0 2rem;
                color: $c3;
            }
            .cont{
@@ -2093,6 +2094,7 @@ body{
     text-align: center;
     h1{
         margin-bottom: 2rem;
+
     }
     h3{
         margin: .5rem 1rem;
@@ -2110,6 +2112,9 @@ body{
         flex-direction: column;
         gap: 2rem;
         justify-content: space-between;
+        .graph{
+            max-height: 700px;
+        }
         .list{
             max-height: 180px;
             overflow: auto;
@@ -2121,7 +2126,7 @@ body{
             align-items: center;
             flex-direction: column;
             position: relative;
-            background-color: $c2;
+            background-color: $c1;
             .mytable{
                 border-collapse: separate; /* Usa separate per avere bordi separati */
                 border-spacing: 5px; /* Elimina lo spazio tra le celle */
@@ -2129,7 +2134,8 @@ body{
                 overflow: hidden; /* Necessario per alcuni browser */
                 td, th{
                     border-radius: 8px;
-                    background-color: $c2_op;
+                    //background-color: $c1_op;
+                    background-color: rgba(224, 225, 234, 0.062);
                     border: 1px solid $c3;
                 }
                 td{ 

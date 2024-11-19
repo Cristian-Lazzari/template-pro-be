@@ -7,9 +7,9 @@
     <div class="stat">
         <h1>Statistiche</h1>
 
-        <h3>Prodotti più ordinati</h3>
+        <h2>Prodotti più ordinati</h2>
         <div class="chart">
-            <canvas id="topProductsChart"></canvas>
+            <canvas class="graph" id="topProductsChart"></canvas>
             <div class="list">
                 <table class=" table table mytable"> 
                     <thead>
@@ -32,9 +32,9 @@
             </div>
         </div>
 
-        <h3>Come vengono ordinati i prodotti nel tempo</h3>
+        <h2>Come vengono ordinati i prodotti nel tempo</h2>
         <div class="chart">
-            <canvas id="ordersOverTimeChart"></canvas>
+            <canvas class="graph" id="ordersOverTimeChart"></canvas>
             <div class="list">
                 <table class="mytable table table-striped "> 
                     <thead>
@@ -56,9 +56,9 @@
             </div>
         </div>
 
-        <h3>Ricavi nel tempo</h3>
+        <h2>Ricavi nel tempo</h2>
         <div class="chart">
-            <canvas id="revenueOverTimeChart"></canvas>
+            <canvas class="graph" id="revenueOverTimeChart"></canvas>
             <div class="list">
                 <table class="mytable table table-striped "> 
                     <thead>
@@ -80,9 +80,9 @@
                 </table>
             </div>
         </div>
-        <h3>Prenotazioni ai tavoli nel tempo</h3>
+        <h2>Prenotazioni ai tavoli nel tempo</h2>
         <div class="chart">
-            <canvas id="reservationsOverTimeChart"></canvas>
+            <canvas class="graph" id="reservationsOverTimeChart"></canvas>
 
             <div class="list">
                 <table class="mytable table table-striped "> 
