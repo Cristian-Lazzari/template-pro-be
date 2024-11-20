@@ -15,6 +15,9 @@
  
 
 <h1>Modifica la Categoria</h1>
+
+<a class="my_btn_5 ml-auto my-3" href="{{ route('admin.categories.index') }}">Torna alle categorie</a>
+
 <form class="creation"  action="{{ route('admin.categories.update', $category) }}"  enctype="multipart/form-data"  method="POST">
     @method('PUT')
     @csrf

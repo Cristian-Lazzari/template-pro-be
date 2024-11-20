@@ -15,6 +15,9 @@
  
 
 <h1>Crea nuova Categoria</h1>
+
+<a class="my_btn_5 ml-auto my-3" href="{{ route('admin.categories.index') }}">Torna alle categorie</a>
+
 <form class="creation"  action="{{ route('admin.categories.store') }}"  enctype="multipart/form-data"  method="POST">
     @csrf
 

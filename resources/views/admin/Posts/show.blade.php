@@ -30,7 +30,7 @@
                 <h4>Precedenza: <strong>{{$post->order}}</strong></h4>      
                 @if (isset($post->link)) 
                     <h4 class="">Link:</h4>
-                    <p class="">{{$post->link}}</p>
+                    <a class="link" href="{{$post->link}}">{{$post->link}}</a>
                 @else
                     <p>(nessun link impostato)</p>   
                 @endif  
