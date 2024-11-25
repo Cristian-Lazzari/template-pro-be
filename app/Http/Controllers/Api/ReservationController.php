@@ -172,14 +172,14 @@ class ReservationController extends Controller
                 $info .= $n_child . ' bambini';
             }
             if (config('configurazione.double_t') && $newRes->sala ) {
-                $info .= '* _Sala prenota: ';
+                $info .= ' ** _Sala prenota: ';
                 if ($newRes->sala == 1) {
                     $info .= config('configurazione.set_time_dt')[0];
                 }else{
                     $info .= config('configurazione.set_time_dt')[1];
                 }
             }
-            $info .='_ *';
+            $info .='_ ** ';
             
             $mail = new confermaOrdineAdmin($bodymail_u);
             Mail::to($data['email'])->send($mail);
