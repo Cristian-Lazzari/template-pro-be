@@ -347,7 +347,7 @@ class OrderController extends Controller
                 $number = config('configurazione.WA_N');
                 $data = [
                     'messaging_product' => 'whatsapp',
-                    'to' => '393271622244',
+                    'to' => $number,
                     'type' => 'template',
                     'template' => [
                         'name' => 'or_res',
@@ -360,7 +360,7 @@ class OrderController extends Controller
                                 'parameters' => [
                                     [
                                         'type' => 'text',
-                                        'text' => $newOrder->comune? 'Ordine a domicilio' : 'Ordine d\'asporto', // Questo sostituirà {{1}} nel template
+                                        'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', // Questo sostituirà {{1}} nel template
                                     ],
                                     [
                                         'type' => 'text',
