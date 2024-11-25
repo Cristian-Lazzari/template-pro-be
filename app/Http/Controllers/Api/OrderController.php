@@ -345,7 +345,44 @@ class OrderController extends Controller
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
+
                 $data = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => '393271622244',
+                    "type"=> "interactive",
+                    "interactive"=> [
+                        "type"=> "button",
+                        "header"=> [
+                            "type" => "text",
+                            "text"=>'Hai una nuova notifica!',
+                        ],  
+                        "footer"=> [
+                            "text"=> "Powered by Future+"
+                        ],
+                        "body"=> [
+                        "text"=> $info,
+                        ],
+                            "action"=> [
+                            "buttons"=> [
+                                [
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "confirm_button",
+                                        "title"=> "Conferma"
+                                    ]
+                                ],
+                                    [
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "cancel_button",
+                                        "title"=> "Annulla"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                $data1 = [
                     'messaging_product' => 'whatsapp',
                     'to' => $number,
                     'type' => 'template',
@@ -371,7 +408,6 @@ class OrderController extends Controller
                         ]
                     ]
                 ];
-
                 
                   
                 // Effettua la richiesta HTTP POST con le intestazioni necessarie
@@ -379,6 +415,10 @@ class OrderController extends Controller
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
+                $response = Http::withHeaders([
+                    'Authorization' => config('configurazione.WA_TO'),
+                    'Content-Type' => 'application/json'
+                ])->post($url, $data1);
 
                 // Estrai l'ID del messaggio dalla risposta di WhatsApp
                 $messageId = $response->json()['messages'][0]['id'] ?? null;
