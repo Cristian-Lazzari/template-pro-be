@@ -397,11 +397,11 @@ class OrderController extends Controller
                                 'parameters' => [
                                     [
                                         'type' => 'text',
-                                        'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', // Questo sostituirà {{1}} nel template
+                                        'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
                                     ],
                                     [
                                         'type' => 'text',
-                                        'text' => $info  // Questo sostituirà {{1}} nel template
+                                        'text' => $info  
                                     ]
                                 ]
                             ]
@@ -415,7 +415,7 @@ class OrderController extends Controller
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
-                $response = Http::withHeaders([
+                $response2 = Http::withHeaders([
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
                 ])->post($url, $data1);
