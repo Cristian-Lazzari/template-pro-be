@@ -345,64 +345,34 @@ class OrderController extends Controller
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
-                // $data = [
-                //     'messaging_product' => 'whatsapp',
-                //     'to' => '393271622244',
-                //     'type' => 'template',
-                //     'template' => [
-                //         'name' => 'ord',
-                //         'language' => [
-                //             'code' => 'it'
-                //         ],
-                //         'components' => [
-                //             [
-                //                 'type' => 'body',
-                //                 'parameters' => [
-                //                     [
-                //                         'type' => 'text',
-                //                         'text' => $info  // Questo sostituirà {{1}} nel template
-                //                     ]
-                //                 ]
-                //             ]
-                //         ]
-                //     ]
-                // ];
                 $data = [
                     'messaging_product' => 'whatsapp',
                     'to' => '393271622244',
-                    "type"=> "interactive",
-                    "interactive"=> [
-                        "type"=> "button",
-                        "header"=> [
-                            "type" => "text",
-                            "text"=>'Hai una nuova notifica!',
-                        ],  
-                        "footer"=> [
-                            "text"=> "Powered by Future+"
+                    'type' => 'template',
+                    'template' => [
+                        'name' => 'or_res',
+                        'language' => [
+                            'code' => 'it'
                         ],
-                        "body"=> [
-                        "text"=> $info,
-                        ],
-                            "action"=> [
-                            "buttons"=> [
-                                [
-                                    "type"=> "reply",
-                                    "reply"=> [
-                                        "id"=> "confirm_button",
-                                        "title"=> "Conferma"
-                                    ]
-                                ],
+                        'components' => [
+                            [
+                                'type' => 'body',
+                                'parameters' => [
                                     [
-                                    "type"=> "reply",
-                                    "reply"=> [
-                                        "id"=> "cancel_button",
-                                        "title"=> "Annulla"
+                                        'type' => 'text',
+                                        'text' => $newOrder->comune? 'Ordine a domicilio' : 'Ordine d\'asporto', // Questo sostituirà {{1}} nel template
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $info  // Questo sostituirà {{1}} nel template
                                     ]
                                 ]
                             ]
                         ]
                     ]
                 ];
+
+                
                   
                 // Effettua la richiesta HTTP POST con le intestazioni necessarie
                 $response = Http::withHeaders([
