@@ -23,7 +23,7 @@
                     @foreach ($topProducts as $key => $value)
                     <tr>
                         <td>{{$index}}</td>
-                        <td>{{$key}}:</td>
+                        <td>{{$key}}</td>
                         <td><strong>{{$value}}</strong></td>
                     </tr>
                     @php $index ++ @endphp

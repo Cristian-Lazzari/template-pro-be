@@ -332,7 +332,7 @@ class PageController extends Controller
         ->join('orders', 'order_product.order_id', '=', 'orders.id')
         ->join('products', 'order_product.product_id', '=', 'products.id')
         ->select(
-            DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as day"), 
+            DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m %H:%i'), '%Y-%m-%d') as day"), 
             'products.name', 
             DB::raw('SUM(order_product.quantity) as quantity')
         )
@@ -341,7 +341,7 @@ class PageController extends Controller
         ->get();
 
         // Grafico a linee: Ricavi nel tempo
-        $revenueOverTime = Order::select(DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), DB::raw('SUM(tot_price) as total_revenue'))
+        $revenueOverTime = Order::select(DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m %H:%i'), '%Y-%m') as month"), DB::raw('SUM(tot_price) as total_revenue'))
         ->groupBy('month')
         ->orderBy('month')
         ->get()
@@ -349,8 +349,8 @@ class PageController extends Controller
 
         $reservationsOverTime = DB::table('reservations')
         ->select(
-            DB::raw("UNIX_TIMESTAMP(STR_TO_DATE(date_slot, '%d/%m/%Y')) as timestamp"), // Timestamp UNIX
-            DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y'), '%d %M, %W') as formatted_date"), // Data formattata
+            DB::raw("UNIX_TIMESTAMP(STR_TO_DATE(date_slot, '%d/%m')) as timestamp"), // Timestamp UNIX
+            DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m'), '%d %M, %W') as formatted_date"), // Data formattata
             DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.adult')), 0) as total_adults"), // Totale adulti
             DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.child')), 0) as total_children") // Totale bambini
         )
