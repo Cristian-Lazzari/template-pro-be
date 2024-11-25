@@ -51,7 +51,7 @@ class WaController extends Controller
                 $new_messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
                 Log::warning("Pulsante premuto:");
                 Log::warning($message['interactive']);
-                $buttonId = $message['interactive']['button_reply']['id']; 
+                $buttonId = $message['interactive']['button_reply']['text']; 
                 Log::warning("Pulsante premuto: $buttonId, ID messaggio: $new_messageId");
                 // Trova l'ordine corrispondente tramite l'ID del messaggio
                 $order_ex = Order::where('whatsapp_message_id', $new_messageId)->exists();
@@ -59,9 +59,9 @@ class WaController extends Controller
                 if ($order_ex) {
                     $order = Order::where('whatsapp_message_id', $new_messageId)->first();
                     Log::info("Ordine trovato per il Message ID: " . $new_messageId);
-                    if($buttonId === 'confirm_button'){
+                    if($buttonId === 'Conferma'){
                         $this->statusOrder(1, $order);
-                    }elseif($buttonId === 'cancel_button'){
+                    }elseif($buttonId === 'Annulla'){
                         $this->statusOrder(0, $order);
                     }
                 } elseif (Reservation::where('whatsapp_message_id', $new_messageId)->exists()) {
@@ -69,9 +69,9 @@ class WaController extends Controller
                     $reservation = Reservation::where('whatsapp_message_id', $new_messageId)->first();
                     if ($reservation) {
                         Log::info("Prenotazione trovata per il Message ID: " . $new_messageId);
-                        if($buttonId === 'confirm_button'){
+                        if($buttonId === 'Conferma'){
                             $this->statusRes(1, $reservation);
-                        }elseif($buttonId === 'cancel_button'){
+                        }elseif($buttonId === 'Annulla'){
                             $this->statusRes(0, $reservation);
                         }
                     }
