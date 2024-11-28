@@ -45,7 +45,7 @@ class WaController extends Controller
 
 
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
-            Log::warning("messaggio:" . $message ?? null);
+            Log::warning("messaggio:" , $message);
             if(isset($message['interactive']))
             {
                 $messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
