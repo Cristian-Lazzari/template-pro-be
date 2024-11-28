@@ -68,6 +68,12 @@ class SettingsTableSeeder extends Seeder
                         ]
                     ]
                 ],
+                [
+                    'name' => 'wa',
+                    'property' => [
+                        'last_response_wa' => ''
+                    ]
+                ],
             ];
         }else{
             $settings = [
@@ -109,12 +115,6 @@ class SettingsTableSeeder extends Seeder
                 [
                     'name' => 'Possibilità di consegna a domicilio - non attivo',  
                     'property' => []
-                ],
-                [
-                    'name' => 'Comuni per il domicilio - non attivo',
-                    'property' => [
-                        'last_response_wa' => ''
-                    ]
                 ],
             ];
         }

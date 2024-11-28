@@ -124,42 +124,72 @@ class StripeWebhookController extends Controller
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
         $number = config('configurazione.WA_N');
-        $data = [
-            'messaging_product' => 'whatsapp',
-            'to' => '393271622244',
-            "type"=> "interactive",
-            "interactive"=> [
-                "type"=> "button",
-                "header"=> [
-                    "type" => "text",
-                    "text"=>'Hai una nuova notifica!',
-                ],
-                "footer"=> [
-                    "text"=> "Powered by Future+"
-                ],
-                "body"=> [
-                "text"=> $info,
-                ],
-                    "action"=> [
-                    "buttons"=> [
-                        [
-                            "type"=> "reply",
-                            "reply"=> [
-                                "id"=> "confirm_button",
-                                "title"=> "Conferma"
-                            ]
-                        ],
+        if ($this->isLastResponseWaWithin24Hours()) {
+            $data = [
+                'messaging_product' => 'whatsapp',
+                'to' => $number,
+                "type"=> "interactive",
+                "interactive"=> [
+                    "type"=> "button",
+                    "header"=> [
+                        "type" => "text",
+                        "text"=>'Hai una nuova notifica!',
+                    ],  
+                    "footer"=> [
+                        "text"=> "Powered by Future+"
+                    ],
+                    "body"=> [
+                    "text"=> $info,
+                    ],
+                        "action"=> [
+                        "buttons"=> [
                             [
-                            "type"=> "reply",
-                            "reply"=> [
-                                "id"=> "cancel_button",
-                                "title"=> "Annulla e Rimborsa"
+                                "type"=> "reply",
+                                "reply"=> [
+                                    "id"=> "Conferma",
+                                    "title"=> "Conferma"
+                                ]
+                            ],
+                                [
+                                "type"=> "reply",
+                                "reply"=> [
+                                    "id"=> "Annulla",
+                                    "title"=> "Annulla"
+                                ]
                             ]
                         ]
                     ]
                 ]
-            ]
-        ];
+            ];
+        }else{
+            $data = [
+                'messaging_product' => 'whatsapp',
+                'to' => $number,
+                'category' => 'marketing',
+                'type' => 'template',
+                'template' => [
+                    'name' => 'or',
+                    'language' => [
+                        'code' => 'it'
+                    ],
+                    'components' => [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $info  
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
         // Effettua la richiesta HTTP POST con le intestazioni necessarie
         $response = Http::withHeaders([
             'Authorization' => config('configurazione.WA_TO'),
@@ -173,15 +203,6 @@ class StripeWebhookController extends Controller
             $order->whatsapp_message_id = $messageId;
             $order->update();
         }
-
-        // // Gestisci la risposta
-        // if ($response->successful()) {
-        //     return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response, 'id' => $messageId], 200);
-        // } else {
-        //     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
-        // }
-
-
         //if($order){
         $date = Date::where('date_slot', $order->date_slot)->first();
                         
@@ -189,95 +210,10 @@ class StripeWebhookController extends Controller
         $av = json_decode($date->availability, true);
         $res = json_decode($date->reserving, true);
     
-        // aggiorno la disponibilità in date
-        if(config('configurazione.typeOfOrdering')){
-            $res_c1 = $res['cucina_1'];
-            $res_c2 = $res['cucina_2'];
-            $av_c1  = $av['cucina_1'];
-            $av_c2  = $av['cucina_2'];
-            // Inizializza i contatori
-            $np_c1  = 0;
-            $np_c2  = 0;
-            // Cicla sui prodotti associati all'ordine
-            foreach ($order->products as $product) {
-               // return $product;
-                // Controlla il tipo di cucina del prodotto
-                if ($product->type_plate == 1) {
-                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
-                } elseif ($product->type_plate == 2) {
-                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
-                }
-            }
-            
-            if(isset($order->comune)){
-                if( ($res['domicilio'] + 1) < $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                } elseif (($res['domicilio'] + 1) == $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                    $vis['domicilio'] = 0;
-                }else{
-                    return response()->json([
-                        'false' => 1,
-                        'success' => false,
-                        'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
-                        'data' => $date
-                    ]);
-                }
-            }
-            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
-            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                $vis['cucina_1'] = 0;
-            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
-                $vis['cucina_2'] = 0;
-            }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
-                $vis['cucina_1'] = 0;
-                $vis['cucina_2'] = 0;
-            }else{
-                return response()->json([
-                    'false' => 2,
-                    'success' => false,
-                    'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                    'data' => $date
-                ]);
-            }
-            $res['cucina_1'] += $np_c1;
-            $res['cucina_2'] += $np_c2;
-            
-        }else{
-            if(isset($order->comune)){
-                if(($res['domicilio'] + 1) < $av['domicilio']){}
-                elseif(($res['domicilio'] + 1) == $av['domicilio']){
-                    $vis['domicilio'] = 0;
-                }else{
-                    return response()->json([
-                        'false' => 3,
-                        'success' => false,
-                        'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
-                        'data' => $date
-                    ]);
-                }
-                $res['domicilio'] = $res['domicilio'] + 1;
-            }else{
-                if(($res['asporto'] + 1) < $av['asporto']){}
-                elseif(($res['asporto'] + 1) == $av['asporto']){
-                    $vis['asporto'] = 0;
-                }else{
-                    return response()->json([
-                        'false' => 4,
-                        'success' => false,
-                        'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                        'data' => $date
-                    ]);
-                }
-                $res['asporto'] = $res['asporto'] + 1;
-            }
-        }
-        $date->visible = json_encode($vis);
-        $date->reserving = json_encode($res);
+
         
         $order->checkout_session_id = $session->payment_intent;
         $order->status = 3;
-        $date->update();
         $order->update();
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
@@ -334,6 +270,64 @@ class StripeWebhookController extends Controller
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
+        // aggiorno la disponibilità in date
+        if(config('configurazione.typeOfOrdering')){
+            $res_c1 = $res['cucina_1'];
+            $res_c2 = $res['cucina_2'];
+            $av_c1  = $av['cucina_1'];
+            $av_c2  = $av['cucina_2'];
+            // Inizializza i contatori
+            $np_c1  = 0;
+            $np_c2  = 0;
+            // Cicla sui prodotti associati all'ordine
+            foreach ($order->products as $product) {
+                // return $product;
+                // Controlla il tipo di cucina del prodotto
+                if ($product->type_plate == 1) {
+                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
+                } elseif ($product->type_plate == 2) {
+                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
+                }
+            }
+            
+            if(isset($order->comune)){
+                if( ($res['domicilio'] + 1) < $av['domicilio']){
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                } else{
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                    $vis['domicilio'] = 0;
+                }
+            }
+            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
+            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
+                $vis['cucina_1'] = 0;
+            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
+                $vis['cucina_2'] = 0;
+            }else{
+                $vis['cucina_1'] = 0;
+                $vis['cucina_2'] = 0;
+            }
+            $res['cucina_1'] += $np_c1;
+            $res['cucina_2'] += $np_c2;
+            
+        }else{
+            if(isset($order->comune)){
+                if(($res['domicilio'] + 1) < $av['domicilio']){}
+                else{
+                    $vis['domicilio'] = 0;
+                }
+                $res['domicilio'] = $res['domicilio'] + 1;
+            }else{
+                if(($res['asporto'] + 1) < $av['asporto']){}
+                else{
+                    $vis['asporto'] = 0;
+                }
+                $res['asporto'] = $res['asporto'] + 1;
+            }
+        }
+        $date->visible = json_encode($vis);
+        $date->reserving = json_encode($res);
+        $date->update();
 
         
 
@@ -353,6 +347,25 @@ class StripeWebhookController extends Controller
         $order->status = 0;
         $order->update();
     
+    }
+    protected function isLastResponseWaWithin24Hours()
+    {
+        // Trova il record con name = 'wa'
+        $setting = Setting::where('name', 'wa')->first();
+
+        if ($setting) {
+            // Decodifica il campo 'property' da JSON ad array
+            $property = json_decode($setting->property, true);
+
+            // Controlla se 'last_response_wa' è impostato
+            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
+                // Confronta la data salvata con le ultime 24 ore
+                $lastResponseDate = Carbon::parse($property['last_response_wa']);
+                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            }
+        }
+
+        return false; // Se il record non esiste o la data non è impostata
     }
 
 }

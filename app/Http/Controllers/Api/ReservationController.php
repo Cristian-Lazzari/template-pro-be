@@ -162,6 +162,11 @@ class ReservationController extends Controller
             ];
 
             // Invia le email
+            $mail = new confermaOrdineAdmin($bodymail_u);
+            Mail::to($data['email'])->send($mail);
+    
+            $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+            Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
             $info = $newRes->name . ' ' . $newRes->surname .' ha prenotato per il: ' . $newRes->date_slot . ', gli ospiti sono: ';
             if($n_adult && $n_child){
@@ -181,50 +186,80 @@ class ReservationController extends Controller
             }
             $info .='_ ** ';
             
-            $mail = new confermaOrdineAdmin($bodymail_u);
-            Mail::to($data['email'])->send($mail);
-    
-            $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-            Mail::to(config('configurazione.mail'))->send($mailAdmin);
-
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
             $number = config('configurazione.WA_N');
-            $data = [
-                'messaging_product' => 'whatsapp',
-                'to' => '393271622244',
-                "type"=> "interactive",
-                "interactive"=> [
-                    "type"=> "button",
-                    "header"=> [
-                        "type" => "text",
-                        "text"=>'Hai una nuova notifica!',
-                    ],
-                    "footer"=> [
-                        "text"=> "Powered by Future+"
-                    ],
-                    "body"=> [
-                    "text"=> $info,
-                    ],
-                        "action"=> [
-                        "buttons"=> [
-                            [
-                                "type"=> "reply",
-                                "reply"=> [
-                                    "id"=> "confirm_button",
-                                    "title"=> "Conferma"
-                                ]
-                            ],
+
+            
+            if ($this->isLastResponseWaWithin24Hours()) {
+                // Esegui azione se è entro le ultime 24 ore
+                $data = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => $number,
+                    "type"=> "interactive",
+                    "interactive"=> [
+                        "type"=> "button",
+                        "header"=> [
+                            "type" => "text",
+                            "text"=>'Hai una nuova notifica!',
+                        ],
+                        "footer"=> [
+                            "text"=> "Powered by Future+"
+                        ],
+                        "body"=> [
+                        "text"=> $info,
+                        ],
+                            "action"=> [
+                            "buttons"=> [
                                 [
-                                "type"=> "reply",
-                                "reply"=> [
-                                    "id"=> "cancel_button",
-                                    "title"=> "Annulla"
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "Conferma",
+                                        "title"=> "Conferma"
+                                    ]
+                                ],
+                                    [
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "Annulla",
+                                        "title"=> "Annulla"
+                                    ]
                                 ]
                             ]
                         ]
                     ]
-                ]
-            ];
+                ];
+                
+            } else {
+                // Esegui azione alternativa
+                $data = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => $number,
+                    'category' => 'marketing',
+                    'type' => 'template',
+                    'template' => [
+                        'name' => 'or',
+                        'language' => [
+                            'code' => 'it'
+                        ],
+                        'components' => [
+                            [
+                                'type' => 'body',
+                                'parameters' => [
+                                    [
+                                        'type' => 'text',
+                                        'text' => 'prenotazione tavolo', 
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $info  
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+            }
+            
             // Effettua la richiesta HTTP POST con le intestazioni necessarie
             $response = Http::withHeaders([
                 'Authorization' => config('configurazione.WA_TO'),
@@ -272,5 +307,26 @@ class ReservationController extends Controller
             ], 200);
         }
     }
+
+    protected function isLastResponseWaWithin24Hours()
+    {
+        // Trova il record con name = 'wa'
+        $setting = Setting::where('name', 'wa')->first();
+
+        if ($setting) {
+            // Decodifica il campo 'property' da JSON ad array
+            $property = json_decode($setting->property, true);
+
+            // Controlla se 'last_response_wa' è impostato
+            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
+                // Confronta la data salvata con le ultime 24 ore
+                $lastResponseDate = Carbon::parse($property['last_response_wa']);
+                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            }
+        }
+
+        return false; // Se il record non esiste o la data non è impostata
+    }
+
 
 }

@@ -31,7 +31,7 @@ class OrderController extends Controller
     public function store(Request $request)
     { 
         
-        $payment_controller = new PaymentController();
+        
 
         $request->validate($this->validations);
         $delivery = false;
@@ -230,7 +230,7 @@ class OrderController extends Controller
             
             
 
-            
+            $payment_controller = new PaymentController();
             
             if($data['paying']){   
                 
@@ -345,83 +345,73 @@ class OrderController extends Controller
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
-
-                // $data = [
-                //     'messaging_product' => 'whatsapp',
-                //     'to' => '393271622244',
-                //     "type"=> "interactive",
-                //     "interactive"=> [
-                //         "type"=> "button",
-                //         "header"=> [
-                //             "type" => "text",
-                //             "text"=>'Hai una nuova notifica!',
-                //         ],  
-                //         "footer"=> [
-                //             "text"=> "Powered by Future+"
-                //         ],
-                //         "body"=> [
-                //         "text"=> $info,
-                //         ],
-                //             "action"=> [
-                //             "buttons"=> [
-                //                 [
-                //                     "type"=> "reply",
-                //                     "reply"=> [
-                //                         "id"=> "confirm_button",
-                //                         "title"=> "Conferma"
-                //                     ]
-                //                 ],
-                //                     [
-                //                     "type"=> "reply",
-                //                     "reply"=> [
-                //                         "id"=> "cancel_button",
-                //                         "title"=> "Annulla"
-                //                     ]
-                //                 ]
-                //             ]
-                //         ]
-                //     ]
-                // ];
-                // $data1 = [
-                //     'messaging_product' => 'whatsapp',
-                //     'to' => '393271622244',
-                //     'type' => 'template',
-                //     'template' => [
-                //         'name' => 'hello_word',
-                //         'language' => [
-                //             'code' => 'en_US'
-                //         ],
-                //     ]
-                // ];
-                $data1 = [
-                    'messaging_product' => 'whatsapp',
-                    'to' => '393271622244',
-                    'category' => 'marketing',
-                    'type' => 'template',
-                    'template' => [
-                        'name' => 'or',
-                        'language' => [
-                            'code' => 'it'
-                        ],
-                        'components' => [
-                            [
-                                'type' => 'body',
-                                'parameters' => [
+                if ($this->isLastResponseWaWithin24Hours()) {
+                    $data = [
+                        'messaging_product' => 'whatsapp',
+                        'to' => $number,
+                        "type"=> "interactive",
+                        "interactive"=> [
+                            "type"=> "button",
+                            "header"=> [
+                                "type" => "text",
+                                "text"=>'Hai una nuova notifica!',
+                            ],  
+                            "footer"=> [
+                                "text"=> "Powered by Future+"
+                            ],
+                            "body"=> [
+                            "text"=> $info,
+                            ],
+                                "action"=> [
+                                "buttons"=> [
                                     [
-                                        'type' => 'text',
-                                        'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
+                                        "type"=> "reply",
+                                        "reply"=> [
+                                            "id"=> "Conferma",
+                                            "title"=> "Conferma"
+                                        ]
                                     ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $info  
+                                        [
+                                        "type"=> "reply",
+                                        "reply"=> [
+                                            "id"=> "Annulla",
+                                            "title"=> "Annulla"
+                                        ]
                                     ]
                                 ]
                             ]
                         ]
-                    ]
-                ];
+                    ];
+                }else{
+                    $data = [
+                        'messaging_product' => 'whatsapp',
+                        'to' => $number,
+                        'category' => 'marketing',
+                        'type' => 'template',
+                        'template' => [
+                            'name' => 'or',
+                            'language' => [
+                                'code' => 'it'
+                            ],
+                            'components' => [
+                                [
+                                    'type' => 'body',
+                                    'parameters' => [
+                                        [
+                                            'type' => 'text',
+                                            'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
+                                        ],
+                                        [
+                                            'type' => 'text',
+                                            'text' => $info  
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ];
+                }
                 
-                  
                 // // Effettua la richiesta HTTP POST con le intestazioni necessarie
                 $response = Http::withHeaders([
                     'Authorization' => config('configurazione.WA_TO'),
@@ -452,10 +442,6 @@ class OrderController extends Controller
             }
 
 
-
-
-
-
         } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
@@ -471,10 +457,25 @@ class OrderController extends Controller
 
             return response()->json($errorInfo, 500);
         }
-
-        
-
     }
+    protected function isLastResponseWaWithin24Hours()
+    {
+        // Trova il record con name = 'wa'
+        $setting = Setting::where('name', 'wa')->first();
 
+        if ($setting) {
+            // Decodifica il campo 'property' da JSON ad array
+            $property = json_decode($setting->property, true);
+
+            // Controlla se 'last_response_wa' è impostato
+            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
+                // Confronta la data salvata con le ultime 24 ore
+                $lastResponseDate = Carbon::parse($property['last_response_wa']);
+                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            }
+        }
+
+        return false; // Se il record non esiste o la data non è impostata
+    }
     
 }

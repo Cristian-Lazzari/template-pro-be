@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Webhooks;
 
+use Carbon\Carbon;
 use Stripe\Refund;
 use Stripe\Stripe;
 use App\Models\Date;
@@ -58,20 +59,24 @@ class WaController extends Controller
             if ($order_ex) {
                 $order = Order::where('whatsapp_message_id', $messageId)->first();
                 Log::info("Ordine trovato per il Message ID: " . $messageId);
-                if($buttonId === 'Conferma'){
+                if($buttonId == 'Conferma'){
                     $this->statusOrder(1, $order);
-                }elseif($buttonId === 'Annulla'){
+                    $this->updateLastResponseWa();
+                }elseif($buttonId == 'Annulla'){
                     $this->statusOrder(0, $order);
+                    $this->updateLastResponseWa();
                 }
             } elseif (Reservation::where('whatsapp_message_id', $messageId)->exists()) {
                 // Se non trovato in Orders, cerca nella tabella rervations
                 $reservation = Reservation::where('whatsapp_message_id', $messageId)->first();
                 if ($reservation) {
                     Log::info("Prenotazione trovata per il Message ID: " . $messageId);
-                    if($buttonId === 'Conferma'){
+                    if($buttonId == 'Conferma'){
                         $this->statusRes(1, $reservation);
-                    }elseif($buttonId === 'Annulla'){
+                        $this->updateLastResponseWa();
+                    }elseif($buttonId == 'Annulla'){
                         $this->statusRes(0, $reservation);
+                        $this->updateLastResponseWa();
                     }
                 }
             } else {
@@ -310,7 +315,21 @@ class WaController extends Controller
 
         return;   
     }
+    protected function updateLastResponseWa(){
+        // Trova il record con name = 'wa'
+        $setting = Setting::where('name', 'wa')->first();
 
+        // Decodifica il campo 'property' da JSON ad array
+        $property = json_decode($setting->property, true);
+
+        // Aggiorna 'last_response_wa' con la data attuale
+        $property['last_response_wa'] = Carbon::now()->toDateTimeString();
+
+        // Ricodifica 'property' in JSON e aggiorna il record
+        $setting->property = json_encode($property);
+        $setting->update();
+
+    }
 
 
 }
