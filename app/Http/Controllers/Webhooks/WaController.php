@@ -91,8 +91,7 @@ class WaController extends Controller
     }
 
     protected function statusOrder($c_a, $order){
-        if($c_a == 1 && in_array($order->status, [1, 5])){
-            
+        if($c_a == 1 && in_array($order->status, [1, 5])){           
             return;
         }elseif(in_array($order->status, [1, 5])){
             return;
