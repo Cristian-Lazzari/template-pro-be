@@ -34,10 +34,10 @@ class WaController extends Controller
     public function handle(Request $request)
     {
         $data = $request->all();
-        // Log::warning("Webhook ricevuto");
-        // Log::warning("changes:" , $data['entry'][0]['changes']);
+        // Log::info("Webhook ricevuto");
+        // Log::info("changes:" , $data['entry'][0]['changes']);
        
-        Log::warning("value:" , $data['entry'][0]['changes'][0]['value'] ?? null);
+        Log::info("value:" , $data['entry'][0]['changes'][0]['value'] ?? null);
         
 
         // Naviga nella struttura del webhook
@@ -45,18 +45,18 @@ class WaController extends Controller
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
             $messageId = '';
             $buttonId = '';
-            Log::warning("messaggio:" , $message);
+            Log::info("messaggio:" , $message);
             if(isset($message['interactive'])){
                 $messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
                 $buttonId = $message['interactive']['button_reply']['text']; 
 
-                Log::warning("Pulsante premuto: $buttonId, ID messaggio: $messageId");   
+                Log::info("Pulsante premuto: $buttonId, ID messaggio: $messageId");   
             }else {
                 $messageId = $message['context']['id'] ?? null;    
                 $buttonId = $message['button']['text']; 
 
-                Log::warning("messaggio non interattivo (template).");
-                Log::warning("Pulsante premuto: $buttonId, ID messaggio: $messageId");
+                Log::info("messaggio non interattivo (template).");
+                Log::info("Pulsante premuto: $buttonId, ID messaggio: $messageId");
             }
              // Trova l'ordine corrispondente tramite l'ID del messaggio
             $order_ex = Order::where('whatsapp_message_id', $messageId)->exists();
@@ -81,10 +81,10 @@ class WaController extends Controller
                 }
             } else {
                 // Nessun ordine o prenotazione trovato per il Message ID
-                Log::warning("Nessun ordine o prenotazione trovati per il Message ID: " . $messageId);
+                Log::info("Nessun ordine o prenotazione trovati per il Message ID: " . $messageId);
             }
         } else {
-            //Log::warning("Struttura del messaggio non valida o messaggio mancante.");
+            //Log::info("Struttura del messaggio non valida o messaggio mancante.");
         }
 
         return response()->json(['status' => 'success']);
@@ -92,6 +92,7 @@ class WaController extends Controller
 
     protected function statusOrder($c_a, $order){
         if($c_a == 1 && in_array($order->status, [1, 5])){
+            
             return;
         }elseif(in_array($order->status, [1, 5])){
             return;
