@@ -44,7 +44,7 @@ class WaController extends Controller
             Log::info("messaggio:" , $message);
             if(isset($message['interactive'])){
                 $messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
-                $buttonId = $message['interactive']['button_reply']['text']; 
+                $buttonId = $message['interactive']['button_reply']['id']; 
 
                 Log::info("Pulsante premuto: $buttonId, ID messaggio: $messageId");   
             }else {
