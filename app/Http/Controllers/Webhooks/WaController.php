@@ -50,19 +50,16 @@ class WaController extends Controller
                 $messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
                 $buttonId = $message['interactive']['button_reply']['text']; 
 
-                Log::warning("Pulsante premuto: $buttonId, ID messaggio: $messageId");
-               
+                Log::warning("Pulsante premuto: $buttonId, ID messaggio: $messageId");   
             }else {
-                Log::warning("messaggio non interattivo (template).");
-                $messageId = $message['context']['from']['id'] ?? null;
-                
+                $messageId = $message['context']['id'] ?? null;    
                 $buttonId = $message['button']['text']; 
+
+                Log::warning("messaggio non interattivo (template).");
                 Log::warning("Pulsante premuto: $buttonId, ID messaggio: $messageId");
             }
-
              // Trova l'ordine corrispondente tramite l'ID del messaggio
             $order_ex = Order::where('whatsapp_message_id', $messageId)->exists();
-            
             if ($order_ex) {
                 $order = Order::where('whatsapp_message_id', $messageId)->first();
                 Log::info("Ordine trovato per il Message ID: " . $messageId);
