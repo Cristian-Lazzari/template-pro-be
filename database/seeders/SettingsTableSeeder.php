@@ -112,7 +112,9 @@ class SettingsTableSeeder extends Seeder
                 ],
                 [
                     'name' => 'Comuni per il domicilio - non attivo',
-                    'property' => []
+                    'property' => [
+                        'last_response_wa' => ''
+                    ]
                 ],
             ];
         }
@@ -121,8 +123,6 @@ class SettingsTableSeeder extends Seeder
             $string = json_encode($s['property'], true);  
             $s['property'] = $string;
             dump( $s['name']);
-        
-
             // Creazione della voce di impostazione
             Setting::create($s);
         }
