@@ -34,12 +34,7 @@ class WaController extends Controller
     public function handle(Request $request)
     {
         $data = $request->all();
-        // Log::info("Webhook ricevuto");
-        // Log::info("changes:" , $data['entry'][0]['changes']);
-       
-        Log::info("value:" , $data['entry'][0]['changes'][0]['value'] ?? null);
-        
-
+         Log::info("Webhook ricevuto");
         // Naviga nella struttura del webhook
         if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
@@ -91,6 +86,7 @@ class WaController extends Controller
     }
 
     protected function statusOrder($c_a, $order){
+        Log::info("success");
         if($c_a == 1 && in_array($order->status, [1, 5])){           
             return;
         }elseif(in_array($order->status, [1, 5])){
@@ -232,6 +228,7 @@ class WaController extends Controller
         return $m;
     }
     protected function statusRes($c_a, $res){
+        Log::info("success");
         if($c_a == 1 && in_array($res->status, [1, 5])){
             return;
         }elseif(in_array($res->status, [1, 5])){
