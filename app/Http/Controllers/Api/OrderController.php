@@ -246,7 +246,6 @@ class OrderController extends Controller
             }else{
                 
                 $date->update();
-                
                 // Ottieni le impostazioni di contatto
                 $set = Setting::where('name', 'Contatti')->firstOrFail();
                 $p_set = json_decode($set->property, true);
@@ -416,7 +415,7 @@ class OrderController extends Controller
                 $response = Http::withHeaders([
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
-                ])->post($url, $data1);
+                ])->post($url, $data);
 
                 // Estrai l'ID del messaggio dalla risposta di WhatsApp
                 $messageId = $response->json()['messages'][0]['id'] ?? null;
