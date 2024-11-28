@@ -80,9 +80,9 @@ class WaController extends Controller
                 }
             } else {
                 Log::warning("messaggio non interattivo (template).");
-                $messageId = $data['entry'][0]['changes'][0]['value']['messages'][0]['context']['id'] ?? null;
+                $messageId = $message['context']['id'] ?? null;
                 
-                $buttonId = $message['interactive']['button_reply']['text']; 
+                $buttonId = $message['context']['button']['text']; 
                 Log::warning("Pulsante premuto: $buttonId, ID messaggio: $messageId");
             }
         } else {
