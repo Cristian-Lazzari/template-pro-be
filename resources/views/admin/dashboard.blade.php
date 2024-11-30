@@ -341,6 +341,25 @@
                     //dd($domicilio_p['pay'])
                 @endphp
                 <div class="set">
+                    <h4>Tavoli</h4>
+                    <div class="radio-inputs">
+                        <label class="radio">
+                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 0) checked  @endif value="0" >
+                            <span class="name">Off</span>
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 1) checked  @endif value="1" >
+                            <span class="name">Chiamate</span>
+                        </label>
+                        @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)   
+                        <label class="radio">
+                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 2) checked  @endif value="2" >
+                            <span class="name">Web App</span>
+                        </label>
+                        @endif
+                    </div>
+                </div>
+                <div class="set">
                     <h4>Asporto</h4>
                     <div class="set-cont">
                         @if (config('configurazione.pack') > 2) <h5>Servizio</h5> @endif   
@@ -383,25 +402,6 @@
                             </div>
                         @endif
                         
-                    </div>
-                </div>
-                <div class="set">
-                    <h4>Tavoli</h4>
-                    <div class="radio-inputs">
-                        <label class="radio">
-                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 0) checked  @endif value="0" >
-                            <span class="name">Off</span>
-                        </label>
-                        <label class="radio">
-                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 1) checked  @endif value="1" >
-                            <span class="name">Chiamate</span>
-                        </label>
-                        @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)   
-                        <label class="radio">
-                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 2) checked  @endif value="2" >
-                            <span class="name">Web App</span>
-                        </label>
-                        @endif
                     </div>
                 </div>
                 @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
