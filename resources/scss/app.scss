@@ -1,26 +1,75 @@
 @import "~bootstrap/scss/bootstrap";
-$c1:#1e2d64;
-$c2:#10b793;
-$c3:#e3eaea;
+// var(--c1:#1e2d64;
+// var(--c2):#10b793;
+// var(--c3):#e3eaea;
 
 
-$c1: #090333;
-//$c2: #29c7c2;
-$c3: #d8dde8;
-//$c2:#FF7658;
-$c1_op:#1e2d6472;
-$c2_op:#10b7937b;
-$c3_op:#e3eaea74;
+
+
+:root {
+    --c1_op:#1e2d6472;
+    --c2_op:#10b7937b;
+    --c3_op:#d8dde880;
+    --c1: #090333;
+    --c2:#10b793;
+    --c3: #d8dde8;
+}
+
+#dark{
+    display: none;
+    height: 0 !important;
+    width: 0 !important;
+}
+#light{
+    height: 16px !important;
+    width: 16px !important;
+}
+
+[data-theme="dark"] {
+    --c3_op:#1e2d6472;
+    --c2_op:#10b7937b;
+    --c1_op:#d8dde880;
+    --c3: #090333;
+    --c2:#10b793;
+    --c1: #d8dde8;
+    #light{
+        display: none;
+        height: 0 !important;
+        width: 0 !important;
+    }
+    #dark{
+        display: block !important;
+        height: 16px !important;
+        width: 16px !important;
+    }
+}
+
+
+// var(--c3_op):#1e2d6472;
+// var(--c2_op):#10b7937b;
+// var(--c1_op:#d8dde880;
+// var(--c3): #090333;
+//  var(--c2):#10b793;
+// var(--c1: #d8dde8;
+
+// var(--c1: #090333;
+//  var(--c2):#10b793;
+// var(--c3): #d8dde8;
+// var(--c1_op:#1e2d6472;
+// var(--c2_op):#10b7937b;
+// var(--c3_op):#d8dde880;
+
+
 $c_red: rgb(219, 92, 92);
 .c-1{
-    color: $c1 !important;
+    color: var(--c1)!important;
 }
-$bg-p-p : $c3;
-$c-delete : $c2;
-$c-update : $c3;
-$c-new : $c1;
+$bg-p-p : var(--c3);
+$c-delete : var(--c2);
+$c-update : var(--c3);
+$c-new : var(--c1); 
 $t : rgba(193, 206, 236, 0.43);
-$cfilter : $c2;
+$cfilter : var(--c2);
 
 .op{
     opacity: .5;
@@ -52,7 +101,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     a{
         align-self: flex-start;
         padding: 20px;
-        text-shadow: 0 0 10px $c2;
+        text-shadow: 0 0 10px var(--c2);
         font-size: $fs_md;
         color: #e3eaea !important;
     }
@@ -82,36 +131,36 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     }
 }
 .my_btn_1, .my_bg_1{
-    background-color: $c1;
-    color: $c3;
+    background-color: var(--c1); 
+    color: var(--c3);
     text-shadow: 1px 1px 4px rgba(181, 181, 181, 0.367);
 }
 .my_btn_2{
-    background-color: $c2;
-    color: $c3;
+    background-color: var(--c2);
+    color: var(--c3);
     text-shadow: 1px 1px 4px rgba(101, 181, 181, 0.367);
 }
 .my_btn_3{
-    background-color: $c3;
-    color: $c2;
-    text-shadow: 1px 1px 4px $c2_op;
+    background-color: var(--c3);
+    color: var(--c2);
+    text-shadow: 1px 1px 4px var(--c2_op);
 }
 .my_btn_4{
-    background-color: $c1;
-    color: $c2;
-    text-shadow: 1px 1px 4px $c2_op;
+    background-color: var(--c1); 
+    color: var(--c2);
+    text-shadow: 1px 1px 4px var(--c2_op);
 }
 .my_btn_5{
-    background-color: $c1;
-    color: $c3;
-    border: 2px solid $c3;
+    background-color: var(--c1); 
+    color: var(--c3);
+    border: 2px solid var(--c3);
     text-shadow: 1px 1px 6px #ffffff5e;
     box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.703);
 }
 .my_btn_6{
-    background-color: $c2;
-    color: $c3;
-    border: 2px solid $c3;
+    background-color: var(--c2);
+    color: var(--c3);
+    border: 2px solid var(--c3);
     box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.703);
     text-shadow: 1px 1px 6px #ffffff5e;
 }
@@ -122,7 +171,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 }
 
 .nav{
-    background-color: $c3!important;
+    background-color: var(--c3)!important;
     position: fixed;
     padding-left: 15px;
     top: 0;
@@ -133,7 +182,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     .mylinknav{
         font-size: $fs_sm;
         font-weight: light !important;
-        color: $c1 !important;
+        color: var(--c1)!important;
         }
         .mylinknavs{
         font-size: $fs_md !important;
@@ -141,7 +190,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 }
 .scale-none{
     h5{
-        color: $c2 !important;
+        color: var(--c2) !important;
     }
 }
 .scale-none:hover{
@@ -150,24 +199,24 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     opacity: .9;
     filter: invert(0) !important;
     h5{
-        color: $c2 !important;
+        color: var(--c2) !important;
     }
 }
 .create{
-    background-color: $c3;
-    color: $c1 ;
+    background-color: var(--c3);
+    color: var(--c1);
     
 }
 .trash{
-    background-color: $c2;
-    color: $c3 ;
+    background-color: var(--c2);
+    color: var(--c3) ;
 }
 .search{
-    background-color: $c1;
-    color: $c2;
+    background-color: var(--c1); 
+    color: var(--c2);
     svg{
-        border-color: $c2;
-        fill: $c2;
+        border-color: var(--c2);
+        fill: var(--c2);
     }
 
 }
@@ -176,17 +225,17 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 }
 .m{
     background-color: $c-update;
-    color: $c2 !important;
+    color: var(--c2) !important;
     a, button{
-        color: $c2 !important;
+        color: var(--c2) !important;
 
     }
 }
 
 .v{
-    background-color: $c1;
-    border: 2px solid $c2;
-    color: $c2 !important;
+    background-color: var(--c1); 
+    border: 2px solid var(--c2);
+    color: var(--c2) !important;
 }
 
 .ell-c{
@@ -201,29 +250,29 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 
 
 .c-white {
-    color: $c3 !important;
+    color: var(--c3) !important;
 }
 
 body{
-    background-color: $c1;
+    background-color: var(--c1); 
     background-size: cover;
     background-repeat: no-repeat;
     padding-top: 80px;
     height: 100%;
     padding-bottom: 100%;
-    color: $c3;
+    color: var(--c3);
 }
 
 .dash-c{
     .plus{
-        background-color: $c1;
+        background-color: var(--c1); 
         height: 30px;
         width: 40px;
         border-radius: 7px;
         position: relative;
         .line{
             
-            background-color: $c3;
+            background-color: var(--c3);
             height: 50%;
             width: 3px;
             border-radius: 5px;
@@ -254,15 +303,15 @@ body{
         gap: 1.5rem;
         .prod, .result-bar, .delivery-c{
             a{
-                color: $c3;
+                color: var(--c3);
                 text-decoration: none;
                 h3{
-                    color: $c1;
+                    color: var(--c1); 
                 }
             }
             flex-grow: 1;
             padding: 1.6rem 10px;
-            background-color: $c2;
+            background-color: var(--c2);
             display: flex;
             justify-content: space-between;
             flex-direction: column;
@@ -271,7 +320,8 @@ body{
             .top-p{
                 display: flex;
                 justify-content: space-between;
-                gap: 4px;
+                gap: .6rem;
+                flex-wrap: wrap;
                 width: 100%;
             }
             .stat-p{
@@ -279,8 +329,8 @@ body{
                 //flex-grow: ;
                 padding: 8px;
                 border-radius: 10px;
-                background-color: $c3;
-                color: $c1;
+                background-color: var(--c3);
+                color: var(--c1); 
                 display: grid;
                 row-gap: .5rem;
                 column-gap: 1.5rem;
@@ -319,26 +369,62 @@ body{
             }
             .delivery-c{
                 flex-grow: 1;
-                background-color: $c3;
-                color: $c1;
+                background-color: var(--c3);
+                color: var(--c1); 
                 .stat-p{
-                    background-color: $c2;
-                    color: $c3;
+                    background-color: var(--c2);
+                    color: var(--c3);
                     flex-wrap: wrap !important;
                     justify-content: space-around;
                     display: flex;
+                    .grup{
+                        flex: 1;
+                        justify-content: space-around;
+                        display: flex;
+                        gap: 4px;
+                        span{
+                            white-space: nowrap !important;
+                        }
+                        h3{
+                            margin: 0 !important;
+                        }
+                    }
                     
                 }
             }
+            
         }
         
 
+    }
+    @media (max-width:992px) {
+        .delivery-c{
+            .stat-p{
+                flex-direction: column !important;
+                .grup{
+                    width: 100% !important;
+                    // /justify-content: space-evenly !important;
+                    display: flex;
+                    gap: 4px;
+                    text-align: left !important;
+                    .stat{
+                        width: 25%;
+                        justify-content: flex-start !important;  
+                    }
+                    span{
+                        white-space: nowrap;
+                    }
+                }
+                
+            }
+        }
+        
     }
     .bottom-c{
         align-items: stretch;
         .date{
             flex-shrink: 0;
-            color: $c3;
+            color: var(--c3);
             flex-grow: 3;
             flex-shrink: 1;
             .date-off{
@@ -347,7 +433,7 @@ body{
                 justify-content: center;
                 align-items: center;
                 a{
-                    color: $c2;
+                    color: var(--c2);
                     text-decoration: none;
                 }
             }
@@ -355,13 +441,14 @@ body{
         .setting{
             
             flex-shrink: 3;
-            padding: 1.6rem ;
+            padding: .9rem ;
             border-radius: 20px;
             text-align: center;
-            background-color: $c3;
-            color: $c1;
+            background-color: var(--c3);
+            color:#090333;
             display: flex;
             flex-direction: column;
+            
             justify-content: space-around;
             gap: 1.5rem;
             .top-set{
@@ -371,11 +458,10 @@ body{
             }
             .bottom-set{
                 h4{
-                    color: $c1;
+                    color:#090333;
                     button{
                         font-size: clamp(15px, 2.7vw, 17px);
-
-                        color: $c1;
+                        color:#090333;
                     }
                 }
                 border-radius: 20px;
@@ -394,10 +480,10 @@ body{
                     flex-wrap: wrap;
                     span{
                         flex-grow: 1;
-                        background-color: $c1;
+                        background-color: var(--c1); 
                         padding: .4em 1em;
                         border-radius: 7px;
-                        color: $c2;
+                        color: var(--c2);
                     }
                 }
                 .actions{
@@ -409,7 +495,11 @@ body{
                 }
             }
             .set{
-                $brr-set : 8px;
+                $brr-set-m : 12px;
+                $brr-set : 10px;
+                padding: .7rem;
+                border-radius: 20px;
+                background-color: white;
                 display: flex;
                 gap: 8px;
                 justify-content: space-between;
@@ -426,19 +516,22 @@ body{
                     //gap: 1rem;
                     .radio-inputs{
                         width: 100% !important;
-                        border-radius: $brr-set;
+                        border-radius: $brr-set-m !important;
+                        span{
+                            border-radius: $brr-set !important;
+                        }
                     }
-                    .input-group-text{
-                        background-color: $c2 !important;
-                        color: $c3 !important;
-                        border: $c2 solid 3px;
-                        border-top-left-radius: $brr-set;
-                        border-bottom-left-radius: $brr-set;
-                    }
-                    input.form-control{
-                        border-radius: $brr-set;
-                        border: $c2 solid 3px;
-                    }
+                }
+                .input-group-text{
+                    background-color: var(--c2) !important;
+                    color: var(--c3) !important;
+                    border: var(--c2) solid 2px;
+                    border-top-left-radius: $brr-set;
+                    border-bottom-left-radius: $brr-set;
+                }
+                input.form-control{
+                    border-radius: $brr-set;
+                    border: var(--c2) solid 2px;
                 }
                 .radio-inputs{
                     border-radius: $brr-set;
@@ -456,13 +549,13 @@ body{
                     .input-group{
                        // width: 80%;
                         label{
-                            background-color: $c2 !important;
-                            color: $c3;
-                            border:  2px solid $c2;
+                            background-color: var(--c2) !important;
+                            color: var(--c3);
+                            border:  2px solid var(--c2);
                         }
                         input{
-                            color: $c1;
-                            border:  2px solid $c2;
+                            color: var(--c1); 
+                            border:  2px solid var(--c2);
                         }
                     }
                 }
@@ -542,7 +635,7 @@ body{
 }
 .carousel-indicators{
     padding: 0 15px;
-    background-color:  $c2 !important;
+    background-color:  var(--c2) !important;
     border-radius: 20px;
 }
 
@@ -554,7 +647,7 @@ body{
     display: flex;
     align-items: center;
     .line{
-        background-color: $c1;
+        background-color: var(--c1); 
         height: 13px;
         width: 2px;
         position: absolute;
@@ -581,7 +674,7 @@ body{
         top: 0px;
         right: 7%;
         position: absolute;
-        color: $c3;
+        color: var(--c3);
         svg{
             height: 27px;
             width: 27px;
@@ -590,7 +683,7 @@ body{
     //margin: 3rem 0;
     width: 100%;
     //height: 100%;
-    background-color: $c3;
+    background-color: var(--c3);
     border-radius: 20px;
     display: flex;
     padding: 5px;
@@ -605,8 +698,8 @@ body{
         padding: 15px 7.2% ;
         width: 100%;
         max-width: 100%;
-        color: $c3;
-        background-color:  $c2 !important;
+        color: var(--c3);
+        background-color:  var(--c2) !important;
         border-radius: 17px;
         h4{
             overflow: hidden; 
@@ -628,8 +721,8 @@ body{
         width: 100%;
     
         .day{
-            color: $c3;
-            background-color: $c1;
+            color: var(--c3);
+            background-color: var(--c1); 
             text-decoration: none;
             width: auto;
             height: 80px;
@@ -644,7 +737,7 @@ body{
                 border: none;
                 padding: 0;
                 font-size: clamp(14px , 2.1vw, 20px);
-                color: $c3;
+                color: var(--c3);
                 font-weight: lighter;
             }
             p{
@@ -667,7 +760,7 @@ body{
                     
                 }
                 span{
-                    text-shadow: 0 0 4px $c2;
+                    text-shadow: 0 0 4px var(--c2);
                     flex-shrink: 0;
 
                 }
@@ -690,7 +783,7 @@ body{
             opacity: .4;
         }
         .day-active{
-            background-color: $c2;
+            background-color: var(--c2);
             .b{
                 font-weight: bold;
             }
@@ -710,7 +803,7 @@ body{
 
 
 .top-bar-product{
-    color: $c3;
+    color: var(--c3);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.195);
     padding: 1.5rem;
     background-color: $cfilter;
@@ -744,7 +837,7 @@ body{
             height: 30px;
             border: none;
             background-color: #f4f4ef8a;
-            color: $c3;
+            color: var(--c3);
             transition: all .2s ease-in;
             padding-inline: 14px;
             appearance: none;
@@ -824,7 +917,7 @@ body{
         //gap: .25rem;
         h3{
             text-align: left;
-            background-color: $c2;
+            background-color: var(--c2);
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
             margin-bottom: 0 !important;
@@ -833,14 +926,14 @@ body{
             width: auto !important;
             a{
                 text-decoration: none;
-                color: $c3;
+                color: var(--c3);
             }
         }
         .card_{
             //border-radius: 12px;
             border-bottom-left-radius: 12px;
             border-bottom-right-radius: 12px;
-            color: $c1 ;
+            color: var(--c1);
             background-color: $bg-p-p;
             padding: 1rem;
             display: flex !important;
@@ -911,7 +1004,7 @@ body{
             aspect-ratio: 1;
             width: 26px;
             box-shadow: 0px 0px 2px black;
-            background-color: $c3;
+            background-color: var(--c3);
             padding: 4px;
         }
         div, a, button{
@@ -930,7 +1023,7 @@ body{
     gap: .6rem;
     h3{
         a{
-            color: $c3;
+            color: var(--c3);
             text-decoration: none;
         }
     }
@@ -938,8 +1031,8 @@ body{
     .card_{
         border-radius: 10px;
         padding: 8px;
-        color: $c1;
-        background-color: $c3;
+        color: var(--c1); 
+        background-color: var(--c3);
         flex-wrap: wrap;
         img{
             background-color: #10b793;
@@ -947,7 +1040,7 @@ body{
             width: 100% !important;
             height: 195px;
             object-fit: cover;
-            border: 2px solid $c3_op;
+            border: 2px solid var(--c3_op);
         }
     }
     .actions{
@@ -972,10 +1065,10 @@ body{
     justify-content: space-between;
     align-items: center;
     border-radius: 16px;
-    background-color: $c3;
+    background-color: var(--c3);
     gap: 1rem ;
     a{
-        color: $c1;
+        color: var(--c1); 
         text-decoration: none;
         font-size: clamp(13px, 2.2vw, 22px);
         line-height: 70% !important;
@@ -984,7 +1077,7 @@ body{
     h3{
         flex-shrink: 1;
         line-height: 90% !important;
-        color: $c1;
+        color: var(--c1); 
     }
     img{
         background-color: #FF7658;
@@ -1005,7 +1098,7 @@ body{
         .price{
             font-size:clamp(17px, 3vw, 23px) ;
             font-weight: bolder;
-            color: $c2; 
+            color: var(--c2); 
         }
         .actions{
             display: flex;
@@ -1022,22 +1115,22 @@ body{
                 margin-top: auto;
                 height: 100%;
                 width: 27px;
-                fill: $c3; 
+                fill: var(--c3); 
                 border-radius: 4px;
                 padding: 6px;
-                background-color: $c1;
+                background-color: var(--c1); 
                 display: block;
             }
             .s_d{
                 display: block;
                 border: none;
                 padding: 0;
-                color: $c2; 
+                color: var(--c2); 
                 height: 100%;
                 width: 27px;
                 svg{
-                    background-color: $c2;
-                    fill: $c3; 
+                    background-color: var(--c2);
+                    fill: var(--c3); 
                     height: 100%;
                     width: 27px;
                 }
@@ -1072,7 +1165,7 @@ body{
     padding: 2.2rem;
     background-color: $bg-p-p;
     border-radius: 20px;
-    color: $c1;
+    color: var(--c1); 
     h2{
         font-weight: bolder;
         text-transform: capitalize;
@@ -1101,7 +1194,7 @@ body{
                 aspect-ratio: 1.5;
                 object-fit: cover;
                 max-width: 650px;
-                background-color: $c2_op;
+                background-color: var(--c2_op);
             }
             .allergens{
                 max-width: 350px;
@@ -1112,7 +1205,7 @@ body{
                 flex-wrap: wrap;
                 img{
                     padding: 3px;
-                    border: $c1_op solid 2px;
+                    border: var(--c1_op) solid 2px;
                     background-color: white;
                     width: 35px;
                     border-radius: 100% ;
@@ -1150,7 +1243,7 @@ body{
         flex-wrap: wrap;
         .my_btn_1, .my_btn_4, .my_btn_2{
             display: flex !important;
-            border: 2px solid $c3;
+            //border: 2px solid var(--c3);
             flex: 1 1 auto!important;
         }
         form{
@@ -1164,13 +1257,18 @@ body{
             align-items: center;
             display: flex;
             gap: 1rem;
-            background-color: $c1_op;
+            background-color: var(--c1_op);
             padding: 1rem;
             border-radius: 10px;
-            //color: $c3;
+            //color: var(--c3);
         }
         .actions{
             justify-content: center;
+            form{
+                button{
+                    width: 100%;
+                }
+            }
         }
         .set_plate{
             justify-content:flex-start;
@@ -1186,11 +1284,11 @@ body{
                 gap: .6rem;
             }
             .title{
-                color: $c3;  
+                color: var(--c3);  
                 font-size: clamp(18px, 3.5vw, 30px) !important;
             }
             .res{
-                color: $c3;  
+                color: var(--c3);  
                 font-size: clamp(15px, 2.5vw, 25px) !important;            
                 flex-grow: 1;
             }
@@ -1222,6 +1320,11 @@ body{
 
 }
 
+.btn_special{
+    border: 1px solid var(--c2);
+    color: var(--c2);
+    background-color: var(--c1_op);
+}
 .creation{
     input::placeholder {
         color: #f4f4ef52; /* Cambia questo colore a tuo piacimento */
@@ -1235,23 +1338,23 @@ body{
         font-weight: bolder;
     }
     section{
-        background: $c2_op;
-        //background: linear-gradient(-15deg, $c1_op , $c2);
+        background: var(--c2_op);
+        //background: linear-gradient(-15deg, var(--c1_op), var(--c2));
         width: 100%;
         padding: 1rem;
         border-radius: 18px;
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        color: $c3;
+        color: var(--c3);
         input, select{
             flex-grow: 1;
-            background-color: $c3_op;
+            background-color: var(--c3_op);
             border: none;
             border-radius: 10px;
             height: 40px;
             padding: 10px;
-            color: $c3;
+            color: var(--c3);
             transition: all .3s ease-in-out;
             appearance: none;
         }
@@ -1259,14 +1362,14 @@ body{
             text-align: center;
         }
         input:focus, select:focus, textarea:focus{
-            border: 2px solid $c3;
-            box-shadow: 0 0 3px $c2;
+            border: 2px solid var(--c3);
+            box-shadow: 0 0 3px var(--c2);
             outline: none;
             transition: all .3s ease-in-out;
         }
         input:hover, select:hover, textarea:hover{
-            background-color: $c1;
-            color: $c2;
+            background-color: var(--c1); 
+            color: var(--c2);
             transition: all .3s ease-in-out;
         }
         #file-input, #file-input1 {
@@ -1280,14 +1383,14 @@ body{
             height: 100%;
             padding: 5px 10px;
             border-radius: 7px;
-            color: $c2;
+            color: var(--c2);
             cursor: pointer;
             transition: background .2s ease-in-out;
         }
         #file-input::file-selector-button:hover, 
         #file-input1::file-selector-button:hover {
-            background: $c2;
-            color: $c3;
+            background: var(--c2);
+            color: var(--c3);
         }
         .split, .split-3{
             display: flex;
@@ -1328,7 +1431,7 @@ body{
             border-radius: 10px;
             padding: 10px;
             background-color: rgba(255, 255, 255, 0.363);
-            color: $c3;
+            color: var(--c3);
 
         }
         label{
@@ -1345,10 +1448,12 @@ body{
     }
     .cont_i{
         .check_c{
+            background-color: rgba(5, 7, 49, 0.41);
 
             max-height: 50vh;
             border-radius: 12px;
-            border: 2px solid $c3_op;
+            border-bottom: 2px solid var(--c3_op);
+            border-top: 2px solid var(--c3_op);
             padding: 10px;
             overflow: scroll;
         }
@@ -1360,9 +1465,11 @@ body{
             flex-wrap: wrap;
             gap: .4rem;
             label{
+                //max-width: 50%;
                 flex: 1 ;
+                background-color: rgba(5, 7, 49, 0.41);
                 white-space: nowrap;
-                margin-bottom: 0;
+                // margin-left:  auto;
                 font-size: clamp(14px, 2.2vw, 16px);
             }
         }
@@ -1380,13 +1487,13 @@ body{
     display: flex;
     flex-direction: column;
     width: 100%;
-    border: 1px solid $c3;
+    border: 1px solid var(--c3);
     border-radius: 16px;
     padding: .2rem 10px;
     margin-bottom: 1rem;
     background-color: #d1d1d131;
     .top{
-        border-bottom: 1px $c3 dotted;
+        border-bottom: 1px var(--c3) dotted;
     }
     section{
         padding: 1rem 1.2rem;
@@ -1463,16 +1570,16 @@ body{
         gap: 5px;
         border-radius: 10px;
         .mail-tel {
-            background-color: $c1;
-            border-bottom: 2px solid $c3;
+            background-color: var(--c1); 
+            border-bottom: 2px solid var(--c3);
             display: flex;
             justify-content: space-between;
             font-size: 20px;
             a {
-                border: 2px solid $c3;
+                border: 2px solid var(--c3);
                 margin: 10px;
                 border-radius: 8px;
-                color: $c3;
+                color: var(--c3);
                 text-decoration: none;
                 padding: 4px 10px;
                 white-space: nowrap;
@@ -1523,7 +1630,7 @@ body{
                     gap: 5px;
                     width: 100%;
                     padding: 5px;
-                    border: 1px solid $c3;
+                    border: 1px solid var(--c3);
                     .counter,
                     .name {
                         font-size: 20px;
@@ -1603,15 +1710,15 @@ body{
 .my_1{
     position: relative;
     opacity: .7;
-    background-color: $c3;
-    color: $c1 ;
+    background-color: var(--c3);
+    color: var(--c1);
     .top{
-        border-bottom: 1px $c1 dotted !important;
+        border-bottom: 1px var(--c1)dotted !important;
     } 
     .mail-tel{
-        border-bottom: 6px solid $c1 !important ;
+        border-bottom: 6px solid var(--c1)!important ;
         div{
-            border: 2px solid $c1 !important ;
+            border: 2px solid var(--c1)!important ;
         }
     }
     
@@ -1619,15 +1726,15 @@ body{
 .my_3{
     position: relative;
     
-    background-color: $c2;
-    color: $c3 ;
+    background-color: var(--c2);
+    color: var(--c3) ;
     .top{
-        border-bottom: 1px $c3 dotted !important;
+        border-bottom: 1px var(--c3) dotted !important;
     } 
     .mail-tel{
-        border-bottom: 6px solid $c3 !important ;
+        border-bottom: 6px solid var(--c3) !important ;
         div{
-            border: 2px solid $c3 !important ;
+            border: 2px solid var(--c3) !important ;
         }
     }
     
@@ -1636,31 +1743,31 @@ body{
     position: relative;
     opacity: .7;
     
-    background-color: $c2;
-    color: $c3 ;
+    background-color: var(--c2);
+    color: var(--c3) ;
     .top{
-        border-bottom: 1px $c3 dotted !important;
+        border-bottom: 1px var(--c3) dotted !important;
     } 
     .mail-tel{
-        border-bottom: 6px solid $c3 !important ;
+        border-bottom: 6px solid var(--c3) !important ;
         div{
-            border: 2px solid $c3 !important ;
+            border: 2px solid var(--c3) !important ;
         }
     }
     
 }
 .my_2{
     position: relative;
-    background-color: $c3;
-    color: $c1 ;
+    background-color: var(--c3);
+    color: var(--c1);
     .top{
-        border-bottom: 1px $c2 dotted !important;
+        border-bottom: 1px var(--c2) dotted !important;
     }
-    border: 2px solid $c2 !important ;
+    border: 2px solid var(--c2) !important ;
     .mail-tel{
-        border-bottom: 6px solid $c1 !important ;
+        border-bottom: 6px solid var(--c1)!important ;
         div{
-            border: 2px solid $c1 !important ;
+            border: 2px solid var(--c1)!important ;
         }
     }
 }
@@ -1668,15 +1775,15 @@ body{
     
     opacity: .7;
     background-color: $c_red;
-    color: $c3 ;
+    color: var(--c3) ;
     position: relative;
     .top{
-        border-bottom: 1px $c3 dotted !important;
+        border-bottom: 1px var(--c3) dotted !important;
     }
     .mail-tel{
-        border-bottom: 6px solid $c1 !important ;
+        border-bottom: 6px solid var(--c1)!important ;
         div{
-            border: 2px solid $c3 !important ;
+            border: 2px solid var(--c3) !important ;
         }
     }
 }
@@ -1700,24 +1807,24 @@ body{
 .my_0::after{
     opacity: .6 !important;
     content: 'Annullata';
-    color: $c3;
+    color: var(--c3);
 }
 .my_6::after{
     opacity: .6 !important;
     content: 'Annullata e Rimborsata';
-    color: $c3;
+    color: var(--c3);
 }
 .my_5::after{
     content: 'Confermata e Pagata';
-    color: $c3;
+    color: var(--c3);
 }
 .my_1::after{
     content: 'Confermata';
-    color: $c2;
+    color: var(--c2);
 }
 .my_3::after{
     content: 'Pagata';
-    color: $c3;
+    color: var(--c3);
 }
 
 
@@ -1824,7 +1931,7 @@ body{
 }
 .slim_time{
     width: auto !important;
-    color: $c1;
+    color: var(--c1); 
 }
 
 
@@ -1837,7 +1944,7 @@ body{
   display: flex;
   flex-wrap: wrap;
   border-radius: 0.5rem;
-  background-color: $c2;
+  background-color: var(--c2);
   box-sizing: border-box;
   box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
   padding: 0.25rem;
@@ -1861,13 +1968,13 @@ body{
   border-radius: 0.5rem;
   border: none;
   padding: .5rem 0;
-  color: $c3;
+  color: var(--c3);
   transition: all .15s ease-in-out;
 }
 
 .radio-inputs .radio input:checked + .name {
   background-color: white;
-  color: $c1;
+  color:#090333;
   font-weight: 600;
 }
 //// uivers select end
@@ -1883,8 +1990,8 @@ body{
        flex-direction: column;
        gap: 1rem;
        section{
-           background-color: $c1;
-           color: $c3;
+           background-color: var(--c1); 
+           color: var(--c3);
            width: 100%;
            align-items: flex-start;
            display: flex;
@@ -1893,7 +2000,7 @@ body{
            border-radius: 11px;
            h2{
             margin: 4rem 0 2rem;
-               color: $c3;
+               color: var(--c3);
            }
            .cont{
                display: flex;
@@ -1902,15 +2009,15 @@ body{
                gap: 1rem;
                flex-wrap: wrap;
                .not-set{
-                   color: $c1;
-                   background-color: $c3 !important;
+                   color: var(--c1); 
+                   background-color: var(--c3) !important;
                    
                 }
                 .set,.not-set{
                     flex: 1 1 40%;
                     padding: 2px 15px;
                     border-radius: 40px;
-                    background-color: $c2;
+                    background-color: var(--c2);
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
@@ -1921,7 +2028,7 @@ body{
                     }
                     input,select{
                         background-color: rgba(255, 255, 255, 0);
-                        color: $c3;
+                        color: var(--c3);
                         font-size: 20px;
                         border: none;
                         max-width: 40px;
@@ -1957,25 +2064,25 @@ body{
         //height: 30px;
         font-size: $fs_md;
         font-weight: bolder;
-        color: $c1;
+        color: var(--c1); 
         background-color: white;
         padding: 0.2rem; 
-        border: 1px solid $c1;
+        border: 1px solid var(--c1); 
         border-radius: 5px;
-        box-shadow: 6px 6px 0px $c1;
+        box-shadow: 6px 6px 0px var(--c1); 
         transition: .4s;
         z-index: 1;
       }
       
       .name::before {
-        color: $c1;
+        color: var(--c1); 
         content: "Non attivi";
         margin-right: 2em;
         transition: .2s ease-in-out;
       }
       
       .name::after {
-        color: $c1;
+        color: var(--c1); 
         content: "Attivi";
         margin-right: 1.7em;
         transition: .2s ease-in-out;
@@ -1984,15 +2091,15 @@ body{
       
       .theme-switch .slider {
         position: absolute;
-        background-color: $c1;
+        background-color: var(--c1); 
         margin-left: 6.2em;
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        border: 4px solid $c1;
+        border: 4px solid var(--c1); 
         transform: rotate(-120deg);
-        box-shadow: inset 0px 6px $c3, inset 0px 6px 1px 1px $c3;
-        -moz-box-shadow: inset 0px 6px $c3, inset 0px 6px 1px 1px $c3;
+        box-shadow: inset 0px 6px var(--c3), inset 0px 6px 1px 1px var(--c3);
+        -moz-box-shadow: inset 0px 6px var(--c3), inset 0px 6px 1px 1px var(--c3);
       }
       
       .theme-switch:hover {
@@ -2000,7 +2107,7 @@ body{
         cursor: pointer;
         box-shadow: none;
         transform: translateX(6px) translateY(6px);
-        background-color: $c1;
+        background-color: var(--c1); 
         border: none;
       }
       
@@ -2064,7 +2171,7 @@ body{
     height: 50px;
     width: 50px;
     transition: all 0.3s;
-    fill: $c1;
+    fill: var(--c1); 
   }
   
   .container_star svg:hover {
@@ -2072,10 +2179,10 @@ body{
   }
   
   .container_star input:checked ~ svg {
-    fill: $c2;
+    fill: var(--c2);
   }
   .promotion_on{
-    fill: $c2;
+    fill: var(--c2);
   }
 
   .ml-auto{
@@ -2085,7 +2192,7 @@ body{
   }
   #alert-container {
     position: fixed;
-    top: 20px;
+    top: 6vh;
     left: 50%;
     transform: translateX(-50%);
     width: 75%;
@@ -2094,18 +2201,19 @@ body{
 
 .fixed-alert-or, .fixed-alert-res  {
     margin-bottom: 12px; /* Spazio tra gli alert */
-    box-shadow: 0 0 10px $c2_op;
+    box-shadow: 0 0 20px -4px var(--c1); 
     font-size: $fs_sm;
+    border-radius: 0;
 }
 
 .fixed-alert-or{
-    background-color: $c2 !important;
-    color: $c3 !important;
+    background-color: var(--c2) !important;
+    color: var(--c3) !important;
     border: none !important;
 }
 .fixed-alert-res{
-    background-color: $c3 !important;
-    color: $c1 !important;
+    background-color: var(--c3) !important;
+    color: var(--c1)!important;
     border: none !important;
 }
 
@@ -2125,9 +2233,9 @@ body{
     .chart{
         // /max-width: 600px ;
         padding: .8rem;
-        color: $c1 !important;
+        color: var(--c1)!important;
         margin-bottom: 2rem;
-        background-color: $c3;
+        background-color: var(--c3);
         border-radius: 20px;
 
         display: flex;
@@ -2148,7 +2256,7 @@ body{
             align-items: center;
             flex-direction: column;
             position: relative;
-            background-color: $c1;
+            background-color: var(--c1); 
             .mytable{
                 border-collapse: separate; /* Usa separate per avere bordi separati */
                 border-spacing: 5px; /* Elimina lo spazio tra le celle */
@@ -2156,18 +2264,18 @@ body{
                 overflow: hidden; /* Necessario per alcuni browser */
                 td, th{
                     border-radius: 8px;
-                    //background-color: $c1_op;
+                    //background-color: var(--c1_op);
                     background-color: rgba(224, 225, 234, 0.062);
-                    border: 1px solid $c3;
+                    border: 1px solid var(--c3);
                 }
                 td{ 
-                    color: $c3;
+                    color: var(--c3);
                 }
                 th{
                     text-align: center;
-                    color: $c2;
+                    color: var(--c2);
                     font-size: $fs_sm;
-                    background-color: $c3;
+                    background-color: var(--c3);
     
                 }
             }
@@ -2180,7 +2288,7 @@ body{
             position: absolute;
             bottom: 0;
             top: 0;
-            background: linear-gradient(180deg, $c1_op  2% , rgba(255, 255, 255, 0));
+            background: linear-gradient(180deg, var(--c1_op) 2% , rgba(255, 255, 255, 0));
         }
     }
 }

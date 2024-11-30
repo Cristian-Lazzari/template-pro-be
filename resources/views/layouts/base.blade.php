@@ -113,9 +113,30 @@
         window.addEventListener('load', function() {
             document.body.classList.remove('loading');
             document.querySelector('.loader').style.display = 'none';
+            const toggleButton = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            if(currentTheme == 'light'){
+                localStorage.setItem('theme', currentTheme)
+                document.documentElement.setAttribute("data-theme", currentTheme);
+            }
+
+            toggleButton.addEventListener('click', () => {
+                const theme = localStorage.getItem('theme') == 'light' ? 'dark' : 'light';
+                localStorage.setItem("theme", theme);
+                console.log(theme)
+                document.documentElement.setAttribute("data-theme", theme);
+            });
         });
    
         
+
+        //document.addEventListener('DOMContentLoaded', () => {
+          
+            
+            
+            
+            
+        //});
     </script>
     @yield('scripts')
 

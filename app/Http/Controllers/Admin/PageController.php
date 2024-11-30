@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\Date;
 use App\Models\Post;
 use App\Models\Order;
@@ -13,7 +14,6 @@ use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -35,6 +35,18 @@ class PageController extends Controller
         $traguard = [
             1 =>  Order::whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [$meseCorrenteInizio, $meseCorrenteFine])->sum('tot_price'),
             2 =>  Order::sum('tot_price'),
+            3 =>  Reservation::selectRaw('SUM(JSON_EXTRACT(n_person, "$.adult") + JSON_EXTRACT(n_person, "$.child")) AS total_persons')
+                ->whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [
+                    Carbon::now()->startOfMonth()->format('Y-m-d H:i:s'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d H:i:s')
+                ])
+                ->value('total_persons'),
+            4 =>  Reservation::selectRaw('SUM(JSON_EXTRACT(n_person, "$.adult") + JSON_EXTRACT(n_person, "$.child")) AS total_persons')
+                ->whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [
+                    Carbon::now()->startOfYear()->format('Y-m-d H:i:s'),
+                    Carbon::now()->endOfYear()->format('Y-m-d H:i:s')
+                ])
+                ->value('total_persons')
         ];
         $post = [ 
             1 => Post::count(),

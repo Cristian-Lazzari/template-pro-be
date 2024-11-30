@@ -161,7 +161,7 @@
                                 <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
                                 <label class="btn 
                                 @if($a['special'])
-                                btn-outline-info
+                                btn-outline-dark btn_special
                                 @else
                                 btn-outline-light
                                 @endif
@@ -223,7 +223,7 @@
                 @if (in_array($i, old('allergens', $al, []))) checked @endif>
                 <label class="btn 
                 @if($a['special'])
-                btn-outline-info
+                btn-outline-dark btn_special
                 @else
                 btn-outline-light
                 @endif

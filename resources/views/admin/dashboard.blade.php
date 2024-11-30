@@ -10,7 +10,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-
+{{-- <div id="alert-container" >
+    <div class="alert alert-dismissible fade show fixed-alert-res">
+        È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.
+        <button class="btn-close"></button>
+    </div>
+    <div class="alert alert-dismissible fade show fixed-alert-or">
+        È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.
+        <button class="btn-close"></button>
+    </div>
+</div> --}}
 <div class="dash-c">
     @php
         $pack = ['', 'Essetians', 'Cene & Pranzi', 'Delivery & Asporto', 'Premium' ]
@@ -31,8 +40,8 @@
             <div class="top-p">
                 <a class="title" href="{{ route('admin.products.index') }}"> <h2>Prodotti</h2></a>
                 <a href="{{ route('admin.products.index') }}" class=" plus icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
-                        <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
                     </svg>
                 </a>
                 <a href="{{ route('admin.products.create') }}" class="plus">
@@ -65,14 +74,30 @@
         </div>      
         @if (config('configurazione.pack') > 1 )
             <div class="right-t">
-                @if (config('configurazione.pack') > 2 )
+                @if (config('configurazione.pack') > 1 )
                 <div class="result-bar">
                     <div class="stat">
                         <h2>€{{$traguard[1] / 100}}</h2>
                         <span>questo mese</span>
                     </div>
                     <div class="stat">
+                        <h2> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                            </svg>
+                            {{$traguard[3]}}</h2>
+                        <span>questo mese</span>
+                    </div>
+                    <div class="stat">
                         <h2>€{{$traguard[2] / 100}}</h2>
+                        <span>questo anno</span>
+                    </div>
+                    <div class="stat">
+                        <h2> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                            </svg>
+                            {{$traguard[4]}}</h2>
                         <span>questo anno</span>
                     </div>
                 </div>
@@ -80,31 +105,35 @@
                     <div class="top-p">
                         <a class="title" href="{{ route('admin.orders.index') }}"> <h3>Ordini asporto/delivery</h3></a>
                         <a href="{{ route('admin.orders.index') }}" class=" plus icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
-                                <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-boxes" viewBox="0 0 16 16">
+                                <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434zM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567zM7.5 9.933l-2.75 1.571v3.134l2.75-1.571zm1 3.134 2.75 1.571v-3.134L8.5 9.933zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567zm2.242-2.433V3.504L8.5 5.076V8.21zM7.5 8.21V5.076L4.75 3.504v3.134zM5.258 2.643 8 4.21l2.742-1.567L8 1.076zM15 9.933l-2.75 1.571v3.134L15 13.067zM3.75 14.638v-3.134L1 9.933v3.134z"/>
                             </svg>
                         </a>
-                        <a href="https://demo3-futureplus.netlify.app/ordina" class="plus">
+                        {{-- <a href="https://demo3-futureplus.netlify.app/ordina" class="plus">
                             <div class="line"></div>
                             <div class="line l2"></div>
-                        </a>
+                        </a> --}}
                     </div>
                     <div class="stat-p">
-                        <div class="stat">
-                            <h3>{{$order[2]}}</h3>
-                            <span>in elaborazione</span>
+                        <div class="grup">
+                            <div class="stat">
+                                <h3>{{$order[2]}}</h3>
+                                <span>da vedere</span>
+                            </div>
+                            <div class="stat">
+                                <h3>{{$order[1]}}</h3>
+                                <span>confermate</span>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <h3>{{$order[1]}}</h3>
-                            <span>confermate</span>
-                        </div>
-                        <div class="stat">
-                            <h3>{{$order[3]}}</h3>
-                            <span>annullate</span>
-                        </div>
-                        <div class="stat">
-                            <h3>{{$order[4]}}</h3>
-                            <span>pagate</span>
+                        <div class="grup">
+                            <div class="stat">
+                                <h3>{{$order[3]}}</h3>
+                                <span>annullate</span>
+                            </div>
+                            <div class="stat">
+                                <h3>{{$order[4]}}</h3>
+                                <span>pagate</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -115,32 +144,37 @@
                     <div class="top-p">
                         <a class="title" href="{{ route('admin.reservations.index') }}"> <h3>Prenotazioni Tavoli</h3></a>
                         <a href="{{ route('admin.reservations.index') }}" class=" plus icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
-                                <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+                              </svg>
                         </a>
-                        <a href="https://demo3-futureplus.netlify.app/check-out" class="plus">
+                        {{-- <a href="https://demo3-futureplus.netlify.app/check-out" class="plus">
                             <div class="line"></div>
                             <div class="line l2"></div>
-                        </a>
+                        </a> --}}
                     </div>
                     <div class="stat-p">
-                        <div class="stat">
-                            <h3>{{$reservation[2]}}</h3>
-                            <span>in elaborazione</span>
+                        <div class="grup">
+                            <div class="stat">
+                                <h3>{{$reservation[2]}}</h3>
+                                <span>da vedere</span>
+                            </div>
+                            <div class="stat">
+                                <h3>{{$reservation[1]}}</h3>
+                                <span>confermate</span>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <h3>{{$reservation[1]}}</h3>
-                            <span>confermate</span>
+                        <div class="grup">
+                            <div class="stat">
+                                <h3>{{$reservation[3]}}</h3>
+                                <span>annullate</span>
+                            </div>
+                            <div class="stat">
+                                <h3>{{$reservation[4]}}</h3>
+                                <span>pagate</span>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <h3>{{$reservation[3]}}</h3>
-                            <span>annullate</span>
-                        </div>
-                        <div class="stat">
-                            <h3>{{$reservation[4]}}</h3>
-                            <span>pagate</span>
-                        </div>
+                        
                     </div>
                 </div>
                 @endif
@@ -150,9 +184,9 @@
             <div class="top-p">
                 <a class="title" href="{{ route('admin.posts.index') }}"> <h2>Post</h2></a>
                 <a href="{{ route('admin.posts.index') }}" class=" plus icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
-                        <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                      </svg>
                 </a>
                 <a href="{{ route('admin.posts.create') }}" class="plus">
                     <div class="line"></div>
@@ -293,7 +327,12 @@
             @endif
         </div>
         <form class="setting" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
-            <h2>Impostazioni</h2>
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+                </svg>
+            Impostazioni</h2>
+            
             <div class="top-set">
                 @csrf
                 @php
@@ -456,7 +495,7 @@
                                     @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
                                         <div class="input-group mb-3">
                                             <label for="{{$giorno}}" class="input-group-text" id="basic-addon2">{{ $giorno }}</label>
-                                            <input id="{{$giorno}}" type="text" class="form-control" placeholder="19:30 - 23:30" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                                            <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
                                         </div>
                                     @endforeach
                                 </section>
