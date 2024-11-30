@@ -306,6 +306,9 @@ body{
         align-items: stretch;
         gap: 1.5rem;
         .prod, .result-bar, .delivery-c{
+            h2{
+                padding-right: 2rem;
+            }
             a{
                 color: var(--c3);
                 text-decoration: none;
@@ -1031,7 +1034,7 @@ body{
             text-decoration: none;
         }
     }
-    flex: 1 1 auto;
+    flex: 1 0 auto;
     .card_{
         border-radius: 10px;
         padding: 8px;
