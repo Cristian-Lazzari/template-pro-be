@@ -362,7 +362,7 @@
                 <div class="set">
                     <h4>Asporto</h4>
                     <div class="set-cont">
-                        @if (config('configurazione.pack') > 2) <h5>Servizio</h5> @endif   
+                        <h5>Servizio</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 0) checked  @endif value="0" >
@@ -372,7 +372,7 @@
                                 <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 1) checked  @endif value="1" >
                                 <span class="name">Chiamate</span>
                             </label>
-                            @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)   
+                            @if (config('configurazione.pack') > 1)   
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 2) checked  @endif value="2" >
                                 <span class="name">Web App</span>
@@ -395,6 +395,8 @@
                                     <span class="name">Obbligatorio</span>
                                 </label>
                             </div>
+                        @endif
+                        @if(config('configurazione.pack') > 1)    
                             <h5>Generali</h5>
                             <div class="input-group mb-3">
                                 <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
@@ -404,7 +406,7 @@
                         
                     </div>
                 </div>
-                @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
+                @if (config('configurazione.pack') > 1)
                 <div class="set">
                     <h4>Domicilio</h4>
                     <div class="set-cont">
@@ -420,6 +422,7 @@
                                 <span class="name">On</span>
                             </label>
                         </div>
+                        @if (config('configurazione.pack') > 2)
                         <h5>Pagamento online</h5>
                         <div class="radio-inputs">
                             <label class="radio">
@@ -435,6 +438,7 @@
                                 <span class="name">Obbligatorio</span>
                             </label>
                         </div>
+                        @endif
                         <h5>Generali</h5>
                         <div class="input-group mb-3">
                             <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
@@ -601,7 +605,7 @@
     </div>
 
 
-    @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
+    @if (config('configurazione.pack') > 1)
     <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
@@ -624,7 +628,7 @@
             </form>
         </div>
     </div>
-    @endif
+    
 
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -653,8 +657,10 @@
         </div>
     </div>
     
-
+    @endif
 </div>
+@if (config('configurazione.pack') > 1 && ($setting[0]['status'] == 2 || $setting[1]['status'] == 2) && config('configurazione.APP_URL') !== 'http://127.0.0.1:8000')
+
 <script>
     const alertContainer = document.createElement('div');
     alertContainer.setAttribute('id', 'alert-container');
@@ -707,6 +713,7 @@
         console.error("Errore nella connessione SSE", event);
     };
 </script>
+@endif
 
 @endsection
 
