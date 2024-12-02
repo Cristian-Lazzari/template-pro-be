@@ -12,7 +12,7 @@
 
  
 
-<h1 class="p-3">{{$day[0]->day}} - {{config('configurazione.mesi')[$day[0]->month]}}</h1>
+<h1 class="p-3">{{$day[0]->day}} - {{['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'][$day[0]->month]}}</h1>
 <div class="slim_cont">
     @foreach ($day as $t)
     @php

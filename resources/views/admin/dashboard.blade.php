@@ -245,7 +245,7 @@
                             @endif
                             ">
                                 
-                                <h2 class="my">{{config('configurazione.mesi')[$m['month']]}} - {{$m['year']}}</h2>
+                                <h2 class="my">{{['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'][$m['month']]}} - {{$m['year']}}</h2>
                                 <div class="calendar-c">
                                     <a href="{{route('admin.dates.index')}}" class="date-set">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-wide-connected" viewBox="0 0 16 16">
@@ -496,7 +496,7 @@
                                 @endphp
                                 <section class="activity-day">
                                     <h3> Giorni di attività </h3>
-                                    @foreach (array_slice(config('configurazione.days_name'), 1) as $giorno)
+                                    @foreach (['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'] as $giorno)
                                         <div class="input-group mb-3">
                                             <label for="{{$giorno}}" class="input-group-text" id="basic-addon2">{{ $giorno }}</label>
                                             <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" aria-describedby="basic-addon2">

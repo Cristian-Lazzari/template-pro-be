@@ -38,7 +38,7 @@
                     <div  class="myres-left-c">
                         <div class="time">{{$ora_formatata}}</div>
 
-                        <div class="day_w">{{config('configurazione.days_name')[$giorno_settimana]}}</div>
+                        <div class="day_w">{{[' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$giorno_settimana]}}</div>
                         <div class="date">{{$data_formatata}}</div>
                     </div>
                     <div class="c_a">inviato alle: {{$reservation->created_at}}</div>

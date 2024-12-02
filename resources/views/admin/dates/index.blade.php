@@ -52,7 +52,7 @@
             @endif
             ">
                 
-                <h2 class="my">{{config('configurazione.mesi')[$m['month']]}} - {{$m['year']}}</h2>
+                <h2 class="my">{{['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'][$m['month']]}} - {{$m['year']}}</h2>
                 <div class="calendar-c">
                     
                     <div class="c-name">
@@ -181,10 +181,10 @@
             <h5 class="pt-4">Seleziona i giorni in cui sei attivo</h5>
             <div class="day_form" role="group" aria-label="Basic checkbox toggle button group">
 
-                @foreach (config('configurazione.days') as $day)
+                @foreach ([1, 2, 3, 4, 5, 6, 7] as $day)
                 
                     <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <label class="my_btn_1 my_btn_2 scale-none  " for="day_{{ $day }}">{{ config('configurazione.days_name')[$day] }}
+                    <label class="my_btn_1 my_btn_2 scale-none  " for="day_{{ $day }}">{{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }}
                         <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
                                 {{-- <input
