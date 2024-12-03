@@ -301,8 +301,7 @@ class ProductController extends Controller
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
 
-        $product->allergens    = json_encode($this->cleanArray($allergens_m));
-        
+        $product->allergens    = is_array($allergens_m) ? json_encode($this->cleanArray($allergens_m)) : $allergens_m;
         
         
         if(config('configurazione.pack') > 2){
@@ -401,7 +400,7 @@ class ProductController extends Controller
             $allergens = '[]';
         }
         // controllo se ci sono allergien dagli ingredient
-        
+       
         $allergens_from_i = [];
         if(isset($data['ingredients'])){     
             foreach ($data['ingredients'] as $i) {
@@ -413,6 +412,7 @@ class ProductController extends Controller
                     }  
                 }
             }
+            dd(count($allergens_from_i));
             if (count($allergens_from_i) > 0) {
                 $alldclen = array_unique($allergens_from_i);
                 $rightall = array_map('intval', array_values($alldclen));   
@@ -457,7 +457,7 @@ class ProductController extends Controller
         $product->price         = intval(round($prezzo_float * 100));       
         $product->description   = $data['description'];
         
-        $product->allergens    = json_encode($this->cleanArray($allergens_m));
+        $product->allergens    = is_array($allergens_m) ? json_encode($this->cleanArray($allergens_m)) : $allergens_m;
         
         $product->promotion   = isset($data['promotion']) ? true : false;
         $product->old_price   = intval(round($prezzo_float1 * 100));
