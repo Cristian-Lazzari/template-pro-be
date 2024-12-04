@@ -412,7 +412,7 @@ class ProductController extends Controller
                     }  
                 }
             }
-            dd(count($allergens_from_i));
+            //dd(count($allergens_from_i));
             if (count($allergens_from_i) > 0) {
                 $alldclen = array_unique($allergens_from_i);
                 $rightall = array_map('intval', array_values($alldclen));   
