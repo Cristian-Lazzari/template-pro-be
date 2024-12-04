@@ -306,9 +306,7 @@ body{
         align-items: stretch;
         gap: 1.5rem;
         .prod, .result-bar, .delivery-c{
-            h2{
-                padding-right: 2rem;
-            }
+            
             a{
                 color: var(--c3);
                 text-decoration: none;
@@ -325,6 +323,9 @@ body{
             gap: .9rem;
             border-radius: 20px;
             .top-p{
+                h2{
+                    padding-right: 2rem;
+                }
                 display: flex;
                 justify-content: space-between;
                 gap: .5rem;
