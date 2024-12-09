@@ -85,7 +85,7 @@ $cfilter : var(--c2);
 }
 @media (max-width: 500px) {
     .main-container-page{
-        padding: 5px;
+        padding: 10px;
     }
     
 }
@@ -1795,8 +1795,8 @@ body{
         }
     }
 }
-.my_0::after, .my_5::after, .my_1::after, .my_3::after, .my_6::after {
-    position: absolute;
+.my_0::before, .my_5::before, .my_1::before, .my_3::before, .my_6::before, .my_2::before {
+    // /position: absolute;
     bottom: -4px;
     right: 0;
     text-align: center;
@@ -1806,31 +1806,35 @@ body{
     align-items: center;
     font-size: $fs_sm;
     font-weight: bolder;
-    text-transform: uppercase;
+    //text-transform: uppercase;
     text-shadow: 0 0 20px black;
     width: 100%;
     opacity: .5;
 
 }
-.my_0::after{
+.my_0::before{
     opacity: .6 !important;
     content: 'Annullata';
     color: var(--c3);
 }
-.my_6::after{
+.my_6::before{
     opacity: .6 !important;
     content: 'Annullata e Rimborsata';
     color: var(--c3);
 }
-.my_5::after{
+.my_5::before{
     content: 'Confermata e Pagata';
     color: var(--c3);
 }
-.my_1::after{
+.my_2::before{
+    content: 'NUOVA';
+    color: var(--c1);
+}
+.my_1::before{
     content: 'Confermata';
     color: var(--c2);
 }
-.my_3::after{
+.my_3::before{
     content: 'Pagata';
     color: var(--c3);
 }

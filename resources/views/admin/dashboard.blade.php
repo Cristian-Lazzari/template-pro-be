@@ -12,11 +12,11 @@
 @endif
 {{-- <div id="alert-container" >
     <div class="alert alert-dismissible fade show fixed-alert-res">
-        È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.
+        È stata appena conclusa una prenotazione: da Mario Rossi per MERCOLDÌ 20/11, sono 1 adulto e 3 bambini.
         <button class="btn-close"></button>
     </div>
     <div class="alert alert-dismissible fade show fixed-alert-or">
-        È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.
+        È stata appena conclusa un ordinazione: da Mario Rossi per MERCOLDÌ 20/11, ha ordinato d'asporto 3 pizze al piatto e 2 pezzi al taglio per un totale di €22.
         <button class="btn-close"></button>
     </div>
 </div> --}}
