@@ -565,7 +565,7 @@
                             </div>
                         </div>
                     </div>
-                    @if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4)
+                    @if (config('configurazione.pack') > 1)
                     <div class="accordion-item">
                         @csrf
                         <h4 class="accordion-header">
