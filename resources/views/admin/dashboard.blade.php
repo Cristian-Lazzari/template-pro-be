@@ -616,6 +616,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    @php
+                        if (is_string($setting[7]['property'])) {
+                            $setting[7]['property'] = json_decode($setting[7]['property'], true);
+                        } 
+                    @endphp
                     @foreach ($setting[7]['property'] as $i)
                         <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
                         <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
