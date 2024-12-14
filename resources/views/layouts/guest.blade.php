@@ -18,7 +18,7 @@
             <p>
                 Esegui l'accesso per vedere i tuoi contenuti!
             </p>
-            @if (config('configurazione.APP_URL') == 'https://db-demo4.future-plus.it')
+            @if (config('configurazione.APP_URL') == 'https://db-demo3.future-plus.it')
                 <p style="font-style: italic">(Le credenziali per accedere alla demo sono email: <strong>demo@demo.it</strong> password: <strong>demo1</strong>) </p>
             @endif
         </div>
