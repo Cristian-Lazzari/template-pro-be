@@ -88,6 +88,6 @@ Route::get('/notifica',        [AdminPageController::class, 'sendNotification'])
 
 
 Route::post('/webhook/wa', [WaController::class, 'handle']);
-Route::get('/webhook/wa', [WaController::class, 'verify']); 
+//Route::get('/webhook/wa', [WaController::class, 'verify']); 
 
 

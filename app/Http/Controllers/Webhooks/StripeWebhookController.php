@@ -80,8 +80,6 @@ class StripeWebhookController extends Controller
 
     protected function handleCheckoutSessionCompleted($session)
     {
-               
-
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         
@@ -125,6 +123,7 @@ class StripeWebhookController extends Controller
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
         $number = config('configurazione.WA_N');
+        $type_m = 0;
         if ($this->isLastResponseWaWithin24Hours()) {
             $data = [
                 'messaging_product' => 'whatsapp',
@@ -163,6 +162,7 @@ class StripeWebhookController extends Controller
                 ]
             ];
         }else{
+            $type_m = 1;
             $data = [
                 'messaging_product' => 'whatsapp',
                 'to' => $number,
@@ -204,15 +204,17 @@ class StripeWebhookController extends Controller
             $order->whatsapp_message_id = $messageId;
             $order->update();
         }
-        //if($order){
+        // Dati da inviare
+        $data1 = [        
+            'wa_id' =>  $order->whatsapp_message_id,
+            'type_m' => $type_m,
+            'source' => config('configurazione.APP_URL')
+        ];
+        // Invio della richiesta POST
+        $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
+
         $date = Date::where('date_slot', $order->date_slot)->first();
                         
-        $vis = json_decode($date->visible, true);
-        $av = json_decode($date->availability, true);
-        $res = json_decode($date->reserving, true);
-    
-
-        
         $order->checkout_session_id = $session->payment_intent;
         $order->status = 3;
         $order->update();
@@ -270,6 +272,12 @@ class StripeWebhookController extends Controller
 
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
+        $vis = json_decode($date->visible, true);
+        $av = json_decode($date->availability, true);
+        $res = json_decode($date->reserving, true);
+    
+
+        
 
         // aggiorno la disponibilità in date
         if(config('configurazione.typeOfOrdering')){

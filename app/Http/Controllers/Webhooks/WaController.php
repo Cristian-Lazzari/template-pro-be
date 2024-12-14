@@ -18,18 +18,6 @@ use Illuminate\Support\Facades\Mail;
 
 class WaController extends Controller
 {
-    // Metodo per gestire la verifica del webhook
-    public function verify(Request $request)
-    {
-        //$verifyToken = config('configurazione.WA_TO');
-        $verifyToken = 'diocane';
-
-        if ($request->query('hub_verify_token') === $verifyToken) {
-            return response($request->query('hub_challenge'), 200);
-        }
-
-        return response('Token di verifica non valido', 403);
-    }
 
     // Metodo per gestire i webhook
     public function handle(Request $request)
@@ -37,6 +25,8 @@ class WaController extends Controller
         $data = $request->all();
          Log::info("Webhook ricevuto");
         // Naviga nella struttura del webhook
+        $this->updateLastResponseWa();
+        
         if (isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
             $message = $data['entry'][0]['changes'][0]['value']['messages'][0] ?? null;
             $messageId = '';
@@ -61,10 +51,8 @@ class WaController extends Controller
                 Log::info("Ordine trovato per il Message ID: " . $messageId);
                 if($buttonId == 'Conferma'){
                     $this->statusOrder(1, $order);
-                    $this->updateLastResponseWa();
                 }elseif($buttonId == 'Annulla'){
                     $this->statusOrder(0, $order);
-                    $this->updateLastResponseWa();
                 }
             } elseif (Reservation::where('whatsapp_message_id', $messageId)->exists()) {
                 // Se non trovato in Orders, cerca nella tabella rervations
@@ -73,10 +61,8 @@ class WaController extends Controller
                     Log::info("Prenotazione trovata per il Message ID: " . $messageId);
                     if($buttonId == 'Conferma'){
                         $this->statusRes(1, $reservation);
-                        $this->updateLastResponseWa();
                     }elseif($buttonId == 'Annulla'){
                         $this->statusRes(0, $reservation);
-                        $this->updateLastResponseWa();
                     }
                 }
             } else {

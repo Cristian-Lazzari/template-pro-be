@@ -345,6 +345,7 @@ class OrderController extends Controller
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
+                $type_m = 0;
                 if ($this->isLastResponseWaWithin24Hours()) {
                     $data = [
                         'messaging_product' => 'whatsapp',
@@ -383,6 +384,7 @@ class OrderController extends Controller
                         ]
                     ];
                 }else{
+                    $type_m = 1;
                     $data = [
                         'messaging_product' => 'whatsapp',
                         'to' => $number,
@@ -427,6 +429,15 @@ class OrderController extends Controller
                     $newOrder->whatsapp_message_id = $messageId;
                     $newOrder->update();
                 }
+
+                // Dati da inviare
+                $data1 = [        
+                    'wa_id' =>  $newOrder->whatsapp_message_id,
+                    'type_m' => $type_m,
+                    'source' => config('configurazione.APP_URL')
+                ];
+                // Invio della richiesta POST
+                $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
     
                 // Gestisci la risposta
                 if ($response->successful()) {

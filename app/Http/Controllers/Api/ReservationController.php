@@ -190,6 +190,7 @@ class ReservationController extends Controller
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
             $number = config('configurazione.WA_N');
 
+            $type_m = 0;
             
             if ($this->isLastResponseWaWithin24Hours()) {
                 // Esegui azione se è entro le ultime 24 ore
@@ -231,6 +232,7 @@ class ReservationController extends Controller
                 ];
                 
             } else {
+                $type_m = 1;
                 // Esegui azione alternativa
                 $data = [
                     'messaging_product' => 'whatsapp',
@@ -274,13 +276,22 @@ class ReservationController extends Controller
                 $newRes->whatsapp_message_id = $messageId;
                 $newRes->update();
             }
+            // Dati da inviare
+            $data1 = [        
+                'wa_id' =>  $newRes->whatsapp_message_id,
+                'type_m' => $type_m,
+                'source' => config('configurazione.APP_URL')
+            ];
+            // Invio della richiesta POST
+            $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
         
 
             // Risposta di successo
             return response()->json([
                 'success' => true,
                 'prenotazione' => $newRes,
-                'data' => $date
+                'data' => $date,
+                'r1' => $response1
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
