@@ -284,14 +284,22 @@ class ReservationController extends Controller
             ];
             // Invio della richiesta POST
             $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
+    
+
+            // Gestione della risposta
+            if ($response1->successful()) {
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $response1->json(),
+                ]);
+            }
         
 
             // Risposta di successo
             return response()->json([
                 'success' => true,
                 'prenotazione' => $newRes,
-                'data' => $date,
-                'r1' => $response1
+                'data' => $date
             ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
