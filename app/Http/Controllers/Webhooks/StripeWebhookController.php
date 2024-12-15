@@ -207,11 +207,11 @@ class StripeWebhookController extends Controller
         // Dati da inviare
         $data1 = [        
             'wa_id' =>  $order->whatsapp_message_id,
-            'type_m' => $type_m,
+            'type' => $type_m,
             'source' => config('configurazione.APP_URL')
         ];
         // Invio della richiesta POST
-        $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
+        $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
 
         $date = Date::where('date_slot', $order->date_slot)->first();
                         

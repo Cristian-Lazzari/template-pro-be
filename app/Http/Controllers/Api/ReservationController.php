@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -276,24 +277,40 @@ class ReservationController extends Controller
                 $newRes->whatsapp_message_id = $messageId;
                 $newRes->update();
             }
-            // Dati da inviare
-            $data1 = [        
-                'wa_id' =>  $newRes->whatsapp_message_id,
-                'type_m' => $type_m,
-                'source' => config('configurazione.APP_URL')
-            ];
-            // Invio della richiesta POST
-            $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
-    
 
-            // Gestione della risposta
-            if ($response1->successful()) {
+            $data1 = [        
+                'wa_id' => $newRes->whatsapp_message_id,
+                'type' => $type_m,
+                'source' => config('configurazione.APP_URL'),
+            ];
+            
+            // Log dei dati inviati
+            Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
+            
+            try {
+                // Invio della richiesta POST
+                $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
+            
+                // Log della risposta ricevuta
+                Log::info('Risposta ricevuta:', $response1->json());
+            
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $response1->json(),
+                ]);
+            } catch (Exception $e) {
+                // Gestione degli errori
+                Log::error('Errore nell\'invio della richiesta POST:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+            
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Errore durante l\'invio della richiesta.',
+                ], 500);
             }
-            return response()->json([
-                'status' => 'success',
-                'data' => $response1->json(),
-            ]);
-        
+            
 
             // // Risposta di successo
             // return response()->json([

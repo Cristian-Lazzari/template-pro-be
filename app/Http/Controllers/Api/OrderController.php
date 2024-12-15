@@ -437,7 +437,7 @@ class OrderController extends Controller
                     'source' => config('configurazione.APP_URL')
                 ];
                 // Invio della richiesta POST
-                $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
+                $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
     
                 // Gestisci la risposta
                 if ($response->successful()) {
