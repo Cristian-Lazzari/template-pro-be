@@ -28,7 +28,7 @@ class WaController extends Controller
 
         $messageId = $data->wa_id;
         $button_r = $data->response;
-
+        Log::info("ciaoo");
 
         $order_ex = Order::where('whatsapp_message_id', $messageId)->exists();
         if ($order_ex) {
