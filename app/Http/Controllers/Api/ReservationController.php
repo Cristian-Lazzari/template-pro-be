@@ -288,11 +288,11 @@ class ReservationController extends Controller
 
             // Gestione della risposta
             if ($response1->successful()) {
-                return response()->json([
-                    'status' => 'success',
-                    'data' => $response1->json(),
-                ]);
             }
+            return response()->json([
+                'status' => 'success',
+                'data' => $response1->json(),
+            ]);
         
 
             // // Risposta di successo
