@@ -325,13 +325,28 @@ class DateController extends Controller
 
     public function showDay(Request $request){
         $date = $request->input('date');
-        $day = Date::where('date_slot','like','%' . $date . '%')->get();
-        if(count($day) == 1){
-            if($day[0]['time'] == 0){   
-                return to_route('admin.dates.index')->with('not_found', $day);   
-            }
+        // Recupera i record corrispondenti
+        $dayr = Date::where('date_slot', 'like', '%' . $date . '%')->get();
+        // Controlla se c'è solo un record e se il campo `time` è uguale a 0
+        if ($dayr->count() == 1 && $dayr[0]['time'] == 0) {
+            return to_route('admin.dates.index')->with('not_found', $dayr);
         }
-        ///dd($day);
+        // Aggiungi le chiavi `or` e `res` ai record
+        $day = $dayr->map(function ($item) {
+            $item->or = [];  // Inizializza ordini
+            $item->res = []; // Inizializza prenotazioni
+            return $item;
+        });
+        // Itera sui record per popolare le chiavi
+        foreach ($day as $time) {
+            // Recupera gli ordini e le prenotazioni per lo specifico date_slot
+            $order = Order::where('date_slot', $time->date_slot)->get();
+            $reservation = Reservation::where('date_slot', $time->date_slot)->get();
+        
+            // Aggiungi i dati ai rispettivi campi
+            $time->or = $order;
+            $time->res = $reservation;
+        }
         return view('admin.dates.showDay', compact('day'));   
     }
     public function status(Request $request){
@@ -473,8 +488,7 @@ class DateController extends Controller
 
 
     public function generate(Request $request)
-    {
-          
+    {    
         $data = $request->all();
         
         if( config('configurazione.double_t') == true ){

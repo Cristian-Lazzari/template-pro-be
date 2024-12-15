@@ -283,7 +283,7 @@ class ReservationController extends Controller
                 'source' => config('configurazione.APP_URL')
             ];
             // Invio della richiesta POST
-            $response1 = Http::post('https://db-demo4.future-plus.it/webhook/wa', $data1);
+            $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
     
 
             // Gestione della risposta
@@ -295,12 +295,14 @@ class ReservationController extends Controller
             }
         
 
-            // Risposta di successo
-            return response()->json([
-                'success' => true,
-                'prenotazione' => $newRes,
-                'data' => $date
-            ]);
+            // // Risposta di successo
+            // return response()->json([
+            //     'success' => true,
+            //     'prenotazione' => $newRes,
+            //     'data' => $date,
+            //     'mw' => $response->json(),
+
+            // ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Errore nel trovare una risorsa
