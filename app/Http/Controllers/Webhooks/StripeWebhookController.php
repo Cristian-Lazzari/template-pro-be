@@ -331,7 +331,7 @@ class StripeWebhookController extends Controller
 
 
         $data1 = [        
-            'wa_id' => $newRes->whatsapp_message_id,
+            'wa_id' => $order->whatsapp_message_id,
             'type' => $type_m,
             'source' => config('configurazione.APP_URL'),
         ];
