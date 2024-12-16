@@ -12,6 +12,7 @@ use App\Models\Reservation;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use Illuminate\Support\Facades\Log;
 use App\Events\NewOrderNotification;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -430,21 +431,44 @@ class OrderController extends Controller
                     $newOrder->update();
                 }
 
-                // Dati da inviare
                 $data1 = [        
-                    'wa_id' =>  $newOrder->whatsapp_message_id,
-                    'type_m' => $type_m,
-                    'source' => config('configurazione.APP_URL')
+                    'wa_id' => $newOrder->whatsapp_message_id,
+                    'type' => $type_m,
+                    'source' => config('configurazione.APP_URL'),
                 ];
-                // Invio della richiesta POST
-                $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
-    
+                
+                // Log dei dati inviati
+                Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
+                
+                try {
+                    // Invio della richiesta POST
+                    $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
+                
+                    // Log della risposta ricevuta
+                    Log::info('Risposta ricevuta:', $response1->json());
+                
+                    return response()->json([
+                        'status' => 'success',
+                        'data' => $response1->json(),
+                    ]);
+                } catch (Exception $e) {
+                    // Gestione degli errori
+                    Log::error('Errore nell\'invio della richiesta POST:', [
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Errore durante l\'invio della richiesta.',
+                    ], 500);
+                }   
                 // Gestisci la risposta
-                if ($response->successful()) {
-                    return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response_j, 'id' => $messageId], 200);
-                } else {
-                    return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
-                }
+                // if ($response->successful()) {
+                //     return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response_j, 'id' => $messageId], 200);
+                // } else {
+                //     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
+                // }
                 // return response()->json([
                 //     'success'   => true,
                 //     'payment'   => false,

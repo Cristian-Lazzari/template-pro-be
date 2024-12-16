@@ -119,6 +119,125 @@ class StripeWebhookController extends Controller
         }else{
             $info .= "Ritiro asporto";
         }
+        $date = Date::where('date_slot', $order->date_slot)->first();
+                        
+        $order->checkout_session_id = $session->payment_intent;
+        $order->status = 3;
+        $order->update();
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        
+        $bodymail_a = [
+            'type' => 'or',
+            'to' => 'admin',
+
+            'order_id' => $order->id,
+            'name' => $order->name,
+            'surname' => $order->surname,
+            'email' => $order->email,
+            'date_slot' => $order->date_slot,
+            'message' => $order->message,
+            'phone' => $order->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'comune' => $order->comune,
+            'address' => $order->address,
+            'address_n' => $order->address_n,
+            
+            'status' => $order->status,
+            'cart' => $order->products,
+            'total_price' => $order->tot_price,
+
+            
+        ];
+        $bodymail_u = [
+            'type' => 'or',
+            'to' => 'user',
+
+            'order_id' => $order->id,
+            'name' => $order->name,
+            'surname' => $order->surname,
+            'email' => $order->email,
+            'date_slot' => $order->date_slot,
+            'message' => $order->message,
+            'phone' => $order->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'comune' => $order->comune,
+            'address' => $order->address,
+            'address_n' => $order->address_n,
+            
+            'status' => $order->status,
+            'cart' => $order->products,
+            'total_price' => $order->tot_price,
+
+            
+        ];
+        $mail = new confermaOrdineAdmin($bodymail_u);
+        Mail::to($order->email)->send($mail);
+        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        Mail::to(config('configurazione.mail'))->send($mailAdmin);
+        $vis = json_decode($date->visible, true);
+        $av = json_decode($date->availability, true);
+        $res = json_decode($date->reserving, true);
+        // aggiorno la disponibilità in date
+        if(config('configurazione.typeOfOrdering')){
+            $res_c1 = $res['cucina_1'];
+            $res_c2 = $res['cucina_2'];
+            $av_c1  = $av['cucina_1'];
+            $av_c2  = $av['cucina_2'];
+            // Inizializza i contatori
+            $np_c1  = 0;
+            $np_c2  = 0;
+            // Cicla sui prodotti associati all'ordine
+            foreach ($order->products as $product) {
+                // return $product;
+                // Controlla il tipo di cucina del prodotto
+                if ($product->type_plate == 1) {
+                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
+                } elseif ($product->type_plate == 2) {
+                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
+                }
+            }
+            
+            if(isset($order->comune)){
+                if( ($res['domicilio'] + 1) < $av['domicilio']){
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                } else{
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                    $vis['domicilio'] = 0;
+                }
+            }
+            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
+            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
+                $vis['cucina_1'] = 0;
+            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
+                $vis['cucina_2'] = 0;
+            }else{
+                $vis['cucina_1'] = 0;
+                $vis['cucina_2'] = 0;
+            }
+            $res['cucina_1'] += $np_c1;
+            $res['cucina_2'] += $np_c2;
+            
+        }else{
+            if(isset($order->comune)){
+                if(($res['domicilio'] + 1) < $av['domicilio']){}
+                else{
+                    $vis['domicilio'] = 0;
+                }
+                $res['domicilio'] = $res['domicilio'] + 1;
+            }else{
+                if(($res['asporto'] + 1) < $av['asporto']){}
+                else{
+                    $vis['asporto'] = 0;
+                }
+                $res['asporto'] = $res['asporto'] + 1;
+            }
+        }
+        $date->visible = json_encode($vis);
+        $date->reserving = json_encode($res);
+        $date->update();
         
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
@@ -204,145 +323,45 @@ class StripeWebhookController extends Controller
             $order->whatsapp_message_id = $messageId;
             $order->update();
         }
-        // Dati da inviare
+
+
+
+
+
+
+
         $data1 = [        
-            'wa_id' =>  $order->whatsapp_message_id,
+            'wa_id' => $newRes->whatsapp_message_id,
             'type' => $type_m,
-            'source' => config('configurazione.APP_URL')
+            'source' => config('configurazione.APP_URL'),
         ];
-        // Invio della richiesta POST
-        $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
-
-        $date = Date::where('date_slot', $order->date_slot)->first();
-                        
-        $order->checkout_session_id = $session->payment_intent;
-        $order->status = 3;
-        $order->update();
-        $set = Setting::where('name', 'Contatti')->firstOrFail();
-        $p_set = json_decode($set->property, true);
         
-        $bodymail_a = [
-            'type' => 'or',
-            'to' => 'admin',
-
-            'order_id' => $order->id,
-            'name' => $order->name,
-            'surname' => $order->surname,
-            'email' => $order->email,
-            'date_slot' => $order->date_slot,
-            'message' => $order->message,
-            'phone' => $order->phone,
-            'admin_phone' => $p_set['telefono'],
-            
-            'comune' => $order->comune,
-            'address' => $order->address,
-            'address_n' => $order->address_n,
-            
-            'status' => $order->status,
-            'cart' => $order->products,
-            'total_price' => $order->tot_price,
-
-            
-        ];
-        $bodymail_u = [
-            'type' => 'or',
-            'to' => 'user',
-
-            'order_id' => $order->id,
-            'name' => $order->name,
-            'surname' => $order->surname,
-            'email' => $order->email,
-            'date_slot' => $order->date_slot,
-            'message' => $order->message,
-            'phone' => $order->phone,
-            'admin_phone' => $p_set['telefono'],
-            
-            'comune' => $order->comune,
-            'address' => $order->address,
-            'address_n' => $order->address_n,
-            
-            'status' => $order->status,
-            'cart' => $order->products,
-            'total_price' => $order->tot_price,
-
-            
-        ];
-        $mail = new confermaOrdineAdmin($bodymail_u);
-        Mail::to($order->email)->send($mail);
-
-        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-        Mail::to(config('configurazione.mail'))->send($mailAdmin);
-        $vis = json_decode($date->visible, true);
-        $av = json_decode($date->availability, true);
-        $res = json_decode($date->reserving, true);
-    
-
+        // Log dei dati inviati
+        Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
         
-
-        // aggiorno la disponibilità in date
-        if(config('configurazione.typeOfOrdering')){
-            $res_c1 = $res['cucina_1'];
-            $res_c2 = $res['cucina_2'];
-            $av_c1  = $av['cucina_1'];
-            $av_c2  = $av['cucina_2'];
-            // Inizializza i contatori
-            $np_c1  = 0;
-            $np_c2  = 0;
-            // Cicla sui prodotti associati all'ordine
-            foreach ($order->products as $product) {
-                // return $product;
-                // Controlla il tipo di cucina del prodotto
-                if ($product->type_plate == 1) {
-                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
-                } elseif ($product->type_plate == 2) {
-                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
-                }
-            }
-            
-            if(isset($order->comune)){
-                if( ($res['domicilio'] + 1) < $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                } else{
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                    $vis['domicilio'] = 0;
-                }
-            }
-            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
-            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                $vis['cucina_1'] = 0;
-            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
-                $vis['cucina_2'] = 0;
-            }else{
-                $vis['cucina_1'] = 0;
-                $vis['cucina_2'] = 0;
-            }
-            $res['cucina_1'] += $np_c1;
-            $res['cucina_2'] += $np_c2;
-            
-        }else{
-            if(isset($order->comune)){
-                if(($res['domicilio'] + 1) < $av['domicilio']){}
-                else{
-                    $vis['domicilio'] = 0;
-                }
-                $res['domicilio'] = $res['domicilio'] + 1;
-            }else{
-                if(($res['asporto'] + 1) < $av['asporto']){}
-                else{
-                    $vis['asporto'] = 0;
-                }
-                $res['asporto'] = $res['asporto'] + 1;
-            }
-        }
-        $date->visible = json_encode($vis);
-        $date->reserving = json_encode($res);
-        $date->update();
-
+        try {
+            // Invio della richiesta POST
+            $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
         
-
-        return [$date, $np_c1, $np_c2];
-    
+            // Log della risposta ricevuta
+            Log::info('Risposta ricevuta:', $response1->json());
         
+            return response()->json([
+                'status' => 'success',
+                'data' => $response1->json(),
+            ]);
+        } catch (Exception $e) {
+            // Gestione degli errori
+            Log::error('Errore nell\'invio della richiesta POST:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Errore durante l\'invio della richiesta.',
+            ], 500);
+        }    
     }
 
     protected function handlePaymentIntentFailed($paymentIntent)
