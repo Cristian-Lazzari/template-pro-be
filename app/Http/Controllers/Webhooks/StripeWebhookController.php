@@ -53,7 +53,7 @@ class StripeWebhookController extends Controller
         }
         elseif($event->type == 'payment_intent.payment_failed'){
             $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-            $this->handlePaymentIntentFailed($paymentIntent);
+            return $this->handlePaymentIntentFailed($paymentIntent);
         }
 
         
@@ -88,8 +88,8 @@ class StripeWebhookController extends Controller
 
         $info =  $order->name . ' ' . $order->surname . ' ha ordinato e PAGATO per il ' . $order->date_slot . ': ';
         // Itera sui prodotti dell'ordine
-        $lastProduct = end($newOrder->products);
-        foreach ($newOrder->products as $product) {
+        $lastProduct = end($order->products);
+        foreach ($order->products as $product) {
             // Aggiungi il nome e la quantità del prodotto
             $info .= "{$product->name} ";
             if ($product->pivot->quantity !== 1) {
@@ -179,7 +179,7 @@ class StripeWebhookController extends Controller
                             'parameters' => [
                                 [
                                     'type' => 'text',
-                                    'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
+                                    'text' => $order->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
                                 ],
                                 [
                                     'type' => 'text',
@@ -215,7 +215,7 @@ class StripeWebhookController extends Controller
         }
         //aggiorno il a1mc
         $data1 = [        
-            'wa_id' => $newOrder->whatsapp_message_id,
+            'wa_id' => $order->whatsapp_message_id,
             'type' => $type_m,
             'source' => config('configurazione.APP_URL'),
         ];
