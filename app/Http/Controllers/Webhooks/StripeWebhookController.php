@@ -379,20 +379,19 @@ class StripeWebhookController extends Controller
         
     }
 
-    protected function handlePaymentIntentFailed($paymentIntent)
-    {
-        // Aggiorna il tuo database per segnare l'ordine come fallito
-        $orderId = $paymentIntent->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        $order = Order::where('id', $orderId)->firstOrFail();
-        $order->status = 0;
-        $order->update();
+    protected function handlePaymentIntentFailed($paymentIntent){
+        // Recupera l'ID dell'ordine dai metadata
+        $orderId = $paymentIntent->metadata->order_id; // Assicurati che l'ID sia correttamente passato nei metadata
     
+        // Trova l'ordine e, se esiste, eliminalo
+        $order = Order::where('id', $orderId)->first();
+    
+        if ($order) {
+            $order->delete();
+        }
     }
-    protected function isLastResponseWaWithin24Hours()
-    {
+    
+    protected function isLastResponseWaWithin24Hours(){
         // Trova il record con name = 'wa'
         $setting = Setting::where('name', 'wa')->first();
 
