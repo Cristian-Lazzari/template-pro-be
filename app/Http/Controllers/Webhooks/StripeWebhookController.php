@@ -198,13 +198,13 @@ class StripeWebhookController extends Controller
         ])->post($url, $data);
 
         
-        // Gestione della risposta
-        if ($response1->successful()) {
-            return response()->json([
-                'status' => 'success',
-                'data' => $response1->json(),
-            ]);
-        }
+        // // Gestione della risposta
+        // if ($response1->successful()) {
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'data' => $response1->json(),
+        //     ]);
+        // }
         
         // Estrai l'ID del messaggio dalla risposta di WhatsApp
         $messageId = $response->json()['messages'][0]['id'] ?? null;
