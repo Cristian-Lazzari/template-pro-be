@@ -84,7 +84,7 @@
                     </svg>
                     <div class="tikets">
                         @foreach ($t->or as $tk) 
-                        <a href="{{ route('admin.orders.show', $tk->id) }}" class="tiket">
+                        <a href="{{ route('admin.orders.show', $tk->id) }}" class="tiket {{ in_array($tk->status, [0, 6]) ? 'null' : '' }} ">
                             <p>{{$tk->name}}</p>
                             @if ($tk->comune)
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="or_svg bi bi-truck" viewBox="0 0 16 16">
