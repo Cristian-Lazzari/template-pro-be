@@ -15,6 +15,7 @@
         'Confermata',
         'Da vedere!',
         'Pagata',
+        '',
         'Confermata e Pagata',
         'Annullata e Rimborsata',
     ]
