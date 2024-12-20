@@ -82,7 +82,7 @@
         </div>
         <h2>Prenotazioni ai tavoli nel tempo</h2>
         <div class="chart">
-            <canvas class="graph" id="reservationsOverTimeChart"></canvas>
+            <canvas class="graph" id="reservationChart"></canvas>
 
             <div class="list">
                 <table class="mytable table table-striped "> 
@@ -94,11 +94,12 @@
                             <th scope="col">Bambini</th>
                         </tr>
                     </thead>
-                    @foreach ($reservationsOverTime as $key => $value)
+                    @foreach ($reservations as $key => $value)
                     <tr>
-                        <td>{{$value->formatted_date}}</td>
-                        <td>{{$value->total_adults}}</td>
-                        <td>{{$value->total_children}}</td>
+                        
+                        <td>{{$value->date}}</td>
+                        <td>{{$value->adults}}</td>
+                        <td>{{$value->children}}</td>
                     </tr>
                     @endforeach
                 </table>
@@ -197,114 +198,77 @@
                 }
             }
         });
-        // const reservationsData = @json($reservationsOverTime);
-    
-        // const days = [...new Set(reservationsData.map(item => item.day))];
-        // const hours = [...new Set(reservationsData.map(item => item.hour))];
-        
-        // const adultsData = days.flatMap(day => hours.map(hour => {
-        //     const reservation = reservationsData.find(item => item.day === day && item.hour === hour);
-        //     return reservation ? reservation.total_adults : 0;
-        // }));
+      
+        const data = @json($reservations);
 
-        // const childrenData = days.flatMap(day => hours.map(hour => {
-        //     const reservation = reservationsData.find(item => item.day === day && item.hour === hour);
-        //     return reservation ? reservation.total_children : 0;
-        // }));
+            // Estrai le date, adulti e bambini
+            const labels = data.map(item => item.date); // Array di date (formato ISO)
+            const adults = data.map(item => item.adults);
+            const children = data.map(item => item.children);
 
-        // new Chart(document.getElementById('reservationsOverTimeChart').getContext('2d'), {
-        //     type: 'bar',
-        //     data: {
-        //         labels: days.map((day, index) => `${day} ${hours[index % hours.length]}:00`),
-        //         datasets: [
-        //             {
-        //                 label: 'Adulti',
-        //                 data: adultsData,
-        //                 backgroundColor: 'rgba(54, 162, 235, 0.7)',
-        //             },
-        //             {
-        //                 label: 'Bambini',
-        //                 data: childrenData,
-        //                 backgroundColor: 'rgba(255, 99, 132, 0.7)',
-        //             }
-        //         ]
-        //     },
-        //     options: {
-        //         responsive: true,
-        //         scales: {
-        //             x: {
-        //                 type: 'time',
-        //                 time: {
-        //                     unit: 'day',
-        //                     displayFormats: {
-        //                         hour: 'MMM dd, H:mm' // Modificato "DD" in "dd"
-        //                     }
-        //                 },
-        //                 title: {
-        //                     display: true,
-        //                     text: 'Data'
-        //                 },
-        //                 ticks: {
-        //                     maxRotation: 45,
-        //                     minRotation: 45
-        //                 }
-        //             },
-        //             y: {
-        //                 beginAtZero: true,
-        //                 title: {
-        //                     display: true,
-        //                     text: 'Numero di persone'
-        //                 },
-        //                 ticks: {
-        //                     stepSize: 1,
-        //                     callback: function(value) { return Number.isInteger(value) ? value : ''; }
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        // });
-        const labels = @json($reservationsOverTime->pluck('formatted_date'));
-        const totalAdults = @json($reservationsOverTime->pluck('total_adults'));
-        const totalChildren = @json($reservationsOverTime->pluck('total_children'));
-
-        const ctx = document.getElementById('reservationsOverTimeChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Adulti',
-                        data: totalAdults,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
+            // Configurazione del grafico
+            const ctx = document.getElementById('reservationChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Adulti',
+                            data: adults,
+                            stack: 'stack',
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Bambini',
+                            data: children,
+                            stack: 'stack',
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time', // Configura l'asse X come asse temporale
+                            time: {
+                                unit: 'day', // Mostra un intervallo basato sui giorni
+                                tooltipFormat: 'dd-MM-yyyy', // Formato per il tooltip
+                                displayFormats: {
+                                    day: 'MM-dd' // Formato per le etichette
+                                },
+                            },
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Numero di persone'
+                            },
+                            stacked: true // Abilita lo stacking
+                        }
                     },
-                    {
-                        label: 'Bambini',
-                        data: totalChildren,
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                    },
-                ],
-            },
-            options: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Numero di persone'
-                    },
-                    ticks: {
-                        stepSize: 1,
-                        callback: function(value) { return Number.isInteger(value) ? value : ''; }
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prenotazioni giornaliere'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
                     }
                 }
-            },
-        });
-
+            });
     });
 </script>
 

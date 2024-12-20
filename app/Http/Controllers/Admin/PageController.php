@@ -359,16 +359,12 @@ class PageController extends Controller
         ->get()
         ->pluck('total_revenue', 'month');
 
-        $reservationsOverTime = DB::table('reservations')
-        ->select(
-            DB::raw("UNIX_TIMESTAMP(STR_TO_DATE(date_slot, '%d/%m')) as timestamp"), // Timestamp UNIX
-            DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m'), '%d %M, %W') as formatted_date"), // Data formattata
-            DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.adult')), 0) as total_adults"), // Totale adulti
-            DB::raw("COALESCE(SUM(JSON_EXTRACT(n_person, '$.child')), 0) as total_children") // Totale bambini
-        )
-        ->groupBy( 'timestamp', 'formatted_date') // Raggruppa per timestamp e data formattata
-        ->orderBy('timestamp', 'asc') // Ordina per timestamp
+        $reservations = DB::table('reservations')
+        ->selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, SUM(JSON_EXTRACT(n_person, '$.adult')) as adults, SUM(JSON_EXTRACT(n_person, '$.child')) as children")
+        ->groupBy('date')
+        ->orderBy('date', 'ASC')
         ->get();
+
         
         
 
@@ -378,7 +374,7 @@ class PageController extends Controller
             'topProducts' => $topProducts,
             'ordersOverTime' => $ordersOverTime,
             'revenueOverTime' => $revenueOverTime,
-            'reservationsOverTime' => $reservationsOverTime,
+            'reservations' => $reservations,
         ]);
     }
     public function sendNotification()
