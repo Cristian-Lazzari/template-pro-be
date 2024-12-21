@@ -107,7 +107,7 @@
                 @endif 
 
                 @if (isset($item->hashtag))
-                    <div class="price">{{$item->hashtag}}</div>
+                    <p class="hash">{{$item->hashtag}}</p>
                 @endif 
                 <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
                 <div class="info">
