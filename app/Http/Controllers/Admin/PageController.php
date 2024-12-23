@@ -66,10 +66,70 @@ class PageController extends Controller
             3 => Reservation::where('status', 0)->count(),
             4 => Reservation::where('status', 3)->count(),
         ];
-        
+        // Fetch and group Reservations by date
+        $reservations = Reservation::selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, COUNT(*) as count")
+            ->groupBy('date')
+            ->orderByRaw("STR_TO_DATE(date, '%Y-%m-%d')")
+            ->get()
+            ->keyBy('date');
+
+        // Fetch and group Orders by date for delivery and asporto
+        $ordersDelivery = Order::whereNotNull('comune')
+            ->selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, COUNT(*) as count")
+            ->groupBy('date')
+            ->orderByRaw("STR_TO_DATE(date, '%Y-%m-%d')")
+            ->get()
+            ->keyBy('date');
+
+        $ordersAsporto = Order::whereNull('comune')
+            ->selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, COUNT(*) as count")
+            ->groupBy('date')
+            ->orderByRaw("STR_TO_DATE(date, '%Y-%m-%d')")
+            ->get()
+            ->keyBy('date');
+
+        // Combine all dates for consistency in the chart
+        $allDates = collect(array_merge(
+            $reservations->keys()->toArray(),
+            $ordersDelivery->keys()->toArray(),
+            $ordersAsporto->keys()->toArray()
+        ))->unique()->sort();
+
+        // Prepare the data for the chart
+       // Prepare the data for the chart
+
+       $chartData = [
+        'labels' => $allDates->map(fn($date) => Carbon::parse($date))->values()->toArray(),
+        'datasets' => [
+            [
+                'label' => 'Prenotazioni',
+                'data' => $allDates->map(fn($date) => isset($reservations[$date]) ? (int)$reservations[$date]['count'] : 0)->values()->toArray(),
+                
+                'borderColor' => '#d8dde8',
+                'backgroundColor' => '#d8dde8',
+            ],
+            [
+                'label' => ' Delivery',
+                'data' => $allDates->map(fn($date) => isset($ordersDelivery[$date]) ? (int)$ordersDelivery[$date]['count'] : 0)->values()->toArray(),
+                'borderColor' => '#10b793',
+                'backgroundColor' => '#10b793',
+            ],
+            [
+                'label' => 'Asporto',
+                'data' => $allDates->map(fn($date) => isset($ordersAsporto[$date]) ? (int)$ordersAsporto[$date]['count'] : 0)->values()->toArray(),
+                'borderColor' => '#10b7937b',
+                'backgroundColor' => '#10b7937b',
+            ],
+        ],
+    ];
+    
+    
+
+
+
 
         if(count($dates) == 0){
-            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post'));
+            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData'));
         };
         $year = [
             1 => [
@@ -323,7 +383,7 @@ class PageController extends Controller
         };
         
        // dd($year);
-        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post'));
+        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData'));
     }
     public function statistics()
     {
@@ -341,23 +401,94 @@ class PageController extends Controller
 
         // Grafico a colonne: Ordinazioni nel tempo
         $ordersOverTime = DB::table('order_product')
-        ->join('orders', 'order_product.order_id', '=', 'orders.id')
-        ->join('products', 'order_product.product_id', '=', 'products.id')
-        ->select(
-            DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as day"), 
-            'products.name', 
-            DB::raw('SUM(order_product.quantity) as quantity')
-        )
-        ->groupBy('day', 'products.name')
-        ->orderBy('day')
-        ->get();
+            ->join('orders', 'order_product.order_id', '=', 'orders.id')
+            ->join('products', 'order_product.product_id', '=', 'products.id')
+            ->select(
+                DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as day"), 
+                'products.name as product', 
+                DB::raw('SUM(order_product.quantity) as quantity')
+            )
+            ->groupBy('day', 'products.name')
+            ->orderBy('day')
+            ->get();
+
+        // Ristruttura i dati per il grafico
+        $chartData = [];
+        foreach ($ordersOverTime as $order) {
+            $chartData[$order->day][$order->product] = $order->quantity;
+        }
+
+        // Riordina in formato leggibile
+        $labels = array_keys($chartData); // Le date
+        $datasets = [];
+
+        // Ottieni i prodotti unici
+        $allProducts = DB::table('products')->pluck('name')->toArray();
+
+        // Creazione dei dataset per ogni prodotto
+        foreach ($allProducts as $product) {
+            $dataset = [
+                'label' => $product,
+                'data' => [],
+            ];
+            foreach ($labels as $label) {
+                $dataset['data'][] = $chartData[$label][$product] ?? 0; // Aggiungi 0 se non ci sono dati
+            }
+            $datasets[] = $dataset;
+        }
+
 
         // Grafico a linee: Ricavi nel tempo
-        $revenueOverTime = Order::select(DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m') as month"), DB::raw('SUM(tot_price) as total_revenue'))
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get()
-        ->pluck('total_revenue', 'month');
+
+        // Estrarre i dati dalla tabella Orders
+        $orders = Order::selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, status, SUM(tot_price) as total_price")
+            ->whereIn('status', [0, 1, 5]) // Considera solo i status rilevanti
+           // ->where('status', '!=', 4) // Escludi status = 4
+            ->groupBy('date', 'status')
+            ->orderBy('date')
+            ->get();
+
+        // Formattare i dati per il frontend
+        $revenueOverTime = [
+            'paid' => [],
+            'cod' => [],
+            'canceled' => [],
+            'tot' => [],
+        ];
+        $xdate = 0;
+
+        foreach ($orders as $order) {
+            $point = [
+                'x' => $order->date,
+                'y' => $order->total_price / 100,
+            ];
+            //dump('ciao');
+            // /dump($order);
+            // dump($order->status);
+            // dump($order->date);
+
+            switch ($order->status) {
+                case 5:
+                    $revenueOverTime['paid'][] = $point;
+                    break;
+                case 1:
+                    $revenueOverTime['cod'][] = $point;
+                    break;
+                case 0:
+                    $revenueOverTime['canceled'][] = $point;
+                    break;
+                }
+            
+            if($xdate !== $point['x']){
+                $revenueOverTime['tot'][] = $point;
+            }else{
+                $revenueOverTime['tot'][count($revenueOverTime['tot']) - 1]['y'] += $point['y'];
+            }
+
+
+            $xdate = $point['x'];
+        }
+       // dd('fine');
 
         $reservations = DB::table('reservations')
         ->selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, SUM(JSON_EXTRACT(n_person, '$.adult')) as adults, SUM(JSON_EXTRACT(n_person, '$.child')) as children")
@@ -372,7 +503,8 @@ class PageController extends Controller
 
         return view('admin.statistics', [
             'topProducts' => $topProducts,
-            'ordersOverTime' => $ordersOverTime,
+            'labels' => $labels,
+            'datasets' => $datasets,
             'revenueOverTime' => $revenueOverTime,
             'reservations' => $reservations,
         ]);

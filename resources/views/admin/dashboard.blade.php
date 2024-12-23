@@ -325,6 +325,9 @@
                 <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, <strong>clicca QUI</strong> e impostale ora</a>
             </div>
             @endif
+            <div class="chart">
+                <canvas id="chartCanvas"></canvas>
+            </div>
         </div>
         <form class="setting" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
             <h2>
@@ -719,6 +722,125 @@
     };
 </script>
 @endif
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+<script>
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Fetch the chart data
+        const data = @json($chartData); 
+        console.log('Chart Data:', data);
+        // Initialize the chart
+       
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        const totalDuration = 1000;
+        const delayBetweenPoints = totalDuration / data.labels.length;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        const animation = {
+            x: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                if (ctx.type !== 'data' || ctx.xStarted) {
+                    return 0;
+                }
+                ctx.xStarted = true;
+                return ctx.index * delayBetweenPoints;
+                }
+            },
+            y: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                if (ctx.type !== 'data' || ctx.yStarted) {
+                    return 0;
+                }
+                ctx.yStarted = true;
+                return ctx.index * delayBetweenPoints;
+                }
+            }
+        };
+              let c3 = '#090333'
+              let c2 = '#10b793'
+              let c1 = '#d8dde8'
+              let ct = 'rgba(244, 243, 0, 0)'
+                
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: data.datasets
+            },
+            options: {
+                animation,
+                interaction: {
+                    intersect: false
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded',
+                            color: 'white' // Imposta il colore delle etichette della legenda su blu
+                        }
+                    },
+                    // title: {
+                    //     display: true,
+                    //     text: 'Andamento ordini e prenotazioni',
+                        
+                    // }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color : ct
+                        },
+                        ticks: {
+                            color: 'white'
+                        },
+                        title: {
+                            display: false,
+                            text: 'Count'
+                        },
+                        beginAtZero: true,
+                        type: 'time', // Configura l'asse X come asse temporale
+                        time: {
+                            unit: 'week', // Mostra un intervallo basato sui giorni
+                            tooltipFormat: 'MM-dd', // Formato per il tooltip
+                            displayFormats: {
+                                week: 'MM-dd' // Formato per le etichette
+                            },
+                        },
+                    },
+                    y: {
+                        grid: {
+                            color : ct
+                        },
+                        ticks: {
+                            color: 'white'
+                        },
+                        title: {
+                            display: false,
+                            text: 'Count'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        
+    });
+</script>
+
 
 @endsection
 

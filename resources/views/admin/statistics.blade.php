@@ -35,51 +35,13 @@
         <h2>Come vengono ordinati i prodotti nel tempo</h2>
         <div class="chart">
             <canvas class="graph" id="ordersOverTimeChart"></canvas>
-            <div class="list">
-                <table class="mytable table table-striped "> 
-                    <thead>
-                        <tr>
-                            <th scope="col">Prodotto</th>
-                            <th scope="col">Data</th>
-                            <th scope="col">Quantità</th>
-                        </tr>
-                    </thead>
-                    @foreach ($ordersOverTime as $key => $value)
-                    <tr>
-                        <td>{{$value->name}}</td>
-                        <td>{{$value->day}}</td>
-                        <td>{{$value->quantity}}</td>
-                       
-                    </tr>
-                    @endforeach
-                </table>
-            </div>
         </div>
 
-        <h2>Ricavi nel tempo</h2>
+        <h2>Ricavi nel tempo da ordini</h2>
         <div class="chart">
             <canvas class="graph" id="revenueOverTimeChart"></canvas>
-            <div class="list">
-                <table class="mytable table table-striped "> 
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Data</th>
-                            <th scope="col">Fatturato dal sito con ordini</th>
-                        </tr>
-                    </thead>
-                    @php $index = 1 @endphp
-                    @foreach ($revenueOverTime as $key => $value)
-                    <tr>
-                        <td>{{$index}}</td>
-                        <td>{{$key}}</td>
-                        <td><strong>€{{$value / 100}}</strong></td>
-                    </tr>
-                    @php $index ++ @endphp
-                    @endforeach
-                </table>
-            </div>
         </div>
+
         <h2>Prenotazioni ai tavoli nel tempo</h2>
         <div class="chart">
             <canvas class="graph" id="reservationChart"></canvas>
@@ -119,11 +81,23 @@
             '#FF6699', '#66CCFF', '#CCFF33', '#FF9933', '#CC66CC',
             '#FFCC66', '#3366FF', '#33CC99', '#FF6666', '#66FFCC'
         ];
+        const colors_op = [
+            'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)', 'rgba(255, 159, 64, 0.5)',
+            'rgba(102, 255, 102, 0.5)', 'rgba(255, 102, 51, 0.5)', 
+            'rgba(0, 153, 255, 0.5)', 'rgba(204, 51, 255, 0.5)', 
+            'rgba(255, 102, 153, 0.5)', 'rgba(102, 204, 255, 0.5)', 
+            'rgba(204, 255, 51, 0.5)', 'rgba(255, 153, 51, 0.5)', 
+            'rgba(204, 102, 204, 0.5)', 'rgba(255, 204, 102, 0.5)', 
+            'rgba(51, 102, 255, 0.5)', 'rgba(51, 204, 153, 0.5)', 
+            'rgba(255, 102, 102, 0.5)', 'rgba(102, 255, 204, 0.5)'
+        ];
 
         // Grafico a torta per i prodotti più ordinati
         const topProductsData = @json($topProducts);
         new Chart(document.getElementById('topProductsChart').getContext('2d'), {
-            type: 'pie',
+            type: 'polarArea',
             data: {
                 labels: Object.keys(topProductsData),
                 datasets: [{
@@ -135,74 +109,130 @@
                 responsive: true,
             }
         });
+        // grafico colonne prodotti nel tempo
+        const labels = @json($labels);  // Assicurati che anche $labels venga passato correttamente
+        const datasets = @json($datasets);  // Dati del grafico
 
-        // Grafico a colonne per le ordinazioni nel tempo
-        const ordersOverTime = @json($ordersOverTime);
-        const columnsLabels = [...new Set(ordersOverTime.map(item => item.day))]; // Usa il giorno come label
-        const products = [...new Set(ordersOverTime.map(item => item.name))];
+        // Funzione per generare un array di colori ripetuto se necessario
+        const getColors = (numberOfColorsNeeded, colors) => {
+            const repeatedColors = [];
+            for (let i = 0; i < numberOfColorsNeeded; i++) {
+                repeatedColors.push(colors[i % colors.length]);  // Usa l'operatore modulo per ripetere i colori
+            }
+            return repeatedColors;
+        };
 
-        let i = -1;
-        const productDatasets = products.map(product => {
-            i++;
+        // Ottieni un array di colori sufficienti per tutti i dataset
+        const colorsForDatasets = getColors(datasets.length, colors_op);
+
+        // Crea un nuovo array di datasets con i colori associati
+        const datasetsWithColors = datasets.map((dataset, index) => {
             return {
-                label: product,
-                data: columnsLabels.map(day => {
-                    const item = ordersOverTime.find(e => e.day === day && e.name === product);
-                    return item ? item.quantity : 0;
-                }),
-                backgroundColor: colors[i],
+                label: dataset.label,  // Etichetta del dataset
+                data: dataset.data,    // I dati numerici
+                backgroundColor: colorsForDatasets[index]  // Colore corrispondente dal nuovo array di colori
             };
         });
 
-        new Chart(document.getElementById('ordersOverTimeChart').getContext('2d'), {
-            type: 'bar',
+        // Ora, puoi usare datasetsWithColors nel grafico
+        const ctx_o_t = document.getElementById('ordersOverTimeChart').getContext('2d');
+
+        const chart_o_t = new Chart(ctx_o_t, {
+            type: "bar",
             data: {
-                labels: columnsLabels,
-                datasets: productDatasets,
+                labels: labels,
+                datasets: datasetsWithColors  // Usa il nuovo array con i colori associati
             },
             options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            filter: (legendItem, chartData) => {
+                                const totals = chartData.datasets.map(dataset => ({
+                                    label: dataset.label,
+                                    total: dataset.data.reduce((sum, value) => sum + value, 0),
+                                }));
+                                totals.sort((a, b) => b.total - a.total);
+                                const top10 = totals.slice(0, 20).map(item => item.label);  // Cambiato 10 a 20 per visualizzare i primi 20
+                                return top10.includes(legendItem.text);
+                            }
+                        }
+                    }
+                },
                 responsive: true,
                 scales: {
+                    x: {
+                        stacked: true
+                    },
                     y: {
-                        beginAtZero: true
+                        stacked: true
                     }
                 }
             }
         });
 
+
         // Grafico a linee per i ricavi nel tempo
         const revenueOverTime = @json($revenueOverTime);
-        const revenueInEuros = Object.values(revenueOverTime).map(value => value / 100);
-        new Chart(document.getElementById('revenueOverTimeChart').getContext('2d'), {
+        const chart_order = document.getElementById('revenueOverTimeChart').getContext('2d');
+        const chart_or = new Chart(chart_order, {
             type: 'line',
             data: {
-                labels: Object.keys(revenueOverTime),
-                datasets: [{
-                    label: 'Ricavi totali',
-                    data: revenueInEuros, // Usa i valori convertiti in euro
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    fill: true
-                }]
+            datasets: [
+                {
+                label: 'Totale',
+                data: revenueOverTime.tot, // Dati per ordini pagati
+                borderColor: 'rgba(145, 220, 224, 1)',
+                backgroundColor: 'rgba(145, 220, 224, .2)',
+                fill: true,
+                },
+                {
+                label: 'Pagati',
+                data: revenueOverTime.paid, // Dati per ordini pagati
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                },
+                {
+                label: 'Pagati alla consegna',
+                data: revenueOverTime.cod, // Dati per ordini pagati alla consegna
+                borderColor: 'rgba(255, 206, 86, 1)',
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                fill: true,
+                },
+                {
+                label: 'Annullati',
+                data: revenueOverTime.canceled, // Dati per ordini annullati
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                },
+            ],
             },
             options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Ricavi in €'
-                        },
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time', // Asse temporale
+                    time: {
+                        unit: 'day', // Mostra i dati per giorno
                     },
-                }
-            }
+                },
+                y: {
+                title: {
+                    display: true,
+                    text: 'Totale (€)',
+                },
+                },
+            },
+            },
         });
-      
+        //ultimo grafico
         const data = @json($reservations);
 
             // Estrai le date, adulti e bambini
-            const labels = data.map(item => item.date); // Array di date (formato ISO)
+            const label = data.map(item => item.date); // Array di date (formato ISO)
             const adults = data.map(item => item.adults);
             const children = data.map(item => item.children);
 
@@ -211,7 +241,7 @@
             const chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: label,
                     datasets: [
                         {
                             label: 'Adulti',
@@ -243,10 +273,6 @@
                                     day: 'MM-dd' // Formato per le etichette
                                 },
                             },
-                            title: {
-                                display: true,
-                                text: 'Data'
-                            }
                         },
                         y: {
                             beginAtZero: true,
