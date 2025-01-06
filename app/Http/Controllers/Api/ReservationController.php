@@ -276,7 +276,7 @@ class ReservationController extends Controller
                                     ],
                                     [
                                         'type' => 'text',
-                                        'text' => $order->phone,  
+                                        'text' => $newRes->phone,  
                                     ],
                                     [
                                         'type' => 'text',
