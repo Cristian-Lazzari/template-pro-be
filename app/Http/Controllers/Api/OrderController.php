@@ -427,7 +427,7 @@ class OrderController extends Controller
                                         ],
                                         [
                                             'type' => 'text',
-                                            'text' => $order->phone,  
+                                            'text' => $newOrder->phone,  
                                         ],
                                         [
                                             'type' => 'text',
