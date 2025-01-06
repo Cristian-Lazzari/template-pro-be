@@ -197,7 +197,7 @@ class ReservationController extends Controller
             
             if ($this->isLastResponseWaWithin24Hours()) {
                 // Esegui azione se è entro le ultime 24 ore
-                $info = 'Contenuto della notifica: *_Prenotazione tavolo_* ' . $info . "\n\n" .
+                $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
                         "📞 Chiama: " . $newRes->phone . "\n\n" .
                         "🔗 Vedi dalla Dashboard: $link_id";
 
