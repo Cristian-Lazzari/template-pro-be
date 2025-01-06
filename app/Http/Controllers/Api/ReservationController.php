@@ -232,20 +232,6 @@ class ReservationController extends Controller
                                         "id"=> "Annulla",
                                         "title"=> "Annulla"
                                     ]
-                                ],
-                                [
-                                    "type" => "url",
-                                    "url" => [
-                                        "link" => $link_id,
-                                        "title" => "Vedi dalla Dashboard"
-                                    ]
-                                ],
-                                [
-                                    "type" => "call",
-                                    "call" => [
-                                        "phone_number" => '+39' . $newRes->phone,
-                                        "title" => "Chiama " . $newRes->name
-                                    ]
                                 ]
                             ]
                         ]
