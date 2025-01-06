@@ -197,7 +197,10 @@ class ReservationController extends Controller
             
             if ($this->isLastResponseWaWithin24Hours()) {
                 // Esegui azione se è entro le ultime 24 ore
-                $info = 'Contenuto della notifica: *_Prenotazione tavolo_*' . $info;
+                $info = 'Contenuto della notifica: *_Prenotazione tavolo_* ' . $info . "\n\n" .
+                        "📞 Chiama: +39" . $newRes->phone . "\n" .
+                        "🔗 Vedi dalla Dashboard: $link_id";
+
                 $data = [
                     'messaging_product' => 'whatsapp',
                     'to' => $number,
