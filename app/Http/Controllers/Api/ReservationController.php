@@ -179,15 +179,17 @@ class ReservationController extends Controller
                 $info .= $n_child . ' bambini';
             }
             if (config('configurazione.double_t') && $newRes->sala ) {
-                $info .= ' ** _Sala prenota: ';
+                $info .= ' *_ Sala prenota: ';
                 if ($newRes->sala == 1) {
                     $info .= config('configurazione.set_time_dt')[0];
                 }else{
                     $info .= config('configurazione.set_time_dt')[1];
                 }
+                $info .=' _* ';
             }
-            $info .='_ ** ';
             
+            $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
+
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
             $number = config('configurazione.WA_N');
 
@@ -195,6 +197,7 @@ class ReservationController extends Controller
             
             if ($this->isLastResponseWaWithin24Hours()) {
                 // Esegui azione se è entro le ultime 24 ore
+                $info = 'Contenuto della notifica: *_Prenotazione tavolo_*' . $info;
                 $data = [
                     'messaging_product' => 'whatsapp',
                     'to' => $number,
@@ -206,7 +209,7 @@ class ReservationController extends Controller
                             "text"=>'Hai una nuova notifica!',
                         ],
                         "footer"=> [
-                            "text"=> "Powered by Future+"
+                            "text"=> "Powered by F +"
                         ],
                         "body"=> [
                         "text"=> $info,
@@ -226,6 +229,20 @@ class ReservationController extends Controller
                                         "id"=> "Annulla",
                                         "title"=> "Annulla"
                                     ]
+                                ],
+                                [
+                                    "type" => "url",
+                                    "url" => [
+                                        "link" => $link_id,
+                                        "title" => "Vedi dalla Dashboard"
+                                    ]
+                                ],
+                                [
+                                    "type" => "call",
+                                    "call" => [
+                                        "phone_number" => '+39' . $newRes->phone,
+                                        "title" => "Chiama " . $newRes->name
+                                    ]
                                 ]
                             ]
                         ]
@@ -238,10 +255,10 @@ class ReservationController extends Controller
                 $data = [
                     'messaging_product' => 'whatsapp',
                     'to' => $number,
-                    'category' => 'marketing',
+                    'category' => 'utility',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'or',
+                        'name' => 'last_t',
                         'language' => [
                             'code' => 'it'
                         ],
@@ -251,12 +268,20 @@ class ReservationController extends Controller
                                 'parameters' => [
                                     [
                                         'type' => 'text',
-                                        'text' => 'prenotazione tavolo', 
+                                        'text' => 'Prenotazione tavolo', 
                                     ],
                                     [
                                         'type' => 'text',
                                         'text' => $info  
-                                    ]
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $order->phone,  
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $link_id,  
+                                    ],
                                 ]
                             ]
                         ]

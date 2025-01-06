@@ -119,12 +119,15 @@ class StripeWebhookController extends Controller
         }else{
             $info .= "Ritiro asporto";
         }
-        
+
+        $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $order->id;
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
         $number = config('configurazione.WA_N');
         $type_m = 0;
         if ($this->isLastResponseWaWithin24Hours()) {
+            $info = 'Contenuto della notifica: *_' . $order->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto' . '_*' . $info;
+
             $data = [
                 'messaging_product' => 'whatsapp',
                 'to' => $number,
@@ -136,7 +139,7 @@ class StripeWebhookController extends Controller
                         "text"=>'Hai una nuova notifica!',
                     ],  
                     "footer"=> [
-                        "text"=> "Powered by Future+"
+                        "text"=> "Powered by F+"
                     ],
                     "body"=> [
                     "text"=> $info,
@@ -156,6 +159,20 @@ class StripeWebhookController extends Controller
                                     "id"=> "Annulla",
                                     "title"=> "Annulla"
                                 ]
+                            ],
+                            [
+                                "type" => "url",
+                                "url" => [
+                                    "link" => $link_id,
+                                    "title" => "Vedi dalla Dashboard"
+                                ]
+                            ],
+                            [
+                                "type" => "call",
+                                "call" => [
+                                    "phone_number" => '+39' . $order->phone,
+                                    "title" => "Chiama " . $order->name
+                                ]
                             ]
                         ]
                     ]
@@ -166,10 +183,10 @@ class StripeWebhookController extends Controller
             $data = [
                 'messaging_product' => 'whatsapp',
                 'to' => $number,
-                'category' => 'marketing',
+                'category' => 'utility',
                 'type' => 'template',
                 'template' => [
-                    'name' => 'or',
+                    'name' => 'last_t',
                     'language' => [
                         'code' => 'it'
                     ],
@@ -183,8 +200,16 @@ class StripeWebhookController extends Controller
                                 ],
                                 [
                                     'type' => 'text',
-                                    'text' => $info  
-                                ]
+                                    'text' => $info,  
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $order->phone,  
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $link_id,  
+                                ],
                             ]
                         ]
                     ]

@@ -309,7 +309,7 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                $info =  $newOrder->name . ' ha ordinato per il ' . $newOrder->date_slot . ': ';
+                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ': ';
                 // Itera sui prodotti dell'ordine
                 $lastProduct = end($newOrder->products);
                 foreach ($newOrder->products as $product) {
@@ -342,12 +342,15 @@ class OrderController extends Controller
                 }else{
                     $info .= "Ritiro asporto";
                 }
-                
+                $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $newOrder->id;
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
                 $number = config('configurazione.WA_N');
                 $type_m = 0;
                 if ($this->isLastResponseWaWithin24Hours()) {
+                    $info = 'Contenuto della notifica: *_' . $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto' . '_*' . $info;
+                    
+
                     $data = [
                         'messaging_product' => 'whatsapp',
                         'to' => $number,
@@ -359,7 +362,7 @@ class OrderController extends Controller
                                 "text"=>'Hai una nuova notifica!',
                             ],  
                             "footer"=> [
-                                "text"=> "Powered by Future+"
+                                "text"=> "Powered by F+"
                             ],
                             "body"=> [
                             "text"=> $info,
@@ -379,6 +382,20 @@ class OrderController extends Controller
                                             "id"=> "Annulla",
                                             "title"=> "Annulla"
                                         ]
+                                    ],
+                                    [
+                                        "type" => "url",
+                                        "url" => [
+                                            "link" => $link_id,
+                                            "title" => "Vedi dalla Dashboard"
+                                        ]
+                                    ],
+                                    [
+                                        "type" => "call",
+                                        "call" => [
+                                            "phone_number" => '+39' . $newOrder->phone,
+                                            "title" => "Chiama " . $newOrder->name
+                                        ]
                                     ]
                                 ]
                             ]
@@ -389,10 +406,10 @@ class OrderController extends Controller
                     $data = [
                         'messaging_product' => 'whatsapp',
                         'to' => $number,
-                        'category' => 'marketing',
+                        'category' => 'utility',
                         'type' => 'template',
                         'template' => [
-                            'name' => 'or',
+                            'name' => 'last_t',
                             'language' => [
                                 'code' => 'it'
                             ],
@@ -407,7 +424,15 @@ class OrderController extends Controller
                                         [
                                             'type' => 'text',
                                             'text' => $info  
-                                        ]
+                                        ],
+                                        [
+                                            'type' => 'text',
+                                            'text' => $order->phone,  
+                                        ],
+                                        [
+                                            'type' => 'text',
+                                            'text' => $link_id,  
+                                        ],
                                     ]
                                 ]
                             ]
