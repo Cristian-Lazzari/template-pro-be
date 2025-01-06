@@ -349,7 +349,7 @@ class OrderController extends Controller
                 $type_m = 0;
                 if ($this->isLastResponseWaWithin24Hours()) {
                     $info = 'Contenuto della notifica: *_' . $newOrder->comune ? "Ordine a domicilio" : "Ordine d'asporto" . "_* \n\n" . $info . "\n\n" .
-                        "📞 Chiama: " . $newRes->phone . "\n\n" .
+                        "📞 Chiama: " . $newOrder->phone . "\n\n" .
                         "🔗 Vedi dalla Dashboard: $link_id";
                     
 
