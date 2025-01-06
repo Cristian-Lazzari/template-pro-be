@@ -322,20 +322,20 @@ class OrderController extends Controller
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
-                        $info .= "Opzioni: " . implode(', ', $options);
+                        $info .= "Opzioni: " . implode(', ', $options) . "\n";
                     }
                     // Gestisci gli ingredienti aggiunti
                     if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
-                        $info .= "Aggiunte: " . implode(', ', $addedIngredients);
+                        $info .= "Aggiunte: " . implode(', ', $addedIngredients) . "\n";
                     }
                     // Gestisci gli ingredienti rimossi
                     if ($product->pivot->remove !== '[]') {
                         $removedIngredients = json_decode($product->pivot->remove);
-                        $info .= "Rimossi: " . implode(', ', $removedIngredients);
+                        $info .= "Rimossi: " . implode(', ', $removedIngredients) . "\n";
                     }
                     // Separatore tra i prodotti
-                    $info .= ($product === $lastProduct) ? ". " : ", ";
+                    $info .= ($product === $lastProduct) ? ". \n\n" : ", \n";
                 }
                 if($newOrder->comune){
                     $info .= "Consegna a domicilio: {$newOrder->address}, {$newOrder->address_n}, {$newOrder->comune} ";
@@ -348,7 +348,9 @@ class OrderController extends Controller
                 $number = config('configurazione.WA_N');
                 $type_m = 0;
                 if ($this->isLastResponseWaWithin24Hours()) {
-                    $info = 'Contenuto della notifica: *_' . $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto' . '_*' . $info;
+                    $info = 'Contenuto della notifica: *_' . $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto' . '_*' . $info . "\n\n\n" .
+                        "📞 Chiama: " . $newRes->phone . "\n\n" .
+                        "🔗 Vedi dalla Dashboard: $link_id";
                     
 
                     $data = [
@@ -381,20 +383,6 @@ class OrderController extends Controller
                                         "reply"=> [
                                             "id"=> "Annulla",
                                             "title"=> "Annulla"
-                                        ]
-                                    ],
-                                    [
-                                        "type" => "url",
-                                        "url" => [
-                                            "link" => $link_id,
-                                            "title" => "Vedi dalla Dashboard"
-                                        ]
-                                    ],
-                                    [
-                                        "type" => "call",
-                                        "call" => [
-                                            "phone_number" => '+39' . $newOrder->phone,
-                                            "title" => "Chiama " . $newOrder->name
                                         ]
                                     ]
                                 ]

@@ -160,20 +160,6 @@ class StripeWebhookController extends Controller
                                     "title"=> "Annulla"
                                 ]
                             ],
-                            [
-                                "type" => "url",
-                                "url" => [
-                                    "link" => $link_id,
-                                    "title" => "Vedi dalla Dashboard"
-                                ]
-                            ],
-                            [
-                                "type" => "call",
-                                "call" => [
-                                    "phone_number" => '+39' . $order->phone,
-                                    "title" => "Chiama " . $order->name
-                                ]
-                            ]
                         ]
                     ]
                 ]
