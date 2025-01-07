@@ -170,22 +170,30 @@ class ReservationController extends Controller
             $mailAdmin = new confermaOrdineAdmin($bodymail_a);
             Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-            $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . ",   🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
+            $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . " \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
+            $guest = "";
+            $sala_mess = "";
             if($n_adult && $n_child){
-                $info .= $n_adult . " adulti e " . $n_child . " bambini  ";
+                $info .= $n_adult . " adulti e " . $n_child . " bambini \n\n";
+                $guest .= $n_adult . " adulti e " . $n_child . " bambini ";
             }elseif($n_adult){
-                $info .= $n_adult . " adulti  ";
+                $info .= $n_adult . " adulti \n\n";
+                $guest .= $n_adult . " adulti ";
             }elseif($n_child){
-                $info .= $n_child . " bambini  ";
+                $info .= $n_child . " bambini \n\n";
+                $guest .= $n_child . " bambini ";
             }
             if (config("configurazione.double_t") && $newRes->sala ) {
                 $info .= " *_Sala prenota: ";
+                $sala_mess .= " *_Sala prenota: ";
                 if ($newRes->sala == 1) {
                     $info .= config("configurazione.set_time_dt")[0];
+                    $sala_mess .= config("configurazione.set_time_dt")[0];
                 }else{
                     $info .= config("configurazione.set_time_dt")[1];
+                    $sala_mess .= config("configurazione.set_time_dt")[1];
                 }
-                $info .="_*   ";
+                $info .="_* \n\n ";
             }
             
             $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
@@ -197,8 +205,8 @@ class ReservationController extends Controller
             
             if ($this->isLastResponseWaWithin24Hours()) {
                 // Esegui azione se è entro le ultime 24 ore
-                $info = "Contenuto della notifica: *_Prenotazione tavolo_*  " . $info . " " .
-                        "📞 Chiama: " . $newRes->phone . " " .
+                $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
+                        "📞 Chiama: " . $newRes->phone . "\n\n" .
                         "🔗 Vedi dalla Dashboard: $link_id";
 
                 $data = [
@@ -261,7 +269,15 @@ class ReservationController extends Controller
                                     ],
                                     [
                                         'type' => 'text',
-                                        'text' => $info  
+                                        'text' => $newRes->name . ' ' . $newRes->surname . 'ha prenotato un tavolo per il ' . $newRes->date_slot  
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => '🧑‍🧑‍🧒‍🧒 Gli ospiti sono: ' . $guest 
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $sala_mess,  
                                     ],
                                     [
                                         'type' => 'text',

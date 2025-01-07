@@ -311,37 +311,48 @@ class OrderController extends Controller
 
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
+                $order_mess = "";
+                $type_mess = "";
                 $lastProduct = end($newOrder->products);
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "☞ ";
+                    $order_mess .= "☞ ";
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}* ";
+                        $order_mess .= "** {$product->pivot->quantity}* ";
                     }
                     $info .= "*```" . $product->name. "```*";
+                    $order_mess .= "*```" . $product->name. "```*";
 
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
                         $info .= "\n ```Opzioni:``` " . implode(', ', $options);
+                        $order_mess .= " ```Opzioni:``` " . implode(', ', $options);
                     }
                     // Gestisci gli ingredienti aggiunti
                     if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
                         $info .= "\n ```Aggiunte:``` " . implode(', ', $addedIngredients);
+                        $order_mess .= " ```Aggiunte:``` " . implode(', ', $addedIngredients);
                     }
                     // Gestisci gli ingredienti rimossi
                     if ($product->pivot->remove !== '[]') {
                         $removedIngredients = json_decode($product->pivot->remove);
                         $info .= "\n ```Rimossi:``` " . implode(', ', $removedIngredients);
+                        $order_mess .= " ```Rimossi:``` " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
                     $info .= " \n\n";
+                    $order_mess .= " " . " ";
                 }
                 if($newOrder->comune){
                     $info .= "Consegna a domicilio: {$newOrder->address}, {$newOrder->address_n}, {$newOrder->comune} ";
+                    $type_mess .= "Consegna a domicilio: {$newOrder->address}, {$newOrder->address_n}, {$newOrder->comune} ";
                 }else{
                     $info .= "Ritiro asporto";
+                    $type_mess .= "Ritiro asporto";
                 }
                 $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $newOrder->id;
                 // Definisci l'URL della richiesta
@@ -414,7 +425,15 @@ class OrderController extends Controller
                                         ],
                                         [
                                             'type' => 'text',
-                                            'text' => $info  
+                                            'text' => $neworder->name . ' ' . $neworder->surname . 'ha ordinato per il ' . $neworder->date_slot  . ': '
+                                        ],
+                                        [
+                                            'type' => 'text',
+                                            'text' => $order_mess
+                                        ],
+                                        [
+                                            'type' => 'text',
+                                            'text' => $type_mess
                                         ],
                                         [
                                             'type' => 'text',
@@ -512,19 +531,19 @@ class OrderController extends Controller
     protected function isLastResponseWaWithin24Hours()
     {
         // Trova il record con name = 'wa'
-        $setting = Setting::where('name', 'wa')->first();
+        // $setting = Setting::where('name', 'wa')->first();
 
-        if ($setting) {
-            // Decodifica il campo 'property' da JSON ad array
-            $property = json_decode($setting->property, true);
+        // if ($setting) {
+        //     // Decodifica il campo 'property' da JSON ad array
+        //     $property = json_decode($setting->property, true);
 
-            // Controlla se 'last_response_wa' è impostato
-            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
-                // Confronta la data salvata con le ultime 24 ore
-                $lastResponseDate = Carbon::parse($property['last_response_wa']);
-                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
-            }
-        }
+        //     // Controlla se 'last_response_wa' è impostato
+        //     if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
+        //         // Confronta la data salvata con le ultime 24 ore
+        //         $lastResponseDate = Carbon::parse($property['last_response_wa']);
+        //         return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+        //     }
+        // }
 
         return false; // Se il record non esiste o la data non è impostata
     }
