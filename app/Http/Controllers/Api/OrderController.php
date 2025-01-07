@@ -318,7 +318,7 @@ class OrderController extends Controller
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}* ";
                     }
-                    $info .= "```" . $product->name. "```";
+                    $info .= "```*" . $product->name. "*```";
 
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
@@ -336,7 +336,7 @@ class OrderController extends Controller
                         $info .= "\n Rimossi: " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
-                    $info .= "; \n";
+                    $info .= " \n\n";
                 }
                 if($newOrder->comune){
                     $info .= "Consegna a domicilio: {$newOrder->address}, {$newOrder->address_n}, {$newOrder->comune} ";
