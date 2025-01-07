@@ -309,7 +309,7 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n";
+                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
                 $lastProduct = end($newOrder->products);
                 foreach ($newOrder->products as $product) {
@@ -318,7 +318,7 @@ class OrderController extends Controller
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}* ";
                     }
-                    $info .= "```*" . $product->name. "*```";
+                    $info .= "* ```" . $product->name. "``` *";
 
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
