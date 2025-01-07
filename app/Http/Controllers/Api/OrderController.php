@@ -309,7 +309,6 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                $order = Order::where('id', $orderId)->with('products')->firstOrFail();
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n";
                 // Itera sui prodotti dell'ordine
                 $lastProduct = end($newOrder->products);
