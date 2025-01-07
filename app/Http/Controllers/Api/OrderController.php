@@ -323,17 +323,17 @@ class OrderController extends Controller
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
-                        $info .= "\n Opzioni: " . implode(', ', $options);
+                        $info .= "\n ```Opzioni:``` " . implode(', ', $options);
                     }
                     // Gestisci gli ingredienti aggiunti
                     if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
-                        $info .= "\n Aggiunte: " . implode(', ', $addedIngredients);
+                        $info .= "\n ```Aggiunte:``` " . implode(', ', $addedIngredients);
                     }
                     // Gestisci gli ingredienti rimossi
                     if ($product->pivot->remove !== '[]') {
                         $removedIngredients = json_decode($product->pivot->remove);
-                        $info .= "\n Rimossi: " . implode(', ', $removedIngredients);
+                        $info .= "\n ```Rimossi:``` " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
                     $info .= " \n\n";

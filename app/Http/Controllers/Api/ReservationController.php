@@ -170,7 +170,7 @@ class ReservationController extends Controller
             $mailAdmin = new confermaOrdineAdmin($bodymail_a);
             Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-            $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . ", \n\n gli ospiti sono: ";
+            $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . ", \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
             if($n_adult && $n_child){
                 $info .= $n_adult . " adulti e " . $n_child . " bambini \n\n";
             }elseif($n_adult){
@@ -179,13 +179,13 @@ class ReservationController extends Controller
                 $info .= $n_child . " bambini \n\n";
             }
             if (config("configurazione.double_t") && $newRes->sala ) {
-                $info .= " * _Sala prenota: ";
+                $info .= " *_Sala prenota: ";
                 if ($newRes->sala == 1) {
                     $info .= config("configurazione.set_time_dt")[0];
                 }else{
                     $info .= config("configurazione.set_time_dt")[1];
                 }
-                $info .="_ * \n\n ";
+                $info .="_* \n\n ";
             }
             
             $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
