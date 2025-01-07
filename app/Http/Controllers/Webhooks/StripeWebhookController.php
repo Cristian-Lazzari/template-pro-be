@@ -85,35 +85,35 @@ class StripeWebhookController extends Controller
         
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->firstOrFail();
+        $info = $order->name . ' ' . $order->surname .' ha ordinato per il ' . $order->date_slot . ": \n";
+                // Itera sui prodotti dell'ordine
+                $lastProduct = end($order->products);
+                foreach ($order->products as $product) {
+                    // Aggiungi il nome e la quantità del prodotto
+                    $info .= "- ";
+                    if ($product->pivot->quantity !== 1) {
+                        $info .= "** {$product->pivot->quantity}*";
+                    }
+                    $info .= "{$product->name} ";
 
-        $info =  $order->name . ' ' . $order->surname . ' ha ordinato e PAGATO per il ' . $order->date_slot . ': ';
-        // Itera sui prodotti dell'ordine
-        $lastProduct = end($order->products);
-        foreach ($order->products as $product) {
-            // Aggiungi il nome e la quantità del prodotto
-            $info .= "{$product->name} ";
-            if ($product->pivot->quantity !== 1) {
-                $info .= "** {$product->pivot->quantity}*";
-            }
-
-            // Gestisci le opzioni del prodotto
-            if ($product->pivot->option !== '[]') {
-                $options = json_decode($product->pivot->option);
-                $info .= "Opzioni: " . implode(', ', $options);
-            }
-            // Gestisci gli ingredienti aggiunti
-            if ($product->pivot->add !== '[]') {
-                $addedIngredients = json_decode($product->pivot->add);
-                $info .= "Aggiunte: " . implode(', ', $addedIngredients);
-            }
-            // Gestisci gli ingredienti rimossi
-            if ($product->pivot->remove !== '[]') {
-                $removedIngredients = json_decode($product->pivot->remove);
-                $info .= "Rimossi: " . implode(', ', $removedIngredients);
-            }
-            // Separatore tra i prodotti
-            $info .= ($product === $lastProduct) ? ". " : ", ";
-        }
+                    // Gestisci le opzioni del prodotto
+                    if ($product->pivot->option !== '[]') {
+                        $options = json_decode($product->pivot->option);
+                        $info .= "\n Opzioni: " . implode(', ', $options);
+                    }
+                    // Gestisci gli ingredienti aggiunti
+                    if ($product->pivot->add !== '[]') {
+                        $addedIngredients = json_decode($product->pivot->add);
+                        $info .= "\n Aggiunte: " . implode(', ', $addedIngredients);
+                    }
+                    // Gestisci gli ingredienti rimossi
+                    if ($product->pivot->remove !== '[]') {
+                        $removedIngredients = json_decode($product->pivot->remove);
+                        $info .= "\n Rimossi: " . implode(', ', $removedIngredients);
+                    }
+                    // Separatore tra i prodotti
+                    $info .= ($product === $lastProduct) ? ". \n\n" : ", \n";
+                }
         if($order->comune){
             $info .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
         }else{
@@ -126,9 +126,9 @@ class StripeWebhookController extends Controller
         $number = config('configurazione.WA_N');
         $type_m = 0;
         if ($this->isLastResponseWaWithin24Hours()) {
-            $t=$newOrder->comune ? "Ordine a domicilio" : "Ordine d'asporto";
+            $t=$order->comune ? "Ordine a domicilio" : "Ordine d'asporto";
             $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
-                "📞 Chiama: " . $newOrder->phone . "\n\n" .
+                "📞 Chiama: " . $order->phone . "\n\n" .
                 "🔗 Vedi dalla Dashboard: $link_id";
 
             $data = [

@@ -309,30 +309,31 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ': ';
+                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n";
                 // Itera sui prodotti dell'ordine
                 $lastProduct = end($newOrder->products);
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
-                    $info .= "{$product->name} ";
+                    $info .= "- ";
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}*";
                     }
+                    $info .= "{$product->name} ";
 
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
                         $options = json_decode($product->pivot->option);
-                        $info .= "Opzioni: " . implode(', ', $options) . "\n";
+                        $info .= "\n Opzioni: " . implode(', ', $options);
                     }
                     // Gestisci gli ingredienti aggiunti
                     if ($product->pivot->add !== '[]') {
                         $addedIngredients = json_decode($product->pivot->add);
-                        $info .= "Aggiunte: " . implode(', ', $addedIngredients) . "\n";
+                        $info .= "\n Aggiunte: " . implode(', ', $addedIngredients);
                     }
                     // Gestisci gli ingredienti rimossi
                     if ($product->pivot->remove !== '[]') {
                         $removedIngredients = json_decode($product->pivot->remove);
-                        $info .= "Rimossi: " . implode(', ', $removedIngredients) . "\n";
+                        $info .= "\n Rimossi: " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
                     $info .= ($product === $lastProduct) ? ". \n\n" : ", \n";
