@@ -112,7 +112,7 @@ class StripeWebhookController extends Controller
                         $info .= "\n Rimossi: " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
-                    $info .= ($product === $lastProduct) ? ". \n\n" : ", \n";
+                    $info .= "; \n";
                 }
         if($order->comune){
             $info .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
