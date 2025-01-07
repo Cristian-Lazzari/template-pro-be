@@ -378,8 +378,8 @@ class ReservationController extends Controller
         //     }
         // }
 
-        //return false; // Se il record non esiste o la data non è impostata
-        return true; // 
+        return false; // Se il record non esiste o la data non è impostata
+
     }
 
 
