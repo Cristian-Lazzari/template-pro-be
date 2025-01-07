@@ -309,14 +309,15 @@ class OrderController extends Controller
                 $mailAdmin = new confermaOrdineAdmin($bodymail_a);
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
-                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n";
+                $order = Order::where('id', $orderId)->with('products')->firstOrFail();
+                $info = $order->name . ' ' . $order->surname .' ha ordinato per il ' . $order->date_slot . ": \n";
                 // Itera sui prodotti dell'ordine
-                $lastProduct = end($newOrder->products);
-                foreach ($newOrder->products as $product) {
+                $lastProduct = end($order->products);
+                foreach ($order->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
-                    $info .= "- ";
+                    $info .= "🍽️ ⌲ ✦ ☞ ";
                     if ($product->pivot->quantity !== 1) {
-                        $info .= "** {$product->pivot->quantity}*";
+                        $info .= "** {$product->pivot->quantity}* ";
                     }
                     $info .= "{$product->name} ";
 
@@ -336,7 +337,7 @@ class OrderController extends Controller
                         $info .= "\n Rimossi: " . implode(', ', $removedIngredients);
                     }
                     // Separatore tra i prodotti
-                    $info .= ($product === $lastProduct) ? ". \n\n" : ", \n";
+                    $info .= "; \n";
                 }
                 if($newOrder->comune){
                     $info .= "Consegna a domicilio: {$newOrder->address}, {$newOrder->address_n}, {$newOrder->comune} ";
