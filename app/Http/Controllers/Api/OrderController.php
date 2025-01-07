@@ -318,7 +318,7 @@ class OrderController extends Controller
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}* ";
                     }
-                    $info .= "* ```" . $product->name. "``` *";
+                    $info .= "*```" . $product->name. "```*";
 
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {
