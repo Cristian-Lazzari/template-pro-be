@@ -85,41 +85,50 @@ class StripeWebhookController extends Controller
         
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->firstOrFail();
-        $info = $order->name . ' ' . $order->surname .' ha ordinato e *PAGATO* per il ' . $order->date_slot . ": \n\n";
-        // Itera sui prodotti dell'ordine
+        $info = $order->name . ' ' . $order->surname .' ha ordinato per il ' . $order->date_slot . ": \n\n";
+        $order_mess = "";
+        $type_mess = "";
         $lastProduct = end($order->products);
         foreach ($order->products as $product) {
             // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
+            $order_mess .= "☞ ";
             if ($product->pivot->quantity !== 1) {
                 $info .= "** {$product->pivot->quantity}* ";
+                $order_mess .= "** {$product->pivot->quantity}* ";
             }
             $info .= "*```" . $product->name. "```*";
+            $order_mess .= "*```" . $product->name. "```*";
 
             // Gestisci le opzioni del prodotto
             if ($product->pivot->option !== '[]') {
                 $options = json_decode($product->pivot->option);
                 $info .= "\n ```Opzioni:``` " . implode(', ', $options);
+                $order_mess .= " ```Opzioni:``` " . implode(', ', $options);
             }
             // Gestisci gli ingredienti aggiunti
             if ($product->pivot->add !== '[]') {
                 $addedIngredients = json_decode($product->pivot->add);
                 $info .= "\n ```Aggiunte:``` " . implode(', ', $addedIngredients);
+                $order_mess .= " ```Aggiunte:``` " . implode(', ', $addedIngredients);
             }
             // Gestisci gli ingredienti rimossi
             if ($product->pivot->remove !== '[]') {
                 $removedIngredients = json_decode($product->pivot->remove);
                 $info .= "\n ```Rimossi:``` " . implode(', ', $removedIngredients);
+                $order_mess .= " ```Rimossi:``` " . implode(', ', $removedIngredients);
             }
             // Separatore tra i prodotti
             $info .= " \n\n";
+            $order_mess .= " " . " ";
         }
         if($order->comune){
             $info .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
+            $type_mess .= "Consegna a domicilio: {$order->address}, {$order->address_n}, {$order->comune} ";
         }else{
             $info .= "Ritiro asporto";
+            $type_mess .= "Ritiro asporto";
         }
-
         $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $order->id;
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
@@ -185,11 +194,19 @@ class StripeWebhookController extends Controller
                             'parameters' => [
                                 [
                                     'type' => 'text',
-                                    'text' => $order->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
+                                    'text' => $order->comune ? 'Ordine a domicilio *GIÀ PAGATO*' : 'Ordine d\'asporto *GIÀ PAGATO*', 
                                 ],
                                 [
                                     'type' => 'text',
-                                    'text' => $info,  
+                                    'text' => $order->name . ' ' . $order->surname . ' ha ordinato per il ' . $order->date_slot  . ': '
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $order_mess
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $type_mess
                                 ],
                                 [
                                     'type' => 'text',

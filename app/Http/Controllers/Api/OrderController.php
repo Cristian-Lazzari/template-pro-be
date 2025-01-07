@@ -425,7 +425,7 @@ class OrderController extends Controller
                                         ],
                                         [
                                             'type' => 'text',
-                                            'text' => $newOrder->name . ' ' . $newOrder->surname . 'ha ordinato per il ' . $newOrder->date_slot  . ': '
+                                            'text' => $newOrder->name . ' ' . $newOrder->surname . ' ha ordinato per il ' . $newOrder->date_slot  . ': '
                                         ],
                                         [
                                             'type' => 'text',
@@ -531,19 +531,19 @@ class OrderController extends Controller
     protected function isLastResponseWaWithin24Hours()
     {
         // Trova il record con name = 'wa'
-        // $setting = Setting::where('name', 'wa')->first();
+        $setting = Setting::where('name', 'wa')->first();
 
-        // if ($setting) {
-        //     // Decodifica il campo 'property' da JSON ad array
-        //     $property = json_decode($setting->property, true);
+        if ($setting) {
+            // Decodifica il campo 'property' da JSON ad array
+            $property = json_decode($setting->property, true);
 
-        //     // Controlla se 'last_response_wa' è impostato
-        //     if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
-        //         // Confronta la data salvata con le ultime 24 ore
-        //         $lastResponseDate = Carbon::parse($property['last_response_wa']);
-        //         return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
-        //     }
-        // }
+            // Controlla se 'last_response_wa' è impostato
+            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
+                // Confronta la data salvata con le ultime 24 ore
+                $lastResponseDate = Carbon::parse($property['last_response_wa']);
+                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            }
+        }
 
         return false; // Se il record non esiste o la data non è impostata
     }
