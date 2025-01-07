@@ -411,7 +411,7 @@ class OrderController extends Controller
                         'category' => 'utility',
                         'type' => 'template',
                         'template' => [
-                            'name' => 'last_t',
+                            'name' => 'full_emoji',
                             'language' => [
                                 'code' => 'it'
                             ],
