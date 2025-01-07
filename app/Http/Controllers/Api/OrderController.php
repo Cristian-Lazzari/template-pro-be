@@ -314,7 +314,7 @@ class OrderController extends Controller
                 $lastProduct = end($newOrder->products);
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
-                    $info .= "🍽️ ⌲ ✦ ☞ ";
+                    $info .= "☞ ";
                     if ($product->pivot->quantity !== 1) {
                         $info .= "** {$product->pivot->quantity}* ";
                     }
