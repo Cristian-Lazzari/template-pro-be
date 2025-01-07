@@ -310,10 +310,10 @@ class OrderController extends Controller
                 Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
                 $order = Order::where('id', $orderId)->with('products')->firstOrFail();
-                $info = $order->name . ' ' . $order->surname .' ha ordinato per il ' . $order->date_slot . ": \n";
+                $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n";
                 // Itera sui prodotti dell'ordine
-                $lastProduct = end($order->products);
-                foreach ($order->products as $product) {
+                $lastProduct = end($newOrder->products);
+                foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "🍽️ ⌲ ✦ ☞ ";
                     if ($product->pivot->quantity !== 1) {
