@@ -85,7 +85,7 @@ class StripeWebhookController extends Controller
         
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->firstOrFail();
-        $info = $order->name . ' ' . $order->surname .' ha ordinato per il ' . $order->date_slot . ": \n\n";
+        $info = $order->name . ' ' . $order->surname .' ha ordinato e *PAGATO* per il ' . $order->date_slot . ": \n\n";
         // Itera sui prodotti dell'ordine
         $lastProduct = end($order->products);
         foreach ($order->products as $product) {
