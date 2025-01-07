@@ -483,6 +483,7 @@ class OrderController extends Controller
                     Log::info('Risposta ricevuta:', $response1->json());
                 
                     return response()->json([
+                        'success' => true,
                         'status' => 'success',
                         'data' => $response1->json(),
                     ]);
