@@ -425,7 +425,7 @@ class OrderController extends Controller
                                         ],
                                         [
                                             'type' => 'text',
-                                            'text' => $neworder->name . ' ' . $neworder->surname . 'ha ordinato per il ' . $neworder->date_slot  . ': '
+                                            'text' => $newOrder->name . ' ' . $newOrder->surname . 'ha ordinato per il ' . $newOrder->date_slot  . ': '
                                         ],
                                         [
                                             'type' => 'text',
