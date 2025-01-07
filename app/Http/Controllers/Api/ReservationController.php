@@ -195,50 +195,50 @@ class ReservationController extends Controller
 
             $type_m = 0;
             
-            if ($this->isLastResponseWaWithin24Hours()) {
-                // Esegui azione se è entro le ultime 24 ore
-                $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
-                        "📞 Chiama: " . $newRes->phone . "\n\n" .
-                        "🔗 Vedi dalla Dashboard: $link_id";
+            // if ($this->isLastResponseWaWithin24Hours()) {
+            //     // Esegui azione se è entro le ultime 24 ore
+            //     $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
+            //             "📞 Chiama: " . $newRes->phone . "\n\n" .
+            //             "🔗 Vedi dalla Dashboard: $link_id";
 
-                $data = [
-                    'messaging_product' => 'whatsapp',
-                    'to' => $number,
-                    "type"=> "interactive",
-                    "interactive"=> [
-                        "type"=> "button",
-                        "header"=> [
-                            "type" => "text",
-                            "text"=>'Hai una nuova notifica!',
-                        ],
-                        "footer"=> [
-                            "text"=> "Powered by F +"
-                        ],
-                        "body"=> [
-                        "text"=> $info,
-                        ],
-                            "action"=> [
-                            "buttons"=> [
-                                [
-                                    "type"=> "reply",
-                                    "reply"=> [
-                                        "id"=> "Conferma",
-                                        "title"=> "Conferma"
-                                    ]
-                                ],
-                                    [
-                                    "type"=> "reply",
-                                    "reply"=> [
-                                        "id"=> "Annulla",
-                                        "title"=> "Annulla"
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ];
+            //     $data = [
+            //         'messaging_product' => 'whatsapp',
+            //         'to' => $number,
+            //         "type"=> "interactive",
+            //         "interactive"=> [
+            //             "type"=> "button",
+            //             "header"=> [
+            //                 "type" => "text",
+            //                 "text"=>'Hai una nuova notifica!',
+            //             ],
+            //             "footer"=> [
+            //                 "text"=> "Powered by F +"
+            //             ],
+            //             "body"=> [
+            //             "text"=> $info,
+            //             ],
+            //                 "action"=> [
+            //                 "buttons"=> [
+            //                     [
+            //                         "type"=> "reply",
+            //                         "reply"=> [
+            //                             "id"=> "Conferma",
+            //                             "title"=> "Conferma"
+            //                         ]
+            //                     ],
+            //                         [
+            //                         "type"=> "reply",
+            //                         "reply"=> [
+            //                             "id"=> "Annulla",
+            //                             "title"=> "Annulla"
+            //                         ]
+            //                     ]
+            //                 ]
+            //             ]
+            //         ]
+            //     ];
                 
-            } else {
+            // } else {
                 $type_m = 1;
                 // Esegui azione alternativa
                 $data = [
@@ -276,7 +276,7 @@ class ReservationController extends Controller
                         ]
                     ]
                 ];
-            }
+            // }
             
             // Effettua la richiesta HTTP POST con le intestazioni necessarie
             $response = Http::withHeaders([
