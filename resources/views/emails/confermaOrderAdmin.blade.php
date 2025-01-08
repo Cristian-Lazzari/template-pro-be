@@ -100,14 +100,14 @@
         @elseif($content_mail['type'] == 'res')
             <!-- Messaggi per tipo 'res' -->
             @if ($content_mail['to'] == 'admin')
-                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
+                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
             @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)        
-                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
+                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
                 <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">La tua prenotazione è nella nostra coda, a breve riceverai l'esito del processamento</h4>
             @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
+                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
             @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-                <h1 style="color: #d35400; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
+                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
             @endif
 
             <!-- Sala prenotata (se applicabile) -->
