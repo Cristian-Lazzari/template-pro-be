@@ -81,18 +81,7 @@
             '#FF6699', '#66CCFF', '#CCFF33', '#FF9933', '#CC66CC',
             '#FFCC66', '#3366FF', '#33CC99', '#FF6666', '#66FFCC'
         ];
-        const colors_op = [
-            'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)',
-            'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)',
-            'rgba(153, 102, 255, 0.5)', 'rgba(255, 159, 64, 0.5)',
-            'rgba(102, 255, 102, 0.5)', 'rgba(255, 102, 51, 0.5)', 
-            'rgba(0, 153, 255, 0.5)', 'rgba(204, 51, 255, 0.5)', 
-            'rgba(255, 102, 153, 0.5)', 'rgba(102, 204, 255, 0.5)', 
-            'rgba(204, 255, 51, 0.5)', 'rgba(255, 153, 51, 0.5)', 
-            'rgba(204, 102, 204, 0.5)', 'rgba(255, 204, 102, 0.5)', 
-            'rgba(51, 102, 255, 0.5)', 'rgba(51, 204, 153, 0.5)', 
-            'rgba(255, 102, 102, 0.5)', 'rgba(102, 255, 204, 0.5)'
-        ];
+
 
         // Grafico a torta per i prodotti più ordinati
         const topProductsData = @json($topProducts);
@@ -123,7 +112,7 @@
         };
 
         // Ottieni un array di colori sufficienti per tutti i dataset
-        const colorsForDatasets = getColors(datasets.length, colors_op);
+        const colorsForDatasets = getColors(datasets.length, colors);
 
         // Crea un nuovo array di datasets con i colori associati
         const datasetsWithColors = datasets.map((dataset, index) => {
