@@ -86,7 +86,7 @@
         // Grafico a torta per i prodotti più ordinati
         const topProductsData = @json($topProducts);
         new Chart(document.getElementById('topProductsChart').getContext('2d'), {
-            type: 'polarArea',
+            type: 'doughnut',
             data: {
                 labels: Object.keys(topProductsData),
                 datasets: [{
