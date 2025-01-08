@@ -85,7 +85,7 @@ class StripeWebhookController extends Controller
         
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         $order = Order::where('id', $orderId)->with('products')->firstOrFail();
-        $info = $order->name . ' ' . $order->surname .' ha ordinato per il ' . $order->date_slot . ": \n\n";
+        $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
         $lastProduct = end($order->products);
@@ -135,7 +135,7 @@ class StripeWebhookController extends Controller
         $number = config('configurazione.WA_N');
         $type_m = 0;
         if ($this->isLastResponseWaWithin24Hours()) {
-            $t=$order->comune ? "Ordine a domicilio" : "Ordine d'asporto";
+            $t=$order->comune ? "Ordine a domicilio GIÀ PAGATO" : "Ordine d'asporto GIÀ PAGATO";
             $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
                 "📞 Chiama: " . $order->phone . "\n\n" .
                 "🔗 Vedi dalla Dashboard: $link_id";
@@ -194,7 +194,7 @@ class StripeWebhookController extends Controller
                             'parameters' => [
                                 [
                                     'type' => 'text',
-                                    'text' => $order->comune ? 'Ordine a domicilio *GIÀ PAGATO*' : 'Ordine d\'asporto *GIÀ PAGATO*', 
+                                    'text' => $order->comune ? 'Ordine a domicilio GIÀ PAGATO' : 'Ordine d\'asporto GIÀ PAGATO', 
                                 ],
                                 [
                                     'type' => 'text',
