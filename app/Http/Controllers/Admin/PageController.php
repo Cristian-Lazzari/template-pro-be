@@ -105,8 +105,8 @@ class PageController extends Controller
                 'label' => 'Prenotazioni',
                 'data' => $allDates->map(fn($date) => isset($reservations[$date]) ? (int)$reservations[$date]['count'] : 0)->values()->toArray(),
                 
-                'borderColor' => '#d8dde8',
-                'backgroundColor' => '#d8dde8',
+                'borderColor' => '#090333',
+                'backgroundColor' => '#090333',
             ],
             [
                 'label' => ' Delivery',
@@ -442,7 +442,7 @@ class PageController extends Controller
 
         // Estrarre i dati dalla tabella Orders
         $orders = Order::selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, status, SUM(tot_price) as total_price")
-            ->whereIn('status', [0, 1, 5]) // Considera solo i status rilevanti
+            ->whereIn('status', [0, 1, 5, 6]) // Considera solo i status rilevanti
            // ->where('status', '!=', 4) // Escludi status = 4
             ->groupBy('date', 'status')
             ->orderBy('date')
@@ -473,6 +473,9 @@ class PageController extends Controller
                     break;
                 case 1:
                     $revenueOverTime['cod'][] = $point;
+                    break;
+                case 6:
+                    $revenueOverTime['canceled'][] = $point;
                     break;
                 case 0:
                     $revenueOverTime['canceled'][] = $point;

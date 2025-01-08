@@ -1,4 +1,11 @@
 @import "~bootstrap/scss/bootstrap";
+$c1_op:#1e2d6472;
+$c2_op:#10b7937b;
+$c3_op:#d8dde880;
+$c1: #090333;
+$c2:#10b793;
+$c3: #d8dde8;
+
 
 :root {
     --c1_op:#1e2d6472;
@@ -424,8 +431,9 @@ body{
                     //min-height: 300px;
                     //height: auto !important;
                 }
+                border: 2px solid $c1;
                 padding: 1rem 1rem;
-                //background-color: var(--c3_op);
+                background-color: $c3;
             }
             .date-off{
                 height: 100%;
@@ -897,7 +905,10 @@ body{
         padding: .6rem !important
     }
 }
-
+.post-container{
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+}
 .object-container{
     margin-top: 2rem;
     width: 100%;
@@ -1022,41 +1033,61 @@ body{
     flex-direction: column;
     gap: .6rem;
     h3{
+        background-color: var(--c2);
+        padding: .6rem;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
         a{
-            color: var(--c3);
+            color: var(--c1);
             text-decoration: none;
         }
-    }
-    flex: 1 0 auto;
-    .hash{
-        width: 200px;
-        white-space: wrap;
-    }
-    .ell-c{
-        max-width: clamp(100px, 60vw, 200px) !important;
-        .ellips{
-            width: 100% !important;
-        }
-    }
+    }   
     .card_{
         border-radius: 10px;
-        padding: 8px;
         color: var(--c1); 
         background-color: var(--c3);
         flex-wrap: wrap;
         img{
-            background-color: #10b793;
+            background-color: var(--c2_op);
             border-radius: 12px;
-            width: 195px !important;
-            height: 195px;
+            //width: 195px !important;
+            //height: 195px;
             object-fit: cover;
-            border: 2px solid var(--c3_op);
+            border: 5px solid var(--c3);
+            width: 100%;
+            margin: 0 auto;
         }
     }
-    .actions{
-        margin: 0 .3rem;
-        align-items: stretch;
-        width: 100% !important;
+    h4, p, h3{
+        padding-inline: .6rem;
+
+    }
+    .hash{
+        padding: .6rem;
+        //width: 200px;
+        white-space: wrap;
+    }
+    .ell-c{
+        max-width: clamp(100px, 50vw, 200px)!important;
+        .ellips{
+            width: 100% !important;
+        }
+    }
+}
+@media (min-width:1090px) {
+    .post-container{
+        grid-template-columns: 1fr 1fr 1fr !important;
+    }
+}
+@media (max-width:700px) {
+    .post-container{
+        grid-template-columns: 1fr !important;
+        .actions{
+            gap: .3rem !important;
+            .my_btn_1, .my_btn_5 {
+                padding: .4rem .7rem;
+            }
+        }
     }
 }
 .slim_cont{

@@ -736,7 +736,7 @@
         const ctx = document.getElementById('chartCanvas').getContext('2d');
         const totalDuration = 1000;
         const delayBetweenPoints = totalDuration / data.labels.length;
-        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(10) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
         const animation = {
             x: {
                 type: 'number',
@@ -789,22 +789,22 @@
                         labels: {
                             usePointStyle: true,
                             pointStyle: 'rectRounded',
-                            color: 'white' // Imposta il colore delle etichette della legenda su blu
+                            color: c3
                         }
                     },
-                    // title: {
-                    //     display: true,
-                    //     text: 'Andamento ordini e prenotazioni',
-                        
-                    // }
+                    title: {
+                        display: true,
+                        text: 'Andamento ordini e prenotazioni nel tempo',
+                        color: c3
+                    }
                 },
                 scales: {
                     x: {
-                        grid: {
-                            color : ct
-                        },
+                        // grid: {
+                        //     color : ct
+                        // },
                         ticks: {
-                            color: 'white'
+                            color: c3
                         },
                         title: {
                             display: false,
@@ -825,7 +825,7 @@
                             color : ct
                         },
                         ticks: {
-                            color: 'white'
+                            color: c3
                         },
                         title: {
                             display: false,
