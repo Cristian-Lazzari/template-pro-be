@@ -100,7 +100,7 @@
                     @endif
                     <a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a>
                 </h3>     
-                @if (!isset($item->image))
+                @if (isset($item->image))
                     <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
                 @else
                     <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">

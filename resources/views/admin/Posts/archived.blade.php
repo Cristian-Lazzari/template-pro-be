@@ -83,66 +83,66 @@
 </form> 
 
 
-<div class="object-container archived">
+<div class="object-container post-container">
     @foreach ($posts as $item)
 
-    <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
-        <h3>
-            @if ($item->promo)
-                <svg height="24px" class="promotion_on" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
-            @endif
-            <a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a>
-        </h3>     
-        <div class="card_">
-            @if (isset($item->image))
-                <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
-            @else
-                <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
-            @endif 
-
-            @if (isset($item->hashtag))
-                <div class="price">{{$item->hashtag}}</div>
-            @endif 
-            <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
-            <div class="info">
-                <section>
-                    <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
-                    @if (isset($item->link)) 
-                        <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
-                    @endif  
-                </section>
-            </div>
-        </div>
-        <div class="actions">
-            <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
-            <form action="{{ route('admin.posts.status') }}" method="POST">
-                @csrf
-                <input type="hidden" name="archive" value="0">
-                <input type="hidden" name="v" value="0">
-                <input type="hidden" name="a" value="1">
-                <input type="hidden" name="id" value="{{$item->id}}">
-                <button class="my_btn_1 d" type="submit">Ripristina</button>
-            </form>
-            <form action="{{ route('admin.posts.status') }}" method="POST">
-                @csrf
-                <input type="hidden" name="archive" value="0">
-                <input type="hidden" name="v" value="1">
-                <input type="hidden" name="a" value="0">
-                <input type="hidden" name="id" value="{{$item->id}}">
-                @if (!$item->visible)
-                    <button class="my_btn_5" type="submit">
-                        PUBBLICA
-                    </button>
+        <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
+            <div class="card_">
+                <h3>
+                    @if ($item->promo)
+                        <svg height="24px" class="promotion_on" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
+                    @endif
+                    <a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a>
+                </h3>     
+                @if (isset($item->image))
+                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
                 @else
-                    <button class="my_btn_5" type="submit">
-                        Nascondi   
-                    </button>
-                @endif
-                
-            </form>
-        </div>
+                    <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
+                @endif 
 
-    </div>
+                @if (isset($item->hashtag))
+                    <p class="hash">{{$item->hashtag}}</p>
+                @endif 
+                <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
+                <div class="info">
+                    <section>
+                        <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
+                        @if (isset($item->link)) 
+                            <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
+                        @endif  
+                    </section>
+                </div>
+            </div>
+            <div class="actions">
+                <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
+                <form action="{{ route('admin.posts.status') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="archive" value="0">
+                    <input type="hidden" name="v" value="0">
+                    <input type="hidden" name="a" value="1">
+                    <input type="hidden" name="id" value="{{$item->id}}">
+                    <button class="my_btn_1 d" type="submit">Archivia</button>
+                </form>
+                <form action="{{ route('admin.posts.status') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="archive" value="0">
+                    <input type="hidden" name="v" value="1">
+                    <input type="hidden" name="a" value="0">
+                    <input type="hidden" name="id" value="{{$item->id}}">
+                    @if (!$item->visible)
+                        <button class="my_btn_5" type="submit">
+                            PUBBLICA
+                        </button>
+                    @else
+                        <button class="my_btn_5" type="submit">
+                            Nascondi   
+                        </button>
+                    @endif
+                    
+                </form>
+            </div>
+
+        </div>
     @endforeach
 </div>
 @endsection
