@@ -20,6 +20,9 @@ use App\Http\Controllers\Guests\PageController as GuestsPageController;
 Route::get('/', function () {
     return view('guests/home');
 });
+Route::get('/doc', function () {
+    return view('guests/documentazione');
+});
 
 Route::middleware(['auth', 'verified'])
     ->name('admin.')
