@@ -172,7 +172,7 @@ class ReservationController extends Controller
 
             $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . " \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
             $guest = "";
-            $sala_mess = "";
+            $sala_mess = " ";
             if($n_adult && $n_child){
                 $info .= $n_adult . " adulti e " . $n_child . " bambini \n\n";
                 $guest .= $n_adult . " adulti e " . $n_child . " bambini ";
