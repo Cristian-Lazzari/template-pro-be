@@ -202,7 +202,7 @@ class ReservationController extends Controller
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
             $number = config('configurazione.WA_N');
 
-            $type_m = 0;
+            $asd = 0;
             
             if ($this->isLastResponseWaWithin24Hours()) {
                 // Esegui azione se è entro le ultime 24 ore
@@ -331,6 +331,7 @@ class ReservationController extends Controller
                     'status' => 'success',
                     'success' => true,
                     'data' => $response->json(),
+                    'tipo' => $asd,
                 ]);
 
                 // // Invio della richiesta POST
