@@ -295,56 +295,45 @@ class ReservationController extends Controller
                 ];
             }
             
-            // Effettua la richiesta HTTP POST con le intestazioni necessarie
-            // $response = Http::withHeaders([
-            //     'Authorization' => config('configurazione.WA_TO'),
-            //     'Content-Type' => 'application/json'
-            // ])->post($url, $data);
+            //Effettua la richiesta HTTP POST con le intestazioni necessarie
+            $response = Http::withHeaders([
+                'Authorization' => config('configurazione.WA_TO'),
+                'Content-Type' => 'application/json'
+            ])->post($url, $data);
 
-            // Estrai l'ID del messaggio dalla risposta di WhatsApp
-            // $messageId = $response->json()['messages'][0]['id'] ?? null;
-            // if ($messageId) {
-            //     // Salva il message_id nell'ordine
-            //     $newRes->whatsapp_message_id = $messageId;
-            //     $newRes->update();
-            // }
+            //Estrai l'ID del messaggio dalla risposta di WhatsApp
+            $messageId = $response->json()['messages'][0]['id'] ?? null;
+            if ($messageId) {
+                // Salva il message_id nell'ordine
+                $newRes->whatsapp_message_id = $messageId;
+                $newRes->update();
+            }
 
 
-            // $data1 = [        
-            //     'wa_id' => $newRes->whatsapp_message_id,
-            //     'type' => $type_m,
-            //     'source' => config('configurazione.APP_URL'),
-            // ];
+            $data1 = [        
+                'wa_id' => $newRes->whatsapp_message_id,
+                'type' => $type_m,
+                'source' => config('configurazione.APP_URL'),
+            ];
             
-            // // Log dei dati inviati
-            // Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
+            // Log dei dati inviati
+            Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
 
             
             
             try {
-                $response = Http::withHeaders([
-                    'Authorization' => config('configurazione.WA_TO'),
-                    'Content-Type' => 'application/json'
-                ])->post($url, $data);
-    
+
+                // Invio della richiesta POST
+                $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
+            
+                // Log della risposta ricevuta
+                Log::info('Risposta ricevuta:', $response1->json());
+            
                 return response()->json([
                     'status' => 'success',
                     'success' => true,
-                    'data' => $response->json(),
-                    'tipo' => $type_m,
+                    'data' => $response1->json(),
                 ]);
-
-                // // Invio della richiesta POST
-                // $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
-            
-                // // Log della risposta ricevuta
-                // Log::info('Risposta ricevuta:', $response1->json());
-            
-                // return response()->json([
-                //     'status' => 'success',
-                //     'success' => true,
-                //     'data' => $response1->json(),
-                // ]);
             } catch (Exception $e) {
                 // Gestione degli errori
                 Log::error('Errore nell\'invio della richiesta POST:', [
