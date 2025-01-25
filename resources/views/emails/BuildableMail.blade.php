@@ -35,7 +35,7 @@
         <p>{{$b}}</p>
         @endforeach
     </div>
-    
+    <p>{{config('configurazione.dominio') . $content_mail['img_2']}}</p>
     @if($content_mail['img_2'] !== NULL)   
         <img style="height: 120px; margin: 2rem auto;" src="{{config('configurazione.dominio') . $content_mail['img_2']}}" alt="">
     @endif
@@ -43,11 +43,11 @@
     <p style="color: #04001d; font-size: 24px; text-align: center; margin: .6rem 0">{{$content_mail['ending']}}</p>
 
     <div class="sender" style="color: #04001ds">
-        <p style="font-wheight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
-        <p style="font-size: 18px; margin: 10px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
+        <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
+        <p style="font-style: italic; font-size: 18px; margin: 10px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
     </div>
 
-    <footer style="width: 100%; margin: 50px 0 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
+    <footer style=" margin: 50px 0 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
         <h5>Seguici sui social</h5>
         <div style="display: flex; gap: 10px; justify-content: center; aline-items: center; flex-wrap: wrap"> 
             <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.facebook.com/profile.php?id=61558817374447">
