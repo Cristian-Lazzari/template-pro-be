@@ -42,9 +42,9 @@
 
     <p style="color: #04001d; font-size: 24px; text-align: center; margin: .6rem 0">{{$content_mail['ending']}}</p>
 
-    <div class="sender" style="color: #04001ds">
+    <div class="sender" style="color: #04001d">
         <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
-        <p style="font-style: italic; font-size: 18px; margin: 10px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
+        <p style="font-style: italic; font-size: 16px; margin: 4px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
     </div>
 
     <footer style=" margin: 50px 0 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
