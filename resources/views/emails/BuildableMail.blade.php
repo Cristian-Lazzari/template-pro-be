@@ -21,13 +21,13 @@
             IntlDateFormatter::NONE  // Nessun orario
         );
    @endphp
-    <img style="height: 80px; margin: 2rem auto;" src="{{config('configurazione.dominio') . '/public/favicon.png'}}" alt="">
+    <img style="height: 80px; margin: 2rem auto;" src="{{c . '/public/favicon.png'}}" alt="">
 
 
     <h1 style="color: #04001d; font-size: 28px; padding: 1ewrem;">{{$content_mail['heading']}}</h1>
     
     @if($content_mail['img_1'] !== NULL)   
-    <img src="{{$content_mail['img_1']}}" alt="">
+    <img src="{{config('configurazione.dominio') . $content_mail['img_1']}}" alt="">
     @endif
     
     <div style="margin: 1rem 3rem; font-size: 20px;" class="corpo">
@@ -37,24 +37,24 @@
     </div>
     
     @if($content_mail['img_2'] !== NULL)   
-        <img src="{{$content_mail['img_2']}}" alt="">
+        <img src="{{config('configurazione.dominio') . $content_mail['img_2']}}" alt="">
     @endif
 
     <p style="color: #04001d; font-size: 24px; text-align: center; margin: .6rem 0">{{$content_mail['ending']}}</p>
 
-    <div class="sender">
-        <p style="font-family: cursive; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
-        <p style="font-size: 18px: margin: 10px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
+    <div class="sender" style="color: #04001ds">
+        <p style="font-wheight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
+        <p style="font-size: 18px; margin: 10px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
     </div>
 
     <footer style="width: 100%; margin: 50px 0 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
         <h5>Seguici sui social</h5>
         <div style="display: flex; gap: 10px; justify-content: center; aline-items: center; flex-wrap: wrap"> 
             <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.facebook.com/profile.php?id=61558817374447">
-                Future plus
+                Facebook: <span style="color: white; font-weight: 900"> Future plus</span>
             </a>
             <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.instagram.com/future.plus_/?hl=it">
-                @future.plus_
+                Instagram: <span style="color: white; font-weight: 900"> @future.plus_</span>
             </a>
         </div>
         <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
