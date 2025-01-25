@@ -21,13 +21,13 @@
             IntlDateFormatter::NONE  // Nessun orario
         );
    @endphp
-    <img style="height: 80px; margin: 2rem auto;" src="{{config('configurazione.dominio') . '/public/favicon.png'}}" alt="">
+    <img style="height: 80px; margin: 2rem auto;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
 
 
     <h1 style="color: #04001d; font-size: 28px; padding: 1ewrem;">{{$content_mail['heading']}}</h1>
     
     @if($content_mail['img_1'] !== NULL)   
-    <img style="height: 250px; margin: 2rem auto;" src="{{config('configurazione.dominio') . $content_mail['img_1']}}" alt="">
+    <img style="height: 250px; margin: 2rem auto;" src="{{config('configurazione.APP_URL') . $content_mail['img_1']}}" alt="">
     @endif
     
     <div style="margin: 1rem 3rem; font-size: 20px;" class="corpo">
@@ -35,9 +35,9 @@
         <p>{{$b}}</p>
         @endforeach
     </div>
-    <p>{{config('configurazione.dominio') }}{{ $content_mail['img_2']}}</p>
+    <p>{{config('configurazione.APP_URL') }}{{ $content_mail['img_2']}}</p>
     @if($content_mail['img_2'] !== NULL)   
-        <img style="height: 120px; margin: 2rem auto;" src="{{config('configurazione.dominio') . $content_mail['img_2']}}" alt="">
+        <img style="height: 120px; margin: 2rem auto;" src="{{config('configurazione.APP_URL') . $content_mail['img_2']}}" alt="">
     @endif
 
     <p style="color: #04001d; font-size: 24px; text-align: center; margin: .6rem 0">{{$content_mail['ending']}}</p>
