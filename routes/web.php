@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DateController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Webhooks\WaController;
+use App\Http\Controllers\Admin\MailerController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -24,6 +25,7 @@ Route::get('/doc', function () {
     return view('guests/documentazione');
 });
 
+
 Route::middleware(['auth', 'verified'])
     ->name('admin.')
     ->prefix('admin')
@@ -32,6 +34,8 @@ Route::middleware(['auth', 'verified'])
         Route::get('/',           [AdminPageController::class, 'dashboard'])->name('dashboard');
    
         Route::get('/statistics', [AdminPageController::class, 'statistics'])->name('statistics');
+        Route::get('/mailer',               [MailerController::class, 'mailer'])->name('mailer');
+        Route::post('mailer/send_mail',     [MailerController::class, 'send_mail'])->name('mailer.send_mail');
         // Rotte setting
 
         Route::post('settings/updateAll',  [SettingController::class, 'updateAll'])->name('settings.updateAll');
