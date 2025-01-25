@@ -43,7 +43,7 @@
     <p style="color: #04001d; font-size: 24px; text-align: center; margin: .6rem 0">{{$content_mail['ending']}}</p>
 
     <div class="sender">
-        <p style="font-family: cursive; font-size: 18px">{{$content_mail['sender']}}</p>
+        <p style="font-family: cursive; font-size: 18px; margin: 5px 2rem">{{$content_mail['sender']}}</p>
         <p style="font-size: 18px" class="date">{{$formatter->format($dataOdierna)}}</p>
     </div>
 
