@@ -35,7 +35,7 @@
         <p>{{$b}}</p>
         @endforeach
     </div>
-    <p>{{config('configurazione.dominio') . $content_mail['img_2']}}</p>
+    <p>{{config('configurazione.dominio') }}{{ $content_mail['img_2']}}</p>
     @if($content_mail['img_2'] !== NULL)   
         <img style="height: 120px; margin: 2rem auto;" src="{{config('configurazione.dominio') . $content_mail['img_2']}}" alt="">
     @endif
