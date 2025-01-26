@@ -34,8 +34,9 @@ Route::middleware(['auth', 'verified'])
         Route::get('/',           [AdminPageController::class, 'dashboard'])->name('dashboard');
    
         Route::get('/statistics', [AdminPageController::class, 'statistics'])->name('statistics');
-        Route::get('/mailer',               [MailerController::class, 'mailer'])->name('mailer.create');
-        Route::post('mailer/send_mail',     [MailerController::class, 'send_mail'])->name('mailer.send_mail');
+
+        Route::get('/mailer/create',         [MailerController::class, 'mailer'])->name('mailer.create');
+        Route::post('/mailer/send_mail',     [MailerController::class, 'send_mail'])->name('mailer.send_mail');
         // Rotte setting
 
         Route::post('settings/updateAll',  [SettingController::class, 'updateAll'])->name('settings.updateAll');
