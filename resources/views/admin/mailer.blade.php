@@ -27,15 +27,21 @@
                 </svg>
                 Lista destinatari
             </label>
+            <div id="emailList" class="p">
+                @foreach ($last_mail_list as $c)
+                <div class="wrapper d-flex gap-2">
+                    <input type="checkbox" name="recipients[]" class="d-none" id="{{$c}}">
+                    <label class="" for="{{$c}}">{{$c}}</label>
+                </div>
+                @endforeach
+                <!-- Email verranno aggiunte qui -->
+            </div>
             
             <div class="split ">
                 <input type="text" id="emailInput" class="" placeholder="esempio@email.com, altro@email.com">
                 <div id="addEmailsButton" class="my_btn_1 w-auto">Aggiungi alla lista</div>
             </div>
-            <p id="emailList" class="">
-                <!-- Email verranno aggiunte qui -->
-            </p>
-            @error('recipients') <p class="error">{{ $message }}</p> @enderror
+            @error('recipients') <p class="error"> {{ $message }}</p> @enderror
         </section>
        
 

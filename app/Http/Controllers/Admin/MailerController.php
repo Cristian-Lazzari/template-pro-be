@@ -25,7 +25,7 @@ class MailerController extends Controller
     public function mailer()
     {
 
-        $last_mail_list = 0;
+        $last_mail_list = [];
         $last_n_contact = 0;
         
         //$old_mail = Setting::where('name', 'email_marketing')->first();
