@@ -48,7 +48,7 @@
     </div>
 
     <footer style=" margin: 50px 0 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
-        <h5>Seguici sui social</h5>
+        <h5 style="font-size: 16px">Seguici sui social</h5>
         <div style="display: flex; gap: 10px; justify-content: center; aline-items: center; flex-wrap: wrap"> 
             <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.facebook.com/profile.php?id=61558817374447">
                 Facebook: <span style="color: white; font-weight: 900"> Future plus</span>
