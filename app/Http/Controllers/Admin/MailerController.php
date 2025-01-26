@@ -79,6 +79,6 @@ class MailerController extends Controller
             $old_mail->update();
         }
         $m = 'Sono state correttamente inviate ' . $n_contact . ' email';
-        return view('admin.mailer')->with('send_success', $m);   
+        return to_route('admin.mailer.create')->with('send_success', $m);   
     }
 }
