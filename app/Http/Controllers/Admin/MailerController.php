@@ -24,6 +24,21 @@ class MailerController extends Controller
     ];
     public function mailer()
     {
+        $old_mail = Setting::where('name', 'mail_list')->firstOrFail();
+        if(!$old_mail){
+            $new_set = [
+                'name' => 'Prenotaione Tavoli',  
+                'status' => 1,
+                'property' => [
+                    'last_mail_list' => json_encode($recipients),
+                    'last_n_contact' => $n_contact
+                ],
+            ];
+            Setting::create($new_set);
+        }else{
+            $old_mail->property = json_encode($recipients);
+            $old_mail->update();
+        }
         return view('admin.mailer');   
     }
     public function send_mail(Request $request)
@@ -79,6 +94,6 @@ class MailerController extends Controller
             $old_mail->update();
         }
         $m = 'Sono state correttamente inviate ' . $n_contact . ' email';
-        return view('admin.mailer.create')->with('send_success', $m);   
+        return view('admin.mailer')->with('send_success', $m);   
     }
 }
