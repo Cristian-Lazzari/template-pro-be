@@ -24,7 +24,7 @@
     <img style="height: 80px; margin: 2rem auto;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
 
 
-    <h1 style="color: #04001d; font-size: 28px; padding: 1ewrem;">{{$content_mail['heading']}}</h1>
+    <h1 style="color: #04001d; font-size: 28px; padding: 1rem;">{{$content_mail['heading']}}</h1>
     
     @if($content_mail['img_1'] !== NULL)   
     <img style="height: 250px; margin: 2rem auto;" src="{{config('configurazione.APP_URL') . $content_mail['img_1']}}" alt="">
