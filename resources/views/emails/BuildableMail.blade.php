@@ -21,13 +21,13 @@
             IntlDateFormatter::NONE  // Nessun orario
         );
    @endphp
-    <img style=" height: 80px; margin: 2rem calc((100% / 2) - 40px);" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
+    <img style="width: 80px; margin: 2rem;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
 
 
     <h1 style="color: #04001d; font-size: 28px; padding: 1rem;">{{$content_mail['heading']}}</h1>
     
     @if($content_mail['img_1'] !== NULL)   
-    <img style=" height: 250px; margin: 2rem calc((100% / 2) - 125px);" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
+    <img style="width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
     @endif
     
     <div style="margin: 1rem 3rem; font-size: 20px;" class="corpo">
@@ -37,7 +37,7 @@
     </div>
     
     @if($content_mail['img_2'] !== NULL)   
-        <img style=" height: 120px; margin: 2rem calc((100% / 2) - 60px);" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
+        <img style="width: 20%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 40%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
     @endif
 
     <p style="color: #04001d; font-size: 24px; text-align: center; margin: .6rem 0">{{$content_mail['ending']}}</p>
