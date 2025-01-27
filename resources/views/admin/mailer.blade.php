@@ -30,7 +30,7 @@
             <div id="emailList" class="p">
                 @foreach ($last_mail_list as $c)
                 <div class="wrapper d-flex gap-2">
-                    <input type="checkbox" name="recipients[]" class="d-none" id="{{$c}}" value="{{$c}}">
+                    <input type="checkbox" name="recipients[]" class="d-none" id="{{$c}}" checked value="{{$c}}">
                     <label class="" for="{{$c}}">{{$c}}</label>
                 </div>
                 @endforeach
