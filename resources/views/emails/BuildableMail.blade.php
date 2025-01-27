@@ -30,7 +30,7 @@
     <img style="border-radius: 10px; width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
     @endif
     
-    <div style="margin: 1rem 3rem; font-size: 20px; opacity: .8;" class="corpo">
+    <div style="margin: 1rem 3rem; font-size: 20px; color: rgb(28, 28, 29)" class="corpo">
         @foreach ($content_mail['body'] as $b)
         <p>{{$b}}</p>
         @endforeach
