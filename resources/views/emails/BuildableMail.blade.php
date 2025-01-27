@@ -24,7 +24,7 @@
     <img style="width: 80px; margin: 2rem;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
 
 
-    <h1 style="color: #04001d; font-size: 28px; padding: 1rem;">{{$content_mail['heading']}}</h1>
+    <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
     
     @if($content_mail['img_1'] !== NULL)   
     <img style="width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
@@ -47,18 +47,18 @@
         <p style="font-style: italic; font-size: 16px; margin: 4px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
     </div>
 
-    <footer style=" margin: 50px 0 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
+    <footer style=" margin: 50px 0 0; background-color: black; color: white; padding: 10px 20px; text-align: center; font-size: 12px;">
         <h5 style="font-size: 16px">Seguici sui social</h5>
-        <div style="display: flex; gap: 10px; justify-content: center; aline-items: center; flex-wrap: wrap"> 
+        <div style="padding: 0 0 20px "> 
             <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.facebook.com/profile.php?id=61558817374447">
                 Facebook: <span style="color: white; font-weight: 900"> Future plus</span>
             </a>
-            <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.instagram.com/future.plus_/?hl=it">
+            <a style="color: white; text-decoration: none; margin: auto;" href="https://www.instagram.com/future.plus_/?hl=it">
                 Instagram: <span style="color: white; font-weight: 900"> @future.plus_</span>
             </a>
         </div>
         <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 15px 10px 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
-        <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white" href="https://future-plus.it">Future +</a></p>
+        <p style="font-size: 17px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
     </footer>
 </body>
 </html>
