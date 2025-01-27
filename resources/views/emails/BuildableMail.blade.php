@@ -21,7 +21,7 @@
             IntlDateFormatter::NONE  // Nessun orario
         );
    @endphp
-    <img style="width: 80px; margin: 2rem; filter: drop-shadow( 0 0 15px rgba(5, 1, 31, 0.496)) " src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
+    <img style="width: 80px; margin: 2rem; filter: drop-shadow( 0 0 15px rgba(5, 1, 31, 0.496)); " src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
 
 
     <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
