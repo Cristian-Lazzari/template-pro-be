@@ -33,7 +33,7 @@
                 <path d="M10 7a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0zm-6 4a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0zm4-3a1 1 0 0 0-1 1v3a1 1 0 1 0 2 0V9a1 1 0 0 0-1-1"/>
             </svg> <span>Statistiche</span>
         </a>
-        <a class="my_btn_6 m-2" href="{{route('admin.mailer.create')}}">  
+        <a class="my_btn_6 m-2" href="{{route('admin.mailer.index')}}">  
             <span>Email Marketing</span>
         </a>
     </p>

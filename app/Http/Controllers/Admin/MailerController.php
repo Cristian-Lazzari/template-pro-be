@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Model;
+use App\Models\Order;
 use App\Models\Setting;
 use App\Mail\BuildableMail;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -12,43 +15,98 @@ use Illuminate\Support\Facades\Storage;
 class MailerController extends Controller
 {
     private $validations = [
-        'recipients'        => 'required|min:1',
-        'object'            => 'required|string|min:1|max:120',
-        'heading'           => 'required|string|min:1|max:120',
-        'img_1'             => 'nullable|image|max:826',
-        'img_2'             => 'nullable|image|max:826',
-        'body'              => 'required|string|min:1|max:820',
-        'ending'            => 'required|string|min:1|max:420',
-        'sender'            => 'required|string|min:1|max:40',
+        'name'              => 'required|string|min:1|max:50',
+        'object'            => 'required|string|min:1|max:150',
+        'heading'           => 'required|string|min:1|max:150',
+        'img_1'             => 'nullable|image|max:1012',
+        'img_2'             => 'nullable|image|max:1012',
+        'body'              => 'required|string|min:1|max:550',
+        'ending'            => 'required|string|min:1|max:450',
+        'sender'            => 'required|string|min:1|max:50',
+    ];
+    private $validations_send = [
+        'recipients'    => 'required|min:1',
+        'models'        => 'required',
     ];
     
     public function mailer()
     {
 
         $last_mail_list = [];
-        $last_n_contact = 0;
-        
-        //$old_mail = Setting::where('name', 'email_marketing')->first();
+        $extra_mail_list = [];
+
+        $order_users =       Order      ::select('email', 'name')->where('news_letter', true)->distinct()->get();
+        $reservation_users = Reservation::select('email', 'name')->where('news_letter', true)->distinct()->get();
+        $order_users =       $order_users->unique('email');
+        $reservation_users = $reservation_users->unique('email');
+
+        $models = Model::all();
+
+        // Conta il numero totale di utenti
         $old_mail = Setting::where('name', 'email_marketing')->first();
-        //dd($old_mail);
-        if($old_mail == null){
-            return view('admin.mailer', compact('last_mail_list', 'last_n_contact'));   
-        }else{
+        if($old_mail !== null){
             $prop = json_decode($old_mail->property);
             $last_mail_list = $prop->last_mail_list;
-            $last_n_contact = $prop->last_n_contact;
-            
-            return view('admin.mailer', compact('last_mail_list', 'last_n_contact'));   
+            $extra_mail_list = $prop->extra_mail_list;
+            //dd($prop->last_mail_list);
+            return view('admin.mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
+        }else{
+            $new_set = [
+                'name' => 'email_marketing',  
+                'status' => 1,
+                'property' => [
+                    'last_mail_list' => [],
+                    'extra_mail_list'=> [],
+                ],
+            ];
+            $new_set['property'] = json_encode($new_set['property']);
+            Setting::create($new_set);
+            return view('admin.mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
         }
     }
-    public function send_mail(Request $request)
+    public function create_model(){
+        return view('admin.mailer.createModel');
+    }
+    public function send_mail(){
+        $models= Model::all();
+
+        $order_users =       Order      ::select('email', 'name')->where('news_letter', true)->distinct()->get();
+        $reservation_users = Reservation::select('email', 'name')->where('news_letter', true)->distinct()->get();
+
+        $models = Model::all();
+
+        
+        // Conta il numero totale di utenti
+        $old_mail = Setting::where('name', 'email_marketing')->first();
+        if($old_mail !== null){
+            $prop = json_decode($old_mail->property);
+            $last_mail_list = $prop->last_mail_list;
+            $extra_mail_list = $prop->extra_mail_list;
+
+            $n_c = [
+                count($reservation_users),
+                count($order_users),
+                count($extra_mail_list),
+                count($last_mail_list),
+            ];
+            
+            return view('admin.mailer.send', compact('models', 'n_c'));
+        }else{
+            $n_c = [
+                count($reservation_users),
+                count($order_users),
+                0,
+                0
+            ];
+               
+            return view('admin.mailer.send', compact('models', 'n_c'));
+        }
+    }
+
+    public function create_m(Request $request)
     {
         $request->validate($this->validations);
         $data = $request->all();
-        ///dd($data);
-
-        $recipients = $data['recipients'];
-        $n_contact = count($recipients);
 
         if (isset($data['img_1'])) {
             $img_1_path = Storage::put('public/uploads', $data['img_1']);
@@ -62,21 +120,109 @@ class MailerController extends Controller
             $img_2_path = NULL;
         } 
         
-        $contentMail = [
+        $model = [
+            'name' => $data['name'],
             'object' => $data['object'],
             'heading' => $data['heading'],
-            'body' => explode("/*/", $data['body']),
+            'body' => $data['body'],
             'ending' => $data['ending'],
             'sender' => $data['sender'],
             'img_1' => $img_1_path,
             'img_2' => $img_2_path,
         ];
 
+        Model::create($model);
 
-        foreach ($recipients as $c ) {   
-            $mail = new BuildableMail($contentMail);
-            Mail::to($c)->send($mail);
+        $m = 'Il modello "' . $data['name'] . '" è stato creato correttamente';
+        return to_route('admin.mailer.index')->with('create_success', $m);   
+    }
+
+    public function extra_list(Request $request){
+        $data = $request->all();
+       
+
+        $old_mail = Setting::where('name', 'email_marketing')->first();
+        $prop = json_decode($old_mail->property);
+        $new_list = [];
+        if(isset($data['recipients'])){
+            foreach ($data['recipients'] as $r) {
+                array_push($new_list, json_decode($r));
+            }
         }
+        $prop->extra_mail_list = $new_list;
+        $old_mail->property = json_encode($prop);
+        $old_mail->update();
+
+        $m = 'Lista aggiornata correttamente';
+        return to_route('admin.mailer.index')->with('extra', $m);   
+
+    }
+
+    public function send_m(Request $request)
+    {
+        $request->validate($this->validations_send);
+        $data = $request->all();
+        
+
+        $last_mail_list = [];
+        $extra_mail_list = [];
+
+        $order_users =       Order      ::select('email', 'name')->where('news_letter', true)->distinct()->get();
+        $reservation_users = Reservation::select('email', 'name')->where('news_letter', true)->distinct()->get();
+
+        // Conta il numero totale di utenti
+        $old_mail = Setting::where('name', 'email_marketing')->first();
+
+        $prop = json_decode($old_mail->property);
+        $extra_mail_list = $prop->extra_mail_list;
+        $last_mail_list = $prop->last_mail_list;
+        
+
+            
+        $recipients = [];
+        if(in_array(1, $data['recipients'])){
+            array_push($recipients, $reservation_users);
+        }
+        if(in_array(2, $data['recipients'])){
+            array_push($recipients, $order_users);
+        }
+        if(in_array(3, $data['recipients'])){
+            array_push($recipients, $extra_mail_list);
+        }
+        if(in_array(4, $data['recipients'])){
+            array_push($recipients, $last_mail_list);
+        }
+    //    dd($recipients);
+        // Trasformazione in un unico array eliminando duplicati basati sull'email
+        $recipients_unique = collect($recipients) // Trasformiamo in una collection
+            ->flatten(1) // Appiattiamo di un livello
+            ->unique('email') // Rimuoviamo duplicati sulla base dell'email
+            ->values() // Reindicizziamo l'array
+            ->toArray(); // Ritorniamo l'array normale
+        $n_contact = count($recipients_unique);
+
+        $model = Model::where('id', $data['models'])->first();
+
+        $contentMail = [
+            'object' => $model['object'],
+            'heading' => $model['heading'],
+            'body' => explode("/*/", $model['body']),
+            'ending' => $model['ending'],
+            'sender' => $model['sender'],
+            'img_1' => $model['img_1'],
+            'img_2' => $model['img_2'],
+        ];
+
+        //necessario per trasformare tutti i contatti in array
+        $contatti = collect($recipients_unique)->map(function ($contatto) {
+            return (array) $contatto;
+        })->toArray();
+
+        foreach ($contatti as $c ) {  
+            $mail = new BuildableMail($contentMail);
+            Mail::to($c['email'])->send($mail);
+        }
+        
         
         $old_mail = Setting::where('name', 'email_marketing')->first();
         if($old_mail == null){
@@ -84,20 +230,21 @@ class MailerController extends Controller
                 'name' => 'email_marketing',  
                 'status' => 1,
                 'property' => [
-                    'last_mail_list' => $recipients,
-                    'last_n_contact' => $n_contact
+                    'last_mail_list' => $recipients_unique,
+                    'extra_mail_list'=> [],
                 ],
             ];
             $new_set['property'] = json_encode($new_set['property']);
             Setting::create($new_set);
         }else{
             $new_prop = json_decode($old_mail->property);
-            $new_prop->last_mail_list = $recipients;
+            $new_prop->last_mail_list = $recipients_unique;
             
             $old_mail->property = json_encode($new_prop);
             $old_mail->update();
         }
         $m = 'Sono state correttamente inviate ' . $n_contact . ' email';
-        return to_route('admin.mailer.create')->with('send_success', $m);   
+        return to_route('admin.mailer.index')->with('send_success', $m);   
     }
+
 }
