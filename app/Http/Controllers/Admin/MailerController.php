@@ -65,7 +65,7 @@ class mailerController extends Controller
         }
     }
     public function create_model(){
-        return view('admin.mailer.createModel');
+        return view('admin.Mailer.createModel');
     }
     public function send_mail(){
         $models= Model::all();
@@ -90,7 +90,7 @@ class mailerController extends Controller
                 count($last_mail_list),
             ];
             
-            return view('admin.mailer.send', compact('models', 'n_c'));
+            return view('admin.Mailer.send', compact('models', 'n_c'));
         }else{
             $n_c = [
                 count($reservation_users),
@@ -99,7 +99,7 @@ class mailerController extends Controller
                 0
             ];
                
-            return view('admin.mailer.send', compact('models', 'n_c'));
+            return view('admin.Mailer.send', compact('models', 'n_c'));
         }
     }
 
