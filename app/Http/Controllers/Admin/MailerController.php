@@ -49,7 +49,7 @@ class mailerController extends Controller
             $last_mail_list = $prop->last_mail_list;
             $extra_mail_list = $prop->extra_mail_list;
             //dd($prop->last_mail_list);
-            return view('admin.mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
+            return view('admin.Mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
         }else{
             $new_set = [
                 'name' => 'email_marketing',  
@@ -61,7 +61,7 @@ class mailerController extends Controller
             ];
             $new_set['property'] = json_encode($new_set['property']);
             Setting::create($new_set);
-            return view('admin.mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
+            return view('admin.Mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
         }
     }
     public function create_model(){
