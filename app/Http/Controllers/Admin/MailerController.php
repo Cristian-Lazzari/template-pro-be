@@ -49,7 +49,7 @@ class MailerController extends Controller
             $last_mail_list = $prop->last_mail_list;
             $extra_mail_list = $prop->extra_mail_list;
             //dd($prop->last_mail_list);
-            return view('admin.mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
+            return view('admin.Mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
         }else{
             $new_set = [
                 'name' => 'email_marketing',  
@@ -61,11 +61,11 @@ class MailerController extends Controller
             ];
             $new_set['property'] = json_encode($new_set['property']);
             Setting::create($new_set);
-            return view('admin.mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
+            return view('admin.Mailer.index', compact('models', 'last_mail_list', 'extra_mail_list', 'order_users', 'reservation_users'));   
         }
     }
     public function create_model(){
-        return view('admin.mailer.createModel');
+        return view('admin.Mailer.createModel');
     }
     public function send_mail(){
         $models= Model::all();
@@ -90,7 +90,7 @@ class MailerController extends Controller
                 count($last_mail_list),
             ];
             
-            return view('admin.mailer.send', compact('models', 'n_c'));
+            return view('admin.Mailer.send', compact('models', 'n_c'));
         }else{
             $n_c = [
                 count($reservation_users),
@@ -99,7 +99,7 @@ class MailerController extends Controller
                 0
             ];
                
-            return view('admin.mailer.send', compact('models', 'n_c'));
+            return view('admin.Mailer.send', compact('models', 'n_c'));
         }
     }
 
@@ -134,7 +134,7 @@ class MailerController extends Controller
         Model::create($model);
 
         $m = 'Il modello "' . $data['name'] . '" è stato creato correttamente';
-        return to_route('admin.mailer.index')->with('create_success', $m);   
+        return to_route('admin.Mailer.index')->with('create_success', $m);   
     }
 
     public function extra_list(Request $request){
@@ -154,7 +154,7 @@ class MailerController extends Controller
         $old_mail->update();
 
         $m = 'Lista aggiornata correttamente';
-        return to_route('admin.mailer.index')->with('extra', $m);   
+        return to_route('admin.Mailer.index')->with('extra', $m);   
 
     }
 
@@ -244,7 +244,7 @@ class MailerController extends Controller
             $old_mail->update();
         }
         $m = 'Sono state correttamente inviate ' . $n_contact . ' email';
-        return to_route('admin.mailer.index')->with('send_success', $m);   
+        return to_route('admin.Mailer.index')->with('send_success', $m);   
     }
 
 }
