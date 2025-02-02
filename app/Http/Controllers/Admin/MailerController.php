@@ -192,7 +192,7 @@ class mailerController extends Controller
         if(in_array(4, $data['recipients'])){
             array_push($recipients, $last_mail_list);
         }
-    //    dd($recipients);
+    
         // Trasformazione in un unico array eliminando duplicati basati sull'email
         $recipients_unique = collect($recipients) // Trasformiamo in una collection
             ->flatten(1) // Appiattiamo di un livello
@@ -245,6 +245,69 @@ class mailerController extends Controller
         }
         $m = 'Sono state correttamente inviate ' . $n_contact . ' email';
         return to_route('admin.mailer.index')->with('send_success', $m);   
+    }
+
+    public function edit_model($id = null){
+        // dd($id);
+        $model = Model::where('id', $id)->first();
+        return view('admin.Mailer.editModel', compact('model'));
+
+    }
+
+    public function update_model(Request $request){
+        $request->validate($this->validations);
+        $data = $request->all();
+        $model = Model::where('id', $data['id'])->first();
+
+
+        if (isset($data['img_1'])) {
+            $img_1_path = Storage::put('public/uploads', $data['img_1']);
+            if ($model->img_1) {
+                Storage::delete($model->img_1);
+            }
+            $model->img_1 = $img_1_path;
+        }else{
+            $img_1_path = NULL;
+        } 
+
+        if (isset($data['img_2'])) {
+            $img_2_path = Storage::put('public/uploads', $data['img_2']);
+            if ($model->img_2) {
+                Storage::delete($model->img_2);
+            }
+            $model->img_2 = $img_2_path;
+        }else{
+            $img_2_path = NULL;
+        } 
+
+
+        $model->name = $data['name'];
+        $model->object = $data['object'];
+        $model->heading = $data['heading'];
+        $model->body = $data['body'];
+        $model->ending = $data['ending'];
+        $model->sender = $data['sender'];
+        $model->img_1 = $img_1_path;
+        $model->img_2 = $img_2_path;
+        
+
+        $model->update();
+
+        $m = 'Il modello "' . $data['name'] . '" è stato modificato correttamente';
+        return to_route('admin.mailer.index')->with('create_success', $m);   
+    }
+
+    public function delete($id)
+    {
+        $model = Model::find($id);
+
+        if (!$model) {
+            return response()->json(['message' => 'Record non trovato'], 404);
+        }
+
+        $model->delete();
+        $m = 'Modello eliminato con successo';
+        return to_route('admin.mailer.index')->with('extra', $m);
     }
 
 }

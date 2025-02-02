@@ -2567,6 +2567,9 @@ body{
 
 
 .email-m{
+    h1,h2{
+        text-align: center;
+    }
     max-width: 1300px;
     margin:  0 auto;
     padding: 1rem;
@@ -2681,6 +2684,15 @@ body{
             h1{
                 font-weight: 700;
                 font-size: 22px;
+            }
+            .act{
+                display: flex;
+                align-items: flex-end;
+                justify-content: flex-end;
+                gap: .5rem;
+                form{
+                    margin: 0 !important;
+                }
             }
         }
     }
