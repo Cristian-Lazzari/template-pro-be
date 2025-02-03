@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('body', 550);
             $table->string('ending', 350);
             $table->string('sender', 50);
-            $table->string('img_1')->nullable();
+            $table->string('img_1');
             $table->string('img_2')->nullable();
             $table->timestamps();
         });

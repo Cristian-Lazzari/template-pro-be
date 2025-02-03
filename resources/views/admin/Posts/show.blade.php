@@ -25,27 +25,36 @@
             <section>
                 <h4>Descrizione:</h4> 
                 <p>{{$post->description}} </p>       
+                <h4>Categorie:</h4> 
+                @if (count($post->categories) !== 0) 
+                    <p>
+                        @foreach ($post->categories as $l) - {{$l}} @endforeach
+                    </p>
+                @else
+                    <p>(nessuna categoria abbinata)</p>   
+                @endif      
             </section>
             <section>
                 <h4>Precedenza: <strong>{{$post->order}}</strong></h4>      
-                @if (isset($post->link)) 
-                    <h4 class="">Link:</h4>
-                    <a class="link" href="{{$post->link}}">{{$post->link}}</a>
+                <h4>Data: <strong>{{$post->date}}</strong></h4>      
+                <h4>Luogo: <strong>{{$post->place}}</strong></h4>      
+                @if ($post->links !== '[]') 
+                @php
+                    $links = json_decode($post->links);
+                @endphp
+                    <h4 class="">Links:</h4>
+                    @foreach ($links as $l)
+                    <a class="links" href="{{$l}}">{{$l}}</a>
+                        
+                    @endforeach
                 @else
-                    <p>(nessun link impostato)</p>   
+                    <p>(nessun links di video impostato)</p>   
                 @endif  
             </section>
 
             <section class="split_i">
                 
-                <h4 class="">Pagina: </h4>
-                <p class="">{{$post->path == '1' ? 'News' : 'Story'}}</p>
-                @if (isset($post->link))
-                    <h4>Hashtag:</h4>
-                    <p class="">{{$post->hashtag}}</p>
-                @else
-                    <p class="">(nessun hashtag impostato)</p>   
-                @endif 
+               
             </section>
         </div>
     </div>

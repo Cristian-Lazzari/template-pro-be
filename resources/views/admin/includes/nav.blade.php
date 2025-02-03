@@ -22,23 +22,6 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-2">
                 <li class="nav-item dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Prodotti
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('admin.products.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.products.create') }}">Aggiungi</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><h5 class="dropdown-header">Categorie</h5></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.categories.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.categories.create') }}">Aggiungi</a></li>
-                        <li><h5 class="dropdown-header">Ingredienti</h5></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.ingredients.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.ingredients.create') }}">Aggiungi</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Post
                     </a>
                     <ul class="dropdown-menu">
@@ -46,34 +29,17 @@
                         <li><a class="dropdown-item" href="{{ route('admin.posts.create') }}">Aggiungi</a></li>
                     </ul>
                 </li>
-                @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)    
                 <li class="nav-item dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Prenotazioni tavoli
+                        Categorie
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('admin.reservations.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ config('configurazione.domain') . '/check-out'}}">Aggiungi</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.categories.index') }}">Mostra tutti</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.categories.create') }}">Aggiungi</a></li>
                     </ul>
                 </li>
-                @endif
-                @if (config('configurazione.pack') > 2)   
-                <li class="nav-item dropdown">
-                    <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Ordini d'asporto
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('admin.orders.index') }}">Mostra tutti</a></li>
-                        <li><a class="dropdown-item" href="{{ config('configurazione.domain') . '/ordina'}}">Aggiungi</a></li>
-                    </ul>
-                </li>
-                @endif
-                @if (config('configurazione.pack') > 1)  
-                <li class="nav-item ">
-                    <a class="nav-link mylinknav" href="{{ route('admin.dates.index') }}">
-                        Gestione date
-                    </a>
-                </li>      
+                
+               
                 <li class="nav-item" >
                     <button id="theme-toggle" class="my_btn_1">
                         <svg id="dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
@@ -85,8 +51,6 @@
                         </svg>
                     </button>
                 </li>
-                
-                @endif
             </ul>   
         </div>
     </div>

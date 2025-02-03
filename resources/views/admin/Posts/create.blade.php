@@ -121,7 +121,7 @@
             <p>
             <div class="input-group mb-3">
                 <input type="text" id="youtubeLink" class="form-control" placeholder="Incolla il link YouTube" aria-label="YouTube Link">
-                <button class="btn btn-light" type="button" onclick="addVideo()">Aggiungi</button>
+                <button class="btn btn-light" id="addv" type="button" onclick="addVideo()">Aggiungi</button>
             </div>
     
             <ul id="videoList" class="list-group mb-3">

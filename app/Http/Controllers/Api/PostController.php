@@ -11,16 +11,9 @@ class PostController extends Controller
     public function index(Request $request)
     {
 
-        $path = $request->query('path');
-       // $path = intval($path);
-
         $query = Post::where('visible', 1);
 
-        if ($path !== null) {
-            $query = $query->where('path', $path);
-        } 
-        
-        $posts = $query->where('archived', 0)->orderBy('order', 'desc')->get();
+        $posts = $query->where('archived', 0)->with('categories')->orderBy('order', 'desc')->get();
         
         return response()->json([
             'success'   => true,

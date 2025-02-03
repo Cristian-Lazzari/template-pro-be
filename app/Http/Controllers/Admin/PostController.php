@@ -142,10 +142,13 @@ class PostController extends Controller
     {
         $data = $request->all();
         //$request->validate($this->validation);    
-        dd($data);  
+        //dd($data);  
         
-        $links = json_encode($data['videos']);
-
+        if(isset($data['videos'])){
+            $links = json_encode($data['videos']);
+        }else{
+            $links = '[]';
+        }
         $post = new Post();
 
         if (isset($data['img_1'])) {
@@ -155,6 +158,8 @@ class PostController extends Controller
         if (isset($data['img_2'])) {
             $img_2Path = Storage::put('public/uploads', $data['img_2']);
             $post->img_2 = $img_2Path;
+        }else{
+            $post->img_2 = '';
         } 
 
         $post->title         = $data['title'];
@@ -187,15 +192,21 @@ class PostController extends Controller
     
     public function edit($id)
     {
-        $post = Post::where('id', $id)->firstOrFail();  
-        return view('admin.Posts.edit', compact( 'post'));        
+        $post = Post::where('id', $id)->with('categories')->firstOrFail();  
+        $categories    = Category::all(); 
+        return view('admin.Posts.edit', compact( 'post', 'categories'));        
     }
     
     public function update(Request $request, $id)
     {
         $data = $request->all();
-        $request->validate($this->validation1); 
-        $links = json_encode($data['videos']);
+        $request->validate($this->validation1);
+        dd($data); 
+        if(isset($data['videos'])){
+            $links = json_encode($data['videos']);
+        }else{
+            $links = '[]';
+        }
         $post = Post::where('id', $id)->firstOrFail();
         if (isset($data['img_1'])) {
             $img_1Path = Storage::put('public/uploads', $data['img_1']);

@@ -20,13 +20,14 @@ return new class extends Migration
             $table->string('place', 150);
             $table->string('title', 150);
             $table->text('description');
-            $table->smallInteger('order');
-            $table->string('img_1');
-            $table->string('img_2');
             $table->text('links');
             
-            $table->boolean  ('visible')->default(false);
-            $table->boolean  ('archived')->default(false);
+            $table->smallInteger('order');
+            $table->string('img_1')->nullable();
+            $table->string('img_2')->nullable();
+            
+            $table->boolean('visible')->default(false);
+            $table->boolean('archived')->default(false);
 
             $table->timestamps();
         });
