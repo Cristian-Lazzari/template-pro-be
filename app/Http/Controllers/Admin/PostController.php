@@ -201,7 +201,7 @@ class PostController extends Controller
     {
         $data = $request->all();
         $request->validate($this->validation1);
-        dd($data); 
+        //dd($data); 
         if(isset($data['videos'])){
             $links = json_encode($data['videos']);
         }else{

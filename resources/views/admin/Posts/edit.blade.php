@@ -122,7 +122,7 @@
                 Allega i link dei video YT *3</label>
             <p>
             <div class="input-group mb-3">
-                <input checked type="text" id="youtubeLink" class="form-control" placeholder="Incolla il link YouTube" aria-label="YouTube Link">
+                <input  type="text" id="youtubeLink" class="form-control" placeholder="Incolla il link YouTube" aria-label="YouTube Link">
                 <button class="btn btn-light" id="addv" type="button" >Aggiungi</button>
             </div>
     
@@ -132,7 +132,7 @@
                 @endphp
                 @foreach ($list as $i)
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <input class="btn-check" name="videos[]" value="{{$i}}" id="{{$i}}" type="checkbox">
+                    <input checked class="btn-check" name="videos[]" value="{{$i}}" id="{{$i}}" type="checkbox">
                     <label class=" btn btn-outline-danger" for="{{$i}}">{{$i}}</label>
                 </li>
                 @endforeach
@@ -148,13 +148,8 @@
                 Descrizione *2</label>   
             <textarea name="description" id="description" cols="30" rows="10" >{{ old('description', $post->description) }}</textarea>
             @error('description') <p class="error">{{ $message }}</p> @enderror
-        </p>
-        <div class="">
+        </p> 
 
-               
-
-            
-            </div>
             <p>*1 il post con la precedenza più alta verra visualizzato per primo</p>
             <p>*2 per andare a capo riportare i caratteri: <strong>/**/</strong> , per mettere in grassetto del testo invece basta racchiudere la porzione di testo che si vuole mettere in grassetto tra 3 asterischi in questo modo: <strong>***</strong> parola da mettere in grassetto <strong>***</strong> .  </p>
             <p>*3 campi facoltativi</p>
@@ -165,6 +160,10 @@
 </form>
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
+    
+    let list = document.getElementById('videoList')
+    const videoLinks = Array.from(list.querySelectorAll('input[name="videos[]"]')).map(input => input.value);
+    console.log(videoLinks)
         // Array per memorizzare i link aggiunti
     document.querySelectorAll('ul li').forEach(li => {
         const label = li.querySelector('label');
@@ -198,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Funzione per estrarre l'ID del video YouTube dal link
 
 
-    let videoLinks = []; // Array per salvare i link
+ // Array per salvare i link
 
     
     const btn = document.getElementById('addv');
@@ -223,13 +222,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         const videoId = match[4];
 
         // Controllo se il link è già stato aggiunto
-        if (videoLinks.includes(videoId)) {
-            showAlert('Video gia inserito!', 'warning', 5000)
+        if (videoLinks.includes(url)) {
+            showAlert('Video gia inserito!', 'warning', 5000);
+            input.value = ''
             return;
         }
-
+        
         // Aggiungi il video alla lista
-        videoLinks.push(videoId);
+        videoLinks.push(url);
+        console.log(videoLinks)
 
         // Recupera il titolo del video da YouTube
         fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`)
