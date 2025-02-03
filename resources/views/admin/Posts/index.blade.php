@@ -43,7 +43,6 @@
             </div>
         </div>
 
-        
         {{-- VISIBILITà  --}}
         <div>
             <label for="visible" class="form-label fw-semibold">Visibilità</label>
@@ -53,14 +52,7 @@
                 <option @if (isset($filters) && $filters['visible'] == '2') selected @endif value="2">Non visibili</option>
             </select>
         </div>
-        <div>
-            <label for="path" class="form-label fw-semibold">Pagina</label>
-            <select class="" id="path" name="path" >
-                <option @if (isset($filters) && $filters['path'] == '0') selected @endif value="0">Tutti</option>
-                <option @if (isset($filters) && $filters['path'] == '1') selected @endif value="1">News</option>
-                <option @if (isset($filters) && $filters['path'] == '2') selected @endif value="2">Storia</option>
-            </select>
-        </div>
+
         <div>
             <label for="order" class="form-label fw-semibold">Ordina per</label>
             <select class="" id="order" name="order" >

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -13,22 +14,14 @@ class PostController extends Controller
     
     private $validation = [
         'title'         => 'required|string|min:1|max:150|unique:posts,title',
-        'hashtag'       => 'nullable|string',
-        'link'          => 'nullable|string',
-
         'description'   => 'required',
-        'path'          => 'required',
         'order'         => 'required',
 
-        'image'         => 'required',
+        'img_1'         => 'required|max:4200',
     ];
     private $validation1 = [
         'title'         => 'required|string|min:1|max:150',
-        'hashtag'       => 'nullable|string',
-        'link'          => 'nullable|string',
-
         'description'   => 'required',
-        'path'          => 'required',
         'order'         => 'required',
     ];
 
@@ -92,18 +85,15 @@ class PostController extends Controller
         
         $archive = $request->input('archive');
         $visible = $request->input('visible');
+    
         $title = $request->input('title');
-        $path = $request->input('path');
+
         $order = $request->input('order');
-        $style = $request->input('style');
-        $type = $request->input('type');
+
         $filters = [
             'title'         => $title,
-            'path'          => $path,
             'visible'       => $visible,
-            'type'          => $type,
             'order'         => $order,      
-            'style'         => $style,    
         ];
         
         $query = Post::query();
@@ -121,14 +111,7 @@ class PostController extends Controller
         } else if ($visible == 2) {
             $query->where('visible', '=', 0);
         }
-        if ($path == 1) {
-            $query->where('path', '=', 1);
-        } else if ($path == 2) {
-            $query->where('path', '=', 2);
-        }
-        if($type){
-            $query->where('type', $type);
-        }
+
         if($order){
             $posts = $query->orderBy('title',)->get();    
         }else{
@@ -151,30 +134,48 @@ class PostController extends Controller
 
     public function create()
     {
-        return view('admin.Posts.create');
+        $categories    = Category::all(); 
+        return view('admin.Posts.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $data = $request->all();
-        $request->validate($this->validation);      
+        //$request->validate($this->validation);    
+        dd($data);  
         
+        $links = json_encode($data['videos']);
+
         $post = new Post();
-        if (isset($data['image'])) {
-            $imagePath = Storage::put('public/uploads', $data['image']);
-            $post->image = $imagePath;
+
+        if (isset($data['img_1'])) {
+            $img_1Path = Storage::put('public/uploads', $data['img_1']);
+            $post->img_1 = $img_1Path;
+        } 
+        if (isset($data['img_2'])) {
+            $img_2Path = Storage::put('public/uploads', $data['img_2']);
+            $post->img_2 = $img_2Path;
         } 
 
         $post->title         = $data['title'];
-        $post->hashtag       = $data['hashtag'];
+
         $post->description   = $data['description'];
-        $post->path          = $data['path'];
+
         $post->order         = $data['order'];
-        $post->link          = $data['link'];
+        $post->place         = $data['place'];
+        $post->date          = $data['date'];
+        $post->links         = $links;
         
         $post->save();
-      
-        return view('admin.Posts.show', compact( 'post'));    
+        if(isset($data['categories'])){     
+            foreach ($data['categories'] as $v) {
+                array_push($categories, $v);
+            }
+            $post->categories()->sync($categories ?? []);  
+        }   
+        
+
+        return view('admin.Posts.show', compact( 'post')); 
     }
     
     
@@ -194,22 +195,42 @@ class PostController extends Controller
     {
         $data = $request->all();
         $request->validate($this->validation1); 
+        $links = json_encode($data['videos']);
         $post = Post::where('id', $id)->firstOrFail();
-        if (isset($data['image'])) {
-            $imagePath = Storage::put('public/uploads', $data['image']);
-            if ($post->image) {
-                Storage::delete($post->image);
+        if (isset($data['img_1'])) {
+            $img_1Path = Storage::put('public/uploads', $data['img_1']);
+            if ($post->img_1) {
+                Storage::delete($post->img_1);
             }
-            $post->image = $imagePath;
+            $post->img_1 = $img_1Path;
         }
+        if (isset($data['img_2'])) {
+            $img_2Path = Storage::put('public/uploads', $data['img_2']);
+            if ($post->img_2) {
+                Storage::delete($post->img_2);
+            }
+            $post->img_2 = $img_2Path;
+        }
+
         $post->title         = $data['title'];
-        $post->hashtag       = $data['hashtag'];
+
         $post->description   = $data['description'];
-        $post->path          = $data['path'];
+
+       
         $post->order         = $data['order'];
-        $post->link          = $data['link'];
-        $post->promo      = isset($data['promo']) ? true : false;
+        $post->place         = $data['place'];
+        $post->date          = $data['date'];
+        $post->links         = $links;
         
+        
+
+      
+        if(isset($data['categories'])){     
+            foreach ($data['categories'] as $v) {
+                array_push($categories, $v);
+            }
+            $post->categories()->sync($categories ?? []);  
+        }   
         $post->update();
       
         return view('admin.Posts.show', compact('post'));

@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
 
-
-            $table->string('title', 100);
+            $table->string('date', 50);
+            $table->string('place', 150);
+            $table->string('title', 150);
             $table->text('description');
-            $table->tinyInteger('path'); // 1 news 2 story
             $table->smallInteger('order');
-            $table->string('image');
-            $table->text('hashtag')->nullable();;
-            $table->string('link')->nullable();
+            $table->string('img_1');
+            $table->string('img_2');
+            $table->text('links');
             
             $table->boolean  ('visible')->default(false);
             $table->boolean  ('archived')->default(false);

@@ -88,7 +88,7 @@
         </div>
     @endforeach
 </div>
-<h4 class="c-title" >Ordine di visualizzazione nel sito</h4>
+
 <ul class="list-group mylist">
     @php $c = -1
     @endphp

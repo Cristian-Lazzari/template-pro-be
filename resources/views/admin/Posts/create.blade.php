@@ -48,25 +48,87 @@
                         <path d="M6.502 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
                         <path d="M14 14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zM4 1a1 1 0 0 0-1 1v10l2.224-2.224a.5.5 0 0 1 .61-.075L8 11l2.157-3.02a.5.5 0 0 1 .76-.063L13 10V4.5h-2A1.5 1.5 0 0 1 9.5 3V1z"/>
                     </svg>
-                    Immagine</label>
-                <p><input type="file" id="file-input" name="image" ></p>
-                @error('image') <p class="error">{{ $message }}</p> @enderror
+                    Immagine principale</label>
+                <p><input type="file" id="file-input" name="img_1" ></p>
+                @error('img_1') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="label_c" for="path">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
-                        <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                <label class="label_c" for="file-input1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-image" viewBox="0 0 16 16">
+                        <path d="M6.502 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                        <path d="M14 14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zM4 1a1 1 0 0 0-1 1v10l2.224-2.224a.5.5 0 0 1 .61-.075L8 11l2.157-3.02a.5.5 0 0 1 .76-.063L13 10V4.5h-2A1.5 1.5 0 0 1 9.5 3V1z"/>
                     </svg>
-                    Pagina di destinazione</label>
-                <p>
-                    <select name="path" id="path">
-                        <option @if( 1 == old('path')) selected @endif value="1">News</option>
-                        <option @if( 2 == old('path')) selected @endif value="2">Storia</option>
-                    </select>
-                </p>
-                @error('path') <p class="error">{{ $message }}</p> @enderror
-            </div>        
+                    Immagine secondaria</label>
+                <p><input type="file" id="file-input1" name="img_2" ></p>
+                @error('img_2') <p class="error">{{ $message }}</p> @enderror
+            </div>
         </div>
+        <div class="split">
+            <div>
+                <label class="label_c" for="place">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484q-.121.12-.242.234c-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/>
+                      </svg>  
+                    Dove si è svolto?</label>
+                <p><input value="{{ old('place') }}" type="text" name="place" id="place" placeholder=" inserisci un luogo "></p>
+                @error('place') <p class="error">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="label_c" for="date">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-date" viewBox="0 0 16 16">
+                        <path d="M6.445 11.688V6.354h-.633A13 13 0 0 0 4.5 7.16v.695c.375-.257.969-.62 1.258-.777h.012v4.61zm1.188-1.305c.047.64.594 1.406 1.703 1.406 1.258 0 2-1.066 2-2.871 0-1.934-.781-2.668-1.953-2.668-.926 0-1.797.672-1.797 1.809 0 1.16.824 1.77 1.676 1.77.746 0 1.23-.376 1.383-.79h.027c-.004 1.316-.461 2.164-1.305 2.164-.664 0-1.008-.45-1.05-.82zm2.953-2.317c0 .696-.559 1.18-1.184 1.18-.601 0-1.144-.383-1.144-1.2 0-.823.582-1.21 1.168-1.21.633 0 1.16.398 1.16 1.23"/>
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                      </svg>
+                    Periodo indicativo</label>
+                <p><input value="{{ old('date') }}" type="date" name="date" id="date" ></p>
+                @error('date') <p class="error">{{ $message }}</p> @enderror
+            </div>
+
+        </div>
+
+
+ 
+        <div class="check_c">
+            <label class="label_c" for="path">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
+                    <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                </svg>
+                Come categorizzi l'esperienza? *3</label>
+            <p>
+                @foreach($categories as $category)
+                    <input type="checkbox" class="btn-check" id="category{{ $category->id }}" name="categorys[]" 
+                    value="{{ $category->id }}"
+                    @if(in_array($category->id, old('categorys', [])))
+                        checked
+                    @endif>
+
+                    <label class="btn btn-outline-light shadow-sm" for="category{{ $category->id }}">{{ $category->name }}</label>
+                    @error('categories') 
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror      
+                @endforeach
+            </p>
+        </div>
+        <div class="desc">
+            <label class="label_c" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                  </svg>
+                Allega i link dei video YT *3</label>
+            <p>
+            <div class="input-group mb-3">
+                <input type="text" id="youtubeLink" class="form-control" placeholder="Incolla il link YouTube" aria-label="YouTube Link">
+                <button class="btn btn-light" type="button" onclick="addVideo()">Aggiungi</button>
+            </div>
+    
+            <ul id="videoList" class="list-group mb-3">
+                <!-- I video verranno aggiunti qui -->
+            </ul>
+    
+        </div>       
         <p class="desc"> 
             <label class="label_c" for="description">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">
@@ -76,36 +138,133 @@
             <textarea name="description" id="description" cols="30" rows="10" >{{ old('description') }}</textarea>
             @error('description') <p class="error">{{ $message }}</p> @enderror
         </p>
-        <div class="split">
-            <div class="desc">
-                <label class="label_c" for="hashtag">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hash" viewBox="0 0 16 16">
-                        <path d="M8.39 12.648a1 1 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1 1 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.51.51 0 0 0-.523-.516.54.54 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532s.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531s.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/>
-                      </svg>
-                    Hashtag *3</label>
-                <textarea name="hashtag" id="hashtag" cols="1" rows="3"  >{{ old('hashtag') }}</textarea>
-                
-            </div>
-            <div>
-                <label class="label_c" for="link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
-                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
-                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
-                      </svg>                      
-                    Link *3</label>
-                <p><input value="{{ old('link') }}" type="text" name="link" id="link" placeholder=" inserisci il link"></p>
-                @error('link') <p class="error">{{ $message }}</p> @enderror
-            </div>
+        <div class="">
+
+               
+
             
-        </div>
+            </div>
+            <p>*1 il post con la precedenza più alta verra visualizzato per primo</p>
+            <p>*2 per andare a capo riportare i caratteri: <strong>/**/</strong> , per mettere in grassetto del testo invece basta racchiudere la porzione di testo che si vuole mettere in grassetto tra 3 asterischi in questo modo: <strong>***</strong> parola da mettere in grassetto <strong>***</strong> .  </p>
+            <p>*3 campi facoltativi</p>
     </section>
-    <p>*1 il post con la precedenza più alta verra visualizzato per primo</p>
-    <p>*2 per andare a capo riportare i caratteri: <strong>/**/</strong> , per mettere in grassetto del testo invece basta racchiudere la porzione di testo che si vuole mettere in grassetto tra 3 asterischi in questo modo: <strong>***</strong> parola da mettere in grassetto <strong>***</strong> .  </p>
-    <p>*3 campi facoltativi</p>
     
     <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Post</button>
     
 </form>
+<script>
+   // document.addEventListener('DOMContentLoaded', async function() {
+        // Array per memorizzare i link aggiunti
+
+    let videoLinks = []; // Array per salvare i link
+
+    const input = document.getElementById('youtubeLink');
+
+    function addVideo() {
+        const input = document.getElementById('youtubeLink');
+        const url = input.value.trim();
+
+        // Regex per validare link di YouTube
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const match = url.match(youtubeRegex);
+
+        if (!match) {
+            showAlert('Inserisci un link valido da YouTube', 'danger', 5000)
+            return;
+        }
+
+        const videoId = match[4];
+
+        // Controllo se il link è già stato aggiunto
+        if (videoLinks.includes(videoId)) {
+            showAlert('Video gia inserito!', 'warning', 5000)
+            return;
+        }
+
+        // Aggiungi il video alla lista
+        videoLinks.push(videoId);
+
+        // Recupera il titolo del video da YouTube
+        fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.title) {
+                    showAlert('Errore nel recupero del video.', 'danger', 5000)
+                    return;
+                }
+
+            // Creazione dell'elemento nella lista
+            const listItem = document.createElement('li');
+            listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+
+            // Input nascosto da inviare nel form
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "videos[]";
+            hiddenInput.value = `https://www.youtube.com/watch?v=${videoId}`;
+
+            // Label con titolo del video
+            const label = document.createElement('span');
+            label.textContent = data.title;
+
+            // Bottone di rimozione
+            const removeButton = document.createElement('button');
+            removeButton.className = "btn btn-danger btn-sm";
+            removeButton.textContent = "Rimuovi";
+            removeButton.onclick = function() {
+                videoLinks = videoLinks.filter(id => id !== videoId);
+                listItem.remove();
+            };
+
+            // Aggiunta degli elementi al DOM
+            listItem.appendChild(label);
+            listItem.appendChild(hiddenInput);
+            listItem.appendChild(removeButton);
+            document.getElementById('videoList').appendChild(listItem);
+
+            // Resetta il campo input
+            input.value = '';
+        })
+        .catch(error => {
+            showAlert('Errore nel recupero del titolo.', 'danger', 5000) 
+        });
+    }
+    function showAlert(message, type, timeout) {
+        // Controlla se esiste già un contenitore per gli alert
+        let alertContainer = document.getElementById('alert-container');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alert-container';
+            alertContainer.style.position = 'fixed';
+            alertContainer.style.top = '0';
+            alertContainer.style.left = '50%';
+            alertContainer.style.transform = 'translateX(-50%)';
+            alertContainer.style.width = 'auto';
+            alertContainer.style.maxWidth = '90%';
+            alertContainer.style.zIndex = '5550'; // Sopra a tutto
+            document.body.appendChild(alertContainer);
+        }
+
+        // Creazione dell'alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show shadow-lg my-5`;
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        // Aggiunge l'alert al contenitore
+        alertContainer.appendChild(alertDiv);
+
+        // Rimuove l'alert dopo il timeout (default 5s)
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, timeout);
+    }
+
+</script>
 
 
 

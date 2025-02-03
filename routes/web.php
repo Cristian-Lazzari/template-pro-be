@@ -44,25 +44,12 @@ Route::middleware(['auth', 'verified'])
         Route::get('/mailer/create_model',  [MailerController::class, 'create_model'])->name('mailer.create_model');
         Route::post('/mailer/create_m',     [MailerController::class, 'create_m'])->name('mailer.create_m');
 
-      Route::get('/mailer/edit_model/{id}', [MailerController::class, 'edit_model'])->name('mailer.edit_model');
+        Route::get('/mailer/edit_model/{id}', [MailerController::class, 'edit_model'])->name('mailer.edit_model');
 
         Route::post('/mailer/update_model', [MailerController::class, 'update_model'])->name('mailer.update_model');
         Route::delete('/models/{id}',       [MailerController::class, 'delete'])->name('models.delete');
 
-        // Rotte setting
 
-        Route::post('settings/updateAll',  [SettingController::class, 'updateAll'])->name('settings.updateAll');
-        Route::post('settings/updateAree', [SettingController::class, 'updateAree'])->name('settings.updateAree');
-
-        // Rotte product
-        
-        Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');
-        Route::post('products/filter',  [ProductController::class, 'filter'])->name('products.filter');
-        Route::post('products/status',  [ProductController::class, 'status'])->name('products.status');
-        
-        // Rotte order res
-        Route::post('orders/status',       [OrderController::class, 'status'])->name('orders.status');
-        Route::post('reservations/status', [ReservationController::class, 'status'])->name('reservations.status');
         
         // Rotte post
         
@@ -70,22 +57,8 @@ Route::middleware(['auth', 'verified'])
         Route::post('posts/filter',  [PostController::class, 'filter'])->name('posts.filter');
         Route::post('posts/status',  [PostController::class, 'status'])->name('posts.status');
         
-        // Rotte Date 
-        
-        Route::get('dates/showDay',    [DateController::class, 'showDay'])->name('dates.showDay');
-        Route::post('dates/status',    [DateController::class, 'status'])->name('dates.status');
-        Route::post('/dates/generate', [DateController::class, 'generate'])->name('dates.generate');
-        
-        Route::post('orders/filter',       [OrderController::class, 'filter'])->name('orders.filter');
-        Route::post('reservations/filter', [ReservationController::class, 'filter'])->name('reservations.filter');
         //resource
-        Route::resource('settings',      SettingController::class);
-        Route::resource('dates',         DateController::class);
-        Route::resource('orders',        OrderController::class);
-        Route::resource('products',      ProductController::class);
         Route::resource('posts',         PostController::class);
-        Route::resource('reservations',  ReservationController::class);
-        Route::resource('ingredients',   IngredientController::class);
         Route::resource('categories',    CategoryController::class);
     });
 
@@ -101,13 +74,6 @@ Route::middleware('auth')
 
 require __DIR__ . '/auth.php';
 
-Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWebhook']);
 
-Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);
-
-
-
-Route::post('/webhook/wa', [WaController::class, 'handle']);
-//Route::get('/webhook/wa', [WaController::class, 'verify']); 
 
 
