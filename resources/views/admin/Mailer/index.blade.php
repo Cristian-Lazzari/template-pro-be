@@ -104,7 +104,7 @@
     </section>
     
     <section>
-        <h2>Modelli per Emai</h2>
+        <h2>Modelli per Email</h2>
         <a class="my_btn_2 m-2" href="{{route('admin.mailer.create_model')}}"> Crea un nuovo modello </a>
         <div class="models">
             @foreach ($models as $m)  
