@@ -21,7 +21,7 @@ class mailerController extends Controller
         'img_1'             => 'nullable|image|max:1012',
         'img_2'             => 'nullable|image|max:1012',
         'body'              => 'required|string|min:1',
-        'ending'            => 'required|string|min:1|max:450',
+        'ending'            => 'required|string|min:1',
         'sender'            => 'required|string|min:1|max:50',
     ];
     private $validations_send = [
