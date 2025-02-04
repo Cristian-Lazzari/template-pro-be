@@ -20,7 +20,7 @@ class mailerController extends Controller
         'heading'           => 'required|string|min:1|max:150',
         'img_1'             => 'nullable|image|max:1012',
         'img_2'             => 'nullable|image|max:1012',
-        'body'              => 'required|string|min:1|max:1050',
+        'body'              => 'required|string|min:1',
         'ending'            => 'required|string|min:1|max:450',
         'sender'            => 'required|string|min:1|max:50',
     ];
