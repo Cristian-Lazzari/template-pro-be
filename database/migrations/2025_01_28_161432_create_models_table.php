@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('object', 150);
             $table->string('heading', 150);
             $table->text('body');
-            $table->string('ending', 350);
+            $table->text('ending');
             $table->string('sender', 50);
             $table->string('img_1')->nullable();
             $table->string('img_2')->nullable();
