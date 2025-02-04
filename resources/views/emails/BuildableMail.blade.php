@@ -27,7 +27,7 @@
     <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
     
     @if($content_mail['img_1'] !== NULL)   
-    <img style="border-radius: 10px; width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
+    <img style="max-width:400px; border-radius: 10px; width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
     @endif
     
     <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29)" class="corpo">
@@ -37,7 +37,7 @@
     </div>
     
     @if($content_mail['img_2'] !== NULL)   
-        <img style="border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 20%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
+        <img style="max-width:350px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 20%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
     @endif
 
     <p style="color: #04001d; font-size: 22px; text-align: center; margin: .6rem 30px">{{$content_mail['ending']}}</p>
