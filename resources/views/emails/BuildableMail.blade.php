@@ -21,7 +21,7 @@
             IntlDateFormatter::NONE  // Nessun orario
         );
    @endphp
-    <img style="width: 80px; margin: 2rem; background-color: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 5px; border: solid 2px #04001d;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
+    <img style="width: 80px; margin: 2rem; background-color: #090333; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 5px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
 
 
     <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
@@ -47,7 +47,7 @@
         <p style="font-style: italic; font-size: 16px; margin: 4px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
     </div>
 
-    <footer style=" margin: 50px 0 0; background-color: black; color: white; padding: 10px 20px; text-align: center; font-size: 12px;">
+    <footer style=" margin: 50px 0 0; background-color: #090333; color: white; padding: 10px 20px; text-align: center; font-size: 12px;">
         <h5 style="font-size: 16px; margin: 5px 0 8px;">Seguici sui social</h5>
         <div style="padding: 0 0 20px "> 
             <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.facebook.com/profile.php?id=61558817374447">
