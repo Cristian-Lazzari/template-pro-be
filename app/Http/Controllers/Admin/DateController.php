@@ -67,7 +67,7 @@ class DateController extends Controller
         
         $dates = Date::all();
         if(count($dates) == 0){
-            return view('admin.dates.index');
+            return view('admin.Dates.index');
         }
         $year = [
             1 => [
@@ -320,7 +320,7 @@ class DateController extends Controller
             ];
             
         };
-        return view('admin.dates.index', compact('year'));
+        return view('admin.Dates.index', compact('year'));
     }
 
     public function showDay(Request $request){
@@ -347,7 +347,7 @@ class DateController extends Controller
             $time->or = $order;
             $time->res = $reservation;
         }
-        return view('admin.dates.showDay', compact('day'));   
+        return view('admin.Dates.showDay', compact('day'));   
     }
     public function status(Request $request){
         $id = $request->input('id');
