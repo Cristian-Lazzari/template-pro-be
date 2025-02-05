@@ -6,46 +6,45 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Conferma Email</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #e9f0fb; color: #161c3e; margin: 0; padding: 10px 20% 0px; width: 100%;">
-   <!-- Footer -->
-   @php
-       $locale = 'it_IT';
-
-        // Ottieni la data odierna
-        $dataOdierna = new DateTime();
-
-        // Formatter per la data in italiano
-        $formatter = new IntlDateFormatter(
-            $locale,
-            IntlDateFormatter::FULL, // Stile della data (es. FULL, LONG, MEDIUM, SHORT)
-            IntlDateFormatter::NONE  // Nessun orario
-        );
-   @endphp
-    <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 5px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
-
-
-    <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
-    
-    @if($content_mail['img_1'] !== NULL)   
-    <img style="max-width:300px; border-radius: 10px; width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
-    @endif
-    
-    <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29); max-width:700px;" class="corpo">
-        @foreach ($content_mail['body'] as $b)
-        <p>{{$b}}</p>
-        @endforeach
+<body style="font-family: Arial, sans-serif; background-color: #e9f0fb; color: #161c3e; margin: 0; padding: 10px 0px 0px; width: 100%;">
+    <div class="main" style="padding: 0 30%">
+    @php
+        $locale = 'it_IT';
+         $dataOdierna = new DateTime();
+         $formatter = new IntlDateFormatter(
+             $locale,
+             IntlDateFormatter::FULL, // Stile della data (es. FULL, LONG, MEDIUM, SHORT)
+             IntlDateFormatter::NONE  // Nessun orario
+         );
+    @endphp
+     <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 5px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
+ 
+ 
+     <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
+     
+     @if($content_mail['img_1'] !== NULL)   
+     <img style="max-width:300px; border-radius: 10px; width: 40%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 30%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
+     @endif
+     
+     <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29); max-width:700px;" class="corpo">
+         @foreach ($content_mail['body'] as $b)
+         <p>{{$b}}</p>
+         @endforeach
+     </div>
+     
+     @if($content_mail['img_2'] !== NULL)   
+         <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 20%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
+     @endif
+ 
+     <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px; max-width:700px;">{{$content_mail['ending']}}</p>
+ 
+     <div class="sender" style="color: #04001d; margin: 50px 0">
+         <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
+         <p style="font-style: italic; font-size: 16px; margin: 4px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
+     </div>
     </div>
-    
-    @if($content_mail['img_2'] !== NULL)   
-        <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem; margin-left: 20%;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
-    @endif
 
-    <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px; max-width:700px;">{{$content_mail['ending']}}</p>
 
-    <div class="sender" style="color: #04001d; margin: 50px 0">
-        <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
-        <p style="font-style: italic; font-size: 16px; margin: 4px 2rem 1rem" class="date">{{$formatter->format($dataOdierna)}}</p>
-    </div>
 
     <footer style=" margin: 50px 0 0; background-color: #090333; color: white; padding: 10px 20px; text-align: center; font-size: 12px;">
         <h5 style="font-size: 16px; margin: 5px 0 8px;">Seguici sui social</h5>
