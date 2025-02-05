@@ -7,7 +7,6 @@
     <title>Conferma Email</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #e9f0fb; color: #161c3e; margin: 0; padding: 10px 0px 0px; width: 100%;">
-
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
         <tr>
             <td align="center">
@@ -25,12 +24,12 @@
                             @endphp
                             <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 5px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
                     
-                    
+            
                             <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
                             
                             @if($content_mail['img_1'] !== NULL) 
                             <center>
-                            <img style="max-width:300px; border-radius: 10px; width: 40%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
+                            <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
                             </center>  
                             @endif
                             
@@ -42,7 +41,7 @@
                             
                             @if($content_mail['img_2'] !== NULL)   
                             <center>
-                                <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
+                                <img style="max-width:300px; border-radius: 10px; width: 70%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
                             </center>
                             @endif
                     
