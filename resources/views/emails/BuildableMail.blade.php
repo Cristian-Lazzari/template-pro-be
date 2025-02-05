@@ -7,7 +7,7 @@
     <title>Conferma Email</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #e9f0fb; color: #161c3e; margin: 0; padding: 10px 0px 0px; width: 100%;">
-    <div class="main" style="padding: 0 23% 20px">
+    <div class="main" style="padding: 0 17% 20px">
     @php
         $locale = 'it_IT';
          $dataOdierna = new DateTime();
