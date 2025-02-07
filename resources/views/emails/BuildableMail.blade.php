@@ -49,7 +49,7 @@
                     
                             <div class="sender" style="color: #04001d; margin: 50px 0">
                                 <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
-                                <p style="font-size: 18px; margin: 1rem 2rem 1rem" class="date">Tel/Wa:  <a style="font-weight: 800" href="tel:393271622244">+39 3271622244</a></p>
+                                <p style="font-size: 18px; margin: 1rem 2rem 1rem" class="date">Tel/Wa:  <a style="font-weight: 800; color: #04001d; text-decoration:none" href="tel:393271622244">+39 3271622244</a></p>
                                 <p style="font-style: italic; font-size: 15px; margin: 0 2rem 2rem; color: #04001db3;" class="date">{{$formatter->format($dataOdierna)}}</p>
                             </div>
                         </td>
