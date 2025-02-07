@@ -266,9 +266,7 @@ class mailerController extends Controller
                 Storage::delete($model->img_1);
             }
             $model->img_1 = $img_1_path;
-        }else{
-            $img_1_path = NULL;
-        } 
+        }
 
         if (isset($data['img_2'])) {
             $img_2_path = Storage::put('public/uploads', $data['img_2']);
@@ -276,9 +274,7 @@ class mailerController extends Controller
                 Storage::delete($model->img_2);
             }
             $model->img_2 = $img_2_path;
-        }else{
-            $img_2_path = NULL;
-        } 
+        }
 
 
         $model->name = $data['name'];
