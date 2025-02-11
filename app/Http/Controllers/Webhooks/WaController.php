@@ -27,7 +27,7 @@ class WaController extends Controller
         
         $data = $request->all();
         $number = $data['number'];
-        Log::info("dati ricevuti daam1: " . $data);
+        //Log::info("dati ricevuti daam1: " . $data);
 
         $setting = Setting::where('name', 'wa')->first();
         $property = json_decode($setting->property, true);
