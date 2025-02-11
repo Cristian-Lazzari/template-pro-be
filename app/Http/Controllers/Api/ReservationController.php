@@ -337,7 +337,7 @@ class ReservationController extends Controller
             ];
             
             // Log dei dati inviati
-            //Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
+            Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
             
             
             try {
