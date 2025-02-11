@@ -35,6 +35,7 @@ class WaController extends Controller
         $p = array_search($number, $numbers);
         $this->updateLastResponseWa($p);
         $p = $p == 0 ? 1 : 0;
+        $number_correct = $numbers[$p];
 
         $numebr = $data['wa_id'];
         $messageId = $data['wa_id'];
@@ -44,13 +45,13 @@ class WaController extends Controller
         if ($order_ex) {
             $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
             
-            $this->message_co_worker(1, $button_r, $p, $order, $number);
+            $this->message_co_worker(1, $button_r, $p, $order, $number_correct);
             $this->statusOrder($button_r, $order);
         } elseif (Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists()) {
             
             $reservation = Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();   // Se non trovato in Orders, cerca nella tabella rervations
             if ($reservation) {
-                $this->message_co_worker(false, $button_r, $p, $reservation, $number);
+                $this->message_co_worker(false, $button_r, $p, $reservation, $number_correct);
                 $this->statusRes($button_r, $reservation);
             }
         } else {
