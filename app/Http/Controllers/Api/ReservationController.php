@@ -208,10 +208,6 @@ class ReservationController extends Controller
             $numbers_wa_set_s = Setting::where('name', 'wa')->firstOrFail();
             $numbers_wa_set = json_decode($numbers_wa_set_s->property, true);
 
-
-
-            $type_m = 0;
-
             $data_i = [
                 'messaging_product' => 'whatsapp',
                 'to' => '',
@@ -299,8 +295,6 @@ class ReservationController extends Controller
             foreach ($numbers_wa_set['numbers'] as $num) {
                 $data_t['to'] = $num;
                 $data_i['to'] = $num;
-                
-                
                 if($this->isLastResponseWaWithin24Hours($n)){
                     if($n == 1){
                         $type_m_1 = 0;
@@ -387,16 +381,6 @@ class ReservationController extends Controller
                     'message' => 'Errore durante l\'invio della richiesta.',
                 ], 500);
             }
-            
-
-            // // Risposta di successo
-            // return response()->json([
-            //     'success' => true,
-            //     'prenotazione' => $newRes,
-            //     'data' => $date,
-            //     'mw' => $response->json(),
-
-            // ]);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Errore nel trovare una risorsa

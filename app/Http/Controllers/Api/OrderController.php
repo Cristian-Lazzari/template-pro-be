@@ -355,138 +355,176 @@ class OrderController extends Controller
                     $type_mess .= "Ritiro asporto";
                 }
                 $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $newOrder->id;
+                $t = $newOrder->comune ? "Ordine a domicilio" : "Ordine d'asporto";
+                $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
+                    "📞 Chiama: " . $newOrder->phone . "\n\n" .
+                    "🔗 Vedi dalla Dashboard: $link_id";
                 // Definisci l'URL della richiesta
                 $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
-                $number = config('configurazione.WA_N');
-                $type_m = 0;
 
-                if ($this->isLastResponseWaWithin24Hours()) {
-                    $t=$newOrder->comune ? "Ordine a domicilio" : "Ordine d'asporto";
-                    $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
-                        "📞 Chiama: " . $newOrder->phone . "\n\n" .
-                        "🔗 Vedi dalla Dashboard: $link_id";
-                    
+                $numbers_wa_set_s = Setting::where('name', 'wa')->firstOrFail();
+                $numbers_wa_set = json_decode($numbers_wa_set_s->property, true);
 
-                    $data = [
-                        'messaging_product' => 'whatsapp',
-                        'to' => $number,
-                        "type"=> "interactive",
-                        "interactive"=> [
-                            "type"=> "button",
-                            "header"=> [
-                                "type" => "text",
-                                "text"=>'Hai una nuova notifica!',
-                            ],  
-                            "footer"=> [
-                                "text"=> "Powered by F+"
-                            ],
-                            "body"=> [
-                            "text"=> $info,
-                            ],
-                                "action"=> [
-                                "buttons"=> [
-                                    [
-                                        "type"=> "reply",
-                                        "reply"=> [
-                                            "id"=> "Conferma",
-                                            "title"=> "Conferma"
-                                        ]
-                                    ],
-                                        [
-                                        "type"=> "reply",
-                                        "reply"=> [
-                                            "id"=> "Annulla",
-                                            "title"=> "Annulla"
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ];
-                }else{
-                    $type_m = 1;
-                    $data = [
-                        'messaging_product' => 'whatsapp',
-                        'to' => $number,
-                        'category' => 'utility',
-                        'type' => 'template',
-                        'template' => [
-                            'name' => 'full_emoji',
-                            'language' => [
-                                'code' => 'it'
-                            ],
-                            'components' => [
+                $data_i = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => '',
+                    "type"=> "interactive",
+                    "interactive"=> [
+                        "type"=> "button",
+                        "header"=> [
+                            "type" => "text",
+                            "text"=>'Hai una nuova notifica!',
+                        ],  
+                        "footer"=> [
+                            "text"=> "Powered by F+"
+                        ],
+                        "body"=> [
+                        "text"=> $info,
+                        ],
+                            "action"=> [
+                            "buttons"=> [
                                 [
-                                    'type' => 'body',
-                                    'parameters' => [
-                                        [
-                                            'type' => 'text',
-                                            'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
-                                        ],
-                                        [
-                                            'type' => 'text',
-                                            'text' => $newOrder->name . ' ' . $newOrder->surname . ' ha ordinato per il ' . $newOrder->date_slot  . ': '
-                                        ],
-                                        [
-                                            'type' => 'text',
-                                            'text' => $order_mess
-                                        ],
-                                        [
-                                            'type' => 'text',
-                                            'text' => $type_mess
-                                        ],
-                                        [
-                                            'type' => 'text',
-                                            'text' => $newOrder->phone,  
-                                        ],
-                                        [
-                                            'type' => 'text',
-                                            'text' => $link_id,  
-                                        ],
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "Conferma",
+                                        "title"=> "Conferma"
+                                    ]
+                                ],
+                                    [
+                                    "type"=> "reply",
+                                    "reply"=> [
+                                        "id"=> "Annulla",
+                                        "title"=> "Annulla"
                                     ]
                                 ]
                             ]
                         ]
-                    ];
+                    ]
+                ];
+
+                $data_t = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => '',
+                    'category' => 'utility',
+                    'type' => 'template',
+                    'template' => [
+                        'name' => 'full_emoji',
+                        'language' => [
+                            'code' => 'it'
+                        ],
+                        'components' => [
+                            [
+                                'type' => 'body',
+                                'parameters' => [
+                                    [
+                                        'type' => 'text',
+                                        'text' => $newOrder->comune ? 'Ordine a domicilio' : 'Ordine d\'asporto', 
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $newOrder->name . ' ' . $newOrder->surname . ' ha ordinato per il ' . $newOrder->date_slot  . ': '
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $order_mess
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $type_mess
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $newOrder->phone,  
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $link_id,  
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                
+                $n = 1;
+                $messageId = [];
+                $type_m_1 = false;
+                $type_m_2 = false;
+                foreach ($numbers_wa_set['numbers'] as $num) {
+                    $data_t['to'] = $num;
+                    $data_i['to'] = $num;
+                    if($this->isLastResponseWaWithin24Hours($n)){
+                        if($n == 1){
+                            $type_m_1 = 0;
+                        }else{     
+                            $type_m_2 = 0;
+                        }
+                        $response = Http::withHeaders([
+                            'Authorization' => config('configurazione.WA_TO'),
+                            'Content-Type' => 'application/json'
+                        ])->post($url, $data_i);
+                        $m_id = $response->json()['messages'][0]['id'] ?? null;
+                        if($m_id){
+                            array_push($messageId, $m_id);
+                        }
+                    }else{
+                        if($n == 1){
+                            $type_m_1 = 1;
+                        }else{     
+                            $type_m_2 = 1;
+                        }
+                        $response = Http::withHeaders([
+                            'Authorization' => config('configurazione.WA_TO'),
+                            'Content-Type' => 'application/json'
+                        ])->post($url, $data_t);
+                        $m_id = $response->json()['messages'][0]['id'] ?? null;
+                        if($m_id){
+                            array_push($messageId, $m_id);
+                        }
+                    }
+                    $n ++;
                 }
                 
-                // // Effettua la richiesta HTTP POST con le intestazioni necessarie
-                $response = Http::withHeaders([
-                    'Authorization' => config('configurazione.WA_TO'),
-                    'Content-Type' => 'application/json'
-                ])->post($url, $data);
+                $newOrder->whatsapp_message_id = json_encode($messageId);
+                $newOrder->update();
 
-                // Estrai l'ID del messaggio dalla risposta di WhatsApp
-                $messageId = $response->json()['messages'][0]['id'] ?? null;
-                $response_j = $response->json();
-
-                if ($messageId) {
-                    // Salva il message_id nell'ordine
-                    $newOrder->whatsapp_message_id = $messageId;
-                    $newOrder->update();
-                }
-
-                $data1 = [        
+                $data_am1 = [        
                     'wa_id' => $newOrder->whatsapp_message_id,
-                    'type' => $type_m,
+                    'type_1' => $type_m_1,
+                    'type_2' => $type_m_2,
                     'source' => config('configurazione.APP_URL'),
                 ];
                 
                 // Log dei dati inviati
-                Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
+                Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
                 
                 try {
+                    // Log dei dati inviati
+                    Log::info('Dati inviati alla API:', $data_am1);
+                    
                     // Invio della richiesta POST
-                    $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
+                    $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
                 
-                    // Log della risposta ricevuta
-                    Log::info('Risposta ricevuta:', $response1->json());
-                
-                    return response()->json([
-                        'success' => true,
-                        'status' => 'success',
-                        'data' => $response1->json(),
-                    ]);
+                    // Controllo della risposta prima di restituirla
+                    if ($response_am1->successful()) {
+                        Log::info('Risposta ricevuta con successo:');
+                        Log::info($response_am1);
+                     //   Log::info('Risposta ricevuta con successo:', $response_am1);
+                        return response()->json([
+                            'status' => 'success',
+                            'success' => true,
+                            'data' => $response_am1->json(),
+                        ]);
+                    } else {
+                        Log::error('Errore nella risposta API:', [
+                            'status' => $response_am1->status(),
+                            'body' => $response_am1->body(),
+                        ]);
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Errore dalla API esterna.',
+                        ], $response_am1->status());
+                    }
                 } catch (Exception $e) {
                     // Gestione degli errori
                     Log::error('Errore nell\'invio della richiesta POST:', [
@@ -498,18 +536,7 @@ class OrderController extends Controller
                         'status' => 'error',
                         'message' => 'Errore durante l\'invio della richiesta.',
                     ], 500);
-                }   
-                // Gestisci la risposta
-                // if ($response->successful()) {
-                //     return response()->json(['message' => 'Messaggio inviato con successo' , 'response' => $response_j, 'id' => $messageId], 200);
-                // } else {
-                //     return response()->json(['success' => false, 'error' => 'Errore nell\'invio del messaggio', 'details' => $response->json()], $response->status());
-                // }
-                // return response()->json([
-                //     'success'   => true,
-                //     'payment'   => false,
-                //     'order'     => $newOrder,
-                // ]);
+                }    
             }
 
 
@@ -529,24 +556,31 @@ class OrderController extends Controller
             return response()->json($errorInfo, 500);
         }
     }
-    protected function isLastResponseWaWithin24Hours()
+    protected function isLastResponseWaWithin24Hours($n)
     {
-        // Trova il record con name = 'wa'
         $setting = Setting::where('name', 'wa')->first();
 
         if ($setting) {
             // Decodifica il campo 'property' da JSON ad array
             $property = json_decode($setting->property, true);
-
-            // Controlla se 'last_response_wa' è impostato
-            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
-                // Confronta la data salvata con le ultime 24 ore
-                $lastResponseDate = Carbon::parse($property['last_response_wa']);
-                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            if($n == 1){
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
+            }else{
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_2']) && !empty($property['last_response_wa_2'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
             }
+        }else{
+            return false; // Se il record non esiste o la data non è impostata
         }
-
-        return false; // Se il record non esiste o la data non è impostata
     }
-    
+
 }
