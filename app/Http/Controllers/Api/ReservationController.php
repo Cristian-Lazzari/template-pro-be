@@ -294,14 +294,19 @@ class ReservationController extends Controller
             
             $n = 1;
             $messageId = [];
-            $type_m_1 = null;
-            $type_m_2 = null;
+            $type_m_1 = false;
+            $type_m_2 = false;
             foreach ($numbers_wa_set['numbers'] as $num) {
                 $data_t['to'] = $num;
                 $data_i['to'] = $num;
                 
+                
                 if($this->isLastResponseWaWithin24Hours($n)){
-                    $type_m_1 = 0;
+                    if($n == 1){
+                        $type_m_1 = 0;
+                    }else{     
+                        $type_m_2 = 0;
+                    }
                     $response = Http::withHeaders([
                         'Authorization' => config('configurazione.WA_TO'),
                         'Content-Type' => 'application/json'
@@ -311,7 +316,11 @@ class ReservationController extends Controller
                         array_push($messageId, $m_id);
                     }
                 }else{
-                    $type_m_2 = 1;
+                    if($n == 1){
+                        $type_m_1 = 1;
+                    }else{     
+                        $type_m_2 = 1;
+                    }
                     $response = Http::withHeaders([
                         'Authorization' => config('configurazione.WA_TO'),
                         'Content-Type' => 'application/json'
