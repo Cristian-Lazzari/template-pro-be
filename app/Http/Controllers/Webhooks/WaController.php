@@ -33,7 +33,7 @@ class WaController extends Controller
         $property = json_decode($setting->property, true);
         $numbers = $property['numbers'];
         $co_work = false;
-        if(count($numbers) !== 2){
+        if(count($numbers) == 2){
             $co_work = true;
             $p = array_search($number, $numbers);
             $this->updateLastResponseWa($p);
