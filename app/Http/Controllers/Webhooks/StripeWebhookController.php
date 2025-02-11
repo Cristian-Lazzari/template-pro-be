@@ -189,11 +189,11 @@ class StripeWebhookController extends Controller
                         'parameters' => [
                             [
                                 'type' => 'text',
-                                'text' => $newOrder->comune ? 'Ordine a domicilio GIÀ PAGATO' : 'Ordine d\'asporto GIÀ PAGATO', 
+                                'text' => $order->comune ? 'Ordine a domicilio GIÀ PAGATO' : 'Ordine d\'asporto GIÀ PAGATO', 
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $newOrder->name . ' ' . $newOrder->surname . ' ha ordinato per il ' . $newOrder->date_slot  . ': '
+                                'text' => $order->name . ' ' . $order->surname . ' ha ordinato per il ' . $order->date_slot  . ': '
                             ],
                             [
                                 'type' => 'text',
@@ -205,7 +205,7 @@ class StripeWebhookController extends Controller
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $newOrder->phone,  
+                                'text' => $order->phone,  
                             ],
                             [
                                 'type' => 'text',
@@ -256,11 +256,11 @@ class StripeWebhookController extends Controller
             $n ++;
         }
         
-        $newOrder->whatsapp_message_id = json_encode($messageId);
-        $newOrder->update();
+        $order->whatsapp_message_id = json_encode($messageId);
+        $order->update();
 
         $data_am1 = [        
-            'wa_id' => $newOrder->whatsapp_message_id,
+            'wa_id' => $order->whatsapp_message_id,
             'type_1' => $type_m_1,
             'type_2' => $type_m_2,
             'source' => config('configurazione.APP_URL'),
