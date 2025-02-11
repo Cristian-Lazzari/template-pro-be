@@ -357,6 +357,7 @@ class ReservationController extends Controller
             
                 // Controllo della risposta prima di restituirla
                 if ($response_am1->successful()) {
+                    Log::info('Risposta ricevuta con successo:');
                     Log::info($response_am1);
                  //   Log::info('Risposta ricevuta con successo:', $response_am1);
                     return response()->json([

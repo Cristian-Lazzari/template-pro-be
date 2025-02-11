@@ -30,7 +30,7 @@ class WaController extends Controller
         $setting = Setting::where('name', 'wa')->first();
         $property = json_decode($setting->property, true);
         $numbers = $property['numbers'];
-        $p = array_search($number, $snumbers);
+        $p = array_search($number, $numbers);
         $this->updateLastResponseWa($p);
 
         $numebr = $data['wa_id'];
