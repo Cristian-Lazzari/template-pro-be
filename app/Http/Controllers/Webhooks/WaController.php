@@ -27,12 +27,14 @@ class WaController extends Controller
         
         $data = $request->all();
         $number = $data['number'];
+        Log::info("dati ricevuti daam1: " . $data);
 
         $setting = Setting::where('name', 'wa')->first();
         $property = json_decode($setting->property, true);
         $numbers = $property['numbers'];
         $p = array_search($number, $numbers);
         $this->updateLastResponseWa($p);
+        $p = $p == 0 ? 1 : 0;
 
         $numebr = $data['wa_id'];
         $messageId = $data['wa_id'];
@@ -60,72 +62,108 @@ class WaController extends Controller
     }
 
     protected function message_co_worker($o_r, $c_a, $p, $or_res, $number){
-        $m = $o_r ? 'L\'ordine è stato ' : 'La prenotazione è stata ';
-        $sub = $o_r ? 'L\'ordine' : 'La prenotazione';
-        if($c_a){
-            $m = $m . 'confermat' . $o_r ? 'o' : 'a';
-            $word = 'confermat' . $o_r ? 'o' : 'a';
-        }else{
-            $m = $m . 'annullat' . $o_r ? 'o' : 'a';
-            $word = 'annullat' . $o_r ? 'o' : 'a';
-        }
-        $m = $m . ' dal tuo collega';
-        if($this->isLastResponseWaWithin24Hours($p)){
-            $messages = json_decode($or_res->whatsapp_message_id);
-            $old_id = $messages[$p];
-
-            $data = [
-                'messaging_product' => 'whatsapp',
-                'to' => $number,
-                "type"=> "text",
-                "context" => [
-                    "message_id" => $old_id
-                ],
-                "text"=> [
-                    "body"=> [
-                        "text"=> $m,
+        try {
+            Log::info("Inizio esecuzione message_co_worker", [
+                'o_r' => $o_r,
+                'c_a' => $c_a,
+                'p' => $p,
+                'or_res_id' => $or_res->id ?? 'N/A',
+                'number' => $number
+            ]);
+    
+            // Definizione dei messaggi in base allo stato
+            $m = $o_r ? 'L\'ordine è stato ' : 'La prenotazione è stata ';
+            $sub = $o_r ? 'L\'ordine' : 'La prenotazione';
+    
+            if ($c_a) {
+                $m .= 'confermat' . ($o_r ? 'o' : 'a');
+                $word = 'confermat' . ($o_r ? 'o' : 'a');
+            } else {
+                $m .= 'annullat' . ($o_r ? 'o' : 'a');
+                $word = 'annullat' . ($o_r ? 'o' : 'a');
+            }
+    
+            $m .= ' dal tuo collega';
+    
+            // Controllo se la risposta è entro 24 ore
+            if ($this->isLastResponseWaWithin24Hours($p)) {
+                // Verifica se il campo whatsapp_message_id esiste e contiene dati validi
+                if (!isset($or_res->whatsapp_message_id)) {
+                    throw new Exception("whatsapp_message_id mancante nell'ordine/prenotazione.");
+                }
+    
+                $messages = json_decode($or_res->whatsapp_message_id, true);
+                if (!is_array($messages) || !isset($messages[$p])) {
+                    throw new Exception("Formato di whatsapp_message_id non valido.");
+                }
+    
+                $old_id = $messages[$p];
+    
+                $data = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => $number,
+                    "type" => "text",
+                    "context" => [
+                        "message_id" => $old_id
                     ],
-                ]
-            ];
-        }else{
-            $data = [
-                'messaging_product' => 'whatsapp',
-                'to' => $number,
-                'category' => 'utility',
-                'type' => 'template',
-                "context" => [
-                    "message_id" => $old_id
-                ],
-                'template' => [
-                    'name' => 'responnse',
-                    'language' => [
-                        'code' => 'it'
+                    "text" => [
+                        "body" => $m
+                    ]
+                ];
+            } else {
+                $data = [
+                    'messaging_product' => 'whatsapp',
+                    'to' => $number,
+                    'category' => 'utility',
+                    'type' => 'template',
+                    "context" => [
+                        "message_id" => $old_id ?? null
                     ],
-                    'components' => [
-                        [
-                            'type' => 'body',
-                            'parameters' => [
-                                [
-                                    'type' => 'text',
-                                    'text' => $sub, 
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => $word, 
-                                ],
+                    'template' => [
+                        'name' => 'responnse',
+                        'language' => [
+                            'code' => 'it'
+                        ],
+                        'components' => [
+                            [
+                                'type' => 'body',
+                                'parameters' => [
+                                    [
+                                        'type' => 'text',
+                                        'text' => $sub
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $word
+                                    ]
+                                ]
                             ]
                         ]
                     ]
-                ]
-            ];
+                ];
+            }
+    
+            $url = 'https://graph.facebook.com/v20.0/' . config('configurazione.WA_ID') . '/messages';
+            
+            $response = Http::withHeaders([
+                'Authorization' => config('configurazione.WA_TO'),
+                'Content-Type' => 'application/json'
+            ])->post($url, $data);
+    
+            // Log della risposta ricevuta
+            Log::info("Risposta WhatsApp inviata con successo", ['response' => $response->json()]);
+    
+            return $response->json();
+        } catch (Exception $e) {
+            Log::error("Errore in message_co_worker", [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
-        $response = Http::withHeaders([
-            'Authorization' => config('configurazione.WA_TO'),
-            'Content-Type' => 'application/json'
-        ])->post($url, $data);
-        
-    } 
+    }
+    
     protected function statusOrder($c_a, $order){
         Log::info("success");
         if($c_a == 1 && in_array($order->status, [1, 5])){
