@@ -339,19 +339,31 @@ class ReservationController extends Controller
             // Log dei dati inviati
             Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
             
-            
             try {
+                // Log dei dati inviati
+                Log::info('Dati inviati alla API:', $data_am1);
+                
                 // Invio della richiesta POST
                 $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
             
-                // Log della risposta ricevuta
-               // Log::info('Risposta ricevuta:', $response_am1->json());
-            
-                return response()->json([
-                    'status' => 'success',
-                    'success' => true,
-                    'data' => $response_am1->json(),
-                ]);
+                // Controllo della risposta prima di restituirla
+                if ($response_am1->successful()) {
+                    Log::info('Risposta ricevuta con successo:', $response_am1->json());
+                    return response()->json([
+                        'status' => 'success',
+                        'success' => true,
+                        'data' => $response_am1->json(),
+                    ]);
+                } else {
+                    Log::error('Errore nella risposta API:', [
+                        'status' => $response_am1->status(),
+                        'body' => $response_am1->body(),
+                    ]);
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Errore dalla API esterna.',
+                    ], $response_am1->status());
+                }
             } catch (Exception $e) {
                 // Gestione degli errori
                 Log::error('Errore nell\'invio della richiesta POST:', [
