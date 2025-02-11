@@ -61,7 +61,8 @@ class SettingController extends Controller
         $setting = Setting::where('name', 'wa')->firstOrFail();
         $old_p = json_decode($setting->property, true);
         $old_p['numbers'] = $numbers;
-        $setting->property = json_encode($old_p);
+        $array_filtrato = array_filter($old_p);
+        $setting->property = json_encode($array_filtrato);
         $setting->update();
 
         $m = 'I numeri sono stati aggiornati correttamente';
