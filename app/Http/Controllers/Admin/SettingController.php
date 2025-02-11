@@ -61,7 +61,17 @@ class SettingController extends Controller
         $setting = Setting::where('name', 'wa')->firstOrFail();
         $old_p = json_decode($setting->property, true);
         $old_p['numbers'] = $numbers;
-        $array_filtrato = array_filter($old_p);
+        //$array_filtrato = array_filter($old_p);
+        // $array_filtrato = array_filter($old_p, function($value) {
+        //     return $value !== null && $value !== ''; // Filtra valori null e stringhe vuote
+        // });
+        $array_filtrato = [];
+        foreach ($numbers as $n) {
+           if($n !== null && $value !== ' '){
+            array_push($array_filtrato, $n);
+           }
+        }
+        dd( $array_filtrato);
         $setting->property = json_encode($array_filtrato);
         $setting->update();
 
