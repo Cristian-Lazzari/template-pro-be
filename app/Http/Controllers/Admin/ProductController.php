@@ -94,7 +94,7 @@ class ProductController extends Controller
         $products   = Product::where('archived', true)->get();
         $categories = Category::all();
         
-        return view('admin.products.archived', compact('products', 'categories'));
+        return view('admin.Products.archived', compact('products', 'categories'));
     }
 
     public function filter(Request $request){
@@ -140,10 +140,10 @@ class ProductController extends Controller
         }        
         if ($archive == 1) {
 
-            return view('admin.products.archived', compact('products', 'categories', 'filters'));
+            return view('admin.Products.archived', compact('products', 'categories', 'filters'));
         }
 
-        return view('admin.products.index', compact('products', 'categories', 'filters'));
+        return view('admin.Products.index', compact('products', 'categories', 'filters'));
 
     }
 
@@ -152,7 +152,7 @@ class ProductController extends Controller
         
         $products    = Product::where('archived', false)->orderBy('updated_at', 'desc')->get();
         $categories  = Category::all();
-        return view('admin.products.index', compact('products', 'categories'));
+        return view('admin.Products.index', compact('products', 'categories'));
     }
 
     public function create()
@@ -160,7 +160,7 @@ class ProductController extends Controller
         $categories     = Category::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
         
-        return view('admin.products.create', compact('categories', 'ingredients'));
+        return view('admin.Products.create', compact('categories', 'ingredients'));
     }
     protected function cleanArray($array) {
         $hasGluten = false;
@@ -323,7 +323,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($ingredients ?? []);  
         }
         
-        return view('admin.products.show', compact( 'product'));
+        return view('admin.Products.show', compact( 'product'));
         
     }
     
@@ -331,7 +331,7 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::where('id', $id)->firstOrFail();
-        return view('admin.products.show', ['product' => $product]);      
+        return view('admin.Products.show', ['product' => $product]);      
     }
     
     public function edit($id)
@@ -340,7 +340,7 @@ class ProductController extends Controller
         $categories     = Category::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
         
-        return view('admin.products.edit', compact( 'product', 'categories', 'ingredients'));        
+        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients'));        
     }
     
     public function update(Request $request, $id){
@@ -483,7 +483,7 @@ class ProductController extends Controller
             $product->ingredients()->sync([] ?? []);  
         }
         
-        return view('admin.products.show', compact( 'product'));     
+        return view('admin.Products.show', compact( 'product'));     
     }
 
     public function destroy(Product $product)
