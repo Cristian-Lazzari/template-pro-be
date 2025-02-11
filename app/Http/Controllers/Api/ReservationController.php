@@ -345,7 +345,7 @@ class ReservationController extends Controller
                 $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
             
                 // Log della risposta ricevuta
-                Log::info('Risposta ricevuta:', $response_am1->json());
+               // Log::info('Risposta ricevuta:', $response_am1->json());
             
                 return response()->json([
                     'status' => 'success',
