@@ -22,25 +22,33 @@ class WaController extends Controller
     // Metodo per gestire i webhook
     public function handle(Request $request)
     {
-        $this->updateLastResponseWa();
+
         
         $data = $request->all();
+        $number = $data['number'];
 
+        $setting = Setting::where('name', 'wa')->first();
+        $property = json_decode($setting->property, true);
+        $numbers = $property['numbers'];
+        $p = array_search($number, $snumbers);
+        $this->updateLastResponseWa($p);
+
+        $numebr = $data['wa_id'];
         $messageId = $data['wa_id'];
         $button_r = $data['response'];
-        Log::info("ciaoo");
 
-        $order_ex = Order::where('whatsapp_message_id', $messageId)->exists();
+        $order_ex = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists();
         if ($order_ex) {
-            $order = Order::where('whatsapp_message_id', $messageId)->first();
+            $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
             
+            $this->message_co_worker(1, $button_r, $p, $order, $number);
             $this->statusOrder($button_r, $order);
-        } elseif (Reservation::where('whatsapp_message_id', $messageId)->exists()) {
-          
-            $reservation = Reservation::where('whatsapp_message_id', $messageId)->first();   // Se non trovato in Orders, cerca nella tabella rervations
+        } elseif (Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists()) {
+            
+            $reservation = Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();   // Se non trovato in Orders, cerca nella tabella rervations
             if ($reservation) {
-
-            $this->statusRes($button_r, $reservation);
+                $this->message_co_worker(false, $button_r, $p, $reservation, $number);
+                $this->statusRes($button_r, $reservation);
             }
         } else {
             // Nessun ordine o prenotazione trovato per il Message ID
@@ -50,11 +58,80 @@ class WaController extends Controller
         return response()->json(['status' => 'success']);
     }
 
+    protected function message_co_worker($o_r, $c_a, $p, $or_res, $number){
+        $m = $o_r ? 'L\'ordine è stato ' : 'La prenotazione è stata ';
+        $sub = $o_r ? 'L\'ordine' : 'La prenotazione';
+        if($c_a){
+            $m = $m . 'confermat' . $o_r ? 'o' : 'a';
+            $word = 'confermat' . $o_r ? 'o' : 'a';
+        }else{
+            $m = $m . 'annullat' . $o_r ? 'o' : 'a';
+            $word = 'annullat' . $o_r ? 'o' : 'a';
+        }
+        $m = $m . ' dal tuo collega';
+        if($this->isLastResponseWaWithin24Hours($p)){
+            $messages = json_decode($or_res->whatsapp_message_id);
+            $old_id = $message[$p];
+
+            $data = [
+                'messaging_product' => 'whatsapp',
+                'to' => $number,
+                "type"=> "text",
+                "context" => [
+                    "message_id" => $old_id
+                ],
+                "text"=> [
+                    "body"=> [
+                        "text"=> $m,
+                    ],
+                ]
+            ];
+        }else{
+            $data = [
+                'messaging_product' => 'whatsapp',
+                'to' => $number,
+                'category' => 'utility',
+                'type' => 'template',
+                "context" => [
+                    "message_id" => $old_id
+                ],
+                'template' => [
+                    'name' => 'responnse',
+                    'language' => [
+                        'code' => 'it'
+                    ],
+                    'components' => [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => $sub, 
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $word, 
+                                ],
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+        $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
+        $response = Http::withHeaders([
+            'Authorization' => config('configurazione.WA_TO'),
+            'Content-Type' => 'application/json'
+        ])->post($url, $data);
+        
+    } 
     protected function statusOrder($c_a, $order){
         Log::info("success");
-        if($c_a == 1 && in_array($order->status, [1, 5])){           
+        if($c_a == 1 && in_array($order->status, [1, 5])){
             return;
-        }elseif(in_array($order->status, [1, 5])){
+        }elseif($c_a == 0 && in_array($order->status, [0, 6])){
+            return;
+        }elseif(in_array($order->status, [1, 5, 0, 6])){
             return;
         }
         if($c_a == 1){
@@ -196,7 +273,9 @@ class WaController extends Controller
         Log::info("success");
         if($c_a == 1 && in_array($res->status, [1, 5])){
             return;
-        }elseif(in_array($res->status, [1, 5])){
+        }elseif($c_a == 0 && in_array($res->status, [0, 6])){
+            return;
+        }elseif(in_array($res->status, [1, 5, 0, 6])){
             return;
         }
         if($c_a == 1){
@@ -275,20 +354,49 @@ class WaController extends Controller
 
         return;   
     }
-    protected function updateLastResponseWa(){
+    protected function updateLastResponseWa($p){
         // Trova il record con name = 'wa'
         $setting = Setting::where('name', 'wa')->first();
 
         // Decodifica il campo 'property' da JSON ad array
         $property = json_decode($setting->property, true);
-
+        if($p == 0){
+            $property['last_response_wa_1'] = Carbon::now()->toDateTimeString();
+        }else if($p == 1){
+            $property['last_response_wa_2'] = Carbon::now()->toDateTimeString();
+        }
         // Aggiorna 'last_response_wa' con la data attuale
-        $property['last_response_wa'] = Carbon::now()->toDateTimeString();
 
         // Ricodifica 'property' in JSON e aggiorna il record
         $setting->property = json_encode($property);
         $setting->update();
 
+    }
+    protected function isLastResponseWaWithin24Hours($p)
+    {
+        $setting = Setting::where('name', 'wa')->first();
+
+        if ($setting) {
+            // Decodifica il campo 'property' da JSON ad array
+            $property = json_decode($setting->property, true);
+            if($n == 0){
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
+            }else{
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_2']) && !empty($property['last_response_wa_2'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
+            }
+        }else{
+            return false; // Se il record non esiste o la data non è impostata
+        }
     }
 
 

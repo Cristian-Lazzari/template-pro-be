@@ -196,143 +196,160 @@ class ReservationController extends Controller
                 $info .="_* \n\n ";
                 $sala_mess .="_*";
             }
+            $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
+            "📞 Chiama: " . $newRes->phone . "\n\n" .
+            "🔗 Vedi dalla Dashboard: $link_id";
             
             $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
 
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
-            $number = config('configurazione.WA_N');
+
+            $numbers_wa_set = Setting::where('name', 'wa')->firstOrFail();
+            $numbers_wa_set = json_decode($numbers_wa_set);
+
+
 
             $type_m = 0;
-            
-            if ($this->isLastResponseWaWithin24Hours()) {
-                // Esegui azione se è entro le ultime 24 ore
-                $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
-                        "📞 Chiama: " . $newRes->phone . "\n\n" .
-                        "🔗 Vedi dalla Dashboard: $link_id";
 
-                $data = [
-                    'messaging_product' => 'whatsapp',
-                    'to' => $number,
-                    "type"=> "interactive",
-                    "interactive"=> [
-                        "type"=> "button",
-                        "header"=> [
-                            "type" => "text",
-                            "text"=>'Hai una nuova notifica!',
-                        ],
-                        "footer"=> [
-                            "text"=> "Powered by F +"
-                        ],
-                        "body"=> [
-                        "text"=> $info,
-                        ],
-                            "action"=> [
-                            "buttons"=> [
-                                [
-                                    "type"=> "reply",
-                                    "reply"=> [
-                                        "id"=> "Conferma",
-                                        "title"=> "Conferma"
-                                    ]
-                                ],
-                                    [
-                                    "type"=> "reply",
-                                    "reply"=> [
-                                        "id"=> "Annulla",
-                                        "title"=> "Annulla"
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ];
-                
-            } else {
-                $type_m = 1;
-                // Esegui azione alternativa
-                $data = [
-                    'messaging_product' => 'whatsapp',
-                    'to' => $number,
-                    'category' => 'utility',
-                    'type' => 'template',
-                    'template' => [
-                        'name' => 'full_emoji',
-                        'language' => [
-                            'code' => 'it'
-                        ],
-                        'components' => [
+            $data_i = [
+                'messaging_product' => 'whatsapp',
+                'to' => '',
+                "type"=> "interactive",
+                "interactive"=> [
+                    "type"=> "button",
+                    "header"=> [
+                        "type" => "text",
+                        "text"=>'Hai una nuova notifica!',
+                    ],
+                    "footer"=> [
+                        "text"=> "Powered by F +"
+                    ],
+                    "body"=> [
+                    "text"=> $info,
+                    ],
+                        "action"=> [
+                        "buttons"=> [
                             [
-                                'type' => 'body',
-                                'parameters' => [
-                                    [
-                                        'type' => 'text',
-                                        'text' => 'Prenotazione tavolo', 
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $newRes->name . ' ' . $newRes->surname . ' ha prenotato un tavolo per il ' . $newRes->date_slot  
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => '🧑‍🧑‍🧒‍🧒 Gli ospiti sono: ' . $guest 
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $sala_mess,  
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $newRes->phone,  
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $link_id,  
-                                    ],
+                                "type"=> "reply",
+                                "reply"=> [
+                                    "id"=> "Conferma",
+                                    "title"=> "Conferma"
+                                ]
+                            ],
+                                [
+                                "type"=> "reply",
+                                "reply"=> [
+                                    "id"=> "Annulla",
+                                    "title"=> "Annulla"
                                 ]
                             ]
                         ]
                     ]
-                ];
+                ]
+            ];
+            $data_t = [
+                'messaging_product' => 'whatsapp',
+                'to' => '',
+                'category' => 'utility',
+                'type' => 'template',
+                'template' => [
+                    'name' => 'full_emoji',
+                    'language' => [
+                        'code' => 'it'
+                    ],
+                    'components' => [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => 'Prenotazione tavolo', 
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $newRes->name . ' ' . $newRes->surname . ' ha prenotato un tavolo per il ' . $newRes->date_slot  
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => '🧑‍🧑‍🧒‍🧒 Gli ospiti sono: ' . $guest 
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $sala_mess,  
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $newRes->phone,  
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $link_id,  
+                                ],
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+            
+            $n == 1;
+            $messageId = [];
+            $type_m_1 = null;
+            $type_m_2 = null;
+            foreach ($numbers_wa_set['numbers'] as $num) {
+                $data_t['to'] = $num;
+                $data_i['to'] = $num;
+                
+                if($this->isLastResponseWaWithin24Hours($n)){
+                    $type_m_1 = 0;
+                    $response = Http::withHeaders([
+                        'Authorization' => config('configurazione.WA_TO'),
+                        'Content-Type' => 'application/json'
+                    ])->post($url, $data_i);
+                    $m_id = $response->json()['messages'][0]['id'] ?? null;
+                    if($m_id){
+                        array_push($messageId, $m_id);
+                    }
+                }else{
+                    $type_m_2 = 1;
+                    $response = Http::withHeaders([
+                        'Authorization' => config('configurazione.WA_TO'),
+                        'Content-Type' => 'application/json'
+                    ])->post($url, $data_t);
+                    $m_id = $response->json()['messages'][0]['id'] ?? null;
+                    if($m_id){
+                        array_push($messageId, $m_id);
+                    }
+                }
+                $n ++;
             }
             
-            //Effettua la richiesta HTTP POST con le intestazioni necessarie
-            $response = Http::withHeaders([
-                'Authorization' => config('configurazione.WA_TO'),
-                'Content-Type' => 'application/json'
-            ])->post($url, $data);
-
-            //Estrai l'ID del messaggio dalla risposta di WhatsApp
-            $messageId = $response->json()['messages'][0]['id'] ?? null;
-            if ($messageId) {
-                // Salva il message_id nell'ordine
-                $newRes->whatsapp_message_id = $messageId;
-                $newRes->update();
-            }
+            $newRes->whatsapp_message_id = json_encode($messageId);
+            $newRes->update();
 
 
-            $data1 = [        
+
+            $data_am1 = [        
                 'wa_id' => $newRes->whatsapp_message_id,
-                'type' => $type_m,
+                'type_1' => $type_m_1,
+                'type_2' => $type_m_2,
                 'source' => config('configurazione.APP_URL'),
             ];
             
             // Log dei dati inviati
-            Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data1);
-
+            Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
             
             
             try {
-
                 // Invio della richiesta POST
-                $response1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data1);
+                $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
             
                 // Log della risposta ricevuta
-                Log::info('Risposta ricevuta:', $response1->json());
+                Log::info('Risposta ricevuta:', $response_am1->json());
             
                 return response()->json([
                     'status' => 'success',
                     'success' => true,
-                    'data' => $response1->json(),
+                    'data' => $response_am1->json(),
                 ]);
             } catch (Exception $e) {
                 // Gestione degli errori
@@ -383,25 +400,31 @@ class ReservationController extends Controller
         }
     }
 
-    protected function isLastResponseWaWithin24Hours()
+    protected function isLastResponseWaWithin24Hours($n)
     {
-        // Trova il record con name = 'wa'
         $setting = Setting::where('name', 'wa')->first();
 
         if ($setting) {
             // Decodifica il campo 'property' da JSON ad array
             $property = json_decode($setting->property, true);
-
-            // Controlla se 'last_response_wa' è impostato
-            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
-                // Confronta la data salvata con le ultime 24 ore
-                $lastResponseDate = Carbon::parse($property['last_response_wa']);
-                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            if($n == 1){
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
+            }else{
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_2']) && !empty($property['last_response_wa_2'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
             }
+        }else{
+            return false; // Se il record non esiste o la data non è impostata
         }
-
-        return false; // Se il record non esiste o la data non è impostata
-
     }
 
 

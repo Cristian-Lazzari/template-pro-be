@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class SettingController extends Controller
 {
     public function updateAree(Request $request){
-        $setting = Setting::all();
+        $setting = Setting::where('name', 'Comuni per il domicilio')->firstOrFail();
         $ar = $request->ar;
         if($ar == 'add'){ //se positivo aggiungie senno elimina
             $comune = $request->comune;
@@ -20,33 +20,33 @@ class SettingController extends Controller
                 'comune' => $comune,
                 'provincia' => $provincia,
             ];
-            $setting[7]['property'] = json_decode($setting[7]['property'], true);
+            $setting['property'] = json_decode($setting['property'], true);
             $isnew = true;
-            foreach ($setting[7]['property']  as $k) {
+            foreach ($setting['property']  as $k) {
                 if($k['comune'] == $comune){
                     $isnew = false;
                 }
             }
             if ($isnew && $comune !== " ") {
-                $newp = $setting[7]['property'];
+                $newp = $setting['property'];
 
                 array_push( $newp, $newarea);
-                $setting[7]['property'] = json_encode($newp);
-                $setting[7]->save();
+                $setting['property'] = json_encode($newp);
+                $setting->save();
             }
         }else{
             $comuni = $request->comuni;
             if($comuni !== null){
-                $setting[7]['property'] = json_decode($setting[7]['property'], true);
+                $setting['property'] = json_decode($setting['property'], true);
                 $upc = [];
-                foreach ($setting[7]['property'] as $co) {
+                foreach ($setting['property'] as $co) {
                     if(!in_array($co['comune'], $comuni)){
                         array_push( $upc, $co);
                     }     
                 }
-                $setting[7]['property'] = $upc;
-                $setting[7]['property'] = json_encode($upc);
-                $setting[7]->save();
+                $setting['property'] = $upc;
+                $setting['property'] = json_encode($upc);
+                $setting->save();
             }
         }
         $m = 'Gli indirizzi sono stati aggiornati correttamente';
@@ -54,6 +54,20 @@ class SettingController extends Controller
         return redirect()->back()->with('success', $m); 
     }
     
+    public function numbers(Request $request){
+        $numbers = $request->numbers;
+
+     //   dd($numbers);
+        $setting = Setting::where('name', 'wa')->firstOrFail();
+        $old_p = json_decode($setting->property, true);
+        $old_p['numbers'] = $numbers;
+        $setting->property = json_encode($old_p);
+        $setting->update();
+
+        $m = 'I numeri sono stati aggiornati correttamente';
+    
+        return redirect()->back()->with('success', $m); 
+    }
     public function updateAll(Request $request)
     {
         $setting = Setting::all();

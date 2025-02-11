@@ -22,7 +22,7 @@
 </div> --}}
 <div class="dash-c">
     @php
-        $pack = ['', 'Essetians', 'Cene & Pranzi', 'Delivery & Asporto', 'Premium' ]
+        $pack = ['', '', 'Essetians', 'Work on', 'Boost up' ]
     @endphp
     <p> 
         <a class="my_btn_5 m-2" href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.pack')]}}</a>
@@ -588,10 +588,7 @@
                                     } 
                                 @endphp
                                 <h2 >Gestione indirizzi di consegna</h2>
-                                <div class="actions">
-                                    <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crea nuovo </button>
-                                    <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> Modifica selezione </button>
-                                </div>
+                              
                                 
                                 <div class="address"> 
                                     @foreach ($setting[7]['property'] as $i)
@@ -600,7 +597,43 @@
                                             {{$i['comune']}}
                                         </span>    
                                     @endforeach
-                                </div>                          
+                                </div>   
+                                <div class="actions">
+                                    <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crea nuovo </button>
+                                    <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> Modifica selezione </button>
+                                </div>                       
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="accordion-item">
+                        @csrf
+                        <h4 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+                                Gestione notifiche whatsapp
+                            </button>
+                        </h4>
+                        <div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">                            
+                                @php
+                                    if (is_string($setting[8]['property'])) {
+                                        $setting[8]['property'] = json_decode($setting[8]['property'], true);
+                                    } 
+                                  //  dd($setting[8]['property'])
+                                @endphp
+                                <h2 >Gestione notifiche whatsapp</h2>
+                 
+                                
+                                <div class="address"> 
+                                    @foreach ($setting[8]['property']['numbers'] as $i)
+                                        <span class="">
+                                            {{ $i }}
+                                        </span>    
+                                    @endforeach
+                                </div>      
+                                <div class="actions">
+                                    <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Modifica</button>
+                                </div>                    
                             </div>
                         </div>
                     </div> 
@@ -664,6 +697,32 @@
                 <div class="modal-footer">
                     <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
                     <button type="sumbit" class="my_btn_1 add">Aggiungi nuovo comune</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop2Label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form action="{{ route('admin.settings.numbers')}}" method="POST" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop2Label">Modifica i numeri che possono ricevere le notifiche wa</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group flex-nowrap py-2 w-auto">
+                        <label for="numbers[]" class="input-group-text" >1# Numero</label>
+                        <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
+                    </div>
+                    <div class="input-group flex-nowrap py-2 w-auto">
+                        <label for="numbers[]" class="input-group-text" >2# Numero</label>
+                        <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
+                    <button type="sumbit" class="my_btn_1 add">Modifica</button>
                 </div>
             </form>
         </div>

@@ -71,7 +71,10 @@ class SettingsTableSeeder extends Seeder
                 [
                     'name' => 'wa',
                     'property' => [
-                        'last_response_wa' => ''
+                        'last_response_wa_1' => '',
+                        'last_response_wa_2' => '',
+                        'numbers' => ['393271622244'],
+
                     ]
                 ],
             ];
