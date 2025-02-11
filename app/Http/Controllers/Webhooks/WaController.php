@@ -71,7 +71,7 @@ class WaController extends Controller
         $m = $m . ' dal tuo collega';
         if($this->isLastResponseWaWithin24Hours($p)){
             $messages = json_decode($or_res->whatsapp_message_id);
-            $old_id = $message[$p];
+            $old_id = $messages[$p];
 
             $data = [
                 'messaging_product' => 'whatsapp',
