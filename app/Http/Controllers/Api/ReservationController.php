@@ -196,11 +196,12 @@ class ReservationController extends Controller
                 $info .="_* \n\n ";
                 $sala_mess .="_*";
             }
+            $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
             $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
             "📞 Chiama: " . $newRes->phone . "\n\n" .
             "🔗 Vedi dalla Dashboard: $link_id";
             
-            $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
+           
 
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
 
