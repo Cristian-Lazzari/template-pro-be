@@ -292,7 +292,7 @@ class ReservationController extends Controller
                 ]
             ];
             
-            $n == 1;
+            $n = 1;
             $messageId = [];
             $type_m_1 = null;
             $type_m_2 = null;
