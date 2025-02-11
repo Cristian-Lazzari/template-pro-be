@@ -67,12 +67,12 @@ class SettingController extends Controller
         // });
         $array_filtrato = [];
         foreach ($numbers as $n) {
-           if($n !== null && $value !== ' '){
+           if($n !== null && $n !== ' '){
             array_push($array_filtrato, $n);
            }
         }
-        dd( $array_filtrato);
-        $setting->property = json_encode($array_filtrato);
+        $old_p['numbers'] = $array_filtrato;
+        $setting->property = json_encode($old_p);
         $setting->update();
 
         $m = 'I numeri sono stati aggiornati correttamente';
