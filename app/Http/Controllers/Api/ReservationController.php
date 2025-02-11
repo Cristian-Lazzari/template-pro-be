@@ -206,7 +206,7 @@ class ReservationController extends Controller
             $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
 
             $numbers_wa_set = Setting::where('name', 'wa')->firstOrFail();
-            $numbers_wa_set = json_decode($numbers_wa_set);
+            $numbers_wa_set = json_decode($numbers_wa_set, true);
 
 
 
