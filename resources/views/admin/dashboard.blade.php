@@ -715,10 +715,13 @@
                         <label for="numbers[]" class="input-group-text" >1# Numero</label>
                         <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
                     </div>
+                    @if (config('configurazione.pack') == 5)
+                        
                     <div class="input-group flex-nowrap py-2 w-auto">
                         <label for="numbers[]" class="input-group-text" >2# Numero</label>
                         <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
                     </div>
+                    @endif
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
