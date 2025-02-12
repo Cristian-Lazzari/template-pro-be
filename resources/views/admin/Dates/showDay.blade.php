@@ -174,6 +174,8 @@
                                             <h5>{{config('configurazione.set_time')[$i]}}:</h5>
                                         @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
                                             <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
+                                        @elseif(config('configurazione.double_t') && !config('configurazione.typeOfOrdering'))
+                                            <h5>{{config('configurazione.set_time_2_dt')[$i]}}:</h5>
                                         @else
                                             <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
                                         @endif
