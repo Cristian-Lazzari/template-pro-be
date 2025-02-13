@@ -792,6 +792,7 @@
     };
 </script>
 @endif
+@if (config('configurazione.pack') > 1 )
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
@@ -910,7 +911,7 @@
         
     });
 </script>
-
+@endif
 
 @endsection
 
