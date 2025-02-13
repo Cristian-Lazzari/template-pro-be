@@ -224,7 +224,7 @@
     </div>
     <div class="bottom-c">
         <div class="date">
-            @if (isset($year))
+            @if (isset($year) && config('configurazione.pack') > 1)
                 <div class="date_index">
                     <div id="carouselExampleIndicators" class="carousel slide my_carousel">
                         <div class="carousel-indicators">
