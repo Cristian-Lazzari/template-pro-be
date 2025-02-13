@@ -22,10 +22,11 @@
 </div> --}}
 <div class="dash-c">
     @php
-        $pack = ['', '', 'Essetians', 'Work on', 'Boost up' ]
+        $pack = ['', 'Essetians', 'Work on', 'Boost up' ]
     @endphp
     <p> 
         <a class="my_btn_5 m-2" href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.pack')]}}</a>
+        @if (config('configurazione.pack') > 1 )
         <a class="my_btn_3 m-2" href="{{route('admin.statistics')}}">  
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-data" viewBox="0 0 16 16">
                 <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
@@ -33,9 +34,12 @@
                 <path d="M10 7a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0zm-6 4a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0zm4-3a1 1 0 0 0-1 1v3a1 1 0 1 0 2 0V9a1 1 0 0 0-1-1"/>
             </svg> <span>Statistiche</span>
         </a>
-        <a class="my_btn_6 m-2" href="{{route('admin.mailer.index')}}">  
-            <span>Email Marketing</span>
-        </a>
+        @endif
+        @if (config('configurazione.pack') > 2 )
+            <a class="my_btn_6 m-2" href="{{route('admin.mailer.index')}}">  
+                <span>Email Marketing</span>
+            </a>
+        @endif
     </p>
 
     
@@ -142,7 +146,7 @@
                     </div>
                 </div>
                 @endif
-                @if (config('configurazione.pack') !== 3)
+                @if (config('configurazione.pack') > 1)
                     
                 <div class="delivery-c">
                     <div class="top-p">
@@ -358,7 +362,7 @@
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 1) checked  @endif value="1" >
                             <span class="name">Chiamate</span>
                         </label>
-                        @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)   
+                        @if (config('configurazione.pack') > 1 )   
                         <label class="radio">
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 2) checked  @endif value="2" >
                             <span class="name">Web App</span>
@@ -645,7 +649,7 @@
     </div>
 
 
-    @if (config('configurazione.pack') > 1)
+    @if (config('configurazione.pack') > 2)
     <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
