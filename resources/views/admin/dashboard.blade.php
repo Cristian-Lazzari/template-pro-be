@@ -333,9 +333,11 @@
                 <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, <strong>clicca QUI</strong> e impostale ora</a>
             </div>
             @endif
+            @if (config('configurazione.pack') > 1)
             <div class="chart">
                 <canvas id="chartCanvas"></canvas>
             </div>
+            @endif
         </div>
         <form class="setting" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
             <h2>
