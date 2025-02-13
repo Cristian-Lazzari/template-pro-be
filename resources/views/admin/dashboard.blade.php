@@ -25,8 +25,8 @@
         $pack = ['', 'Essetians', 'Work on', 'Boost up' ]
     @endphp
     <p> 
-        <a class="my_btn_5 m-2" href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.pack')]}}</a>
-        @if (config('configurazione.pack') > 1 )
+        <a class="my_btn_5 m-2" href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.subscription')]}}</a>
+        @if (config('configurazione.subscription') > 1 )
         <a class="my_btn_3 m-2" href="{{route('admin.statistics')}}">  
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-data" viewBox="0 0 16 16">
                 <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
@@ -35,7 +35,7 @@
             </svg> <span>Statistiche</span>
         </a>
         @endif
-        @if (config('configurazione.pack') > 2 )
+        @if (config('configurazione.subscription') > 2 )
             <a class="my_btn_6 m-2" href="{{route('admin.mailer.index')}}">  
                 <span>Email Marketing</span>
             </a>
@@ -80,9 +80,9 @@
                 <a href="{{ route('admin.ingredients.index') }}" class="my_btn_1">Ingredienti</a>
             </div>
         </div>      
-        @if (config('configurazione.pack') > 1 )
+        @if (config('configurazione.subscription') > 1 )
             <div class="right-t">
-                @if (config('configurazione.pack') > 1 )
+                @if (config('configurazione.subscription') > 1 )
                 <div class="result-bar">
                     <div class="stat">
                         <h2>€{{$traguard[1] / 100}}</h2>
@@ -146,7 +146,7 @@
                     </div>
                 </div>
                 @endif
-                @if (config('configurazione.pack') > 1)
+                @if (config('configurazione.subscription') > 1)
                     
                 <div class="delivery-c">
                     <div class="top-p">
@@ -224,7 +224,7 @@
     </div>
     <div class="bottom-c">
         <div class="date">
-            @if (isset($year) && config('configurazione.pack') > 1)
+            @if (isset($year) && config('configurazione.subscription') > 1)
                 <div class="date_index">
                     <div id="carouselExampleIndicators" class="carousel slide my_carousel">
                         <div class="carousel-indicators">
@@ -324,7 +324,7 @@
                     </div>
                 </div>
             
-            @elseif(config('configurazione.pack') == 1)
+            @elseif(config('configurazione.subscription') == 1)
             <div class="date-off d-back-g">
                 <a href="https://future-plus.it/#pacchetti">Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e <strong>prenota una call con i nostri consulenti</strong></a>
             </div>
@@ -333,7 +333,7 @@
                 <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, <strong>clicca QUI</strong> e impostale ora</a>
             </div>
             @endif
-            @if (config('configurazione.pack') > 1)
+            @if (config('configurazione.subscription') > 1)
             <div class="chart">
                 <canvas id="chartCanvas"></canvas>
             </div>
@@ -364,7 +364,7 @@
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 1) checked  @endif value="1" >
                             <span class="name">Chiamate</span>
                         </label>
-                        @if (config('configurazione.pack') > 1 )   
+                        @if (config('configurazione.subscription') > 1 )   
                         <label class="radio">
                             <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 2) checked  @endif value="2" >
                             <span class="name">Web App</span>
@@ -385,14 +385,14 @@
                                 <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 1) checked  @endif value="1" >
                                 <span class="name">Chiamate</span>
                             </label>
-                            @if (config('configurazione.pack') > 1)   
+                            @if (config('configurazione.subscription') > 1)   
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 2) checked  @endif value="2" >
                                 <span class="name">Web App</span>
                             </label>
                             @endif
                         </div>
-                        @if (config('configurazione.pack') > 2)
+                        @if (config('configurazione.subscription') > 2)
                             <h5>Pagamento online</h5>
                             <div class="radio-inputs">
                                 <label class="radio">
@@ -409,7 +409,7 @@
                                 </label>
                             </div>
                         @endif
-                        @if(config('configurazione.pack') > 1)    
+                        @if(config('configurazione.subscription') > 1)    
                             <h5>Generali</h5>
                             <div class="input-group mb-3">
                                 <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
@@ -419,7 +419,7 @@
                         
                     </div>
                 </div>
-                @if (config('configurazione.pack') > 1)
+                @if (config('configurazione.subscription') > 1)
                 <div class="set">
                     <h4>Domicilio</h4>
                     <div class="set-cont">
@@ -435,7 +435,7 @@
                                 <span class="name">On</span>
                             </label>
                         </div>
-                        @if (config('configurazione.pack') > 2)
+                        @if (config('configurazione.subscription') > 2)
                         <h5>Pagamento online</h5>
                         <div class="radio-inputs">
                             <label class="radio">
@@ -578,7 +578,7 @@
                             </div>
                         </div>
                     </div>
-                    @if (config('configurazione.pack') > 1)
+                    @if (config('configurazione.subscription') > 1)
                     <div class="accordion-item">
                         @csrf
                         <h4 class="accordion-header">
@@ -651,7 +651,7 @@
     </div>
 
 
-    @if (config('configurazione.pack') > 2)
+    @if (config('configurazione.subscription') > 2)
     <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
@@ -721,7 +721,7 @@
                         <label for="numbers[]" class="input-group-text" >1# Numero</label>
                         <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
                     </div>
-                    @if (config('configurazione.pack') == 5)
+                    @if (config('configurazione.subscription') == 5)
                         
                     <div class="input-group flex-nowrap py-2 w-auto">
                         <label for="numbers[]" class="input-group-text" >2# Numero</label>
@@ -739,7 +739,7 @@
     
     @endif
 </div>
-@if (config('configurazione.pack') > 1 && ($setting[0]['status'] == 2 || $setting[1]['status'] == 2) && config('configurazione.APP_URL') !== 'http://127.0.0.1:8000')
+@if (config('configurazione.subscription') > 1 && ($setting[0]['status'] == 2 || $setting[1]['status'] == 2) && config('configurazione.APP_URL') !== 'http://127.0.0.1:8000')
 
 <script>
     const alertContainer = document.createElement('div');
@@ -794,7 +794,7 @@
     };
 </script>
 @endif
-@if (config('configurazione.pack') > 1 )
+@if (config('configurazione.subscription') > 1 )
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
