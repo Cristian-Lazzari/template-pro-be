@@ -39,6 +39,8 @@ class WaController extends Controller
             $this->updateLastResponseWa($p);
             $p = $p == 0 ? 1 : 0;
             $number_correct = $numbers[$p];
+        }else{
+            $this->updateLastResponseWa(0);
         }
         $numebr = $data['wa_id'];
         $messageId = $data['wa_id'];
