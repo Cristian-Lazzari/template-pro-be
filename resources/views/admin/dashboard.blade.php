@@ -22,7 +22,7 @@
 </div> --}}
 <div class="dash-c">
     @php
-        $pack = ['', 'Essetians', 'Work on', 'Boost up' ]
+        $pack = ['', 'Essetians', 'Work on', 'Boost up', '','Boost up +' ]
     @endphp
     <p> 
         <a class="my_btn_5 m-2" href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.subscription')]}}</a>
