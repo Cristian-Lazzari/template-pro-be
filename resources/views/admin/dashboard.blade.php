@@ -84,10 +84,13 @@
             <div class="right-t">
                 @if (config('configurazione.subscription') > 1 )
                 <div class="result-bar">
+                    @if (config('configurazione.pack') > 2)
                     <div class="stat">
                         <h2>€{{$traguard[1] / 100}}</h2>
                         <span>questo mese</span>
                     </div>
+                    @endif
+                    @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)
                     <div class="stat">
                         <h2> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
@@ -96,10 +99,14 @@
                             {{$traguard[3]}}</h2>
                         <span>questo mese</span>
                     </div>
+                    @endif
+                    @if (config('configurazione.pack') > 2)
                     <div class="stat">
                         <h2>€{{$traguard[2] / 100}}</h2>
                         <span>questo anno</span>
                     </div>
+                    @endif
+                    @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)
                     <div class="stat">
                         <h2> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
@@ -108,7 +115,10 @@
                             {{$traguard[4]}}</h2>
                         <span>questo anno</span>
                     </div>
+                    @endif
                 </div>
+                @endif
+                @if (config('configurazione.pack') > 2)
                 <div class="delivery-c">
                     <div class="top-p">
                         <a class="title" href="{{ route('admin.orders.index') }}"> <h3>Ordini asporto/delivery</h3></a>
@@ -146,7 +156,7 @@
                     </div>
                 </div>
                 @endif
-                @if (config('configurazione.subscription') > 1)
+                @if (config('configurazione.pack') == 2 || config('configurazione.pack') == 4)
                     
                 <div class="delivery-c">
                     <div class="top-p">
