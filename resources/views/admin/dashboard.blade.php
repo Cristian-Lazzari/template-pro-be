@@ -578,6 +578,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     @if (config('configurazione.subscription') > 1)
                     <div class="accordion-item">
                         @csrf
@@ -610,7 +611,9 @@
                                 </div>                       
                             </div>
                         </div>
-                    </div> 
+                    </div>
+                    @endif 
+                    @if (config('configurazione.subscription') > 2)
 
                     <div class="accordion-item">
                         @csrf
