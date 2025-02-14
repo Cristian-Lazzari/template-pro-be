@@ -56,7 +56,7 @@ class CategoryController extends Controller
             $category->updated_at = now()->addSeconds($s); // Aggiunge 5 secondi
 
             $category->update(); 
-            $s++
+            $s++;
         }
         
         //dd($ids);
