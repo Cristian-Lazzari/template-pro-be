@@ -55,6 +55,8 @@ Route::middleware(['auth', 'verified'])
         Route::post('settings/updateAll',  [SettingController::class, 'updateAll'])->name('settings.updateAll');
         Route::post('settings/updateAree', [SettingController::class, 'updateAree'])->name('settings.updateAree');
 
+        Route::post('categories/neworder', [CategoryController::class, 'neworder'])->name('categories.neworder');
+
         // Rotte product
         
         Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');

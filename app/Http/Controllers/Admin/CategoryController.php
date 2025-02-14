@@ -46,6 +46,25 @@ class CategoryController extends Controller
     }
     
     
+    public function neworder(Request $request)
+    {
+        $ids = $request->input('new_order');
+        $invertito = array_reverse($ids);
+        $s= 0;
+        foreach ($invertito as $id) {
+            $category = Category::where('id', $id)->first();
+            $category->updated_at = now()->addSeconds($s); // Aggiunge 5 secondi
+
+            $category->update(); 
+            $s++
+        }
+        
+        //dd($ids);
+        $m = 'Ordine aggiornato correttamente';
+    
+        return to_route('admin.categories.index')->with('category_success', $m);   
+    }
+
     public function edit($id)
     {
         $category    = Category::where('id', $id)->firstOrFail();; 

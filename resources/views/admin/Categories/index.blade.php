@@ -88,7 +88,10 @@
         </div>
     @endforeach
 </div>
-<h4 class="c-title" >Ordine di visualizzazione nel sito</h4>
+<h3 class="c-title" >Ordine di visualizzazione nel sito</h3>
+<button type="button" class="my_btn_3 m-auto mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecial">
+    Modifica ordine
+</button>
 <ul class="list-group mylist">
     @php $c = -1
     @endphp
@@ -108,5 +111,80 @@
     @endforeach
 </ul>
 
+<div class="modal fade" id="staticBackdropspecial" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelspecial" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h1 class=" fs-5" id="staticBackdropLabelspecial">Riordina le tue categorie</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body body">
+            <form action="{{ route('admin.categories.neworder') }}" method="post" >
+                @csrf
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="text-center">Lista Categeorie da ordinare</h4>
+                        <ul id="listaA" class="list-group mylist">
+                            @foreach($order as $oggetto)
+                                <li class="list-group-item" data-id="{{ $oggetto['id'] }}">
+                                    <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->name }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                
+                
+                    <div class="col-md-6">
+                        <h4 class="text-center">Ordine corretto</h4>
+                        <ul id="listaB" class="list-group mylist">
+                            <!-- Lista vuota inizialmente -->
+                        </ul>
+                    </div>
+                </div>
+                <button  id="btnConferma" class="d-none my_btn_5 w-100" type="submit">
+                    Modifica
+                </button>
+            </form>
+        </div>
+        
+    </div>
+    </div>
+</div>
+
+<script defer>
+    document.addEventListener("DOMContentLoaded", function () {
+        const listaA = document.getElementById("listaA");
+        const listaB = document.getElementById("listaB");
+        const btnConferma = document.getElementById("btnConferma");
+
+        function spostaElemento(elemento, destinazione) {
+            destinazione.appendChild(elemento);
+            controllaBottone();
+        }
+
+        function controllaBottone() {
+            // Mostra il bottone solo se listaB è vuota
+            if (listaA.children.length === 0) {
+                btnConferma.classList.remove("d-none");
+            } else {
+                btnConferma.classList.add("d-none");
+            }
+        }
+
+        document.body.addEventListener("click", function (e) {
+            if (e.target.classList.contains("list-group-item")) {
+                const elemento = e.target;
+                if (elemento.parentElement.id === "listaA") {
+                    spostaElemento(elemento, listaB);
+                } else {
+                    spostaElemento(elemento, listaA);
+                }
+            }
+        });
+
+        // Nasconde il bottone inizialmente
+        controllaBottone();
+    });
+</script>
 
 @endsection
