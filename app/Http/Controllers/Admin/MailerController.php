@@ -204,6 +204,7 @@ class mailerController extends Controller
         $model = Model::where('id', $data['models'])->first();
 
         $contentMail = [
+            'name' => '',
             'object' => $model['object'],
             'heading' => $model['heading'],
             'body' => explode("/*/", $model['body']),
@@ -219,6 +220,7 @@ class mailerController extends Controller
         })->toArray();
 
         foreach ($contatti as $c ) {  
+            $contentMail['name'] = $c['name'];
             $mail = new BuildableMail($contentMail);
             Mail::to($c['email'])->send($mail);
         }
@@ -251,7 +253,6 @@ class mailerController extends Controller
         // dd($id);
         $model = Model::where('id', $id)->first();
         return view('admin.Mailer.editModel', compact('model'));
-
     }
 
     public function update_model(Request $request){
@@ -283,8 +284,7 @@ class mailerController extends Controller
         $model->body = $data['body'];
         $model->ending = $data['ending'];
         $model->sender = $data['sender'];
-        $model->img_1 = $img_1_path;
-        $model->img_2 = $img_2_path;
+
         
 
         $model->update();
