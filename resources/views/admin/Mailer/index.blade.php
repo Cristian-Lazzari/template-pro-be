@@ -26,6 +26,9 @@
         {{ $data }}
     </div>
 @endif
+@php
+    use Illuminate\Support\Str;
+@endphp
 {{-- compact('models', 'last_mail_list', 'extra_mail_list', 'users', 'order_users', 'reservation_users'));    --}}
 
 <div class="email-m">
