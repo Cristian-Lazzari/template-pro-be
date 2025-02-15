@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Conferma Email</title>
+    <style>
+        span.im{
+            color: #04001d !important;
+        }
+    </style>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #e9f0fb; color: #161c3e; margin: 0; padding: 10px 0px 0px; width: 100%;">
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
