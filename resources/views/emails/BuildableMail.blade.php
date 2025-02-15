@@ -21,7 +21,6 @@
                                     IntlDateFormatter::FULL, // Stile della data (es. FULL, LONG, MEDIUM, SHORT)
                                     IntlDateFormatter::NONE  // Nessun orario
                                 ); 
-                                use Illuminate\Support\Str;
                             @endphp 
                             {{-- logo --}}
                             <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
