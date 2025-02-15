@@ -35,10 +35,10 @@
                             @endif
                             
                             {{-- corpo --}}
-                            <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29); text-align:start" class="corpo">
-                                <span style="text-align:start; padding: 0 0 -10px" >Ciao {{$content_mail['name']}},</span>
+                            <div style="margin: 30px 25px; font-size: 20px; color: #04001d; text-align:start" class="corpo">
+                                <span style="text-align:start; color: #04001d;" >Ciao {{$content_mail['name']}},</span>
                                 @foreach ($content_mail['body'] as $b)
-                                <p style="text-align:start" >{!! nl2br(e(str_replace('\n', " ", $b))) !!}</p>
+                                <p style="text-align:start; color: #04001d;" >{!! nl2br(e(str_replace('\n', " ", $b))) !!}</p>
                                 @endforeach
                             </div>
                             
