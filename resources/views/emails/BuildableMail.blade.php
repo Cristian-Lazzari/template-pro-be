@@ -38,7 +38,7 @@
                             <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29); text-align:start" class="corpo">
                                 <span style="text-align:start" >Ciao {{$content_mail['name']}},</span>
                                 @foreach ($content_mail['body'] as $b)
-                                <p style="text-align:start" >{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p>
+                                <p style="text-align:start" >{!! nl2br(e(str_replace('\n', " ", $b))) !!}</p>
                                 @endforeach
                             </div>
                             
@@ -49,7 +49,7 @@
                             @endif
                             
                             {{-- ending --}}
-                            <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{!! nl2br(e(str_replace('\n', "\n", $content_mail['ending']))) !!}</p>
+                            <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{!! nl2br(e(str_replace('\n', " ", $content_mail['ending']))) !!}</p>
                             <a href=""></a>
                             <table cellspacing="0" cellpadding="0" border="0" align="center">
                                 <tr>
