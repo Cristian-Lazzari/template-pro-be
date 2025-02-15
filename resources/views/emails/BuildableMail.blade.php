@@ -33,7 +33,7 @@
                             </center>  
                             @endif
                             
-                            <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29);" class="corpo">
+                            <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29); text-align:center" class="corpo">
                                 <span>Ciao {{$content_mail['name']}},</span>
                                 @foreach ($content_mail['body'] as $b)
                                     <p>{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p>
