@@ -50,6 +50,17 @@
                             
                             {{-- ending --}}
                             <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{!! nl2br(e(str_replace('\n', "\n", $content_mail['ending']))) !!}</p>
+                            <a href=""></a>
+                            <table cellspacing="0" cellpadding="0" border="0" align="center">
+                                <tr>
+                                  <td align="center" bgcolor="#0069ff" style="border-radius: 5px;">
+                                    <a href="https://calendly.com/tua-username" target="_blank" 
+                                       style="display: inline-block; font-family: Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; background-color: #0069ff;">
+                                      📅 Prenota una Call
+                                    </a>
+                                  </td>
+                                </tr>
+                              </table>
                     
                             <div class="sender" style="color: #04001d; margin: 50px 0">
                                 <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
