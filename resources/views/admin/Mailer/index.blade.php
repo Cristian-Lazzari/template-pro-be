@@ -119,7 +119,7 @@
                     
                     <div class="corpo">
                         @foreach (explode("/*/", $m['body']) as $b)
-                        <p>{!! nl2br(e($b)) !!}</p>
+                        <p>{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p>
                         @endforeach
                     </div>
                     
