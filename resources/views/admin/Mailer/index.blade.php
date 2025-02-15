@@ -119,7 +119,7 @@
                     
                     <div class="corpo">
                         @foreach (explode("/*/", $m['body']) as $b)
-                        <p>{{$b}}</p>
+                        <p>{!! nl2br(e($b)) !!}</p>
                         @endforeach
                     </div>
                     
