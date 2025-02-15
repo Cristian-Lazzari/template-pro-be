@@ -20,23 +20,25 @@
                                     $locale,
                                     IntlDateFormatter::FULL, // Stile della data (es. FULL, LONG, MEDIUM, SHORT)
                                     IntlDateFormatter::NONE  // Nessun orario
-                                );
-                            @endphp
+                                ); 
+                            @endphp 
+                            {{-- logo --}}
                             <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
                     
-            
+                            {{-- heading --}}
                             <h1 style="color: #04001d; font-size: 28px; padding: 20px;">{{$content_mail['heading']}}</h1>
                             
                             @if($content_mail['img_1'] !== NULL) 
                             <center>
-                            <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
+                                <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
                             </center>  
                             @endif
                             
+                            {{-- corpo --}}
                             <div style="margin: 30px 25px; font-size: 20px; color: rgb(28, 28, 29); text-align:start" class="corpo">
                                 <span style="text-align:start" >Ciao {{$content_mail['name']}},</span>
                                 @foreach ($content_mail['body'] as $b)
-                                    <p style="text-align:start" >{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p>
+                                <p style="text-align:start" >{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p>
                                 @endforeach
                             </div>
                             
@@ -45,7 +47,8 @@
                                 <img style="max-width:300px; border-radius: 10px; width: 70%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
                             </center>
                             @endif
-                    
+                            
+                            {{-- ending --}}
                             <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{!! nl2br(e(str_replace('\n', "\n", $content_mail['ending']))) !!}</p>
                     
                             <div class="sender" style="color: #04001d; margin: 50px 0">
