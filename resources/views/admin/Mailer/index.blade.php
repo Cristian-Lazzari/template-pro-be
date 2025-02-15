@@ -127,7 +127,7 @@
                         <img src="{{ asset('public/storage/' . $m['img_2']) }}" alt="">
                     @endif
         
-                    <p class="ending">{{$m['ending']}}</p>
+                    <p class="ending">{!! nl2br(e(str_replace('\n', "\n", $m['ending']))) !!}</p>
         
                     <div class="sender" style="color: #04001d">
                         <p>{{$m['sender']}}</p>
