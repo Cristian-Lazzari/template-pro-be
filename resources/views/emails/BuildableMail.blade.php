@@ -54,7 +54,7 @@
                             <table cellspacing="0" cellpadding="0" border="0" align="center">
                                 <tr>
                                   <td align="center" bgcolor="#0069ff" style="border-radius: 5px;">
-                                    <a href="https://calendly.com/tua-username" target="_blank" 
+                                    <a href="https://calendly.com/futureplus-commerciale/scopri-come-restaurant-puo-svoltare-il-tuo-lavoro" target="_blank" 
                                        style="display: inline-block; font-family: Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; background-color: #0069ff;">
                                       📅 Prenota una Call
                                     </a>
