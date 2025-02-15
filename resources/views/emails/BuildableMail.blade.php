@@ -30,7 +30,7 @@
                             
                             @if($content_mail['img_1'] !== NULL) 
                             <center>
-                                <img style="max-width:300px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
+                                <img style="max-width:450px; border-radius: 10px; width: 60%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_1']}}" alt="">
                             </center>  
                             @endif
                             
@@ -44,7 +44,7 @@
                             
                             @if($content_mail['img_2'] !== NULL)   
                             <center>
-                                <img style="max-width:300px; border-radius: 10px; width: 70%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
+                                <img style="max-width:450px; border-radius: 10px; width: 70%; margin-top: 2rem; margin-bottom: 2rem;" src="{{config('configurazione.APP_URL') . '/public/storage/' . $content_mail['img_2']}}" alt="">
                             </center>
                             @endif
                             
