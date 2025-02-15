@@ -46,7 +46,7 @@
                             </center>
                             @endif
                     
-                            <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{{$content_mail['ending']}}</p>
+                            <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{!! nl2br(e(str_replace('\n', "\n", $content_mail['ending']))) !!}</p>
                     
                             <div class="sender" style="color: #04001d; margin: 50px 0">
                                 <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
