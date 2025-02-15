@@ -55,8 +55,8 @@
                             
                             {{-- ending --}}
                             <p style="color: #04001d; font-size: 22px; text-align: center; margin: 30px;">{!! nl2br(e(str_replace('\n', " ", $content_mail['ending']))) !!}</p>
-                            <a href=""></a>
-                            <table cellspacing="0" cellpadding="0" border="0" align="center">
+                            
+                            {{-- <table cellspacing="0" cellpadding="0" border="0" align="center">
                                 <tr>
                                   <td align="center"  >
                                     <a href="https://calendly.com/futureplus-commerciale/scopri-come-restaurant-puo-svoltare-il-tuo-lavoro" target="_blank" 
@@ -65,7 +65,7 @@
                                     </a>
                                   </td>
                                 </tr>
-                              </table>
+                              </table> --}}
                     
                             <div class="sender" style="color: #04001d; margin: 50px 0">
                                 <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
