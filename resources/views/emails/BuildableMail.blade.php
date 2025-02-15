@@ -53,10 +53,10 @@
                             <a href=""></a>
                             <table cellspacing="0" cellpadding="0" border="0" align="center">
                                 <tr>
-                                  <td align="center" bgcolor="#0069ff" style="border-radius: 5px;">
+                                  <td align="center" bgcolor="#0069ff" >
                                     <a href="https://calendly.com/futureplus-commerciale/scopri-come-restaurant-puo-svoltare-il-tuo-lavoro" target="_blank" 
-                                       style="display: inline-block; font-family: Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; background-color: #0069ff;">
-                                      📅 Prenota una Call
+                                       style="display: inline-block; font-weight: 800; font-size: 18px; color: #e9f0fb; text-decoration: none; padding: 10px 24px; border-radius: 10px; background-color: #04001d;">
+                                        PRENOTA UNA CALL
                                     </a>
                                   </td>
                                 </tr>
