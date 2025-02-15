@@ -26,7 +26,6 @@
         {{ $data }}
     </div>
 @endif
-
 {{-- compact('models', 'last_mail_list', 'extra_mail_list', 'users', 'order_users', 'reservation_users'));    --}}
 
 <div class="email-m">
@@ -121,8 +120,8 @@
                     <div class="corpo">
                         @foreach (explode("/*/", $m['body']) as $b)
                         
-                        <p>{!! Str::markdown($b) !!}</p>
-                        {{-- <p>{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p> --}}
+                        {{-- <p>{!! Str::markdown($b) !!}</p> --}}
+                        <p>{!! nl2br(e(str_replace('\n', "\n", $b))) !!}</p>
                         @endforeach
                     </div>
                     
