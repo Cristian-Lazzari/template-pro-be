@@ -49,10 +49,10 @@ class WaController extends Controller
         $order_ex = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists();
         if ($order_ex) {
             $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
+            $this->statusOrder($button_r, $order);
             if ($co_work && !in_array($order->status, [1,3,5,6])) {
                 $this->message_co_worker(1, $button_r, $p, $order, $number_correct);
             }
-            $this->statusOrder($button_r, $order);
         } elseif (Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists()) {
             
             $reservation = Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();   // Se non trovato in Orders, cerca nella tabella rervations
