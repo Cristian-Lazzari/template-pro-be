@@ -267,7 +267,7 @@ body{
         gap: 1rem;
         background-color: var(--c3);
         padding: 1rem;
-        border-radius: 10px;
+        border-radius: 13px;
         h1{
             color: var(--c1);
             font-weight: 900;
@@ -275,10 +275,12 @@ body{
         }
         img{
             margin-right: auto;
-            border-radius: 100%;
+            border-radius: 15px;
             height: 50px;
+            object-fit: cover;
             border: 4px solid var(--c1);
-            padding: .2rem;
+            background-color: var(--c1);
+            padding: 4px;
         }
         a{
             color: var(--c1);
@@ -313,16 +315,16 @@ body{
 .dash-c{
     .plus{
         background-color: var(--c1); 
-        height: 30px;
+        height: 33px;
         width: 40px;
-        border-radius: 7px;
+        border-radius: 6px;
         position: relative;
         .line{
             
             background-color: var(--c3);
             height: 50%;
             width: 3px;
-            border-radius: 5px;
+            border-radius: 3px;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -358,13 +360,13 @@ body{
                 }
             }
             flex-grow: 1;
-            padding: 1.6rem 10px;
+            padding: 10px ;
             background-color: var(--c2);
             display: flex;
             justify-content: space-between;
             flex-direction: column;
             gap: .9rem;
-            border-radius: 20px;
+            border-radius: 13px;
             .top-p{
                 h2{
                     padding-right: 2rem;
