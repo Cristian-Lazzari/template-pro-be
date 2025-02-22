@@ -11,7 +11,13 @@
         
         <!-- Informazioni automatizzate -->
         <p style="font-size: 16px; line-height: 1.8; margin: 5px;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
-        
+        <center>
+            @if (config('configurazione.APP_URL') === 'https://db-demo3.future-plus.it')
+                <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
+            @else
+                <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
+            @endif
+        </center>
         @if ($content_mail['type'] == 'or')
             <!-- Messaggi per tipo 'or' -->
             @if ($content_mail['to'] == 'admin')
