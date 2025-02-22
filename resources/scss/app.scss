@@ -1483,6 +1483,23 @@ body{
     background-color: var(--c1_op);
 }
 .creation{
+    .img-cont{
+        //background-color: red;
+        display: flex;
+        align-items: center;
+        input{
+            width: 50% !important;
+        }
+        img{
+            background-color: var(--c3_op);
+            width: 80px !important;
+            height: 80px !important;
+            object-fit: cover;
+
+            padding: 4px;
+            border-radius: 10px;
+        }
+    }
     input::placeholder {
         color: #f4f4ef52; /* Cambia questo colore a tuo piacimento */
     }

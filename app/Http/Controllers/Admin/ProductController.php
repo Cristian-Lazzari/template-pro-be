@@ -450,7 +450,13 @@ class ProductController extends Controller
                 Storage::delete($product->image);
             }
             $product->image = $imagePath;
+        }elseif (isset($data['img_off'])) {
+            if ($product->image) {
+                Storage::delete($product->image);
+            }
+            $product->image = null;
         } 
+        
         $product->category_id   = $data['category_id'];
 
         $product->name          = $data['name'];
