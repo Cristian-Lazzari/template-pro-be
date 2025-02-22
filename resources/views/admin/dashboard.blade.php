@@ -27,8 +27,10 @@ $pack = ['', 'Essetians', 'Work on', 'Boost up', '','Boost up +' ]
     <div class="targhetta">
         <div class="title">
             <img src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
-            <h1 >{{config('configurazione.APP_NAME')}}</h1>
-            <a  href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.subscription')]}}</a>
+            <a href="{{config('configurazione.domain')}}">
+                <h1 >{{config('configurazione.APP_NAME')}}</h1>
+            </a>
+            <a class="pack" href="https://future-plus.it/#pacchetti">Pacchetto: {{$pack[config('configurazione.subscription')]}}</a>
         </div>
        
         <div class="btns"> 
