@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SettingController extends Controller
 {
-    public function client_default() {
+    public function client_default(Request $request) {
         $messageId = $request->route('whatsapp_message_id');
 
         if (!$messageId) {
