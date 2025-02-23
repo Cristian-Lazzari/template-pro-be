@@ -82,17 +82,17 @@ class WaController extends Controller
     
             // Definizione dei messaggi in base allo stato
             $m = $o_r ? 'L\'ordine è stato ' : 'La prenotazione è stata ';
-            $sub = $o_r ? 'L\'ordine' : 'La prenotazione';
+            $sub = $o_r ? 'L\'ordine è stato' : 'La prenotazione è stata';
     
             if ($c_a) {
-                $m .= 'confermat' . ($o_r ? 'o ✅' : 'a ✅');
-                $word = 'confermat' . ($o_r ? 'o ✅' : 'a ✅');
+                $m .= '*confermat' . ($o_r ? 'o* ✅' : 'a* ✅');
+                $word = '*confermat' . ($o_r ? 'o* ✅' : 'a* ✅');
             } else {
-                $m .= 'annullat' . ($o_r ? 'o ❌' : 'a ❌');
-                $word = 'annullat' . ($o_r ? 'o ❌' : 'a ❌');
+                $m .= '*annullat' . ($o_r ? 'o* ❌' : 'a* ❌');
+                $word = '*annullat' . ($o_r ? 'o* ❌' : 'a* ❌');
             }
     
-            $m .= ' dal tuo collega';
+            $m .= ' dal *tuo collega*';
     
             // Controllo se la risposta è entro 24 ore
             if ($this->isLastResponseWaWithin24Hours($p)) {
@@ -129,7 +129,7 @@ class WaController extends Controller
                         "message_id" => $old_id ?? null
                     ],
                     'template' => [
-                        'name' => 'responnse',
+                        'name' => 'response_full',
                         'language' => [
                             'code' => 'it'
                         ],
@@ -144,6 +144,10 @@ class WaController extends Controller
                                     [
                                         'type' => 'text',
                                         'text' => $word
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => 'tuo collega'
                                     ]
                                 ]
                             ]
