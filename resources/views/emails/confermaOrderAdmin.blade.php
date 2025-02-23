@@ -141,6 +141,12 @@
             <p style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['message']}}</p>
         @endif
 
+        @if (isset($content_mail['message']))
+            <p style="line-height: 1.5; margin: 15px;">
+                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
+            </p>
+        @endif
+
         <!-- Se destinatario è admin -->
         @if($content_mail['to'] == 'admin')             
             <!-- Bottone per chiamare -->
