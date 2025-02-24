@@ -25,8 +25,9 @@
     
 
         <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">{{$content_mail['title']}}</h1>
+        @if (isset($content_mail['subtitle']))
         <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['subtitle']}}</h4>
-        
+        @endif
 
         <!-- Data prenotata -->
         <p style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
