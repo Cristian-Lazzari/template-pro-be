@@ -120,55 +120,7 @@ class ReservationController extends Controller
             $date->update();
             $newRes->save();
 
-            // Ottieni le impostazioni di contatto
-            $set = Setting::where('name', 'Contatti')->firstOrFail();
-            $p_set = json_decode($set->property, true);
-            if(isset($p_set['telefono'])){
-                $telefono = $p_set['telefono'];
-            }else{
-                $telefono = '3332222333';
-            }
-
-            // Prepara i dati per le email
-            $bodymail_a = [
-                'type' => 'res',
-                'to' => 'admin',
-                
-                'res_id' => $newRes->id,
-                'name' => $newRes->name,
-                'surname' => $newRes->surname,
-                'email' => $newRes->email,
-                'date_slot' => $newRes->date_slot,
-                'message' => $newRes->message,
-                'sala' => $newRes->message,
-                'phone' => $newRes->phone,
-                'admin_phone' => $telefono,
-                'n_person' => $n_person,
-                'status' => $newRes->status,
-            ];
-            $bodymail_u = [
-                'type' => 'res',
-                'to' => 'user',
-                
-                'res_id' => $newRes->id,
-                'name' => $newRes->name,
-                'surname' => $newRes->surname,
-                'email' => $newRes->email,
-                'date_slot' => $newRes->date_slot,
-                'message' => $newRes->message,
-                'sala' => $newRes->sala,
-                'phone' => $newRes->phone,
-                'admin_phone' => $telefono,
-                'n_person' => $n_person,
-                'status' => $newRes->status,
-            ];
-
-            // Invia le email
-            $mail = new confermaOrdineAdmin($bodymail_u);
-            Mail::to($data['email'])->send($mail);
-    
-            $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-            Mail::to(config('configurazione.mail'))->send($mailAdmin);
+ 
 
             $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . " \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
             $guest = "";
@@ -329,7 +281,7 @@ class ReservationController extends Controller
             
             $newRes->whatsapp_message_id = json_encode($messageId);
             $newRes->update();
-
+            
 
 
             $data_am1 = [        
@@ -408,6 +360,55 @@ class ReservationController extends Controller
         }
     }
 
+    protected function send_mail($res){
+        // Ottieni le impostazioni di contatto
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        if(isset($p_set['telefono'])){
+            $telefono = $p_set['telefono'];
+        }else{
+            $telefono = '3332222333';
+        }
+        // Prepara i dati per le email
+        $bodymail_a = [
+            'type' => 'res',
+            'to' => 'admin',
+            
+            'res_id' => $newRes->id,
+            'name' => $newRes->name,
+            'surname' => $newRes->surname,
+            'date_slot' => $newRes->date_slot,
+            'message' => $newRes->message,
+            'sala' => $newRes->message,
+            'phone' => $newRes->phone,
+            'admin_phone' => $telefono,
+            'n_person' => $newRes->$n_person,
+            'status' => $newRes->status,
+        ];
+        $bodymail_u = [
+            'type' => 'res',
+            'to' => 'user',
+            
+            'res_id' => $newRes->id,
+            'name' => $newRes->name,
+            'surname' => $newRes->surname,
+            'date_slot' => $newRes->date_slot,
+            'message' => $newRes->message,
+            'sala' => $newRes->sala,
+            'phone' => $newRes->phone,
+            'admin_phone' => $telefono,
+            'n_person' => $newRes->$n_person,
+            'whatsapp_message_id' => $whatsapp_message_id,
+            'status' => $newRes->status,
+        ];
+
+        // Invia le email
+        $mail = new confermaOrdineAdmin($bodymail_u);
+        Mail::to($data['email'])->send($mail);
+
+        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        Mail::to(config('configurazione.mail'))->send($mailAdmin);
+    }
     protected function isLastResponseWaWithin24Hours($n)
     {
         $setting = Setting::where('name', 'wa')->first();

@@ -77,7 +77,6 @@ class ReservationController extends Controller
             'res_id' => $res->id,
             'name' => $res->name,
             'surname' => $res->surname,
-            'email' => $res->email,
             'date_slot' => $res->date_slot,
             'message' => $res->message,
             'sala' => $res->sala,
