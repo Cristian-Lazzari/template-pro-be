@@ -404,7 +404,7 @@ class ReservationController extends Controller
 
         // Invia le email
         $mail = new confermaOrdineAdmin($bodymail_u);
-        Mail::to($data['email'])->send($mail);
+        Mail::to($newRes['email'])->send($mail);
 
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
