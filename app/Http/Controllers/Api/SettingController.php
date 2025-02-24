@@ -50,7 +50,7 @@ class SettingController extends Controller
             $or_res = $reservation;
             $o_r = 'res';
             $bodymail = [
-                'n_person' => $n_person,         
+                'n_person' => $or_res->$n_person,         
             ];
         }
 
