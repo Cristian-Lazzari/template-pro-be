@@ -11,7 +11,7 @@
 </head>
 <body>
     <header>
-        <div class="container my-5" >
+        <div class="container text-center my-5" >
             <h1>
                 La tua prenotazione è stata annullata con successo
             </h1>
