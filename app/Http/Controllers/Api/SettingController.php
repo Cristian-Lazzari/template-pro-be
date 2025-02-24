@@ -51,6 +51,7 @@ class SettingController extends Controller
             $o_r = 'res';
             $bodymail = [
                 'n_person' => $or_res->n_person,         
+                'sala' => $or_res->sala,         
             ];
         }
 
