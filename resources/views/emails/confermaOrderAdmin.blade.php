@@ -141,11 +141,6 @@
             <p style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['message']}}</p>
         @endif
 
-        @if (isset($content_mail['whatsapp_message_id']))
-            <p style="line-height: 1.5; margin: 15px;">
-                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
-            </p>
-        @endif
 
         <!-- Se destinatario è admin -->
         @if($content_mail['to'] == 'admin')             
@@ -157,6 +152,13 @@
             @elseif($content_mail['type'] == 'res')
                 <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
+        @endif
+
+        @if (isset($content_mail['whatsapp_message_id']))
+        <p>Per annullare l'ordine o la prenotazione premi questo bottone </p>
+            <p style="line-height: 1.5; margin: 15px;">
+                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #910d0d; color: rgb(255, 255, 255); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Annulla</a>
+            </p>
         @endif
 
         
