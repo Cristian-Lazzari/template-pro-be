@@ -370,9 +370,12 @@ class ReservationController extends Controller
             $telefono = '3332222333';
         }
         // Prepara i dati per le email
-        $bodymail_a = [
+        $bodymail = [
             'type' => 'res',
             'to' => 'admin',
+
+            'title' =>  $newRes->name . ' ' . $newRes->surname .'ha appena prenotato un tavolo',
+            'subtitle' => '',
             
             'res_id' => $newRes->id,
             'name' => $newRes->name,
@@ -384,30 +387,20 @@ class ReservationController extends Controller
             'admin_phone' => $telefono,
             'n_person' => $newRes->n_person,
             'status' => $newRes->status,
-        ];
-        $bodymail_u = [
-            'type' => 'res',
-            'to' => 'user',
-            
-            'res_id' => $newRes->id,
-            'name' => $newRes->name,
-            'surname' => $newRes->surname,
-            'date_slot' => $newRes->date_slot,
-            'message' => $newRes->message,
-            'sala' => $newRes->sala,
-            'phone' => $newRes->phone,
-            'admin_phone' => $telefono,
-            'n_person' => $newRes->n_person,
             'whatsapp_message_id' => $newRes->whatsapp_message_id,
-            'status' => $newRes->status,
         ];
 
         // Invia le email
-        $mail = new confermaOrdineAdmin($bodymail_u);
-        Mail::to($newRes['email'])->send($mail);
-
         $mailAdmin = new confermaOrdineAdmin($bodymail_a);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
+
+        $bodymail['to'] = 'user';
+        $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
+        $bodymail['title'] = 'Ciao' . $newRes->name . ', grazie per aver prenotato tramite il nostro sito web';
+        $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
+        
+        $mail = new confermaOrdineAdmin($bodymail_u);
+        Mail::to($newRes['email'])->send($mail);
     }
     protected function isLastResponseWaWithin24Hours($n)
     {

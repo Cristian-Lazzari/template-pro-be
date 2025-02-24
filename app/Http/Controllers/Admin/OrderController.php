@@ -122,7 +122,7 @@ class OrderController extends Controller
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
                 $order->status = 0;
             }else{
-                $m = 'L\'ordine erag gia stato annullato!';
+                $m = 'L\'ordine era gia stato annullato!';
                 return redirect()->back()->with('success', $m); 
             }
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
@@ -204,6 +204,10 @@ class OrderController extends Controller
             'address' => $order->address,
             'address_n' => $order->address_n,
             
+            'title' =>  $c_a ? 'Ti confermiamo che il tuo ordine è stato accettato' : 'Ci dispiace informarti che il tuo ordine è stato annullato',
+            'subtitle' => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 gironi lavorativi' : '',
+            'whatsapp_message_id' => $order->whatsapp_message_id,
+
             'status' => $order->status,
             'cart' => $order->products,
             'total_price' => $order->tot_price,

@@ -246,65 +246,7 @@ class OrderController extends Controller
                 
                 $date->update();
                 // Ottieni le impostazioni di contatto
-                $set = Setting::where('name', 'Contatti')->firstOrFail();
-                $p_set = json_decode($set->property, true);
-                if(isset($p_set['telefono'])){
-                    $telefono = $p_set['telefono'];
-                }else{
-                    $telefono = '3332222333';
-                }
-                
-                $bodymail_a = [
-                    'type' => 'or',
-                    'to' => 'admin',
-        
-                    'order_id' => $newOrder->id,
-                    'name' => $newOrder->name,
-                    'surname' => $newOrder->surname,
-                    'email' => $newOrder->email,
-                    'date_slot' => $newOrder->date_slot,
-                    'message' => $newOrder->message,
-                    'phone' => $newOrder->phone,
-                    'admin_phone' => $p_set['telefono'],
-                    
-                    'comune' => $newOrder->comune,
-                    'address' => $newOrder->address,
-                    'address_n' => $newOrder->address_n,
-                    
-                    'status' => $newOrder->status,
-                    'cart' => $newOrder->products,
-                    'total_price' => $newOrder->tot_price,
-        
-                    
-                ];
-                $bodymail_u = [
-                    'type' => 'or',
-                    'to' => 'user',
-        
-                    'order_id' => $newOrder->id,
-                    'name' => $newOrder->name,
-                    'surname' => $newOrder->surname,
-                    'email' => $newOrder->email,
-                    'date_slot' => $newOrder->date_slot,
-                    'message' => $newOrder->message,
-                    'phone' => $newOrder->phone,
-                    'admin_phone' => $p_set['telefono'],
-                    
-                    'comune' => $newOrder->comune,
-                    'address' => $newOrder->address,
-                    'address_n' => $newOrder->address_n,
-                    
-                    'status' => $newOrder->status,
-                    'cart' => $newOrder->products,
-                    'total_price' => $newOrder->tot_price,
-        
-                    
-                ];
-                $mail = new confermaOrdineAdmin($bodymail_u);
-                Mail::to($data['email'])->send($mail);
-        
-                $mailAdmin = new confermaOrdineAdmin($bodymail_a);
-                Mail::to(config('configurazione.mail'))->send($mailAdmin);
+                        
 
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
@@ -491,6 +433,53 @@ class OrderController extends Controller
                     'type_2' => $type_m_2,
                     'source' => config('configurazione.APP_URL'),
                 ];
+                $set = Setting::where('name', 'Contatti')->firstOrFail();
+                $p_set = json_decode($set->property, true);
+                if(isset($p_set['telefono'])){
+                    $telefono = $p_set['telefono'];
+                }else{
+                    $telefono = '3332222333';
+                }
+                $bodymail_a = [
+                    'type' => 'or',
+                    'to' => 'admin',
+
+                    'title' =>  $newOrder->name . 'ha appena ordinato' . $newOrder->comune ? 'a domicilio' : 'd\'asporto',
+                    'subtitle' => '',
+                    
+        
+                    'order_id' => $newOrder->id,
+                    'name' => $newOrder->name,
+                    'surname' => $newOrder->surname,
+                    'email' => $newOrder->email,
+                    'date_slot' => $newOrder->date_slot,
+                    'message' => $newOrder->message,
+                    'phone' => $newOrder->phone,
+                    'admin_phone' => $p_set['telefono'],
+                    
+                    'comune' => $newOrder->comune,
+                    'address' => $newOrder->address,
+                    'address_n' => $newOrder->address_n,
+                    
+                    'whatsapp_message_id' => null,
+                    'status' => $newOrder->status,
+                    'cart' => $newOrder->products,
+                    'total_price' => $newOrder->tot_price,
+                    
+                    
+                ];
+                $mailAdmin = new confermaOrdineAdmin($bodymail);
+                Mail::to(config('configurazione.mail'))->send($mailAdmin);
+                
+                $bodymail['to'] = 'user';
+                $bodymail['whatsapp_message_id'] = $newOrder->whatsapp_message_id;
+                $bodymail['title'] = 'Ciao' . $newOrder->name . ', grazie per aver ordinato tramite il nostro sito web';
+                $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
+
+
+                $mail = new confermaOrdineAdmin($bodymail);
+                Mail::to($data['email'])->send($mail);
+
                 
                 // Log dei dati inviati
                 Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);

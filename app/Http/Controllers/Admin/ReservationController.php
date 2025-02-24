@@ -82,6 +82,10 @@ class ReservationController extends Controller
             'sala' => $res->sala,
             'phone' => $res->phone,
             'admin_phone' => $p_set['telefono'],
+
+            'title' =>  $c_a ? 'Ti confermiamo che la tua prenotazione è stata accettata' : 'Ci dispiace informarti che la tua prenotazione è stata annullata',
+            'subtitle' => '',
+            'whatsapp_message_id' => $res->whatsapp_message_id,
                
             'n_person' => $res->n_person,
             'status' => $res->status,

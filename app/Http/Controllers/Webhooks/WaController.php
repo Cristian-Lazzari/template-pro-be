@@ -287,6 +287,11 @@ class WaController extends Controller
         $bodymail = [
             'type' => 'or',
             'to' => 'user',
+            
+            'title' =>  $c_a ? 'Ti confermiamo che il tuo ordine è stato accettato' : 'Ci dispiace informarti che il tuo ordine è stato annullato',
+            'subtitle' => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 gironi lavorativi' : '',
+            'whatsapp_message_id' => $res->whatsapp_message_id,
+
             'order_id' => $order->id,
             'name' => $order->name,
             'surname' => $order->surname,
@@ -299,6 +304,7 @@ class WaController extends Controller
             'comune' => $order->comune,
             'address' => $order->address,
             'address_n' => $order->address_n,
+
             
             'status' => $order->status,
             'cart' => $order->products,
@@ -376,6 +382,9 @@ class WaController extends Controller
             'type' => 'res',
             'to' => 'user',
 
+            'title' =>  $c_a ? 'Ti confermiamo che il tuo oridine è stato accettato' : 'Ci dispiace informarti che la tua oridine è stato annullato',
+            'subtitle' => '',
+
             'res_id' => $res->id,
             'name' => $res->name,
             'surname' => $res->surname,
@@ -385,7 +394,8 @@ class WaController extends Controller
             'sala' => $res->sala,
             'phone' => $res->phone,
             'admin_phone' => $p_set['telefono'],
-               
+            
+            'whatsapp_message_id' => $res->whatsapp_message_id,
             'n_person' => $res->n_person,
             'status' => $res->status,
         ];
