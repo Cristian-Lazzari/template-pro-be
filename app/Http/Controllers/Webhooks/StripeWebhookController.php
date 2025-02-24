@@ -129,7 +129,11 @@ class StripeWebhookController extends Controller
             $info .= "Ritiro asporto";
             $type_mess .= "Ritiro asporto";
         }
-        $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $order->id;
+        $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $newOrder->id;
+        $t = $newOrder->comune ? "Ordine a domicilio *GIÀ PAGATO*" : "Ordine d'asporto *GIÀ PAGATO*";
+        $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
+            "📞 Chiama: " . $newOrder->phone . "\n\n" .
+            "🔗 Vedi dalla Dashboard: $link_id";
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
 
@@ -189,11 +193,11 @@ class StripeWebhookController extends Controller
                         'parameters' => [
                             [
                                 'type' => 'text',
-                                'text' => $order->comune ? 'Ordine a domicilio GIÀ PAGATO' : 'Ordine d\'asporto GIÀ PAGATO', 
+                                'text' => $newOrder->comune ? 'Ordine a domicilio *GIÀ PAGATO*' : 'Ordine d\'asporto *GIÀ PAGATO*', 
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $order->name . ' ' . $order->surname . ' ha ordinato per il ' . $order->date_slot  . ': '
+                                'text' => $newOrder->name . ' ' . $newOrder->surname . ' ha ordinato per il ' . $newOrder->date_slot  . ': '
                             ],
                             [
                                 'type' => 'text',
@@ -205,7 +209,7 @@ class StripeWebhookController extends Controller
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $order->phone,  
+                                'text' => $newOrder->phone,  
                             ],
                             [
                                 'type' => 'text',
@@ -217,7 +221,7 @@ class StripeWebhookController extends Controller
             ]
         ];
         
-        $n = 1;
+        $n = 0;
         $messageId = [];
         $type_m_1 = false;
         $type_m_2 = false;
@@ -255,6 +259,8 @@ class StripeWebhookController extends Controller
             }
             $n ++;
         }
+        
+        
         
         $order->whatsapp_message_id = json_encode($messageId);
         $order->update();
@@ -453,23 +459,31 @@ class StripeWebhookController extends Controller
         }
     }
     
-    protected function isLastResponseWaWithin24Hours(){
-        //Trova il record con name = 'wa'
+    protected function isLastResponseWaWithin24Hours($n)
+    {
         $setting = Setting::where('name', 'wa')->first();
 
         if ($setting) {
             // Decodifica il campo 'property' da JSON ad array
             $property = json_decode($setting->property, true);
-
-            // Controlla se 'last_response_wa' è impostato
-            if (isset($property['last_response_wa']) && !empty($property['last_response_wa'])) {
-                // Confronta la data salvata con le ultime 24 ore
-                $lastResponseDate = Carbon::parse($property['last_response_wa']);
-                return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+            if($n == 0){
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
+            }else{
+                 // Controlla se 'last_response_wa' è impostato
+                if (isset($property['last_response_wa_2']) && !empty($property['last_response_wa_2'])) {
+                    // Confronta la data salvata con le ultime 24 ore
+                    $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
+                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }
             }
+        }else{
+            return false; // Se il record non esiste o la data non è impostata
         }
-
-        return false; // Se il record non esiste o la data non è impostata
     }
 
 }

@@ -240,7 +240,7 @@ class ReservationController extends Controller
                 ]
             ];
             
-            $n = 1;
+            $n = 0;
             $messageId = [];
             $type_m_1 = false;
             $type_m_2 = false;
@@ -416,7 +416,7 @@ class ReservationController extends Controller
         if ($setting) {
             // Decodifica il campo 'property' da JSON ad array
             $property = json_decode($setting->property, true);
-            if($n == 1){
+            if($n == 0){
                  // Controlla se 'last_response_wa' è impostato
                 if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
                     // Confronta la data salvata con le ultime 24 ore
