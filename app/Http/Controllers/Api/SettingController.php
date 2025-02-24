@@ -17,7 +17,7 @@ class SettingController extends Controller
 {
     public function client_default(Request $request) {
         $messageId = $request->query('whatsapp_message_id');
-        return $messageId;
+        //return $messageId;
 
         if (!$messageId) {
             return response()->json(['error' => 'whatsapp_message_id mancante'], 400);
