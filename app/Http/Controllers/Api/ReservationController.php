@@ -375,7 +375,7 @@ class ReservationController extends Controller
                 'type' => 'res',
                 'to' => 'admin',
 
-                'title' =>  $newRes->name . ' ' . $newRes->surname .'ha appena prenotato un tavolo',
+                'title' =>  $newRes->name . ' ' . $newRes->surname .' ha appena prenotato un tavolo',
                 'subtitle' => '',
                 
                 'res_id' => $newRes->id,
