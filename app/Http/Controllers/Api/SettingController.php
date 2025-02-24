@@ -88,7 +88,6 @@ class SettingController extends Controller
             'success' => true,
             'or_res' => $or_res,
             'message' => "Il ... è stato annullato con successo.",
-            'whatsapp_response' => $response->json()
         ]);
     }
     public function index() {
