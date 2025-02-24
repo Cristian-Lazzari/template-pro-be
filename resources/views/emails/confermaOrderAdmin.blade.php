@@ -18,29 +18,23 @@
                 <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
             @endif
         </center>
-        @if ($content_mail['type'] == 'or')
-            <!-- Messaggi per tipo 'or' -->
-            @if ($content_mail['to'] == 'admin')
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">{{ $content_mail['name'] }}{{$content_mail['status'] == 3 ? ' ha prenotato e PAGATO un ordine' :' ha prenotato un ordine!'}}</h1>
-            @elseif($content_mail['to'] == 'user' && ($content_mail['status'] == 2 || $content_mail['status'] == 3))
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato tramite il nostro sito web!</h1>
-                <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">Il tuo ordine è nella nostra coda, a breve riceverai l'esito del processamento</h4>
-            @elseif($content_mail['to'] == 'user' && ($content_mail['status'] == 1 || $content_mail['status'] == 5))
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che il tuo ordine è stato confermato!</h1>
+        {{-- Ciao {{ $content_mail['name'] }}, grazie per aver prenotato tramite il nostro sito web! --}}
+        {{-- Ciao {{ $content_mail['name'] }}, ti informiamo che il tuo ordine è stato confermato! --}}
+        {{-- Il tuo ordine è nella nostra coda, a breve riceverai l'esito del processamento --}}
+        {{-- Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato! --}}
+    
 
-            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine è stato annullato!</h1>
-            @elseif($content_mail['to'] == 'user' && in_array($content_mail['status'], [0, 6]))
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che il tuo ordine !{{$content_mail['status'] == 6 ? ' è stato annullato e rimborsato' :' è stato annullato'}}</h1>
-            @endif
+        <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;"></h1>
+        <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;"></h4>
+        
 
-            <!-- Data prenotata -->
-            <p style="font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
-            
-            <!-- Elenco prodotti -->
-            <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
-            <div style="width: 100%;">
-                
+        <!-- Data prenotata -->
+        <p style="font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
+        
+        <!-- Elenco prodotti -->
+        <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
+        @if($content_mail['type'] == 'or')
+            <div class="carrello" style="width: 100%;">
                 @foreach ($content_mail['cart'] as $i)               
                     <?php
                         $arrO= json_decode($i->pivot->option); 
@@ -90,31 +84,19 @@
                     </div>
                     <hr style="height: 2px; background-color: rgb(75, 81, 88); border: none; margin: 10px 0; order-radius: 20px">
                 @endforeach
-               
+            
             </div>
-
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
                 <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Indirizzo per la consegna:</h3>
                 <p style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
                 <p style="font-size: 16px; line-height: 1.8; margin: 5px;">L'importo verra pagato al momento della consegna.</p>
             @endif
-
             <!-- Totale carrello -->
             <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">Totale carrello: €{{$content_mail['total_price'] / 100}}</h4>
         
+    
         @elseif($content_mail['type'] == 'res')
-            <!-- Messaggi per tipo 'res' -->
-            @if ($content_mail['to'] == 'admin')
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Il sign/gr {{ $content_mail['name'] }}, ha prenotato un tavolo!</h1>
-            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 2)        
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, grazie per aver prenotato un tavolo tramite il nostro sito web!</h1>
-                <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">La tua prenotazione è nella nostra coda, a breve riceverai l'esito del processamento</h4>
-            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 1)
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ti informiamo che la tua prenotazione è stata confermata!</h1>
-            @elseif($content_mail['to'] == 'user' && $content_mail['status'] == 0)
-                <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">Ciao {{ $content_mail['name'] }}, ci dispiace informarti che la tua prenotazione è stata annullata!</h1>
-            @endif
 
             <!-- Sala prenotata (se applicabile) -->
             @if (config('configurazione.double_t') && $content_mail['sala'] !== 0)
@@ -154,10 +136,10 @@
             @endif
         @endif
 
-        @if (isset($content_mail['whatsapp_message_id']))
-        <p>Per annullare l'ordine o la prenotazione premi questo bottone </p>
+        @if (isset($content_mail['whatsapp_message_id'] && config('configurazione.subscription' == 3)))
+        <p style="line-height: 1.5; margin: 15px;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
             <p style="line-height: 1.5; margin: 15px;">
-                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #910d0d; color: rgb(255, 255, 255); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Annulla</a>
+                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323f0; color: rgb(255, 255, 255); padding: 8px 17px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 15px;">Annulla</a>
             </p>
         @endif
 
