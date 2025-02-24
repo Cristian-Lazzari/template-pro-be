@@ -20,7 +20,7 @@ use App\Http\Controllers\Admin\ReservationController as AdminReservationControll
 
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
 
-Route::get('client_default/{$whatsapp_message_id}',    [SettingController::class, 'client_default'])->name('api.client_default');
+Route::get('client_default/',    [SettingController::class, 'client_default'])->name('api.client_default');
 
 Route::get('products',          [ProductController::class, 'index'])->name('api.products.index');
 Route::get('promoHome',         [ProductController::class, 'promoHome'])->name('api.promoHome.index');
