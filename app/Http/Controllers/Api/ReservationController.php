@@ -391,7 +391,7 @@ class ReservationController extends Controller
         ];
 
         // Invia le email
-        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        $mailAdmin = new confermaOrdineAdmin($bodymail);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
 
         $bodymail['to'] = 'user';

@@ -440,7 +440,7 @@ class OrderController extends Controller
                 }else{
                     $telefono = '3332222333';
                 }
-                $bodymail_a = [
+                $bodymail = [
                     'type' => 'or',
                     'to' => 'admin',
 

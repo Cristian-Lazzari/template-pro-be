@@ -323,7 +323,7 @@ class StripeWebhookController extends Controller
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
         
-        $bodymail_a = [
+        $bodymail = [
             'type' => 'or',
             'to' => 'admin',
 
@@ -346,34 +346,19 @@ class StripeWebhookController extends Controller
 
             
         ];
-        $bodymail_u = [
-            'type' => 'or',
-            'to' => 'user',
 
-            'order_id' => $order->id,
-            'name' => $order->name,
-            'surname' => $order->surname,
-            'email' => $order->email,
-            'date_slot' => $order->date_slot,
-            'message' => $order->message,
-            'phone' => $order->phone,
-            'admin_phone' => $p_set['telefono'],
-            
-            'comune' => $order->comune,
-            'address' => $order->address,
-            'address_n' => $order->address_n,
-            
-            'status' => $order->status,
-            'cart' => $order->products,
-            'total_price' => $order->tot_price,
-
-            
-        ];
-        $mail = new confermaOrdineAdmin($bodymail_u);
+        $mail = new confermaOrdineAdmin($bodymail);
         Mail::to($order->email)->send($mail);
 
-        $mailAdmin = new confermaOrdineAdmin($bodymail_a);
+        $bodymail['to'] = 'user';
+        $bodymail['whatsapp_message_id'] = $order->whatsapp_message_id;
+        $bodymail['title'] = 'Ciao' . $order->name . ', grazie per aver ordinato tramite il nostro sito web';
+        $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
+
+        $mailAdmin = new confermaOrdineAdmin($bodymail);
         Mail::to(config('configurazione.mail'))->send($mailAdmin);
+
+
         $vis = json_decode($date->visible, true);
         $av = json_decode($date->availability, true);
         $res = json_decode($date->reserving, true);
