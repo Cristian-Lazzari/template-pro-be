@@ -398,7 +398,7 @@ class ReservationController extends Controller
             'phone' => $newRes->phone,
             'admin_phone' => $telefono,
             'n_person' => $newRes->n_person,
-            'whatsapp_message_id' => $whatsapp_message_id,
+            'whatsapp_message_id' => $newRes->whatsapp_message_id,
             'status' => $newRes->status,
         ];
 
