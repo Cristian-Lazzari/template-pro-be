@@ -82,7 +82,7 @@ class SettingController extends Controller
         $bodymail['admin_phone'] = $p_set['telefono'];
         $bodymail['status'] = $or_res->status;
         $mail = new confermaOrdineAdmin($bodymail);
-        Mail::to($order['email'])->send($mail);
+        Mail::to($or_res['email'])->send($mail);
 
         return response()->json([
             'success' => true,
