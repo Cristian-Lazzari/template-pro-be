@@ -56,7 +56,7 @@ class SettingController extends Controller
 
         
 
-        $setting = Setting::where('wa', 'name')->first();
+        $setting = Setting::where('name', 'wa')->first();
         $numbers = json_decode($setting->numbers, true);
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
         $p = 1; 
