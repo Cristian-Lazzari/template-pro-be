@@ -382,7 +382,7 @@ class ReservationController extends Controller
             'sala' => $newRes->message,
             'phone' => $newRes->phone,
             'admin_phone' => $telefono,
-            'n_person' => $newRes->$n_person,
+            'n_person' => $newRes->n_person,
             'status' => $newRes->status,
         ];
         $bodymail_u = [
@@ -397,7 +397,7 @@ class ReservationController extends Controller
             'sala' => $newRes->sala,
             'phone' => $newRes->phone,
             'admin_phone' => $telefono,
-            'n_person' => $newRes->$n_person,
+            'n_person' => $newRes->n_person,
             'whatsapp_message_id' => $whatsapp_message_id,
             'status' => $newRes->status,
         ];
