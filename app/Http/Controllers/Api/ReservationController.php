@@ -361,46 +361,58 @@ class ReservationController extends Controller
     }
 
     protected function send_mail($newRes){
-        // Ottieni le impostazioni di contatto
-        $set = Setting::where('name', 'Contatti')->firstOrFail();
-        $p_set = json_decode($set->property, true);
-        if(isset($p_set['telefono'])){
-            $telefono = $p_set['telefono'];
-        }else{
-            $telefono = '3332222333';
-        }
-        // Prepara i dati per le email
-        $bodymail = [
-            'type' => 'res',
-            'to' => 'admin',
+        try{
+            // Ottieni le impostazioni di contatto
+            $set = Setting::where('name', 'Contatti')->firstOrFail();
+            $p_set = json_decode($set->property, true);
+            if(isset($p_set['telefono'])){
+                $telefono = $p_set['telefono'];
+            }else{
+                $telefono = '3332222333';
+            }
+            // Prepara i dati per le email
+            $bodymail = [
+                'type' => 'res',
+                'to' => 'admin',
 
-            'title' =>  $newRes->name . ' ' . $newRes->surname .'ha appena prenotato un tavolo',
-            'subtitle' => '',
+                'title' =>  $newRes->name . ' ' . $newRes->surname .'ha appena prenotato un tavolo',
+                'subtitle' => '',
+                
+                'res_id' => $newRes->id,
+                'name' => $newRes->name,
+                'surname' => $newRes->surname,
+                'date_slot' => $newRes->date_slot,
+                'message' => $newRes->message,
+                'sala' => $newRes->message,
+                'phone' => $newRes->phone,
+                'admin_phone' => $telefono,
+                'n_person' => $newRes->n_person,
+                'status' => $newRes->status,
+                'whatsapp_message_id' => $newRes->whatsapp_message_id,
+            ];
+
+            // Invia le email
+            $mailAdmin = new confermaOrdineAdmin($bodymail);
+            Mail::to(config('configurazione.mail'))->send($mailAdmin);
+
+            $bodymail['to'] = 'user';
+            $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
+            $bodymail['title'] = 'Ciao' . $newRes->name . ', grazie per aver prenotato tramite il nostro sito web';
+            $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
             
-            'res_id' => $newRes->id,
-            'name' => $newRes->name,
-            'surname' => $newRes->surname,
-            'date_slot' => $newRes->date_slot,
-            'message' => $newRes->message,
-            'sala' => $newRes->message,
-            'phone' => $newRes->phone,
-            'admin_phone' => $telefono,
-            'n_person' => $newRes->n_person,
-            'status' => $newRes->status,
-            'whatsapp_message_id' => $newRes->whatsapp_message_id,
-        ];
+            $mail = new confermaOrdineAdmin($bodymail_u);
+            Mail::to($newRes['email'])->send($mail);
+            return;
+        } catch (\Exception $e) {
+            // Gestione generale degli errori
+            return response()->json([
+                'success' => false,
+                'message' => 'Si è verificato un errore: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 200);
+        }
 
-        // Invia le email
-        $mailAdmin = new confermaOrdineAdmin($bodymail);
-        Mail::to(config('configurazione.mail'))->send($mailAdmin);
-
-        $bodymail['to'] = 'user';
-        $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
-        $bodymail['title'] = 'Ciao' . $newRes->name . ', grazie per aver prenotato tramite il nostro sito web';
-        $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
-        
-        $mail = new confermaOrdineAdmin($bodymail_u);
-        Mail::to($newRes['email'])->send($mail);
     }
     protected function isLastResponseWaWithin24Hours($n)
     {
