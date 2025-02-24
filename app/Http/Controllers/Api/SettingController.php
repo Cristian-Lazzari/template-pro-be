@@ -85,11 +85,12 @@ class SettingController extends Controller
         $mail = new confermaOrdineAdmin($bodymail);
         Mail::to($or_res['email'])->send($mail);
 
-        return response()->json([
-            'success' => true,
-            'or_res' => $or_res,
-            'message' => "Il ... è stato annullato con successo.",
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'or_res' => $or_res,
+        //     'message' => "Il ... è stato annullato con successo.",
+        // ]);
+        return view('guest.delete_success');
     }
     public function index() {
         $settings = Setting::all();

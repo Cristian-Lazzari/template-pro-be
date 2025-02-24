@@ -24,6 +24,9 @@ Route::get('/', function () {
 Route::get('/doc', function () {
     return view('guests/documentazione');
 });
+Route::get('/delete_succes', function () {
+    return view('guests/documentazione');
+});
 
 
 Route::middleware(['auth', 'verified'])
