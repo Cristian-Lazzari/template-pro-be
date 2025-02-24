@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Mail;
 
 class SettingController extends Controller
 {
-    public function client_default($whatsapp_message_id = 0) {
-        $messageId = $whatsapp_message_id;
-        return $whatsapp_message_id;
+    public function client_default(Request $request) {
+        $messageId = $request->query('whatsapp_message_id');
+        return $messageId;
 
         if (!$messageId) {
             return response()->json(['error' => 'whatsapp_message_id mancante'], 400);
