@@ -93,21 +93,16 @@ class WaController extends Controller
             }
     
             $m .= ' dal *tuo collega*';
+
+            $messages = json_decode($or_res->whatsapp_message_id, true);
+            if (!is_array($messages) || !isset($messages[$p])) {
+                throw new Exception("Formato di whatsapp_message_id non valido.");
+            }
+
+            $old_id = $messages[$p];
     
             // Controllo se la risposta è entro 24 ore
-            if ($this->isLastResponseWaWithin24Hours($p)) {
-                // Verifica se il campo whatsapp_message_id esiste e contiene dati validi
-                if (!isset($or_res->whatsapp_message_id)) {
-                    throw new Exception("whatsapp_message_id mancante nell'ordine/prenotazione.");
-                }
-    
-                $messages = json_decode($or_res->whatsapp_message_id, true);
-                if (!is_array($messages) || !isset($messages[$p])) {
-                    throw new Exception("Formato di whatsapp_message_id non valido.");
-                }
-    
-                $old_id = $messages[$p];
-    
+            if ($this->isLastResponseWaWithin24Hours($p)) {    
                 $data = [
                     'messaging_product' => 'whatsapp',
                     'to' => $number,
@@ -126,7 +121,7 @@ class WaController extends Controller
                     'category' => 'utility',
                     'type' => 'template',
                     "context" => [
-                        "message_id" => $old_id ?? null
+                        "message_id" => $old_id
                     ],
                     'template' => [
                         'name' => 'response_full',
