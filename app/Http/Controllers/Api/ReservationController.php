@@ -282,7 +282,7 @@ class ReservationController extends Controller
             $newRes->whatsapp_message_id = json_encode($messageId);
             $newRes->update();
             
-
+            $this->send_mail($newRes);
 
             $data_am1 = [        
                 'wa_id' => $newRes->whatsapp_message_id,
@@ -360,7 +360,7 @@ class ReservationController extends Controller
         }
     }
 
-    protected function send_mail($res){
+    protected function send_mail($newRes){
         // Ottieni le impostazioni di contatto
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
