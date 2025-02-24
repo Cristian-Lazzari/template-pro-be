@@ -61,7 +61,7 @@ class SettingController extends Controller
         $numbers = json_decode($setting->property, true);
 
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
-        $p = 1; 
+        $p = 0; 
         foreach ($numbers as $number) {
             $this->message_default($o_r, $p, $or_res, $number);
             $p ++; 
