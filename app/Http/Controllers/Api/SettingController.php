@@ -90,7 +90,7 @@ class SettingController extends Controller
         //     'or_res' => $or_res,
         //     'message' => "Il ... è stato annullato con successo.",
         // ]);
-        return view('guest.delete_success');
+        return view('guests.delete_success');
     }
     public function index() {
         $settings = Setting::all();
