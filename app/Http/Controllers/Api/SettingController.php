@@ -124,10 +124,6 @@ class SettingController extends Controller
     
             // Controllo se la risposta è entro 24 ore
             $messages = json_decode($or_res->whatsapp_message_id, true);
-            if (!is_array($messages) || !isset($messages[$p])) {
-                throw new Exception("Formato di whatsapp_message_id non valido.");
-            }
-
             $old_id = $messages[$p];
             if ($this->isLastResponseWaWithin24Hours($p)) {
     
