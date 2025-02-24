@@ -108,7 +108,6 @@ class SettingController extends Controller
         try {
             Log::info("Inizio esecuzione message_default", [
                 'o_r' => $o_r,
-                'c_a' => $c_a,
                 'p' => $p,
                 'or_res_id' => $or_res->id ?? 'N/A',
                 'number' => $number
