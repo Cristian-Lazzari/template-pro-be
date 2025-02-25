@@ -53,9 +53,11 @@ class SettingController extends Controller
             $o_r = 'res'; 
         }
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
+        $wa = Setting::where('name', 'wa')->first();
+        $property = json_decode($wa->property, 1);
         $p = 0; 
         if($block){
-            foreach ($numbers['numbers'] as $number) {
+            foreach ($property['numbers'] as $number) {
                 $this->message_default($o_r, $p, $or_res, $number);
                 $p ++; 
             }

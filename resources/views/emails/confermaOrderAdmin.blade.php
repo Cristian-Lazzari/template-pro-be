@@ -29,8 +29,8 @@
         <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
         
         <!-- Elenco prodotti -->
-        <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
         @if($content_mail['type'] == 'or')
+        <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
             <div class="carrello" style="width: 100%;">
                 @foreach ($content_mail['cart'] as $i)               
                     <?php
