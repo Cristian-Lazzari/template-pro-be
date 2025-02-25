@@ -473,7 +473,7 @@ class OrderController extends Controller
                 
                 $bodymail['to'] = 'user';
                 $bodymail['whatsapp_message_id'] = $newOrder->whatsapp_message_id;
-                $bodymail['title'] = 'Ciao' . $newOrder->name . ', grazie per aver ordinato tramite il nostro sito web';
+                $bodymail['title'] = 'Ciao ' . $newOrder->name . ', grazie per aver ordinato tramite il nostro sito web';
                 $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
 
 

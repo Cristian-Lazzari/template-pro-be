@@ -397,7 +397,7 @@ class ReservationController extends Controller
 
             $bodymail['to'] = 'user';
             $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
-            $bodymail['title'] = 'Ciao' . $newRes->name . ', grazie per aver prenotato tramite il nostro sito web';
+            $bodymail['title'] = 'Ciao ' . $newRes->name . ', grazie per aver prenotato tramite il nostro sito web';
             $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
             
             $mail = new confermaOrdineAdmin($bodymail);

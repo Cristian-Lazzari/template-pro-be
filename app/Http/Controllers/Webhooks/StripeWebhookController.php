@@ -355,7 +355,7 @@ class StripeWebhookController extends Controller
 
         $bodymail['to'] = 'user';
         $bodymail['whatsapp_message_id'] = $order->whatsapp_message_id;
-        $bodymail['title'] = 'Ciao' . $order->name . ', grazie per aver ordinato tramite il nostro sito web';
+        $bodymail['title'] = 'Ciao ' . $order->name . ', grazie per aver ordinato tramite il nostro sito web';
         $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
 
         $mailAdmin = new confermaOrdineAdmin($bodymail);
