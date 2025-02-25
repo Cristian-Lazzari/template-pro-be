@@ -84,6 +84,11 @@ class WaController extends Controller
             $m = $o_r ? 'L\'ordine è stato ' : 'La prenotazione è stata ';
             $sub = $o_r ? 'L\'ordine è stato' : 'La prenotazione è stata';
     
+            if ($o_r) {
+                $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $or_res->id;
+            }else{
+                $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $or_res->id;
+            }
             if ($c_a) {
                 $m .= '*confermat' . ($o_r ? 'o* ✅' : 'a* ✅');
                 $word = 'confermat' . ($o_r ? 'o ✅' : 'a ✅');
@@ -136,7 +141,19 @@ class WaController extends Controller
                                     [
                                         'type' => 'text',
                                         'text' => 'tuo collega'
-                                    ]
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $or_res->name . ' ' . $or_res->surname,
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $or_res->date_slot,
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $link_id,
+                                    ],
                                 ]
                             ]
                         ]

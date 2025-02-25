@@ -27,51 +27,39 @@ class SettingController extends Controller
         if (!$messageId) {
             return response()->json(['error' => 'whatsapp_message_id mancante'], 400);
         }
-
+        
         // Cerca l'ordine o la prenotazione
         $order = Order::where('whatsapp_message_id', $messageId)->first();
         $reservation = Reservation::where('whatsapp_message_id', $messageId)->first();
-
+        
         if (!$order && !$reservation) {
             return response()->json(['error' => 'Nessun ordine o prenotazione trovata'], 404);
         }
         
         // Determina quale entità annullare
+        $block =false;
         if ($order) {
-
-            $this->statusOrder(0, $order);
             $or_res = $order;
+            $block = $or_res->status !== 2 ? 1 : 0;
+            $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $or_res->id;
+            $this->statusOrder(0, $or_res);
             $o_r = 'or';
-            $bodymail = [
-                'comune' => $or_res->comune,
-                'address' => $or_res->address,
-                'address_n' => $or_res->address_n,
-                'cart' => $or_res->products,
-                'total_price' => $or_res->tot_price,
-            ];
+            
         } else {
-            $reservation->update();
             $or_res = $reservation;
-            $o_r = 'res';
-            $bodymail = [
-                'n_person' => $or_res->n_person,         
-                'sala' => $or_res->sala,         
-            ];
+            $block = $or_res->status !== 2 ? 1 : 0;
+            $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $or_res->id;
+            $this->statusRes($c_a, $or_res);
+            $o_r = 'res'; 
         }
-
-        
-
-        $setting = Setting::where('name', 'wa')->first();
-        $numbers = json_decode($setting->property, true);
-
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
         $p = 0; 
-        //if($or_res->status !== 2){
+        if($block){
             foreach ($numbers['numbers'] as $number) {
                 $this->message_default($o_r, $p, $or_res, $number);
                 $p ++; 
             }
-        //}
+        }
 
         return view('guests.delete_success');
     }
@@ -88,7 +76,7 @@ class SettingController extends Controller
             'double_t'=> config('configurazione.double_t'),
         ]);
     }
-    protected function message_default($o_r, $p, $or_res, $number){
+    protected function message_default($o_r, $p, $or_res, $number, $link_id){
         try {
             Log::info("Inizio esecuzione message_default", [
                 'o_r' => $o_r,
@@ -105,7 +93,7 @@ class SettingController extends Controller
             $word = 'annullat' . ($o_r == 'or' ? 'o ❌' : 'a ❌');
 
             $m .= ' dal *cliente*';
-    
+            
             // Controllo se la risposta è entro 24 ore
             $messages = json_decode($or_res->whatsapp_message_id, true);
             $old_id = $messages[$p];
@@ -128,9 +116,6 @@ class SettingController extends Controller
                     'to' => $number,
                     'category' => 'utility',
                     'type' => 'template',
-                    "context" => [
-                        "message_id" => $old_id
-                    ],
                     'template' => [
                         'name' => 'response',
                         'language' => [
@@ -148,10 +133,22 @@ class SettingController extends Controller
                                         'type' => 'text',
                                         'text' => $word
                                     ],
-                                    // [
-                                    //     'type' => 'text',
-                                    //     'text' => 'cliente'
-                                    // ]
+                                    [
+                                        'type' => 'text',
+                                        'text' => 'cliente'
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $or_res->name . ' ' . $or_res->surname,
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $or_res->date_slot,
+                                    ],
+                                    [
+                                        'type' => 'text',
+                                        'text' => $link_id,
+                                    ],
                                 ]
                             ]
                         ]
