@@ -131,7 +131,7 @@ class SettingController extends Controller
                         "message_id" => $old_id
                     ],
                     'template' => [
-                        'name' => 'response',
+                        'name' => 'response_full',
                         'language' => [
                             'code' => 'it'
                         ],

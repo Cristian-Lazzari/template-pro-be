@@ -133,7 +133,7 @@
             @endif
         @endif
 
-        @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 3 && $content_mail['to'] == 'user')
+        @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 2 && $content_mail['to'] == 'user')
             <p style="line-height: 1.5; margin: 15px;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
             <p style="line-height: 1.5; margin: 15px;">
                 <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323f0; color: rgb(255, 255, 255); padding: 8px 17px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 15px;">Annulla</a>
