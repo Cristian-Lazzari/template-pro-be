@@ -42,7 +42,7 @@ class SettingController extends Controller
             $or_res = $order;
             $status = $or_res->status;  
             if(in_array($status, [0, 6])){
-                return;
+                return view('guests.delete_success');
             }
             $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $or_res->id;
             $this->statusOrder(0, $or_res);
@@ -52,7 +52,7 @@ class SettingController extends Controller
             $or_res = $reservation;
             $status = $or_res->status;  
             if(in_array($status, [0, 6])){
-                return;
+                return view('guests.delete_success');
             }
             $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $or_res->id;
             $this->statusRes(0, $or_res);
@@ -63,12 +63,12 @@ class SettingController extends Controller
         $property = json_decode($wa->property, 1);
         $p = 0; 
        
-        if($block){
+
             foreach ($property['numbers'] as $number) {
                 $this->message_default($o_r, $p, $or_res, $number, $link_id );
                 $p ++; 
             }
-        }
+
 
         return view('guests.delete_success');
     }
