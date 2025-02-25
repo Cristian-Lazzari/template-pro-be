@@ -315,7 +315,7 @@ class SettingController extends Controller
             
             'title' =>  'Come richiesto il tuo ordine è stato annullato',
             'subtitle' => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 gironi lavorativi' : '',
-            'whatsapp_message_id' => $res->whatsapp_message_id,
+            'whatsapp_message_id' => $order->whatsapp_message_id,
 
             'order_id' => $order->id,
             'name' => $order->name,
