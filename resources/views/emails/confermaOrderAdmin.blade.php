@@ -132,13 +132,13 @@
                 <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #11289b; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
-{{-- 
+
         @if (isset($content_mail['whatsapp_message_id'] && config('configurazione.subscription' == 3) && $content_mail['to'] == 'user' && in_array($content_mail['status'], [0, 6])))
         <p style="line-height: 1.5; margin: 15px;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
-            <p style="line-height: 1.5; margin: 15px;">
+            {{-- <p style="line-height: 1.5; margin: 15px;">
                 <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323f0; color: rgb(255, 255, 255); padding: 8px 17px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 15px;">Annulla</a>
-            </p>
-        @endif --}}
+            </p> --}}
+        @endif
 
         
     </div>
