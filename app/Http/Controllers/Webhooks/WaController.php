@@ -116,9 +116,6 @@ class WaController extends Controller
                     'to' => $number,
                     'category' => 'utility',
                     'type' => 'template',
-                    "context" => [
-                        "message_id" => $old_id
-                    ],
                     'template' => [
                         'name' => 'response_full',
                         'language' => [
@@ -143,7 +140,10 @@ class WaController extends Controller
                                 ]
                             ]
                         ]
-                    ]
+                    ],
+                    'context' => [
+                        "message_id" => $old_id
+                    ],
                 ];
             }
     
