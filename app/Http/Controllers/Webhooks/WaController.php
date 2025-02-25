@@ -382,7 +382,7 @@ class WaController extends Controller
             'type' => 'res',
             'to' => 'user',
 
-            'title' =>  $c_a ? 'Ti confermiamo che il tuo oridine è stato accettato' : 'Ci dispiace informarti che la tua oridine è stato annullato',
+            'title' =>  $c_a ? 'Ti confermiamo che il tuo ordine è stato accettato' : 'Ci dispiace informarti che la tua ordine è stato annullato',
             'subtitle' => '',
 
             'res_id' => $res->id,
