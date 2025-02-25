@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Conferma Email</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; color: #191919; margin: 0; padding: 0;">
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; color: #04001d; margin: 0; padding: 0;">
     <div style="max-width: 600px; margin: 10px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
         
         <!-- Informazioni automatizzate -->
@@ -20,16 +20,16 @@
         </center>
 
 
-        <h1 style="color: #9280FD; font-size: 24px; text-align: center; margin: 5px;">{{$content_mail['title']}}</h1>
+        <h1 style="color: #04001d; font-size: 24px; text-align: center; margin: 5px;">{{$content_mail['title']}}</h1>
         @if (isset($content_mail['subtitle']))
-        <h4 style="font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['subtitle']}}</h4>
+        <h4 style="color: #04001de3; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['subtitle']}}</h4>
         @endif
 
         <!-- Data prenotata -->
-        <p style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
+        <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
         
         <!-- Elenco prodotti -->
-        <h3 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
+        <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">I prodotti:</h3>
         @if($content_mail['type'] == 'or')
             <div class="carrello" style="width: 100%;">
                 @foreach ($content_mail['cart'] as $i)               
@@ -43,18 +43,18 @@
 
                     ?>
                     <div style="width: 100%; margin: 5px 0;">
-                        <span style="color: #191919; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
-                        <span style="color: #191919; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                        <span style="color: #191919; font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->price / 100 }}</span>
+                        <span style="color: #04001d; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                        <span style="color: #04001d; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
+                        <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->price / 100 }}</span>
                     </div>
                     <br>
                     <div style="margin: 5px;">
                         <!-- Opzioni prodotto -->
                         @if (count($arrO))
                             <div style="margin: 5px;">
-                                <h5 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
+                                <h5 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
                                 @foreach ($arrO as $a)
-                                    <span style="color: #191919; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
+                                    <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
                                 @endforeach
                             </div>
                         @endif
@@ -62,18 +62,18 @@
                             <!-- Ingredienti extra -->
                             @if (count($arrA))
                                 <div style="margin: 5px;">
-                                    <h5 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
+                                    <h5 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
                                     @foreach ($arrA as $a)
-                                        <span style="color: #191919; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                        <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
                                     @endforeach
                                 </div>
                             @endif
                             <!-- Ingredienti rimossi -->
                             @if (count($arrD))
                                 <div style="margin: 5px;">
-                                    <h5 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
+                                    <h5 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
                                     @foreach ($arrD as $a)
-                                        <span style="color: #191919; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
+                                        <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
                                     @endforeach       
                                 </div>
                             @endif
@@ -85,12 +85,12 @@
             </div>
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
-                <h3 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 10px 0;">Indirizzo per la consegna:</h3>
-                <p style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
-                <p style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">L'importo verra pagato al momento della consegna.</p>
+                <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">Indirizzo per la consegna:</h3>
+                <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
+                <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">L'importo verra pagato al momento della consegna.</p>
             @endif
             <!-- Totale carrello -->
-            <h4 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">Totale carrello: €{{$content_mail['total_price'] / 100}}</h4>
+            <h4 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Totale carrello: €{{$content_mail['total_price'] / 100}}</h4>
         
     
         @elseif($content_mail['type'] == 'res')
@@ -116,8 +116,8 @@
 
         <!-- Messaggio opzionale -->
         @if($content_mail['message'] !== NULL)
-            <h4 style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">Messaggio:</h4>
-            <p style="color: #191919; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['message']}}</p>
+            <h4 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Messaggio:</h4>
+            <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['message']}}</p>
         @endif
 
 
@@ -143,7 +143,7 @@
         
     </div>
     <!-- Footer -->
-    <div style="width: 95%; margin: 50px auto 0; background-color: black; color: white; padding: 10px; text-align: center; font-size: 12px;">
+    <div style="width: 95%; margin: 50px auto 0; background-color: #04001d; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">
                 Contatta {{config('configurazione.APP_NAME')}} se desideri annullare o modificare la tua prenotazione:
