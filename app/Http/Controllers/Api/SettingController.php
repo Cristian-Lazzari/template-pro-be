@@ -38,7 +38,7 @@ class SettingController extends Controller
         
         // Determina quale entità annullare
         if ($order) {
-            $order->status = 0;
+
             $this->statusOrder(0, $order);
             $or_res = $order;
             $o_r = 'or';
@@ -50,7 +50,6 @@ class SettingController extends Controller
                 'total_price' => $or_res->tot_price,
             ];
         } else {
-            $reservation->status = 0;
             $reservation->update();
             $or_res = $reservation;
             $o_r = 'res';
@@ -67,9 +66,11 @@ class SettingController extends Controller
 
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
         $p = 0; 
-        foreach ($numbers['numbers'] as $number) {
-            $this->message_default($o_r, $p, $or_res, $number);
-            $p ++; 
+        if($or_res->status !== 2){
+            foreach ($numbers['numbers'] as $number) {
+                $this->message_default($o_r, $p, $or_res, $number);
+                $p ++; 
+            }
         }
 
         return view('guests.delete_success');
@@ -131,7 +132,7 @@ class SettingController extends Controller
                         "message_id" => $old_id
                     ],
                     'template' => [
-                        'name' => 'response_full',
+                        'name' => 'response',
                         'language' => [
                             'code' => 'it'
                         ],
