@@ -49,7 +49,7 @@ class SettingController extends Controller
             $or_res = $reservation;
             $block = $or_res->status !== 2 ? 1 : 0;
             $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $or_res->id;
-            $this->statusRes($c_a, $or_res);
+            $this->statusRes(0, $or_res);
             $o_r = 'res'; 
         }
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
