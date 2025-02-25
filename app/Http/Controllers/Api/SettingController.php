@@ -117,7 +117,7 @@ class SettingController extends Controller
                     'category' => 'utility',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'response',
+                        'name' => 'response_link',
                         'language' => [
                             'code' => 'it'
                         ],
