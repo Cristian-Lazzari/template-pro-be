@@ -122,7 +122,7 @@ class WaController extends Controller
                     'category' => 'utility',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'response_full',
+                        'name' => 'response_link',
                         'language' => [
                             'code' => 'it'
                         ],
