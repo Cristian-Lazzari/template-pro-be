@@ -101,7 +101,7 @@ class SettingController extends Controller
             $sub = $o_r == 'or' ? 'L\'ordine è stato' : 'La prenotazione è stata';
      
             $m .= '*annullat' . ($o_r == 'or' ? 'o* ❌' : 'a* ❌');
-            $word = '*annullat' . ($o_r == 'or' ? 'o* ❌' : 'a* ❌');
+            $word = 'annullat' . ($o_r == 'or' ? 'o ❌' : 'a ❌');
 
             $m .= ' dal *cliente*';
     
@@ -147,10 +147,10 @@ class SettingController extends Controller
                                         'type' => 'text',
                                         'text' => $word
                                     ],
-                                    // [
-                                    //     'type' => 'text',
-                                    //     'text' => 'cliente'
-                                    // ]
+                                    [
+                                        'type' => 'text',
+                                        'text' => 'cliente'
+                                    ]
                                 ]
                             ]
                         ]

@@ -86,10 +86,10 @@ class WaController extends Controller
     
             if ($c_a) {
                 $m .= '*confermat' . ($o_r ? 'o* ✅' : 'a* ✅');
-                $word = '*confermat' . ($o_r ? 'o* ✅' : 'a* ✅');
+                $word = 'confermat' . ($o_r ? 'o ✅' : 'a ✅');
             } else {
                 $m .= '*annullat' . ($o_r ? 'o* ❌' : 'a* ❌');
-                $word = '*annullat' . ($o_r ? 'o* ❌' : 'a* ❌');
+                $word = 'annullat' . ($o_r ? 'o ❌' : 'a ❌');
             }
     
             $m .= ' dal *tuo collega*';
