@@ -66,12 +66,12 @@ class SettingController extends Controller
 
         // 📲 **Invia il messaggio di annullamento su WhatsApp*
         $p = 0; 
-        if($or_res->status !== 2){
+        //if($or_res->status !== 2){
             foreach ($numbers['numbers'] as $number) {
                 $this->message_default($o_r, $p, $or_res, $number);
                 $p ++; 
             }
-        }
+        //}
 
         return view('guests.delete_success');
     }
