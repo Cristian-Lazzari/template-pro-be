@@ -58,7 +58,7 @@ class SettingController extends Controller
         $p = 0; 
         if($block){
             foreach ($property['numbers'] as $number) {
-                $this->message_default($o_r, $p, $or_res, $number);
+                $this->message_default($o_r, $p, $or_res, $number, $link_id );
                 $p ++; 
             }
         }
