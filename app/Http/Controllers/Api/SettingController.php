@@ -148,10 +148,10 @@ class SettingController extends Controller
                                         'type' => 'text',
                                         'text' => $word
                                     ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => 'cliente'
-                                    ]
+                                    // [
+                                    //     'type' => 'text',
+                                    //     'text' => 'cliente'
+                                    // ]
                                 ]
                             ]
                         ]
