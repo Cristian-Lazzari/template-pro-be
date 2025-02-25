@@ -282,7 +282,7 @@ class ReservationController extends Controller
             $newRes->whatsapp_message_id = json_encode($messageId);
             $newRes->update();
             
-            $this->send_mail($newRes);
+            //$this->send_mail($newRes);
 
             $data_am1 = [        
                 'wa_id' => $newRes->whatsapp_message_id,
