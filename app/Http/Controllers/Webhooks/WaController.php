@@ -46,21 +46,37 @@ class WaController extends Controller
         $messageId = $data['wa_id'];
         $button_r = $data['response'];
 
-        $order_ex = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists();
-        if ($order_ex) {
-            $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
+        $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
+        if ($order) {
+            $status = $order->status;
             $this->statusOrder($button_r, $order);
-            if ($co_work && !in_array($order->status, [1,3,5,6])) {
+            if($button_r == 1 && in_array($status, [1, 5])){
+                return;
+            }elseif($button_r == 0 && in_array($status, [0, 6])){
+                return;
+            }elseif(in_array($status, [1, 5, 0, 6])){
+                return;
+            }
+            if ($co_work) {
                 $this->message_co_worker(1, $button_r, $p, $order, $number_correct);
             }
         } elseif (Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->exists()) {
             
             $reservation = Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();   // Se non trovato in Orders, cerca nella tabella rervations
             if ($reservation) {
-                if ($co_work && !in_array($reservation->status, [1,3,5,6])) {
+                $status = $reservation->status;
+                $this->statusRes($button_r, $reservation);
+                if($button_r == 1 && in_array($status, [1, 5])){
+                    return;
+                }elseif($button_r == 0 && in_array($status, [0, 6])){
+                    return;
+                }elseif(in_array($status, [1, 5, 0, 6])){
+                    return;
+                }
+                if ($co_work) {
                     $this->message_co_worker(false, $button_r, $p, $reservation, $number_correct);
                 }
-                $this->statusRes($button_r, $reservation);
+                
             }
         } else {
             // Nessun ordine o prenotazione trovato per il Message ID
