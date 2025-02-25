@@ -72,29 +72,6 @@ class SettingController extends Controller
             $p ++; 
         }
 
-        $set = Setting::where('name', 'Contatti')->firstOrFail();
-        $p_set = json_decode($set->property, true);
-        
-
-        $bodymail['to'] = 'user';
-        $bodymail['type'] = $o_r;
-        $bodymail['order_id'] = $or_res->id;
-        $bodymail['name'] = $or_res->name;
-        $bodymail['surname'] = $or_res->surname;
-        $bodymail['email'] = $or_res->email;
-        $bodymail['date_slot'] = $or_res->date_slot;
-        $bodymail['message'] = $or_res->message;
-        $bodymail['phone'] = $or_res->phone;
-        $bodymail['admin_phone'] = $p_set['telefono'];
-        $bodymail['status'] = $or_res->status;
-        $mail = new confermaOrdineAdmin($bodymail);
-        Mail::to($or_res['email'])->send($mail);
-
-        // return response()->json([
-        //     'success' => true,
-        //     'or_res' => $or_res,
-        //     'message' => "Il ... è stato annullato con successo.",
-        // ]);
         return view('guests.delete_success');
     }
     public function index() {
