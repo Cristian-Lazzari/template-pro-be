@@ -79,7 +79,7 @@
                             @endif
                         </div>
                     </div>
-                    <hr style="height: 2px; background-color: rgb(75, 81, 88); border: none; margin: 10px 0; order-radius: 20px">
+                    <hr style="height: 1px; background-color: #04001da1; border: none; margin: 10px 0; order-radius: 20px">
                 @endforeach
             
             </div>
@@ -97,20 +97,17 @@
 
             <!-- Sala prenotata (se applicabile) -->
             @if (config('configurazione.double_t') && $content_mail['sala'] !== 0)
-                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+                <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
             @endif
 
             <!-- Data prenotata -->
-            <p style="font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
+            <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
 
             <!-- Numero di persone -->
             @if (is_string($content_mail['n_person']))
                 @php $n_person = json_decode($content_mail['n_person'], true); @endphp
-                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di adulti: {{ $n_person['adult'] }}</h3>
-                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di bambini: {{ $n_person['child'] }}</h3>
-            @else
-                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di adulti: {{ $content_mail['n_person']['adult'] }}</h3>
-                <h3 style="font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di bambini: {{ $content_mail['n_person']['child'] }}</h3>
+                <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di adulti: {{ $n_person['adult'] }}</h3>
+                <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">Numero di bambini: {{ $n_person['child'] }}</h3>
             @endif
         @endif
 
