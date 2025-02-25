@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use Carbon\Carbon;
+use Stripe\Refund;
+use Stripe\Stripe;
+use App\Models\Date;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Reservation;
+use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\Log;
@@ -249,7 +254,7 @@ class SettingController extends Controller
                 // Aggiorna lo stato del rimborso nella tua tabella
                 $order->status = 6;
     
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return response()->json(['error' => $e->getMessage()], 500);
             }
             
