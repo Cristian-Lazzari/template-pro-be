@@ -211,7 +211,7 @@ class SettingController extends Controller
     
         if(in_array($order->status, [3, 5])){
             $m = 'L\'ordine è stata annullato e RIMBORSATO correttamente';
-            $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
+            
             //codice per rimborso
             try {
                 $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
