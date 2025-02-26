@@ -112,12 +112,12 @@ class SettingController extends Controller
                     'messaging_product' => 'whatsapp',
                     'to' => $number,
                     "type" => "text",
+                    "text" => [
+                        "body" => $m
+                    ],
                     "context" => [
                         "message_id" => $old_id
                     ],
-                    "text" => [
-                        "body" => $m
-                    ]
                 ];
             } else {
                 $data = [
@@ -161,7 +161,10 @@ class SettingController extends Controller
                                 ]
                             ]
                         ]
-                    ]
+                                ],
+                    "context" => [
+                        "message_id" => $old_id
+                    ],
                 ];
             }
     
