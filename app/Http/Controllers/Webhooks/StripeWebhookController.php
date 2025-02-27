@@ -394,8 +394,8 @@ class StripeWebhookController extends Controller
             'type' => 'or',
             'to' => 'admin',
 
-            'title' =>  $order->name . ' ha appena ordinato e PAGATO un ordine ' . $order->comune ? 'a domicilio' : 'd\'asporto',
-            'subtitle' => '',
+            'title' =>  $newOrder->name . ' ha appena ordinato e PAGATO' . $newOrder->comune ? 'a domicilio' : 'd\'asporto',
+                    'subtitle' => '',
 
             'order_id' => $order->id,
             'name' => $order->name,
@@ -416,7 +416,7 @@ class StripeWebhookController extends Controller
         ];
 
         $mail = new confermaOrdineAdmin($bodymail);
-        Mail::to($order->email)->send($mail);
+        Mail::to(config('configurazione.mail'))->send($mail);
 
         $bodymail['to'] = 'user';
         $bodymail['whatsapp_message_id'] = $order->whatsapp_message_id;
@@ -424,7 +424,7 @@ class StripeWebhookController extends Controller
         $bodymail['subtitle'] = 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito del processamento';
 
         $mailAdmin = new confermaOrdineAdmin($bodymail);
-        Mail::to(config('configurazione.mail'))->send($mailAdmin);
+        Mail::to($order->email)->send($mailAdmin);
     }
     protected function handlePaymentIntentFailed($paymentIntent){
         // Recupera l'ID dell'ordine dai metadata
