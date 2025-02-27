@@ -401,7 +401,7 @@ class SettingController extends Controller
             'type' => 'res',
             'to' => 'user',
 
-            'title' => 'Come richiesto la tua ordine è stato annullato',
+            'title' => 'Come richiesto la tua prenotazione è stato annullato',
             'subtitle' => '',
 
             'res_id' => $res->id,
