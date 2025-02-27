@@ -60,9 +60,11 @@
                         @else
                             <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
                         @endif
-                        <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                        @if (isset($i->pivot->quantity > 1))
+                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                        @endif
                         <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                        <span style="color: #f4f4f4; font-size: 16px;  margin-left: 10px;">€{{$i->price / 100 }}</span>
+                        <span style="color: #f4f4f4; font-size: 20px;  margin-left: 10px;">€{{$i->price / 100 }}</span>
                         <br>
                         @if (count($arrO) || count($arrA) || count($arrD))
                             <div style="margin: 5px;">
