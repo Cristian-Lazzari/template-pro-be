@@ -24,9 +24,15 @@
         @if (isset($content_mail['subtitle']))
         <h4 style="color: #04001de3; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['subtitle']}}</h4>
         @endif
-
+        @php
+            $dateTime = DateTime::createFromFormat('d/m/Y H:i', $content_mail['date_slot']);
+            // Formattazione personalizzata
+             $formattedDate = strftime('%A %e %B alle %H:%M', $dateTime->getTimestamp());
+            // Converti la stringa in italiano
+            setlocale(LC_TIME, 'it_IT.UTF-8');
+        @endphp 
         <!-- Data prenotata -->
-        <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
+        <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $dateTime }}</p>
         
         <!-- Elenco prodotti -->
         @if($content_mail['type'] == 'or')
