@@ -159,7 +159,7 @@
         
     </div>
     <!-- Footer -->
-    <div style="width: 95%; margin: 50px auto 0; background-color: #04001d; color: white; padding: 10px; text-align: center; font-size: 12px;">
+    <div style="margin: 50px auto 0; background-color: #04001d; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">
                 Contatta {{config('configurazione.APP_NAME')}} se desideri annullare o modificare la tua prenotazione:
