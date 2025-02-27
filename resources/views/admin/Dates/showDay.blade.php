@@ -14,7 +14,7 @@
         'Annullata',
         'Confermata',
         'Da vedere!',
-        'Pagata',
+        'Pagata da vedere! ',
         '',
         'Confermata e Pagata',
         'Annullata e Rimborsata',
@@ -98,7 +98,9 @@
                             <div class="person">
                                 <div>€{{$tk->tot_price / 100}}</div>
                             </div>
-                            <p class="status {{in_array($tk->status, [2, 3]) ? 's-1' : ''}}">{{$status[$tk->status]}}</p>
+                            <p class="status {{in_array($tk->status, [2, 3]) ? 's-1' : ''}}">
+                                {{$status[$tk->status]}}
+                            </p>
                             @if ($tk->message)  
                             <div class="message">
                                 NOTE: {{$tk->message}}
