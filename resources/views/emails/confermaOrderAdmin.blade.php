@@ -71,9 +71,9 @@
                                 <!-- Opzioni prodotto -->
                                 @if (count($arrO))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4af; font-size: 16px;  margin: 5px 0;">Opzioni:</h5>
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Opzioni:</h5>
                                         @foreach ($arrO as $a)
-                                            <span style="color: #f4f4f4af; font-size: 16px;  margin: 2px 0;">+ {{$a}} </span>
+                                            <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">+ {{$a}} </span>
                                         @endforeach
                                     </div>
                                 @endif
@@ -81,18 +81,18 @@
                                     <!-- Ingredienti extra -->
                                     @if (count($arrA))
                                         <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4af; font-size: 16px;  margin: 5px 0;">Ingredienti extra:</h5>
+                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Ingredienti extra:</h5>
                                             @foreach ($arrA as $a)
-                                                <span style="color: #f4f4f4af; font-size: 16px;  margin: 2px 0;">+ {{$a}}</span>
+                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">+ {{$a}}</span>
                                             @endforeach
                                         </div>
                                     @endif
                                     <!-- Ingredienti rimossi -->
                                     @if (count($arrD))
                                         <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4af; font-size: 16px;  margin: 5px 0;">Ingredienti rimossi:</h5>
+                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Ingredienti rimossi:</h5>
                                             @foreach ($arrD as $a)
-                                                <span style="color: #f4f4f4af; font-size: 16px;  margin: 2px 0;">- {{$a}}</span>
+                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">- {{$a}}</span>
                                             @endforeach       
                                         </div>
                                     @endif
