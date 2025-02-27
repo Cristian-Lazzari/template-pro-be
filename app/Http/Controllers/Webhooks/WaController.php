@@ -88,14 +88,7 @@ class WaController extends Controller
 
     protected function message_co_worker($o_r, $c_a, $p, $or_res, $number){
         try {
-            Log::info("Inizio esecuzione message_co_worker", [
-                'o_r' => $o_r,
-                'c_a' => $c_a,
-                'p' => $p,
-                'or_res_id' => $or_res->id ?? 'N/A',
-                'number' => $number
-            ]);
-    
+ 
             // Definizione dei messaggi in base allo stato
             $m = $o_r ? 'L\'ordine è stato ' : 'La prenotazione è stata ';
             $sub = $o_r ? 'L\'ordine è stato' : 'La prenotazione è stata';
@@ -117,6 +110,14 @@ class WaController extends Controller
 
             $messages = json_decode($or_res->whatsapp_message_id, true);
             $old_id = $messages[$p];
+
+            Log::info("Esecuzione message_co_worker", [
+                'o_r' => $o_r,
+                'c_a' => $c_a,
+                'p' => $p,
+                'old_id' => $old_id,
+                'number' => $number
+            ]);
     
             // Controllo se la risposta è entro 24 ore
             if ($this->isLastResponseWaWithin24Hours($p)) {    
@@ -188,7 +189,7 @@ class WaController extends Controller
             ])->post($url, $data);
     
             // Log della risposta ricevuta
-            Log::info("Risposta WhatsApp inviata con successo", ['response' => $response->json()]);
+            Log::info("Risposta da WhatsApp:", ['response' => $response->json()]);
     
             return $response->json();
         } catch (Exception $e) {
