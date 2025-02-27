@@ -340,8 +340,8 @@ class DateController extends Controller
         // Itera sui record per popolare le chiavi
         foreach ($day as $time) {
             // Recupera gli ordini e le prenotazioni per lo specifico date_slot
-            $order = Order::where('date_slot', $time->date_slot)->get();
-            $reservation = Reservation::where('date_slot', $time->date_slot)->get();
+            $order = Order::where('date_slot', $time->date_slot)->where('status', '!=', 4)->get();
+            $reservation = Reservation::where('date_slot', $time->date_slot)->where('status', '!=', 4)->get();
         
             // Aggiungi i dati ai rispettivi campi
             $time->or = $order;
