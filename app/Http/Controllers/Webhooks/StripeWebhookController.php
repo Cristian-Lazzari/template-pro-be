@@ -129,10 +129,10 @@ class StripeWebhookController extends Controller
             $info .= "Ritiro asporto";
             $type_mess .= "Ritiro asporto";
         }
-        $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $newOrder->id;
-        $t = $newOrder->comune ? "Ordine a domicilio *GIÀ PAGATO*" : "Ordine d'asporto *GIÀ PAGATO*";
+        $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $order->id;
+        $t = $order->comune ? "Ordine a domicilio *GIÀ PAGATO*" : "Ordine d'asporto *GIÀ PAGATO*";
         $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
-            "📞 Chiama: " . $newOrder->phone . "\n\n" .
+            "📞 Chiama: " . $order->phone . "\n\n" .
             "🔗 Vedi dalla Dashboard: $link_id";
         // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
@@ -193,11 +193,11 @@ class StripeWebhookController extends Controller
                         'parameters' => [
                             [
                                 'type' => 'text',
-                                'text' => $newOrder->comune ? 'Ordine a domicilio *GIÀ PAGATO*' : 'Ordine d\'asporto *GIÀ PAGATO*', 
+                                'text' => $order->comune ? 'Ordine a domicilio *GIÀ PAGATO*' : 'Ordine d\'asporto *GIÀ PAGATO*', 
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $newOrder->name . ' ' . $newOrder->surname . ' ha ordinato per il ' . $newOrder->date_slot  . ': '
+                                'text' => $order->name . ' ' . $order->surname . ' ha ordinato per il ' . $order->date_slot  . ': '
                             ],
                             [
                                 'type' => 'text',
@@ -209,7 +209,7 @@ class StripeWebhookController extends Controller
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $newOrder->phone,  
+                                'text' => $order->phone,  
                             ],
                             [
                                 'type' => 'text',
@@ -327,7 +327,7 @@ class StripeWebhookController extends Controller
             'type' => 'or',
             'to' => 'admin',
 
-            'title' =>  $newOrder->name . 'ha appena ordinato e PAGATO pagato ' . $newOrder->comune ? 'a domicilio' : 'd\'asporto',
+            'title' =>  $order->name . 'ha appena ordinato e PAGATO ' . $order->comune ? 'a domicilio' : 'd\'asporto',
             'subtitle' => '',
 
             'order_id' => $order->id,
