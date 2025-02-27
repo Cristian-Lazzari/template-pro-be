@@ -51,44 +51,49 @@
 
                     ?>
                     <div class="product" style="width: 100%; margin: 5px 0; background-color: #04001d; padding: 8px; border-radius: 8px;">
+                        @if (isset($item->image))
+                            <img style="width: 120px; margin: 0 5px;" src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                        @else
+                            <div style="width: 120px; margin: 0 5px;"> </div>
+                        @endif
                         <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                         <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
                         <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->price / 100 }}</span>
-                    </div>
-                    <br>
-                    @if (count($arrO) || count($arrA) || count($arrD))
-                        <div style="margin: 5px;">
-                            <!-- Opzioni prodotto -->
-                            @if (count($arrO))
-                                <div style="margin: 5px;">
-                                    <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
-                                    @foreach ($arrO as $a)
-                                        <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
-                                    @endforeach
-                                </div>
-                            @endif
+                        <br>
+                        @if (count($arrO) || count($arrA) || count($arrD))
                             <div style="margin: 5px;">
-                                <!-- Ingredienti extra -->
-                                @if (count($arrA))
+                                <!-- Opzioni prodotto -->
+                                @if (count($arrO))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
-                                        @foreach ($arrA as $a)
-                                            <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                        <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
+                                        @foreach ($arrO as $a)
+                                            <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
                                         @endforeach
                                     </div>
                                 @endif
-                                <!-- Ingredienti rimossi -->
-                                @if (count($arrD))
-                                    <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
-                                        @foreach ($arrD as $a)
-                                            <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
-                                        @endforeach       
-                                    </div>
-                                @endif
+                                <div style="margin: 5px;">
+                                    <!-- Ingredienti extra -->
+                                    @if (count($arrA))
+                                        <div style="margin: 5px;">
+                                            <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
+                                            @foreach ($arrA as $a)
+                                                <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    <!-- Ingredienti rimossi -->
+                                    @if (count($arrD))
+                                        <div style="margin: 5px;">
+                                            <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
+                                            @foreach ($arrD as $a)
+                                                <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
+                                            @endforeach       
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                     {{-- <hr style="height: 1px; background-color: #04001da1; border: none; margin: 10px 0; order-radius: 20px"> --}}
                 @endforeach
             
