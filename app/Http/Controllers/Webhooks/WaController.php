@@ -80,7 +80,7 @@ class WaController extends Controller
             }
         } else {
             // Nessun ordine o prenotazione trovato per il Message ID
-            Log::info("Nessun ordine o prenotazione trovati per il Message ID: " . $messageId);
+            Log::info("(WC) Nessun ordine o prenotazione trovati per il Message ID: " . $messageId);
         }
       
         return response()->json(['status' => 'success']);
@@ -111,7 +111,7 @@ class WaController extends Controller
             $messages = json_decode($or_res->whatsapp_message_id, true);
             $old_id = $messages[$p];
 
-            Log::info("Esecuzione message_co_worker", [
+            Log::info("(WC) Esecuzione message_co_worker", [
                 'o_r' => $o_r,
                 'c_a' => $c_a,
                 'p' => $p,
@@ -189,11 +189,11 @@ class WaController extends Controller
             ])->post($url, $data);
     
             // Log della risposta ricevuta
-            Log::info("Risposta da WhatsApp:", ['response' => $response->json()]);
+            Log::info("(WC) Risposta da WhatsApp:", ['response' => $response->json()]);
     
             return $response->json();
         } catch (Exception $e) {
-            Log::error("Errore in message_co_worker", [
+            Log::error("(WC) Errore in message_co_worker", [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -203,7 +203,7 @@ class WaController extends Controller
     }
     
     protected function statusOrder($c_a, $order){
-        Log::info("success");
+        Log::info("(WC) Inizio statusOrder");
         if($c_a == 1 && in_array($order->status, [1, 5])){
             return;
         }elseif($c_a == 0 && in_array($order->status, [0, 6])){
@@ -353,7 +353,7 @@ class WaController extends Controller
         return $m;
     }
     protected function statusRes($c_a, $res){
-        Log::info("success");
+        Log::info("(WC) Inizio statusRes");
         if($c_a == 1 && in_array($res->status, [1, 5])){
             return;
         }elseif($c_a == 0 && in_array($res->status, [0, 6])){

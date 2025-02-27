@@ -87,7 +87,7 @@ class SettingController extends Controller
     }
     protected function message_default($o_r, $p, $or_res, $number, $link_id){
         try {
-            Log::info("Inizio esecuzione message_default", [
+            Log::info("(SC) Inizio esecuzione message_default", [
                 'o_r' => $o_r,
                 'p' => $p,
                 'or_res_id' => $or_res->id ?? 'N/A',
@@ -176,11 +176,11 @@ class SettingController extends Controller
             ])->post($url, $data);
     
             // Log della risposta ricevuta
-            Log::info("Risposta WhatsApp inviata con successo", ['response' => $response->json()]);
+            Log::info("(SC) Risposta WhatsApp inviata con successo", ['response' => $response->json()]);
     
             return $response->json();
         } catch (Exception $e) {
-            Log::error("Errore in message_default", [
+            Log::error("(SC) Errore in message_default", [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
