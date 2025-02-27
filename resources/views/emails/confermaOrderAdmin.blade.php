@@ -54,7 +54,7 @@
                         @if (isset($i->image))
                         <div>
                             <center>
-                                <img style="width: 120px; margin: 0 5px; border-radius: 8px;" src="{{ asset('public/storage/' . $i->image) }}" alt="{{$i->name}}">
+                                <img style="width: 100px; margin: 0 5px; border-radius: 8px;" src="{{ asset('public/storage/' . $i->image) }}" alt="{{$i->name}}">
                             </center>
                         </div>
                         @else
