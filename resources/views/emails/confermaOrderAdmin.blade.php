@@ -50,7 +50,7 @@
                         //dd($i->pivot->quantity);
 
                     ?>
-                    <div class="product" style="margin: 5px 0; background-color: #04001d; padding: 8px; border-radius: 8px;">
+                    <div class="product" style="margin: 5px 0; background-color: #04001dcd; padding: 8px; border-radius: 8px;">
                         @if (isset($i->image))
                             <img style="width: 120px; margin: 0 5px; border-radius: 8px;" src="{{ asset('public/storage/' . $i->image) }}" alt="{{$i->name}}">
                         @else
