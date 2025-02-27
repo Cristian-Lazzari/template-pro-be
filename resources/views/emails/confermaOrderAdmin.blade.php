@@ -100,9 +100,6 @@
                 <h3 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
             @endif
 
-            <!-- Data prenotata -->
-            <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $content_mail['date_slot'] }}</p>
-
             <!-- Numero di persone -->
             @if (is_string($content_mail['n_person']))
                 @php $n_person = json_decode($content_mail['n_person'], true); @endphp
