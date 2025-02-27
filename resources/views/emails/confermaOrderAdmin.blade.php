@@ -50,16 +50,15 @@
                         //dd($i->pivot->quantity);
 
                     ?>
-                    <div class="product" style="margin: 5px 0; background-color: #04001d; padding: 8px; border-radius: 8px;">
+                    <div class="product" style="margin: 5px 0; background-color: #0f0744; padding: 8px; border-radius: 8px;">
                         @if (isset($i->image))
                         <div>
                             <center>
                                 <img style="width: 100px; margin: 0 5px; border-radius: 8px;" src="{{ asset('public/storage/' . $i->image) }}" alt="{{$i->name}}">
                             </center>
                         </div>
-                        @else
-                            <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
                         @endif
+                        <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
                         @if ($i->pivot->quantity > 1)
                             <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                         @endif
