@@ -20,7 +20,7 @@
         </center>
 
 
-        <h1 style="text-transform :uppercase; color: #04001d; font-size: 24px;">{{$content_mail['title']}}</h1>
+        <h1 style="text-transform :uppercase; color: #04001d; font-size: 24px; margin-bottom: 12px">{{$content_mail['title']}}</h1>
         @if (isset($content_mail['subtitle']))
         <h4 style="color: #04001db9; font-size: 16px; ">{{$content_mail['subtitle']}}</h4>
         @endif
@@ -152,7 +152,7 @@
         @endif
 
         @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 2 && $content_mail['to'] == 'user' && !in_array($content_mail['status'], [0,6]))
-            <p style="margin: 5px; color: #04001d; opacity: .8;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
+            <p style="font-size: 13px; color: #04001d; opacity: .7;" >**Per annullare l'ordine o la prenotazione premi questo bottone </p>
             <p style="margin: 10px;">
                 <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323d8; color: rgb(255, 255, 255); padding: 5px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px;">Annulla</a>
             </p>
