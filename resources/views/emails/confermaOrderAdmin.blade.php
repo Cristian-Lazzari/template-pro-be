@@ -142,12 +142,12 @@
         <!-- Se destinatario è admin -->
         @if($content_mail['to'] == 'admin')             
             <!-- Bottone per chiamare -->
-            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #159478; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
+            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #159478; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">Chiama {{$content_mail['name']}}</a>
             <!-- Bottone per visualizzare nella dashboard -->
             @if ($content_mail['type'] == 'or')
-                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">Visualizza nella Dashboard</a>
             @elseif($content_mail['type'] == 'res')
-                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
 
