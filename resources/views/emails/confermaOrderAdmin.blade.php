@@ -26,14 +26,14 @@
         @endif
         @php
             use Carbon\Carbon;
-            use Carbon\CarbonImmutable;
-
             $dateString = "31/03/2025 18:00"; 
-            $date = Carbon::createFromFormat('d/m/Y H:i', $dateString)->locale('it');
+            $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $dateString)
+                ->locale('it')
+                ->translatedFormat('l j F \a\l\l\e H:i');
         @endphp 
         <!-- Data prenotata -->
         <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: 
-            <strong>{{ ucfirst(\Carbon\Carbon::createFromFormat('d/m/Y H:i', {{$content_mail['date_slot']}})->locale('it')->translatedFormat('l j F \a\l\l\e H:i')) }}</strong>
+            <strong>{{ ucfirst($formattedDate) }}</strong>
         </p>
         
         <!-- Elenco prodotti -->
