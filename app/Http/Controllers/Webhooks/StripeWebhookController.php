@@ -335,6 +335,9 @@ class StripeWebhookController extends Controller
             'type_2' => $type_m_2,
             'source' => config('configurazione.APP_URL'),
         ];
+        $order->checkout_session_id = $session->payment_intent;
+        $order->status = 3;
+        $order->update();
         $this->send_mail($order);
         // Log dei dati inviati
         Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
@@ -383,9 +386,7 @@ class StripeWebhookController extends Controller
 
     protected function send_mail($order){
                                 
-        $order->checkout_session_id = $session->payment_intent;
-        $order->status = 3;
-        $order->update();
+        
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
         
