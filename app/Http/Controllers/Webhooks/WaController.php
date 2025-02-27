@@ -212,7 +212,7 @@ class WaController extends Controller
             return;
         }
         if($c_a == 1){
-            if($order->status == 2 || $order->status == 0){
+            if($order->status == 2){
                 $order->status = 1;
             }elseif($order->status == 3){
                 $order->status = 5;
