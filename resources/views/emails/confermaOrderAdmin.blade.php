@@ -10,7 +10,7 @@
     <div style="max-width: 600px; margin: 10px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
         
         <!-- Informazioni automatizzate -->
-        <p style="font-size: 16px; line-height: 1.8; margin: 5px;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
+        <p style="font-size: 10px; line-height: 1.8; margin: 5px; color: #04001d80;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
         <center>
             @if (config('configurazione.APP_URL') === 'https://db-demo3.future-plus.it')
                 <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
@@ -20,9 +20,9 @@
         </center>
 
 
-        <h1 style="color: #04001d; font-size: 24px; text-align: center; margin: 5px;">{{$content_mail['title']}}</h1>
+        <h1 style="color: #04001d; font-size: 24px; text-align: center;">{{$content_mail['title']}}</h1>
         @if (isset($content_mail['subtitle']))
-        <h4 style="color: #04001de3; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['subtitle']}}</h4>
+        <h4 style="color: #04001db9; font-size: 16px; line-height: 1.8;">{{$content_mail['subtitle']}}</h4>
         @endif
         @php
             use Carbon\Carbon;
@@ -32,7 +32,7 @@
                 ->translatedFormat('l j F \a\l\l\e H:i');
         @endphp 
         <!-- Data prenotata -->
-        <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: 
+        <p style="color: #04001d; font-size: 16px; line-height: 1.8;">Data prenotata: 
             <strong>{{ ucfirst($formattedDate) }}</strong>
         </p>
         
@@ -50,44 +50,46 @@
                         //dd($i->pivot->quantity);
 
                     ?>
-                    <div style="width: 100%; margin: 5px 0;">
-                        <span style="color: #04001d; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
-                        <span style="color: #04001d; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                        <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->price / 100 }}</span>
+                    <div class="product" style="width: 100%; margin: 5px 0; background-color: #04001d; padding: 8px; border-radius: 8px;">
+                        <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                        <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
+                        <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin-left: 10px;">€{{$i->price / 100 }}</span>
                     </div>
                     <br>
-                    <div style="margin: 5px;">
-                        <!-- Opzioni prodotto -->
-                        @if (count($arrO))
-                            <div style="margin: 5px;">
-                                <h5 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
-                                @foreach ($arrO as $a)
-                                    <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
-                                @endforeach
-                            </div>
-                        @endif
+                    @if (count($arrO) || count($arrA) || count($arrD))
                         <div style="margin: 5px;">
-                            <!-- Ingredienti extra -->
-                            @if (count($arrA))
+                            <!-- Opzioni prodotto -->
+                            @if (count($arrO))
                                 <div style="margin: 5px;">
-                                    <h5 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
-                                    @foreach ($arrA as $a)
-                                        <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                    <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
+                                    @foreach ($arrO as $a)
+                                        <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
                                     @endforeach
                                 </div>
                             @endif
-                            <!-- Ingredienti rimossi -->
-                            @if (count($arrD))
-                                <div style="margin: 5px;">
-                                    <h5 style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
-                                    @foreach ($arrD as $a)
-                                        <span style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
-                                    @endforeach       
-                                </div>
-                            @endif
+                            <div style="margin: 5px;">
+                                <!-- Ingredienti extra -->
+                                @if (count($arrA))
+                                    <div style="margin: 5px;">
+                                        <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
+                                        @foreach ($arrA as $a)
+                                            <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <!-- Ingredienti rimossi -->
+                                @if (count($arrD))
+                                    <div style="margin: 5px;">
+                                        <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
+                                        @foreach ($arrD as $a)
+                                            <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
+                                        @endforeach       
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                    <hr style="height: 1px; background-color: #04001da1; border: none; margin: 10px 0; order-radius: 20px">
+                    @endif
+                    {{-- <hr style="height: 1px; background-color: #04001da1; border: none; margin: 10px 0; order-radius: 20px"> --}}
                 @endforeach
             
             </div>
@@ -138,9 +140,10 @@
         @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 2 && $content_mail['to'] == 'user' && !in_array($content_mail['status'], [0,6]))
             <p style="line-height: 1.5; margin: 15px;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
             <p style="line-height: 1.5; margin: 15px;">
-                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323f0; color: rgb(255, 255, 255); padding: 8px 17px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 15px;">Annulla</a>
+                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323d8; color: rgb(255, 255, 255); padding: 5px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px;">Annulla</a>
             </p>
         @endif
+
 
         
     </div>
@@ -151,7 +154,7 @@
                 Contatta {{config('configurazione.APP_NAME')}} se desideri annullare o modificare la tua prenotazione:
             </p>
             <p style="color: #ffffff; line-height: 1.5; margin: 15px;">
-                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 35px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
+                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
             </p>
         @endif
         <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
