@@ -394,7 +394,7 @@ class StripeWebhookController extends Controller
             'type' => 'or',
             'to' => 'admin',
 
-            'title' =>  $newOrder->name . ' ha appena ordinato e PAGATO' . ($newOrder->comune ? 'a domicilio' : 'd\'asporto'),
+            'title' =>  $order->name . ' ha appena ordinato e PAGATO' . ($order->comune ? 'a domicilio' : 'd\'asporto'),
             'subtitle' => '',
 
             'order_id' => $order->id,
