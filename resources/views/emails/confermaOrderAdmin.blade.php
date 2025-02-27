@@ -22,7 +22,7 @@
 
         <h1 style="text-transform :uppercase; color: #04001d; font-size: 24px; margin-bottom: 12px">{{$content_mail['title']}}</h1>
         @if (isset($content_mail['subtitle']))
-        <h4 style="color: #04001db9; font-size: 16px; ">{{$content_mail['subtitle']}}</h4>
+        <h4 style="color: #04001db9; font-size: 16px; margin-top: 0px">{{$content_mail['subtitle']}}</h4>
         @endif
         @php
             use Carbon\Carbon;
