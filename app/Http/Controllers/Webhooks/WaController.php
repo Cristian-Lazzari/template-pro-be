@@ -416,7 +416,7 @@ class WaController extends Controller
             'type' => 'res',
             'to' => 'user',
 
-            'title' =>  $c_a ? 'Ti confermiamo che il tuo ordine è stato accettato' : 'Ci dispiace informarti che la tua prenotazione è stato annullato',
+            'title' =>  $c_a ? 'Ti confermiamo che la tua prenotazione è stata accettata' : 'Ci dispiace informarti che la tua prenotazione è stata annullata',
             'subtitle' => '',
 
             'res_id' => $res->id,
