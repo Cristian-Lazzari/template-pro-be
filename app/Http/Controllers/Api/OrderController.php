@@ -444,7 +444,7 @@ class OrderController extends Controller
                     'type' => 'or',
                     'to' => 'admin',
 
-                    'title' =>  $newOrder->name . 'ha appena ordinato' . $newOrder->comune ? 'a domicilio' : 'd\'asporto',
+                    'title' =>  $newOrder->name . ' ha appena ordinato' . ($newOrder->comune ? 'a domicilio' : 'd\'asporto'),
                     'subtitle' => '',
                     
         
