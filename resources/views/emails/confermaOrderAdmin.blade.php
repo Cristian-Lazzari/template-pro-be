@@ -108,9 +108,9 @@
             
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
-                <h3 style="color: #04001d; font-size: 18px; margin: 10px 0;">Indirizzo per la consegna:</h3>
-                <p style="color: #04001d; font-size: 16px; margin: 5px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
-                <p style="color: #04001d; font-size: 16px; margin: 5px;">L'importo verra pagato al momento della consegna.</p>
+                <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">Indirizzo per la consegna:</h3>
+                <p style="color: #04001d; font-size: 16px; margin: 1rem 0 10px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
+                <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p>
             @endif
     
         @elseif($content_mail['type'] == 'res')
@@ -138,12 +138,12 @@
         <!-- Se destinatario è admin -->
         @if($content_mail['to'] == 'admin')             
             <!-- Bottone per chiamare -->
-            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #119b1a; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
+            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #159478; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
             <!-- Bottone per visualizzare nella dashboard -->
             @if ($content_mail['type'] == 'or')
-                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 90%; text-align: center; padding: 10px; background-color: #04001d; font-size: 20px; font-weight:700; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 90%; text-align: center; padding: 10px; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @elseif($content_mail['type'] == 'res')
-                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 90%; text-align: center; padding: 10px; background-color: #04001d; font-size: 20px; font-weight:700; color: white; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 90%; text-align: center; padding: 10px; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
 
