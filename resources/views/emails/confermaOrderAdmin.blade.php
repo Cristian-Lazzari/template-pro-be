@@ -50,11 +50,11 @@
                         //dd($i->pivot->quantity);
 
                     ?>
-                    <div class="product" style="width: 100%; margin: 5px 0; background-color: #04001d; padding: 8px; border-radius: 8px;">
-                        @if (isset($item->image))
-                            <img style="width: 120px; margin: 0 5px;" src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                    <div class="product" style="margin: 5px 0; background-color: #04001d; padding: 8px; border-radius: 8px;">
+                        @if (isset($i->image))
+                            <img style="width: 120px; margin: 0 5px; border-radius: 8px;" src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
                         @else
-                            <div style="width: 120px; margin: 0 5px;"> </div>
+                            <div style="width: 120px; margin: 0 5px;"> ☛ </div>
                         @endif
                         <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                         <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
@@ -65,9 +65,9 @@
                                 <!-- Opzioni prodotto -->
                                 @if (count($arrO))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
+                                        <h5 style="color: #f4f4f4af; font-size: 16px; line-height: 1.8; margin: 5px 0;">Opzioni:</h5>
                                         @foreach ($arrO as $a)
-                                            <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
+                                            <span style="color: #f4f4f4af; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}} </span>
                                         @endforeach
                                     </div>
                                 @endif
@@ -75,18 +75,18 @@
                                     <!-- Ingredienti extra -->
                                     @if (count($arrA))
                                         <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
+                                            <h5 style="color: #f4f4f4af; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti extra:</h5>
                                             @foreach ($arrA as $a)
-                                                <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
+                                                <span style="color: #f4f4f4af; font-size: 16px; line-height: 1.8; margin: 2px 0;">+ {{$a}}</span>
                                             @endforeach
                                         </div>
                                     @endif
                                     <!-- Ingredienti rimossi -->
                                     @if (count($arrD))
                                         <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
+                                            <h5 style="color: #f4f4f4af; font-size: 16px; line-height: 1.8; margin: 5px 0;">Ingredienti rimossi:</h5>
                                             @foreach ($arrD as $a)
-                                                <span style="color: #f4f4f4; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
+                                                <span style="color: #f4f4f4af; font-size: 16px; line-height: 1.8; margin: 2px 0;">- {{$a}}</span>
                                             @endforeach       
                                         </div>
                                     @endif
