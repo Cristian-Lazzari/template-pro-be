@@ -38,7 +38,7 @@
         
         <!-- Elenco prodotti -->
         @if($content_mail['type'] == 'or')
-        <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">I prodotti:</h3>
+
             <div class="carrello" style="width: 100%;">
                 @foreach ($content_mail['cart'] as $i)               
                     <?php
