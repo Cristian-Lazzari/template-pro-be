@@ -25,14 +25,16 @@
         <h4 style="color: #04001de3; font-size: 16px; line-height: 1.8; margin: 5px;">{{$content_mail['subtitle']}}</h4>
         @endif
         @php
-            $dateTime = DateTime::createFromFormat('d/m/Y H:i', $content_mail['date_slot']);
-            // Formattazione personalizzata
-             $formattedDate = strftime('%A %e %B alle %H:%M', $dateTime->getTimestamp());
-            // Converti la stringa in italiano
-            setlocale(LC_TIME, 'it_IT.UTF-8');
+            use Carbon\Carbon;
+            use Carbon\CarbonImmutable;
+
+            $dateString = "31/03/2025 18:00"; 
+            $date = Carbon::createFromFormat('d/m/Y H:i', $dateString)->locale('it');
         @endphp 
         <!-- Data prenotata -->
-        <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: {{ $dateTime }}</p>
+        <p style="color: #04001d; font-size: 16px; line-height: 1.8; margin: 5px;">Data prenotata: 
+            <strong>{{ ucfirst(\Carbon\Carbon::createFromFormat('d/m/Y H:i', {{$content_mail['date_slot']}})->locale('it')->translatedFormat('l j F \a\l\l\e H:i')) }}</strong>
+        </p>
         
         <!-- Elenco prodotti -->
         @if($content_mail['type'] == 'or')
