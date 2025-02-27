@@ -161,7 +161,7 @@ class SettingController extends Controller
                                 ]
                             ]
                         ]
-                                ],
+                    ],
                     "context" => [
                         "message_id" => $old_id
                     ],
