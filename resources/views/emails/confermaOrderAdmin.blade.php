@@ -104,12 +104,12 @@
             
             </div>
             <!-- Totale carrello -->
-            <p style="color: #04001d; font-size: 22px; margin: 5px;">Totale carrello: €{{$content_mail['total_price'] / 100}}</p>
+            <p style="color: #04001d; font-size: 22px; margin: 15px 0;">Totale carrello: €{{$content_mail['total_price'] / 100}}</p>
             
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
                 <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">Indirizzo per la consegna:</h3>
-                <p style="color: #04001d; font-size: 16px; margin: 1rem 0 10px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
+                <p style="color: #04001d; font-size: 16px; margin: 7px 0 15px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
                 <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p>
             @endif
     
@@ -123,8 +123,12 @@
             <!-- Numero di persone -->
             @if (is_string($content_mail['n_person']))
                 @php $n_person = json_decode($content_mail['n_person'], true); @endphp
-                <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Numero di adulti: {{ $n_person['adult'] }}</h3>
-                <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Numero di bambini: {{ $n_person['child'] }}</h3>
+                @if ($n_person['adult'])
+                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Numero di adulti: {{ $n_person['adult'] }}</h3>
+                @endif
+                @if ($n_person['child'])
+                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Numero di bambini: {{ $n_person['child'] }}</h3>
+                @endif
             @endif
         @endif
 
@@ -138,18 +142,18 @@
         <!-- Se destinatario è admin -->
         @if($content_mail['to'] == 'admin')             
             <!-- Bottone per chiamare -->
-            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 80%; text-align: center; padding: 10px; background-color: #159478; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
+            <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #159478; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Chiama {{$content_mail['name']}}</a>
             <!-- Bottone per visualizzare nella dashboard -->
             @if ($content_mail['type'] == 'or')
-                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 90%; text-align: center; padding: 10px; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @elseif($content_mail['type'] == 'res')
-                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 90%; text-align: center; padding: 10px; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 90%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 20px auto 0 auto;">Visualizza nella Dashboard</a>
             @endif
         @endif
 
         @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 2 && $content_mail['to'] == 'user' && !in_array($content_mail['status'], [0,6]))
-            <p style="line-height: 1.5; margin: 15px;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
-            <p style="line-height: 1.5; margin: 15px;">
+            <p style="margin: 5px; color: #04001d; opacity: .8;" >Per annullare l'ordine o la prenotazione premi questo bottone </p>
+            <p style="margin: 10px;">
                 <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323d8; color: rgb(255, 255, 255); padding: 5px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px;">Annulla</a>
             </p>
         @endif
