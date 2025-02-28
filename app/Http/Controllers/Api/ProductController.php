@@ -28,7 +28,7 @@ class ProductController extends Controller
             $query = $query->where('category_id', $categoryId);
         } 
         
-        $products = $query->where('archived', 0)->orderBy('created_at')->get();
+        $products = $query->where('archived', 0)->orderBy('created_at', 'asc')->get();
         
         return response()->json([
             'success'   => true,
