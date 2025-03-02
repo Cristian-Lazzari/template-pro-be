@@ -2543,11 +2543,12 @@ body{
     z-index: 1050;
 }
 
-.fixed-alert-or, .fixed-alert-res  {
+.fixed-alert-or, .fixed-alert-res {
     margin-bottom: 12px; /* Spazio tra gli alert */
     box-shadow: 0 0 20px -4px var(--c1); 
     font-size: $fs_sm;
     border-radius: 0;
+    border-radius: 20px;
 }
 
 .fixed-alert-or{
