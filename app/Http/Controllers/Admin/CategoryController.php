@@ -70,9 +70,9 @@ class CategoryController extends Controller
     public function new_order_products(Request $request)
     {
         $ids = $request->input('new_order_p');
-        $invertito = array_reverse($ids);
+        //$invertito = array_reverse($ids);
         $s= 0;
-        foreach ($invertito as $id) {
+        foreach ($ids as $id) {
             $prod = Product::where('id', $id)->first();
             $prod->created_at = now()->addSeconds($s); // Aggiunge 5 secondi
 

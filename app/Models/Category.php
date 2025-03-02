@@ -10,6 +10,6 @@ class Category extends Model
 {
     use HasFactory;
     public function product() {    
-        return $this->hasMany(Product::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(Product::class)->orderBy('created_at', 'asc');
     }
 }
