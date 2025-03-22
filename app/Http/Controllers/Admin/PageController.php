@@ -383,25 +383,25 @@ class PageController extends Controller
         };
 
         // Ottieni ordini non notificati
-        $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
-        $res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
+        $not_or = Order::where('notificated', 0)->where('status', '!=', 4)->get();
+        $not_res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
 
         $notify = [];
-        if (count($order) || count($res)) {
-            if (count($order)){
-                foreach ($order as $o) {
+        if (count($not_or) || count($not_res)) {
+            if (count($not_or)){
+                foreach ($not_or as $o) {
                     $n = [
-                        'm' => 'È stato appena concluso un ordine: da ' . $o->name . ' per il ' . $order->date_slot . ' di €' . $o->tot_price / 100,
+                        'm' => 'È stato appena concluso un ordine: da ' . $o->name . ' per il ' . $o->date_slot . ' di €' . $o->tot_price / 100,
                         'type' => 'or'
                     ]; 
                     array_push($notify, $n); $o->notificated = 1; $o->update();
                 }
             }
-            if (count($res)){
-                foreach ($res as $o) {
+            if (count($not_res)){
+                foreach ($not_res as $o) {
                     $person = json_decode($o->n_person, 1);
                     $n = [
-                        'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $order->date_slot . ' , gli ospiti sono ' . $perosn['adult'].' adulti e '.$perosn['child'].' bambini.',
+                        'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $o->date_slot . ' , gli ospiti sono ' . $perosn['adult'].' adulti e '.$perosn['child'].' bambini.',
                         'type' => 'res'
                     ];
                     array_push($notify, $n); $o->notificated = 1; $o->update();
