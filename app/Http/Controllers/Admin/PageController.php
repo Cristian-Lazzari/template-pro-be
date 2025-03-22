@@ -401,7 +401,7 @@ class PageController extends Controller
                 foreach ($not_res as $o) {
                     $person = json_decode($o->n_person, 1);
                     $n = [
-                        'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $o->date_slot . ' , gli ospiti sono ' . $perosn['adult'].' adulti e '.$perosn['child'].' bambini.',
+                        'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $o->date_slot . ' , gli ospiti sono ' . $person['adult'].' adulti e '.$person['child'].' bambini.',
                         'type' => 'res'
                     ];
                     array_push($notify, $n); $o->notificated = 1; $o->update();
