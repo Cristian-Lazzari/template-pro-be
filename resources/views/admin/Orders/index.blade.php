@@ -65,8 +65,8 @@
             <label for="order" class="form-label fw-semibold">Ordina</label>
             <select class="" id="order" name="order" >
                 <option selected disabled value="1">seleziona uno ordine</option>
-                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Data di creazione</option>
                 <option @if (isset($filters) && $filters['order'] == '1') selected @endif value="1">Data di prenotazione</option>
+                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Data di creazione</option>
             </select>
         </div>
         

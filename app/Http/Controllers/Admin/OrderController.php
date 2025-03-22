@@ -66,7 +66,7 @@ class OrderController extends Controller
         if($order){
             $orders = $query->orderBy('date_slot', 'asc')->get();
         }else{
-            $orders = $query->orderBy('created_at', 'desc')->get();    
+            $orders = $query->orderBy('created_at', 'asc')->get();    
         }        
     
 

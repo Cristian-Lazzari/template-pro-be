@@ -11,7 +11,7 @@
     </div>
 @endif
 @php
-$pack = ['', 'Essentials', 'Work on', 'Boost up', '','Boost up +' ]
+$pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' ]
 @endphp
 {{-- <div id="alert-container" >
     <div class="alert alert-dismissible fade show fixed-alert-res">
