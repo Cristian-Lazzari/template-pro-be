@@ -13,16 +13,20 @@
 @php
 $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' ]
 @endphp
-{{-- <div id="alert-container" >
-    <div class="alert alert-dismissible fade show fixed-alert-res">
-        È stata appena conclusa una prenotazione: da Mario Rossi per MERCOLDÌ 20/11, sono 1 adulto e 3 bambini.
-        <button class="btn-close"></button>
+@if (count($notify))
+    <div id="alert-container" >
+        @foreach ($notify as $r)
+            @if ($r['type'] == 'res')  
+                <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
+            @else    
+                <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
+            @endif    
+                {{ $r['m'] }} 
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endforeach
     </div>
-    <div class="alert alert-dismissible fade show fixed-alert-or">
-        È stata appena conclusa un ordinazione: da Mario Rossi per MERCOLDÌ 20/11, ha ordinato d'asporto 3 pizze al piatto e 2 pezzi al taglio per un totale di €22.
-        <button class="btn-close"></button>
-    </div>
-</div> --}}
+@endif
 <div class="dash-c">
     <div class="targhetta">
         <div class="title">
@@ -768,56 +772,56 @@ $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' 
 @if (config('configurazione.subscription') > 1 && ($setting[0]['status'] == 2 || $setting[1]['status'] == 2) && config('configurazione.APP_URL') !== 'http://127.0.0.1:8000')
 
 <script>
-    const alertContainer = document.createElement('div');
-    alertContainer.setAttribute('id', 'alert-container');
-    document.body.appendChild(alertContainer);
+    // const alertContainer = document.createElement('div');
+    // alertContainer.setAttribute('id', 'alert-container');
+    // document.body.appendChild(alertContainer);
     
-    const eventSource = new EventSource('/notifica');
+    // const eventSource = new EventSource('/notifica');
     
-    eventSource.onmessage = function(event) {
+    // eventSource.onmessage = function(event) {
         
-        console.log('event-control')
-        let ac = JSON.parse(event.data);
-        console.log(ac)
+    //     console.log('event-control')
+    //     let ac = JSON.parse(event.data);
+    //     console.log(ac)
     
-        // $.notify(ac.nomeCliente, 'success');
-        function createAlert(order) {
-        // Creazione dell'elemento div principale
-            const alertDiv = document.createElement('div'); 
-            alertDiv.setAttribute('role', 'alert');
-            // Creazione del messaggio parametrizzato
-            if(order.set == 'res'){
-                alertDiv.className = 'alert alert-dismissible fade show fixed-alert-res';
-                const alertText = document.createTextNode(`È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.`);
-                alertDiv.appendChild(alertText);
-            }else if(order.set == 'or'){
-                alertDiv.className = 'alert alert-dismissible fade show fixed-alert-or';
-                const alertText = document.createTextNode(`È stato appena concluso un ordine: da ${order.name} per il ${order.data} di € ${order.price}.`);
-                alertDiv.appendChild(alertText);
-            } 
-            // Creazione del pulsante di chiusura
-            const closeButton = document.createElement('button');
-            closeButton.type = 'button';
-            closeButton.className = 'btn-close';
-            closeButton.setAttribute('data-bs-dismiss', 'alert'); closeButton.setAttribute('aria-label', 'Close');
-            // Aggiunta del pulsante di chiusura al div principale
-            alertDiv.appendChild(closeButton);
-            return alertDiv;
-        }
-        // Ciclo per generare più alert per ogni ordine
-        ac.forEach((order) => {
-            const newAlert = createAlert(order);
-            alertContainer.appendChild(newAlert); // Aggiungi gli alert al container
-            // setTimeout(() => {
-            //     newAlert.remove();
-            // }, 10000);
-        });
+    //     // $.notify(ac.nomeCliente, 'success');
+    //     function createAlert(order) {
+    //     // Creazione dell'elemento div principale
+    //         const alertDiv = document.createElement('div'); 
+    //         alertDiv.setAttribute('role', 'alert');
+    //         // Creazione del messaggio parametrizzato
+    //         if(order.set == 'res'){
+    //             alertDiv.className = 'alert alert-dismissible fade show fixed-alert-res';
+    //             const alertText = document.createTextNode(`È stata appena conclusa una prenotazione: da ${order.name} per il ${order.data}, sono ${order.adult} adulti e ${order.child} bambini.`);
+    //             alertDiv.appendChild(alertText);
+    //         }else if(order.set == 'or'){
+    //             alertDiv.className = 'alert alert-dismissible fade show fixed-alert-or';
+    //             const alertText = document.createTextNode(`È stato appena concluso un ordine: da ${order.name} per il ${order.data} di € ${order.price}.`);
+    //             alertDiv.appendChild(alertText);
+    //         } 
+    //         // Creazione del pulsante di chiusura
+    //         const closeButton = document.createElement('button');
+    //         closeButton.type = 'button';
+    //         closeButton.className = 'btn-close';
+    //         closeButton.setAttribute('data-bs-dismiss', 'alert'); closeButton.setAttribute('aria-label', 'Close');
+    //         // Aggiunta del pulsante di chiusura al div principale
+    //         alertDiv.appendChild(closeButton);
+    //         return alertDiv;
+    //     }
+    //     // Ciclo per generare più alert per ogni ordine
+    //     ac.forEach((order) => {
+    //         const newAlert = createAlert(order);
+    //         alertContainer.appendChild(newAlert); // Aggiungi gli alert al container
+    //         // setTimeout(() => {
+    //         //     newAlert.remove();
+    //         // }, 10000);
+    //     });
         
-    };
+    // };
 
-    eventSource.onerror = function(event) {
-        console.error("Errore nella connessione SSE", event);
-    };
+    // eventSource.onerror = function(event) {
+    //     console.error("Errore nella connessione SSE", event);
+    // };
 </script>
 @endif
 @if (config('configurazione.subscription') > 1 )

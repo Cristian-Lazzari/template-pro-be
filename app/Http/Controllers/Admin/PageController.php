@@ -381,9 +381,35 @@ class PageController extends Controller
             ];
             
         };
-        
+
+        // Ottieni ordini non notificati
+        $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
+        $res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
+
+        $notify = [];
+        if (count($order) || count($res)) {
+            if (count($order)){
+                foreach ($order as $o) {
+                    $n = [
+                        'm' => 'È stato appena concluso un ordine: da ' . $o->name . ' per il ' . $order->date_slot . ' di €' . $o->tot_price / 100,
+                        'type' => 'or'
+                    ]; 
+                    array_push($notify, $n); $o->notificated = 1; $o->update();
+                }
+            }
+            if (count($res)){
+                foreach ($res as $o) {
+                    $person = json_decode($o->n_person, 1);
+                    $n = [
+                        'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $order->date_slot . ' , gli ospiti sono ' . $perosn['adult'].' adulti e '.$perosn['child'].' bambini.',
+                        'type' => 'res'
+                    ];
+                    array_push($notify, $n); $o->notificated = 1; $o->update();
+                }
+            }
+        }
+        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify'));
        // dd($year);
-        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData'));
     }
     public function statistics()
     {
@@ -525,47 +551,7 @@ class PageController extends Controller
                 break; // Esce dal ciclo se la connessione viene interrotta
             }
             
-            // Ottieni ordini non notificati
-            $order = Order::where('notificated', 0)->where('status', '!=', 4)->get();
-            $res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
-    
-            $eventData = [];
-            if (count($order) || count($res)) {
-                if (count($order)){
-                    foreach ($order as $o) {
-                        $eventData[] = [
-                            'set'  => 'or',
-                            'name'  => $o->name,
-                            'data'  => $o->date_slot,
-                            'price'  => $o->tot_price / 100,
-                        ];
-                        // Imposta notificato a 1 per evitare notifiche duplicate
-                        $o->notificated = 1;
-                        $o->update();
-                    }
-                }
-                if (count($res)){
-                    foreach ($res as $o) {
-                        $person = json_decode($o->n_person, 1);
-                        $eventData[] = [
-                            'set'  => 'res',
-                            'name'  => $o->name,
-                            'data'  => $o->date_slot,
-                            'adult'  => $person['adult'],
-                            'child'  => $person['child'],
-                        ];
-                        // Imposta notificato a 1 per evitare notifiche duplicate
-                        $o->notificated = 1;
-                        $o->update();
-                    }
-                }
-                // Invia i dati formattati secondo lo standard SSE
-                echo 'data: ' . json_encode($eventData) . "\n\n";
-                
-                // Forza l'invio immediato dei dati al client
-                ob_flush();
-                flush();
-            }
+            
     
             // Intervallo di attesa per ridurre il carico sul server
             //sleep(7); // 5 secondi di pausa tra le verifiche
