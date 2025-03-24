@@ -408,6 +408,7 @@ class PageController extends Controller
                 }
             }
         }
+        dd($notify);
         return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify'));
        // dd($year);
     }
