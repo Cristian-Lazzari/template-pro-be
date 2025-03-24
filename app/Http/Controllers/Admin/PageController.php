@@ -125,11 +125,11 @@ class PageController extends Controller
     
     
 
-
+    $notify = [];
 
 
         if(count($dates) == 0){
-            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData'));
+            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify'));
         };
         $year = [
             1 => [
@@ -386,7 +386,7 @@ class PageController extends Controller
         $not_or = Order::where('notificated', 0)->where('status', '!=', 4)->get();
         $not_res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
 
-        $notify = [];
+        
         if (count($not_or) || count($not_res)) {
             if (count($not_or)){
                 foreach ($not_or as $o) {
@@ -408,7 +408,7 @@ class PageController extends Controller
                 }
             }
         }
-        dd($notify);
+
         return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify'));
        // dd($year);
     }
