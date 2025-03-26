@@ -383,7 +383,7 @@ class ReservationController extends Controller
                 'surname' => $newRes->surname,
                 'date_slot' => $newRes->date_slot,
                 'message' => $newRes->message,
-                'sala' => $newRes->message,
+                'sala' => $newRes->sala,
                 'phone' => $newRes->phone,
                 'admin_phone' => $telefono,
                 'n_person' => $newRes->n_person,
