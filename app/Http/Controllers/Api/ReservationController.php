@@ -148,6 +148,9 @@ class ReservationController extends Controller
                 $info .="_* \n\n ";
                 $sala_mess .="_*";
             }
+            if($newRes->message){
+                $info .= "Note: " . $newRes->message . " \n";
+            }
             $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
             $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
             "📞 Chiama: " . $newRes->phone . "\n\n" .

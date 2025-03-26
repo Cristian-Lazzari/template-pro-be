@@ -295,6 +295,9 @@ class OrderController extends Controller
                 }
                 $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $newOrder->id;
                 $t = $newOrder->comune ? "Ordine a domicilio" : "Ordine d'asporto";
+                if($newOrder->message){
+                    $info .= "Note: " . $newOrder->message . " \n";
+                }
                 $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
                     "📞 Chiama: " . $newOrder->phone . "\n\n" .
                     "🔗 Vedi dalla Dashboard: $link_id";
