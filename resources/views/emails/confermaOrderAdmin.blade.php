@@ -26,8 +26,8 @@
         @endif
         @php
             use Carbon\Carbon;
-            $dateString = $content_mail['date_slot']; 
-            $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $dateString)
+            $dateString = "31/03/2025 18:00"; 
+            $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $content_mail['date_slot'])
                 ->locale('it')
                 ->translatedFormat('l j F \a\l\l\e H:i');
         @endphp 
