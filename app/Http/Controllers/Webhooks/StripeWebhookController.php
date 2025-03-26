@@ -193,6 +193,9 @@ class StripeWebhookController extends Controller
             $info .= "Ritiro asporto";
             $type_mess .= "Ritiro asporto";
         }
+        if($order->message){
+            $info .= "Note: " . $order->message . " \n";
+        }
         $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $order->id;
         $t = $order->comune ? "Ordine a domicilio *GIÀ PAGATO*" : "Ordine d'asporto *GIÀ PAGATO*";
         $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
