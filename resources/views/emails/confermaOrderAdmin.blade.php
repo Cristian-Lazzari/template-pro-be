@@ -139,7 +139,7 @@
         <!-- Messaggio opzionale -->
         @if($content_mail['message'] !== NULL)
             <h4 style="color: #04001d; font-size: 16px;  margin: 5px;">Messaggio:</h4>
-            <p style="color: #04001d; font-size: 16px;  margin: 5px;">{{$content_mail['message']}}</p>
+            <span style="color: #04001d; font-size: 16px;">{{$content_mail['message']}}</span>
         @endif
 
 
