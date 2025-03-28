@@ -39,8 +39,7 @@ Route::post('orders',           [OrderController::class, 'store'])->name('api.or
 
 Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');
 
-Route::get('/orders/status',            [AdminOrderController::class, 'status_mail'])->name('orders.status');
-Route::post('/reservations/status',     [AdminReservationController::class, 'status'])->name('reservations.status');
+
 
 
 

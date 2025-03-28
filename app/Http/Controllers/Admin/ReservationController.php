@@ -13,6 +13,60 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
+
+    public function filter(Request $request){
+        
+        // FUNZIONE DI FILTRAGGIO INDEX
+        $status = $request->input('status');
+        $name = $request->input('name');
+        $order = $request->input('order');
+        $date = $request->input('date');
+
+        $filters = [
+            'name'          => $name ,
+            'status'        => $status ,
+            'date'          => $date ,
+            'order'         => $order,     
+        ];
+        
+        $query = Reservation::query();
+       
+        if ($name) {
+            $query->where('name', 'like', '%' . $name . '%')
+            ->orWhere('surname', 'like', '%' . $name . '%');
+        } 
+        if ($status == 4) {
+            $query->where('status', 0)
+            ->orWhere('status', 6);
+        } else if ($status == 1) {
+            $query->where('status', 1)
+            ->orWhere('status', 5);
+        } else if ($status == 2) {
+            $query->where('status', 2)
+            ->orWhere('status', 3);
+        } else if ($status == 5) {
+            $query->where('status', 3)
+            ->orWhere('status', 5);
+        }else{ 
+            $query->where('status', '!=', 4);
+        }
+        if($date){
+            $formattedDate = DateTime::createFromFormat('Y-m-d', $date)->format('d/m/Y');
+            $query->where('date_slot', 'like', '%' . $formattedDate . '%');
+        }
+        if($order){
+            $reservations = $query->orderBy('date_slot', 'asc')->get();    
+        }else{
+            $reservations = $query->orderBy('created_at', 'asc')->get();
+        }        
+    
+        $data = [];
+        array_push($data, $filters);
+        array_push($data, $reservations);
+      
+        
+        return redirect()->back()->with('filter', $data);
+    }
     
     public function status(Request $request){
         $wa = $request->input('wa');
@@ -101,62 +155,6 @@ class ReservationController extends Controller
         return redirect()->back()->with('success', $m);   
     }
     
-
-    public function filter(Request $request){
-        
-        // FUNZIONE DI FILTRAGGIO INDEX
-        $status = $request->input('status');
-        $name = $request->input('name');
-        $order = $request->input('order');
-        $date = $request->input('date');
-
-        $filters = [
-            'name'          => $name ,
-            'status'        => $status ,
-            'date'          => $date ,
-            'order'         => $order,     
-        ];
-        
-        $query = Reservation::query();
-       
-        if ($name) {
-            $query->where('name', 'like', '%' . $name . '%')
-            ->orWhere('surname', 'like', '%' . $name . '%');
-        } 
-        if ($status == 4) {
-            $query->where('status', 0)
-            ->orWhere('status', 6);
-        } else if ($status == 1) {
-            $query->where('status', 1)
-            ->orWhere('status', 5);
-        } else if ($status == 2) {
-            $query->where('status', 2)
-            ->orWhere('status', 3);
-        } else if ($status == 5) {
-            $query->where('status', 3)
-            ->orWhere('status', 5);
-        }else{ 
-            $query->where('status', '!=', 4);
-        }
-        if($date){
-            $formattedDate = DateTime::createFromFormat('Y-m-d', $date)->format('d/m/Y');
-            $query->where('date_slot', 'like', '%' . $formattedDate . '%');
-        }
-        if($order){
-            $reservations = $query->orderBy('date_slot', 'asc')->get();    
-        }else{
-            $reservations = $query->orderBy('created_at', 'asc')->get();
-        }        
-    
-        $data = [];
-        array_push($data, $filters);
-        array_push($data, $reservations);
-      
-        
-        return redirect()->back()->with('filter', $data);
-    }
-
-
 
 
     public function index()
