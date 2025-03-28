@@ -20,8 +20,7 @@ use App\Http\Controllers\Admin\ReservationController as AdminReservationControll
 
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
 
-Route::get('client_default',    [SettingController::class, 'client_default'])->name('api.client_default');
- 
+
 Route::get('products',          [ProductController::class, 'index'])->name('api.products.index');
 Route::get('promoHome',         [ProductController::class, 'promoHome'])->name('api.promoHome.index');
 
@@ -34,6 +33,7 @@ Route::get('postHome',          [PostController::class, 'postHome'])->name('api.
 Route::get('dates',             [DateController::class, 'index'])->name('api.dates.index');
 Route::get('getDays',           [DateController::class, 'getDays'])->name('api.dates.getDays');
 
+Route::get('client_default',    [SettingController::class, 'client_default'])->name('api.client_default'); // annullamento tramite mail
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 
