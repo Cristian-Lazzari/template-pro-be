@@ -26,20 +26,19 @@
                 <h4>Descrizione:</h4> 
                 <p>{{$post->description}} </p>       
             </section>
-            <section>
-                <h4>Precedenza: <strong>{{$post->order}}</strong></h4>      
-                @if (isset($post->link)) 
-                    <h4 class="">Link:</h4>
-                    <a class="link" href="{{$post->link}}">{{$post->link}}</a>
-                @else
-                    <p>(nessun link impostato)</p>   
-                @endif  
+            <section> 
+                <h4 class="">Link:
+                    @if (isset($post->link)) 
+                        <a class="link" href="{{$post->link}}">{{$post->link}}</a>
+                    @else
+                        <span>(nessun link impostato)</span>   
+                    @endif  
+                </h4>
             </section>
 
             <section class="split_i">
-                
-                <h4 class="">Pagina: </h4>
-                <p class="">{{$post->path == '1' ? 'News' : 'Story'}}</p>
+
+                <p class=""> <strong>Pagina: </strong>  {{$post->path == '1' ? ' News' : ' Story'}}</p>
                 @if (isset($post->link))
                     <h4>Hashtag:</h4>
                     <p class="">{{$post->hashtag}}</p>

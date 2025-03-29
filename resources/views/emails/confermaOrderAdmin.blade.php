@@ -26,10 +26,20 @@
         @endif
         @php
             use Carbon\Carbon;
-            $dateString = "31/03/2025 18:00"; 
-            $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $content_mail['date_slot'])
-                ->locale('it')
-                ->translatedFormat('l j F \a\l\l\e H:i');
+
+            $dateSlot = $content_mail['date_slot']; // Es: '12/09/2022' oppure '12/09/2022 22:43'
+
+            if (strpos($dateSlot, ' ') !== false) {
+                // Caso: la stringa contiene anche l'orario
+                $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $dateSlot)
+                    ->locale('it')
+                    ->translatedFormat('l j F \a\l\l\e H:i');
+            } else {
+                // Caso: solo la data, senza orario
+                $formattedDate = Carbon::createFromFormat('d/m/Y', $dateSlot)
+                    ->locale('it')
+                    ->translatedFormat('l j F');
+            }
         @endphp 
         <!-- Data prenotata -->
         <p style="color: #04001d; font-size: 18px; ">Data prenotata: 

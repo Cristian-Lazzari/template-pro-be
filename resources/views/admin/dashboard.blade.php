@@ -18,9 +18,11 @@ $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' 
         @foreach ($notify as $r)
             @if ($r['type'] == 'res')  
                 <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
+                <a href="{{ route('admin.reservations.show', $r['id']) }}" class="btn btn-dark-outline">Dettagli</a> 
             @else    
                 <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
-            @endif    
+                <a href="{{ route('admin.orders.show', $r['id']) }}" class="btn btn-dark-outline">Dettagli</a> 
+            @endif 
                 {{ $r['m'] }} 
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>

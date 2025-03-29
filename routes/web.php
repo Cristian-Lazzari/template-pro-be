@@ -60,7 +60,7 @@ Route::middleware(['auth', 'verified'])
 
         Route::post('categories/neworder', [CategoryController::class, 'neworder'])->name('categories.neworder');
         Route::post('categories/new_order_products', [CategoryController::class, 'new_order_products'])->name('categories.new_order_products');
-
+        
         // Rotte product
         
         Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');
@@ -68,14 +68,16 @@ Route::middleware(['auth', 'verified'])
         Route::post('products/status',  [ProductController::class, 'status'])->name('products.status');
         
         // Rotte order res
+        Route::post('orders/changetime',       [OrderController::class, 'changetime'])->name('orders.changetime');
         Route::post('orders/status',       [OrderController::class, 'status'])->name('orders.status');
         Route::post('reservations/status', [ReservationController::class, 'status'])->name('reservations.status');
         
         // Rotte post
         
-        Route::get('posts/archived', [PostController::class, 'archived'])->name('posts.archived');
-        Route::post('posts/filter',  [PostController::class, 'filter'])->name('posts.filter');
-        Route::post('posts/status',  [PostController::class, 'status'])->name('posts.status');
+        Route::post('posts/neworder', [PostController::class, 'neworder'])->name('posts.neworder');
+        Route::get('posts/archived',  [PostController::class, 'archived'])->name('posts.archived');
+        Route::post('posts/filter',   [PostController::class, 'filter'])->name('posts.filter');
+        Route::post('posts/status',   [PostController::class, 'status'])->name('posts.status');
         
         // Rotte Date 
         

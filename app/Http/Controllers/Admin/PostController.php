@@ -18,7 +18,6 @@ class PostController extends Controller
 
         'description'   => 'required',
         'path'          => 'required',
-        'order'         => 'required',
 
         'image'         => 'required',
     ];
@@ -29,7 +28,6 @@ class PostController extends Controller
 
         'description'   => 'required',
         'path'          => 'required',
-        'order'         => 'required',
     ];
 
 
@@ -138,15 +136,37 @@ class PostController extends Controller
 
             return view('admin.Posts.archived', compact('posts', 'filters'));
         }
+        $news = Post::where('archived', false)->where('path', 1)->orderBy('order', 'desc')->get(); 
+        $story = Post::where('archived', false)->where('path', 2)->orderBy('order', 'desc')->get(); 
 
-        return view('admin.Posts.index', compact('posts', 'filters'));
+        return view('admin.Posts.index', compact('posts', 'filters', 'story', 'news'));
         
     }
 
     public function index()
     {
-        $posts    = Post::where('archived', false)->orderBy('order', 'desc')->get(); 
-        return view('admin.Posts.index', compact('posts'));
+        $posts = Post::where('archived', false)->orderBy('order', 'desc')->get(); 
+        $news = Post::where('archived', false)->where('path', 1)->orderBy('order', 'desc')->get(); 
+        $story = Post::where('archived', false)->where('path', 2)->orderBy('order', 'desc')->get(); 
+        return view('admin.Posts.index', compact('posts', 'story', 'news'));
+    }
+
+    public function neworder(Request $request)
+    {
+        $ids = $request->input('new_order');
+        $invertito = array_reverse($ids);
+        $s= 0;
+        foreach ($invertito as $id) {
+            $post = Post::where('id', $id)->first();
+            $post->order = $s; 
+            $post->update(); 
+            $s++;
+        }
+        
+        //dd($ids);
+        $m = 'Ordine aggiornato correttamente';
+    
+        return to_route('admin.posts.index')->with('order_success', $m);   
     }
 
     public function create()
@@ -169,7 +189,7 @@ class PostController extends Controller
         $post->hashtag       = $data['hashtag'];
         $post->description   = $data['description'];
         $post->path          = $data['path'];
-        $post->order         = $data['order'];
+        $post->order         = Post::max('order') + 1;
         $post->link          = $data['link'];
         
         $post->save();
@@ -206,7 +226,6 @@ class PostController extends Controller
         $post->hashtag       = $data['hashtag'];
         $post->description   = $data['description'];
         $post->path          = $data['path'];
-        $post->order         = $data['order'];
         $post->link          = $data['link'];
         $post->promo      = isset($data['promo']) ? true : false;
         

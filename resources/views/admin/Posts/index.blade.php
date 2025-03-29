@@ -21,6 +21,15 @@
        " {{ $data->title }} " e stato eliminato correttamente
     </div>
 @endif
+@if (session('order_success'))
+    @php
+        $data = session('order_success')
+    @endphp
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ $data }} 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
  
 <h1>Post</h1>
  
@@ -84,6 +93,7 @@
     </div>
     
 </form> 
+
 <div class="action-page">
     <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.posts.create') }}">Crea un nuovo post</a>
     <a class="my_btn_1 trash m-1 w-auto" href="{{ route('admin.posts.archived') }}">Archivio</a>
@@ -112,7 +122,7 @@
                 <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
                 <div class="info">
                     <section>
-                        <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
+                        {{-- <h4>Precedenza: <strong>{{$item->order}}</strong></h4>       --}}
                         @if (isset($item->link)) 
                             <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
                         @endif  
@@ -151,4 +161,147 @@
         </div>
     @endforeach
 </div>
+<div class="action-page mt-5">
+    <button type="button" class="my_btn_3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialStory">
+        Modifica ordine Post in Storia
+    </button>
+    <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialNews">
+        Modifica ordine Post in News
+    </button>
+</div>
+
+
+
+    <!-- Modal ORDINA LE CATEGORIE -->
+<div class="modal fade" id="staticBackdropspecialNews" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="#staticBackdropspecialNews" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class=" fs-5" id="staticBackdropspecialNews">Riordina i tuoi Post in News (Novità/eventi)</h1>
+            <button type="button" class="btn-close" data-bs-target="#staticBackdropspecialNews" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body body">
+                <form action="{{ route('admin.posts.neworder') }}" method="post" >
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="text-center">Post in News</h4>
+                            <ul id="newsA" class="list-group mylist">
+                                @foreach($news as $oggetto)
+                                    <li class="list-group-item list_n" data-id="{{ $oggetto['id'] }}">
+                                        <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->title }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    
+                    
+                        <div class="col-md-6">
+                            <h4 class="text-center">Ordine corretto</h4>
+                            <ul id="newsB" class="list-group mylist list_n">
+                                <!-- Lista vuota inizialmente -->
+                            </ul>
+                        </div>
+                    </div>
+                    <button  id="btnConfermaN" class="d-none my_btn_5 w-100" type="submit">
+                        Modifica
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="staticBackdropspecialStory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="#staticBackdropspecialStory" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class=" fs-5" id="staticBackdropspecialStory">Riordina i tuoi Post in Storia (Chi siamo)</h1>
+            <button type="button" class="btn-close" data-bs-target="#staticBackdropspecial" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body body">
+                <form action="{{ route('admin.categories.neworder') }}" method="post" >
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="text-center">Post in story</h4>
+                            <ul id="storyA" class="list-group mylist">
+                                @foreach($story as $oggetto)
+                                    <li class="list-group-item list_s" data-id="{{ $oggetto['id'] }}">
+                                        <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->title }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    
+                    
+                        <div class="col-md-6">
+                            <h4 class="text-center">Ordine corretto</h4>
+                            <ul id="storyB" class="list-group mylist list_s">
+                                <!-- Lista vuota inizialmente -->
+                            </ul>
+                        </div>
+                    </div>
+                    <button  id="btnConfermaS" class="d-none my_btn_5 w-100" type="submit">
+                        Modifica
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+<script defer>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let storyA = document.getElementById("storyA");
+    let storyB = document.getElementById("storyB");
+    let newsA = document.getElementById("newsA");
+    let newsB = document.getElementById("newsB");
+    let btnConfermaS = document.getElementById("btnConfermaS");
+    let btnConfermaN = document.getElementById("btnConfermaN");
+
+    function spostaElemento(elemento, destinazione, list) {
+        destinazione.appendChild(elemento);
+        controllaBottone(list);
+    }
+
+    function controllaBottone(list) {
+        // Mostra il bottone solo se listaB è vuota
+        if(list == 'story'){
+            if (storyA.children.length === 0) {
+                btnConfermaS.classList.remove("d-none");
+            } else {
+                btnConfermaS.classList.add("d-none");
+            }
+        }else{
+            if (newsA.children.length === 0) {
+                btnConfermaN.classList.remove("d-none");
+            } else {
+                btnConfermaN.classList.add("d-none");
+            }
+        }
+    }
+    document.body.addEventListener("click", function (e) {
+        if (e.target.classList.contains("list_s")) {
+            const elemento = e.target;
+            if (elemento.parentElement.id === "storyA") {
+                spostaElemento(elemento, storyB, 'story');
+            } else {
+                spostaElemento(elemento, storyA, 'story');
+            }
+            
+        }else if(e.target.classList.contains("list_n")){
+            const elemento = e.target;
+            if (elemento.parentElement.id === "newsA") {
+                spostaElemento(elemento, newsB, 'news');
+            } else {
+                spostaElemento(elemento, newsA, 'news');
+            }
+        }
+    });
+});
+</script>
 @endsection

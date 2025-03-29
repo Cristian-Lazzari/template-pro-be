@@ -11,6 +11,15 @@
         {{ $data }}
     </div>
 @endif
+@if (session('error'))
+    @php
+        $data = session('error')
+    @endphp
+    <div class="alert alert-danger">
+        {{ $data }}
+    </div>
+@endif
+
 @if (session('filter'))
     @php
         $data = session('filter');

@@ -80,6 +80,10 @@ class OrderController extends Controller
     protected function statusF($wa, $c_a, $id){
 
         $order = Order::where('id', $id)->with('products')->firstOrFail();
+        $date = Date::where('date_slot', $order->date_slot)->first();
+            if($date == null){
+                return 'error data';
+            }
         //dd($order);
         if($c_a){
             if($order->status == 2 || $order->status == 0){
@@ -125,7 +129,7 @@ class OrderController extends Controller
                 $m = 'L\'ordine era gia stato annullato!';
                 return redirect()->back()->with('success', $m); 
             }
-            $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
+            
             $vis = json_decode($date->visible, 1); 
             $reserving = json_decode($date->reserving, 1);
             if(config('configurazione.typeOfOrdering')){
@@ -133,7 +137,7 @@ class OrderController extends Controller
                 $np_cucina_2 = 0;
                 foreach ($order->products as $p) {
                     $qt = 0;
-                    $op = OrderProduct::where('product_id', $p->id)->where('order_id', $order->id)->firstOrFail();
+                    $op = OrderProduct::where('product_id', $p->id)->where('order_id', $order->id)->first();
                     if($op !== null){
                         $qt = $op->quantity;
                         if($p->type_plate == 1 && $qt !== 0){
@@ -230,6 +234,9 @@ class OrderController extends Controller
         $id = $request->input('id');
         
         $m = $this->statusF($wa, $c_a, $id);
+        if($m == 'error data'){
+            return redirect()->back()->with('error', 'ATTENZIONE! La data relativa alla prenotazione/ordine selezionata/o non è più esistente');
+        }
         
         return redirect()->back()->with('success', $m);   
     }
@@ -239,12 +246,6 @@ class OrderController extends Controller
         $wa = false;
 
         $this->statusF($wa, $c_a, $id);
-        
-
-//...
-        // dump("https://chat.whatsapp.com/" . config('configurazione.id_group') . "?text=" . $info);
-        // return redirect("https://wa.me/" . config('configurazione.id_group') . "?text=" . $info);
-        //return redirect("https://chat.whatsapp.com/" . config('configurazione.id_group') . "?text=" . $info);
     }
 
     public function index()
@@ -287,10 +288,86 @@ class OrderController extends Controller
         return view('admin.Orders.show', compact('order', 'orderProduct', 'delivery_cost'));
     }
 
-    
     public function destroy($id)
     {
         //
     }
     
+    public function changetime(Request $request){
+       // dd($request);
+
+        $order = Order::where('id', $request['id'])->with('products')->first();
+
+        $new_time = $request['new_time'];
+        $content_notify = 'L\'ordine è stato posticipato correttamente alle: ' . $new_time;
+        
+        //dd($content_notify);
+        $ship = $order->comune ? 'consegnare' : 'preparare';
+        $ship_2 = $order->comune ? 'alla tua consegna' : 'al tuo ritiro';
+        $message_wa = 'Ciao ' . $order->name . ' ti informiamo che abbiamo accettato il tuo ordine, al fine di offrirti il miglior servizio e la miglior qualità dei prodotti '. $ship_2 .', riusciremo a ' . $ship . ' l\'ordine entro questo quest\'orario: ' . $new_time ;
+        $sub = 'Al fine di offrirti il miglior servizio e la miglior qualità dei prodotti '. $ship_2 .', riusciremo a ' . $ship . ' l\'ordine entro questo quest\'orario: ' . $new_time ;
+        
+        $date = Date::where('date_slot', $order->date_slot)->first();
+        if($date == null){
+            return redirect()->back()->with('error', 'La data relativa alla prenotazione/ordine selezionata/o non è più esistente');
+        }
+        $vis = json_decode($date->visible, 1); 
+        $reserving = json_decode($date->reserving, 1);
+
+        if($request['cancel'] == 0){
+            $content_notify .= ' e l\'orario è stato bloccato';
+            if(config('configurazione.typeOfOrdering')){
+                $vis['cucina_1'] = 0;
+                $vis['cucina_2'] = 0;
+                $vis['domicilio'] = 0;
+            }else{
+                $vis['asporto'] = 0;
+                $vis['domicilio'] = 0;
+            }
+        }
+
+
+        $date->reserving = json_encode($reserving);
+        $date->visible = json_encode($vis);
+        $date->update();
+        $order->status = $order->status == 3 ? 5 : 1;
+        $order->update();
+
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        $bodymail = [
+            'type' => 'or',
+            'to' => 'user',
+            'order_id' => $order->id,
+            'name' => $order->name,
+            'surname' => $order->surname,
+            'email' => $order->email,
+            'date_slot' => explode(' ', $order->date_slot)[0],
+            'message' => $order->message,
+            'phone' => $order->phone,
+            'admin_phone' => $p_set['telefono'],
+            
+            'comune' => $order->comune,
+            'address' => $order->address,
+            'address_n' => $order->address_n,
+            
+            'title' =>  'Ciao ' . $order->name . ' ti informiamo che il tuo ordine è stato confermato',
+            'subtitle' => $sub,
+            'whatsapp_message_id' => $order->whatsapp_message_id,
+
+            'status' => $order->status,
+            'cart' => $order->products,
+            'total_price' => $order->tot_price,
+        ];
+
+       
+        $mail = new confermaOrdineAdmin($bodymail);
+        Mail::to($order['email'])->send($mail);
+
+       
+        // if($content_notify){
+        //     return redirect("https://wa.me/39" . $order->phone . "?text=" . $message_wa);
+        // }
+        return redirect()->back()->with('success', $content_notify);
+    }
 }

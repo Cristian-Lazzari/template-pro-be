@@ -392,7 +392,8 @@ class PageController extends Controller
                 foreach ($not_or as $o) {
                     $n = [
                         'm' => 'È stato appena concluso un ordine: da ' . $o->name . ' per il ' . $o->date_slot . ' di €' . $o->tot_price / 100,
-                        'type' => 'or'
+                        'type' => 'or',
+                        'id' => $o->id
                     ]; 
                     array_push($notify, $n); $o->notificated = 1; $o->update();
                 }
@@ -402,7 +403,8 @@ class PageController extends Controller
                     $person = json_decode($o->n_person, 1);
                     $n = [
                         'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $o->date_slot . ' , gli ospiti sono ' . $person['adult'].' adulti e '.$person['child'].' bambini.',
-                        'type' => 'res'
+                        'type' => 'res',
+                        'id' => $o->id
                     ];
                     array_push($notify, $n); $o->notificated = 1; $o->update();
                 }

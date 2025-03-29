@@ -121,7 +121,7 @@
                     <input type="hidden" name="v" value="0">
                     <input type="hidden" name="a" value="1">
                     <input type="hidden" name="id" value="{{$item->id}}">
-                    <button class="my_btn_1 d" type="submit">Archivia</button>
+                    <button class="my_btn_1 d" type="submit">Ripristina</button>
                 </form>
                 <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
