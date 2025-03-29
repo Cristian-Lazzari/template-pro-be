@@ -1121,7 +1121,7 @@ body{
             background-color: var(--c2_op);
             border-radius: 12px;
             //width: 195px !important;
-            //height: 195px;
+            max-height: 195px;
             object-fit: cover;
             border: 5px solid var(--c3);
             width: 100%;
