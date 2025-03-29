@@ -958,7 +958,8 @@ body{
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
-    gap: .2rem;
+    flex-wrap: wrap;
+    gap: .3rem;
 }
 @media (max-width: 600px ) {
     .top-bar-product{
