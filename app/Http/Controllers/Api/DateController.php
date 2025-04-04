@@ -12,7 +12,7 @@ class DateController extends Controller
 {
     public function getDays(Request $request) {
 
-        $filter = $request->query('filter'); // 1 tavol1 // asporto 2 // 3 domicillio
+        $filter = $request->query('filter'); // 1 tavol1 // 2 asporto // 3 domicillio
         
         // Ottieni la data e l'ora attuale 
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
