@@ -83,9 +83,24 @@
                                 @if($o->fixed_menu == '2')
                                     <div class="choices">
                                         <h5>Prodotti:</h5>
-                                        @foreach ($o->products as $c)
-                                        <span>{{$c->pivot->label}}:</span>
-                                        <span>{{$c->name}}({{$c->category->name}})</span>
+                                        @php
+                                           // 
+                                            $right_c = [];
+                                            $scelti = json_decode($o->pivot->choices)
+                                            foreach ($scelti as $id) {
+                                                foreach ($o->products as $p) {
+                                                    if($p->id == $p){
+                                                        array_push($right_c , $p)
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+                                        @foreach ($right_c as $c)
+                                            @if()
+                                                <strong>{{$c->pivot->label}}: </strong>
+                                                <span>{{$c->name}}({{$c->category->name}})</span>
+                                            @endif
                                         @endforeach
                                         
                                     </div>
