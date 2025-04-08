@@ -59,13 +59,13 @@
                             </center>
                         </div>
                         @endif
-                        <div style="display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
-                            <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
+                        <div style="margin: 0 5px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                            <span style=" color: #f4f4f4; font-size: 25px;"> ☛ {{$i->name}}</span>
+                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;"></span>
                             @if ($i->pivot->quantity > 1)
                                 <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                             @endif
-                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                            <span style="color: #f4f4f4; font-size: 14px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
+                            <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
                         </div>
                         @if($i->fixed_menu == '2')
                             <div class="choices">
@@ -85,12 +85,15 @@
                                 @endphp
                                 @foreach ($right_c as $c)
                                     <div style="margin: 2px 10px;">
-                                        <strong style="color: #f4f4f4; opacity: .7; font-size: 17px; font-weight:900; ">{{$c->pivot->label}}: </strong>
-                                        <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
-                                            {{$c->name}} ({{$c->category->name}})</span>
+                                        <div style="margin: 0 5px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                                            <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
+                                                <strong style="color: #f4f4f4; opacity: .7; font-size: 17px; font-weight:900; ">{{$c->pivot->label}}: </strong>
+                                                {{$c->name}} ({{$c->category->name}})
+                                            </span>
                                             @if ($c->pivot->extra_price)   
-                                                <strong style="color: #f4f4f4; opacity: .7; font-size: 13px; font-weight:900;">(+ €{{$c->pivot->extra_price / 100}})</strong>
+                                                <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$c->pivot->extra_price / 100}}</strong>
                                             @endif    
+                                        </div>
                                     </div>
 
                                 @endforeach
@@ -127,12 +130,14 @@
                             </center>
                         </div>
                         @endif
-                        <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
-                        @if ($i->pivot->quantity > 1)
-                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
-                        @endif
-                        <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                        <span style="color: #f4f4f4; font-size: 14px; margin-left: auto;"> € {{$i->price / 100 }}</span>
+                        <div style="display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                            <span style="margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ {{$i->name}}</span>
+                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;"></span>
+                            @if ($i->pivot->quantity > 1)
+                                <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                            @endif
+                            <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
+                        </div>
                         <br>
                         @if (count($arrO) || count($arrA) || count($arrD))
                             <div style="margin: 5px;">
@@ -174,7 +179,7 @@
             
             </div>
             <!-- Totale carrello -->
-            <p style="color: #04001d; font-size: 22px; margin: 15px 0;">Totale carrello: €{{$content_mail['total_price'] / 100}}</p>
+            <p style="color: #04001d; font-size: 22px; margin: 15px 0; text-align:end;">Totale carrello: €{{$content_mail['total_price'] / 100}}</p>
             
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))

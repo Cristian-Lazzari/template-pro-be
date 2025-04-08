@@ -37,8 +37,7 @@ class OrderController extends Controller
         $request->validate($this->validations);
         $delivery = false;
         $data = $request->all();
-        try {
-            
+        try {       
             $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
             $vis = json_decode($date->visible, true);
             $av = json_decode($date->availability, true);
@@ -464,8 +463,24 @@ class OrderController extends Controller
                 }else{
                     $telefono = '3332222333';
                 }
+                $product_r = [];
+                foreach ($newOrder->products as $p) {
+                    $arrO = json_decode($p->pivot->option, 1);
+                    $arrA = json_decode($p->pivot->add, 1);
+                    $p->r_option = [];
+                    $p->r_add = [];
+                    foreach ($arrO as $o) {
+                        $ingredient = Ingredient::where('name', $o)->first();
+                        array_push($p->r_option, $ingredient); 
+                    }
+                    foreach ($arrA as $o) {
+                        $ingredient = Ingredient::where('name', $o)->first();
+                        array_push($p->r_add, $ingredient); 
+                    }
+                    array_push($product_r, $p); 
+                }
                 $cart_mail = [
-                    'products' => $newOrder->products,
+                    'products' => $product_r,
                     'menus' => $newOrder->menus,
                 ];
                 $bodymail = [
