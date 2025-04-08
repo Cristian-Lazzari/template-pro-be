@@ -286,32 +286,11 @@ class OrderController extends Controller
             $cart_price += $o->price * $o->pivot->quantity;
         }
         foreach ($order->menus as $menu) {
-            $cart_price += $menu->price * $menu->pivot->quantity;
-            if($menu->pivot->choices !== '1'){
-                $right_c = [];
-                $c = json_decode($menu->pivot->choices, 1);
-                $choices =  json_decode($menu->fixed_menu, 1);
-
-                if(!is_array($choices)){
-                   dd('errore');
+            if($menu->fixed_menu == '2'){
+                foreach ($menu->products as $p) {
+                    $cart_price +=$p->pivot->extra_price* $menu->pivot->quantity;
                 }
-                foreach ($choices as $choice) {
-                    foreach ($choice['products'] as $p) {
-                        if (in_array($p['id'], $c)) {
-                            $cart_price += $p['extra_price'] * $menu->pivot->quantity;
-                            $r_c = [
-                                'label' => $choice['label'],
-                                'product' => Product::where('id', $p['id'])->first(),
-                            ];
-                        }
-                    }
-                    array_push($right_c, $r_c);
-                }
-                $menu->r_choice = $right_c;
             }
-        }
-        foreach ($c as $k) {
-            # code...
         }
         $delivery_cost = $order->tot_price - $cart_price;
         
