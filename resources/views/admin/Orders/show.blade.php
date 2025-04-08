@@ -89,7 +89,7 @@
                                             $scelti = json_decode($o->pivot->choices);
                                             foreach ($scelti as $id) {
                                                 foreach ($o->products as $p) {
-                                                    if($p->id == $p){
+                                                    if($p->id == $id){
                                                         array_push($right_c , $p);
                                                         break;
                                                     }
