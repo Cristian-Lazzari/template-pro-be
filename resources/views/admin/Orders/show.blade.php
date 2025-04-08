@@ -90,7 +90,7 @@
                                             foreach ($scelti as $id) {
                                                 foreach ($o->products as $p) {
                                                     if($p->id == $p){
-                                                        array_push($right_c , $p)
+                                                        array_push($right_c , $p);
                                                         break;
                                                     }
                                                 }
