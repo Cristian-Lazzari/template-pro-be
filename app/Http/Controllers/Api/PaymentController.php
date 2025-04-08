@@ -13,7 +13,7 @@ use App\Http\Controllers\Controller;
 
 class PaymentController extends Controller
 {        
-    public function checkout($cart, $id, $delivery) 
+    public function checkout($cart, $id, $delivery, $menus) 
     {
        
         $final_destination = config('configurazione.domain') . '/success-pay'; 
@@ -23,6 +23,37 @@ class PaymentController extends Controller
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
  
         $line_items = [];
+        foreach ($menus as $menu) {
+            $line_items[] = [
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => [
+                        'name' => $menu->name,
+                    ],
+                    'unit_amount' => $menu->price, 
+                ],
+                'quantity' => $menu->pivot->quantity,
+            ];
+            if ($menu->fixed_menu == '2') {
+                foreach ($menu->products as $p) {
+                    //$product = Product::where('id', $p)->first();
+                    //if ($product) {
+                    $line_items[] = [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'product_data' => [
+                                'name' => $p->name,
+                            ],
+                            'unit_amount' =>  $p->pivot->extra_price ? $p->pivot->extra_price : 0, 
+                        ],
+                        'quantity' => $menu->pivot->quantity,
+                    ];
+                        
+                   // }
+                }
+            }
+
+        }
         foreach ($cart as $orderProduct) {
             //return [$orderProduct->quantity, $orderProduct->price];
             $line_items[] = [
@@ -31,7 +62,7 @@ class PaymentController extends Controller
                     'product_data' => [
                         'name' => $orderProduct->name,
                     ],
-                    'unit_amount' => $orderProduct->price, // Prezzo totale del prodotto con gli extra
+                    'unit_amount' => $orderProduct->price, // Prezzo totale del prodotto senza gli extra
                 ],
                 'quantity' => $orderProduct->pivot->quantity,
             ];

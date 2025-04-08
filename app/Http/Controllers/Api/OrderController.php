@@ -257,7 +257,7 @@ class OrderController extends Controller
             
             if($data['paying']){   
                 
-                $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $delivery);
+                $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $delivery, $newOrder->menus);
                 
                 return response()->json([
                     'success'   => true,
