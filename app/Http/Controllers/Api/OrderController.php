@@ -465,20 +465,23 @@ class OrderController extends Controller
                 }
                 $product_r = [];
                 foreach ($newOrder->products as $p) {
-                    $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, 1) : [];
-                    $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, 1) : [];
-                    $p->r_option = [];
-                    $p->r_add = [];
+                    $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
+                    $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
+                    $r_option = [];
+                    $r_add = [];
                     foreach ($arrO as $o) {
                         $ingredient = Ingredient::where('name', $o)->first();
-                        array_push($p->r_option, $ingredient); 
+                        $r_option[] = $ingredient;
                     }
                     foreach ($arrA as $o) {
                         $ingredient = Ingredient::where('name', $o)->first();
-                        array_push($p->r_add, $ingredient); 
+                        $r_add[] = $ingredient;
                     }
-                    array_push($product_r, $p); 
+                    $p->setAttribute('r_option', $r_option);
+                    $p->setAttribute('r_add', $r_add);
+                    $product_r[] = $p;
                 }
+                
                 $cart_mail = [
                     'products' => $product_r,
                     'menus' => $newOrder->menus,
