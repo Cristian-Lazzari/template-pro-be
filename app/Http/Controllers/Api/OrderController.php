@@ -272,7 +272,29 @@ class OrderController extends Controller
                 // Itera sui prodotti dell'ordine
                 $order_mess = "";
                 $type_mess = "";
-                $lastProduct = end($newOrder->products);
+
+                foreach ($newOrder->menus as $menu) {
+                    // Aggiungi il nome e la quantità del prodotto
+                    $info .= "☞ ";
+                    $order_mess .= "☞ ";
+                    if ($menu->pivot->quantity !== 1) {
+                        $info .= "** {$menu->pivot->quantity}* ";
+                        $order_mess .= "** {$menu->pivot->quantity}* ";
+                    }
+                    $info .= "*```" . $menu->name. "```*";
+                    $order_mess .= "*```" . $menu->name. "```*";
+                    // Gestisci le opzioni del prodotto
+                    $info .= "\n ```Prodotti:``` " ;
+                    $order_mess .= " ```Prodotti:``` " ;
+                    foreach ($menu->pivot->products as $p) {
+                        $info .= "\n " . $p->name . " " ;
+                        $order_mess .= $p->name . " " ;
+                    }
+                    // Separatore tra i prodotti
+                    $info .= " \n\n";
+                    $order_mess .= " " . " ";
+                }
+
                 foreach ($newOrder->products as $product) {
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "☞ ";
@@ -463,6 +485,7 @@ class OrderController extends Controller
                 }else{
                     $telefono = '3332222333';
                 }
+                //new menu
                 $product_r = [];
                 foreach ($newOrder->products as $p) {
                     $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
@@ -481,11 +504,11 @@ class OrderController extends Controller
                     $p->setAttribute('r_add', $r_add);
                     $product_r[] = $p;
                 }
-                
                 $cart_mail = [
                     'products' => $product_r,
                     'menus' => $newOrder->menus,
                 ];
+                //new menu
                 $bodymail = [
                     'type' => 'or',
                     'to' => 'admin',
