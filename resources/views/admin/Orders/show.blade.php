@@ -86,7 +86,7 @@
                                         @php
                                            // 
                                             $right_c = [];
-                                            $scelti = json_decode($o->pivot->choices)
+                                            $scelti = json_decode($o->pivot->choices);
                                             foreach ($scelti as $id) {
                                                 foreach ($o->products as $p) {
                                                     if($p->id == $p){
