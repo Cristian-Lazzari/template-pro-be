@@ -68,7 +68,7 @@
                         <br>
                         @if($i->fixed_menu == '2')
                             <div class="choices">
-                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0 3px;">Prodotti nel menu:</h5>
+                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti scelti:</h5>
                                 @php
                                     // 
                                     $right_c = [];
@@ -83,13 +83,13 @@
                                     }
                                 @endphp
                                 @foreach ($right_c as $c)
-                                    <div style="margin: 3px 5px;">
+                                    <div style="margin: 2px 10px;">
                                         <strong style="color: #f4f4f4; opacity: .7; font-size: 17px; font-weight:900; ">{{$c->pivot->label}}: </strong>
                                         <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
                                             @if ($c->pivot->extra_price)   
                                                 <strong style="color: #f4f4f4; opacity: .7; font-size: 13px; font-weight:900;">(+ €{{$c->pivot->extra_price / 100}})</strong>
-                                            @endif
-                                             {{$c->name}} ({{$c->category->name}})</span>
+                                            @endif    
+                                            {{$c->name}} ({{$c->category->name}})</span>
                                     </div>
 
                                 @endforeach
@@ -97,10 +97,11 @@
                             </div>
                         @else
                             <div class="prod">
-                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Prodotti nel menu:</h5>
+                                <h5style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti nel menu:</h5>
                                 @foreach ($i->products as $c)
-                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">{{$c->name}} ({{$c->category->name}})</span>
-
+                                    <div style="margin: 2px 10px;">
+                                        <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">{{$c->name}} ({{$c->category->name}})</span>
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
