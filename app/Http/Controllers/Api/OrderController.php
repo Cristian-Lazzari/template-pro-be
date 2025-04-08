@@ -465,7 +465,7 @@ class OrderController extends Controller
                     $telefono = '3332222333';
                 }
                 $cart_mail = [
-                    'proudcts' => $newOrder->products,
+                    'products' => $newOrder->products,
                     'menus' => $newOrder->menus,
                 ];
                 $bodymail = [
