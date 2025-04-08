@@ -196,6 +196,8 @@
                 <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">Indirizzo per la consegna:</h3>
                 <p style="color: #04001d; font-size: 16px; margin: 7px 0 15px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
                 <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p>
+            @else
+                <p style="color: #04001d; font-size: 16px; margin: 10px 0;">Modalità consegna: Ritiro asporto presso {{config('configurazione.APP_NAME')}}</p>
             @endif
     
         @elseif($content_mail['type'] == 'res')
