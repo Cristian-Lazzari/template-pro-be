@@ -35,21 +35,24 @@ class PaymentController extends Controller
                 'quantity' => $menu->pivot->quantity,
             ];
             if ($menu->fixed_menu == '2') {
-                foreach ($menu->products as $p) {
-                    //$product = Product::where('id', $p)->first();
-                    //if ($product) {
-                    $line_items[] = [
-                        'price_data' => [
-                            'currency' => 'eur',
-                            'product_data' => [
-                                'name' => $p->name,
-                            ],
-                            'unit_amount' =>  $p->pivot->extra_price ? $p->pivot->extra_price : 0, 
-                        ],
-                        'quantity' => $menu->pivot->quantity,
-                    ];
-                        
-                   // }
+
+                $choices = json_encode($menu->pivot->choices);
+                foreach ($choices as $key => $value) {
+                    foreach ($menu->products as $p) {
+                        if ($p->id == $value) {
+                            $line_items[] = [
+                                'price_data' => [
+                                    'currency' => 'eur',
+                                    'product_data' => [
+                                        'name' => $p->name,
+                                    ],
+                                    'unit_amount' =>  $p->pivot->extra_price ? $p->pivot->extra_price : 0, 
+                                ],
+                                'quantity' => $menu->pivot->quantity,
+                            ];
+                            break; 
+                        }
+                    }
                 }
             }
 
