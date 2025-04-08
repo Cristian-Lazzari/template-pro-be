@@ -51,7 +51,7 @@
 
             <div class="carrello" style="width: 100%;">
                 @foreach ($content_mail['cart']['menus'] as $i)               
-                    <div class="product" style="margin: 5px 0; background-color: #0f0744; padding: 8px; border-radius: 8px;">
+                    <div class="menus" style="margin: 5px 0; background-color: #0f0744; padding: 8px; border-radius: 8px;">
                         @if (isset($i->image))
                         <div>
                             <center>
@@ -59,13 +59,14 @@
                             </center>
                         </div>
                         @endif
-                        <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
-                        @if ($i->pivot->quantity > 1)
-                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
-                        @endif
-                        <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                        <span style="color: #f4f4f4; font-size: 20px;  margin-left: auto;">€{{$i->price / 100 }}</span>
-                        <br>
+                        <div style="display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                            <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
+                            @if ($i->pivot->quantity > 1)
+                                <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                            @endif
+                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
+                            <span style="color: #f4f4f4; font-size: 14px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
+                        </div>
                         @if($i->fixed_menu == '2')
                             <div class="choices">
                                 <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti scelti:</h5>
@@ -86,10 +87,10 @@
                                     <div style="margin: 2px 10px;">
                                         <strong style="color: #f4f4f4; opacity: .7; font-size: 17px; font-weight:900; ">{{$c->pivot->label}}: </strong>
                                         <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
+                                            {{$c->name}} ({{$c->category->name}})</span>
                                             @if ($c->pivot->extra_price)   
                                                 <strong style="color: #f4f4f4; opacity: .7; font-size: 13px; font-weight:900;">(+ €{{$c->pivot->extra_price / 100}})</strong>
                                             @endif    
-                                            {{$c->name}} ({{$c->category->name}})</span>
                                     </div>
 
                                 @endforeach
@@ -97,7 +98,7 @@
                             </div>
                         @else
                             <div class="prod">
-                                <h5style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti nel menu:</h5>
+                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti nel menu:</h5>
                                 @foreach ($i->products as $c)
                                     <div style="margin: 2px 10px;">
                                         <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">{{$c->name}} ({{$c->category->name}})</span>
@@ -131,7 +132,7 @@
                             <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                         @endif
                         <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
-                        <span style="color: #f4f4f4; font-size: 20px;  margin-left: auto;">€{{$i->price / 100 }}</span>
+                        <span style="color: #f4f4f4; font-size: 14px; margin-left: auto;"> € {{$i->price / 100 }}</span>
                         <br>
                         @if (count($arrO) || count($arrA) || count($arrD))
                             <div style="margin: 5px;">
