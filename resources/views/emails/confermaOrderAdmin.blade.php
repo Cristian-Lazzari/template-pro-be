@@ -51,7 +51,7 @@
 
             <div class="carrello" style="width: 100%;">
                 @foreach ($content_mail['cart']['menus'] as $i)               
-                    <div class="menus" style="margin: 5px 0; background-color: #0f0744; padding: 8px; border-radius: 8px;">
+                    <div class="menus" style="margin: 5px 0; background-color: #0f0744; padding: 8px 10px 8px 8px; border-radius: 8px;">
                         @if (isset($i->image))
                         <div>
                             <center>
@@ -137,9 +137,9 @@
                                 <!-- Opzioni prodotto -->
                                 @if (count($i->r_option))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Opzioni:</h5>
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Opzioni:</h5>
                                         @foreach ($i->r_option as $a)
-                                            <div style="margin: 0 5px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                                            <div style="margin: 0 10px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
                                                 <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
                                                     {{$a->name}}
                                                 </span>
@@ -154,7 +154,7 @@
                                     <!-- Ingredienti extra -->
                                     @if (count($i->r_add))
                                         <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Ingredienti extra:</h5>
+                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti extra:</h5>
                                             @foreach ($i->r_add as $a)
                                             <div style="margin: 0 10px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
                                                 <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
@@ -170,9 +170,9 @@
                                     <!-- Ingredienti rimossi -->
                                     @if (count($arrD))
                                         <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Ingredienti rimossi:</h5>
+                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti rimossi:</h5>
                                             @foreach ($arrD as $a)
-                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">- {{$a}}</span>
+                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 0px 10px;">- {{$a}}</span>
                                             @endforeach       
                                         </div>
                                     @endif
