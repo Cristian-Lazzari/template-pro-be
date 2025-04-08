@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DateController;
+use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Webhooks\WaController;
@@ -88,6 +89,7 @@ Route::middleware(['auth', 'verified'])
         Route::post('orders/filter',       [OrderController::class, 'filter'])->name('orders.filter');
         Route::post('reservations/filter', [ReservationController::class, 'filter'])->name('reservations.filter');
         //resource
+        Route::resource('menus',         MenuController::class);
         Route::resource('settings',      SettingController::class);
         Route::resource('dates',         DateController::class);
         Route::resource('orders',        OrderController::class);

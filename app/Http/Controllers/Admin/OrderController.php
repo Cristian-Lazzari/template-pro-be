@@ -8,6 +8,7 @@ use Stripe\Refund;
 use Stripe\Stripe;
 use App\Models\Date;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Ingredient;
 use App\Models\OrderProduct;
@@ -266,23 +267,51 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::where('id', $id)->with('products')->firstOrFail();
+        $order = Order::where('id', $id)->with('products', 'menus.products.category')->firstOrFail();
         $orderProduct = OrderProduct::all();
-        $cart = 0;
+        $cart_price = 0;
         foreach ($order->products as $o) {
             $add = json_decode( $o->pivot->add , 1);
             $option = json_decode( $o->pivot->option , 1);
             foreach ($add as $a) {
                 $ing = Ingredient::where('name', $a)->first();
-                $cart += $ing->price * $o->pivot->quantity;
+                $cart_price += $ing->price * $o->pivot->quantity;
             }
             foreach ($option as $a) {
                 $ing = Ingredient::where('name', $a)->first();
-                $cart += $ing->price * $o->pivot->quantity;
+                $cart_price += $ing->price * $o->pivot->quantity;
             }
-            $cart += $o->price * $o->pivot->quantity;
+            $cart_price += $o->price * $o->pivot->quantity;
         }
-        $delivery_cost = $order->tot_price - $cart;
+        foreach ($order->menus as $menu) {
+            $cart_price += $menu->price * $menu->pivot->quantity;
+            if($menu->pivot->choices !== '1'){
+                $right_c = [];
+                $c = json_decode($menu->pivot->choices, 1);
+                $choices =  json_decode($menu->fixed_menu, 1);
+
+                if(!is_array($choices)){
+                   dd('errore');
+                }
+                foreach ($choices as $choice) {
+                    foreach ($choice['products'] as $p) {
+                        if (in_array($p['id'], $c)) {
+                            $cart_price += $p['extra_price'] * $menu->pivot->quantity;
+                            $r_c = [
+                                'label' => $choice['label'],
+                                'product' => Product::where('id', $p['id'])->first(),
+                            ];
+                        }
+                    }
+                    array_push($right_c, $r_c);
+                }
+                $menu->r_choice = $right_c;
+            }
+        }
+        foreach ($c as $k) {
+            # code...
+        }
+        $delivery_cost = $order->tot_price - $cart_price;
         
 
         return view('admin.Orders.show', compact('order', 'orderProduct', 'delivery_cost'));

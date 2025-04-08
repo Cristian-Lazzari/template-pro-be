@@ -14,10 +14,12 @@ class IngredientController extends Controller
     private $validations_ingredient = [
         'name_ing'          => 'required|string|min:2|unique:ingredients,name',
         'price_ing'         => 'required',
+        'image_ing'         => 'nullable|image',
     ];
     private $validations_ingredient1 = [
         'name_ing'          => 'required|string|min:2',
         'price_ing'         => 'required',
+        'image_ing'         => 'nullable|image',
     ];
     public function index()
     {

@@ -97,6 +97,7 @@ $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' 
             <div class="action">
                 <a href="{{ route('admin.categories.index') }}" class="my_btn_1">Categorie</a>
                 <a href="{{ route('admin.ingredients.index') }}" class="my_btn_1">Ingredienti</a>
+                <a href="{{ route('admin.menus.index') }}" class="my_btn_1">Menu</a>
             </div>
         </div>      
         @if (config('configurazione.subscription') > 1 )

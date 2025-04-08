@@ -36,12 +36,13 @@ class ProductController extends Controller
         'name'          => 'required|string|min:1|max:50',
         'image'         => 'nullable|image',
     ];
-
-
-
+    
+    
+    
     private $validations_ingredient = [
         'name_ing'          => 'required|string|min:2|unique:ingredients,name',
         'price_ing'         => 'required',
+        'image_ing'         => 'nullable|image',
     ];
 
    

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
 use App\Models\Date;
+use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\MenuOrder;
 use App\Models\Ingredient;
 use App\Models\Reservation;
 use App\Models\OrderProduct;
@@ -36,22 +38,25 @@ class OrderController extends Controller
         $delivery = false;
         $data = $request->all();
         try {
-
+            
             $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
             $vis = json_decode($date->visible, true);
             $av = json_decode($date->availability, true);
             $res = json_decode($date->reserving, true);
-    
+            
             $arrvar = str_replace('\\', '', $data['cart']);
             $cart = json_decode($arrvar, true);
+           // return response()->json($cart);
     
             if(config('configurazione.typeOfOrdering')){
                 $res_c1 = $res['cucina_1'];
                 $res_c2 = $res['cucina_2'];
                 $av_c1 = $av['cucina_1'];
                 $av_c2 = $av['cucina_2'];
+
                 $np_c1 = $data['npezzi_c1'];
                 $np_c2 = $data['npezzi_c2'];
+
                 if(isset($data['comune'])){
                     if( ($res['domicilio'] + 1) < $av['domicilio']){
                         $res['domicilio'] = $res['domicilio'] + 1;
@@ -171,22 +176,32 @@ class OrderController extends Controller
                 }
             }
             $total_price = 0;
-            for ($i = 0; $i < count($cart); ++$i) {
-                $product = Product::where('id', $cart[$i]['id'])->first();
-                $total_price += $product->price * $cart[$i]['counter'];
-                $cart[$i]['price'] = $product->price;
+            for ($i = 0; $i < count($cart['products']); ++$i) {
+                $product = Product::where('id', $cart['products'][$i]['id'])->first();
+                $total_price += $product->price * ($cart['products'][$i]['counter'] ? $cart['products'][$i]['counter'] : 1);
+                $cart['products'][$i]['price'] = $product->price;
        
-                for ($z = 0; $z < count($cart[$i]['add']); $z++) {
-                    $ingredient = Ingredient::where('name', $cart[$i]['add'][$z])->first();
-                    $total_price += $ingredient->price * $cart[$i]['counter'];
-
-                    $cart[$i]['price'] +=  $ingredient->price;
+                for ($z = 0; $z < count($cart['products'][$i]['add']); $z++) {
+                    $ingredient = Ingredient::where('name', $cart['products'][$i]['add'][$z])->first();
+                    $total_price += $ingredient->price * ($cart['products'][$i]['counter'] ? $cart['products'][$i]['counter'] : 1);
                 }
-                for ($z = 0; $z < count($cart[$i]['option']); $z++) {
-                    $ingredient = Ingredient::where('name', $cart[$i]['option'][$z])->first();
-                    $total_price += $ingredient->price * $cart[$i]['counter'];
-                    
-                    $cart[$i]['price'] +=  $ingredient->price;
+                for ($z = 0; $z < count($cart['products'][$i]['option']); $z++) {
+                    $ingredient = Ingredient::where('name', $cart['products'][$i]['option'][$z])->first();
+                    $total_price += $ingredient->price * ($cart['products'][$i]['counter'] ? $cart['products'][$i]['counter'] : 1);
+                }
+            }
+            foreach ($cart['menus'] as $m) {
+                $menu = Menu::where('id', $m['id'])->first();
+                $total_price += $menu->price * ($m['counter'] ? $m['counter'] : 1);
+                if($menu->fixed_menu !== '1'){
+                    $fixed_menu = json_decode($menu->fixed_menu, 1);
+                    foreach ($fixed_menu as $choice) {
+                        foreach ($choice['products'] as $p) {
+                            if(in_array($p['id'], array_column($m['products'], 'id'))){
+                                $total_price += $p['extra_price'] * ($m['counter'] ? $m['counter'] : 1);
+                            }
+                        }
+                    }
                 }
             }
             
@@ -214,8 +229,8 @@ class OrderController extends Controller
                 $newOrder->tot_price = $total_price;
             }
             $newOrder->save();
-            
-            foreach ($cart as $e) {
+            /// controllo se ci sono menu e in caso li aggiungo
+            foreach ($cart['products'] as $e) {
                 $item_order = new OrderProduct();
                 $item_order->order_id = $newOrder->id;
                 $item_order->product_id = $e['id'];
@@ -223,6 +238,15 @@ class OrderController extends Controller
                 $item_order->remove = json_encode($e['remove']);
                 $item_order->add = json_encode($e['add']);
                 $item_order->option = json_encode($e['option']);
+                $item_order->save();
+            }
+            
+            foreach ($cart['menus'] as $m) {
+                $item_order = new MenuOrder();
+                $item_order->order_id = $newOrder->id;
+                $item_order->menu_id = $m['id'];
+                $item_order->quantity= $m['counter'];
+                $item_order->choices = $m['combo_menu'] ? json_encode(array_column($m['products'], 'id')) : '1';
                 $item_order->save();
             }
 

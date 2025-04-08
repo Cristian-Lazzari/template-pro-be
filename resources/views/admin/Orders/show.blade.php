@@ -74,60 +74,80 @@
                 </section>
                 <section class="myres-center">
                     <h3>Prodotti</h3>
-                    
 
-                    @foreach ($orderProduct as $i)
-                    
-                        @if ($order->id == $i->order_id)
-                            @foreach ($order->products as $o)
-                            
-                                @if ($o->id == $i->product_id)
-                                <?php $name= $o->name ?>
+                    @foreach ($order->menus as $o)                
+                        <div class="product">
+                            <div class="counter">* {{$o->pivot->quantity}}</div>              
+                            <div class="name">{{$o->name}}</div>
+                            <div class="variations">
+                                @if($o->pivot->choices !== '1')
+                                    <div class="choices">
+                                        <h5>Prodotti:</h5>
+                                        @foreach ($o->r_choice as $c)
+                                        <span>{{$c['label']}}:</span>
+                                        <span>{{$c['product']['name']}}</span>
+                                        @endforeach
+                                        
+                                    </div>
+                                    @else
+                                    <div class="prod">
+                                        <h5>Prodotti:</h5>
+                                        @foreach ($o->products as $c)
+                                        <span>{{$c->name}}:</span>
+                                        <span>({{$c->category->name}})</span>
+                                        @endforeach
+                                    </div>
                                 @endif
-                                
-                            @endforeach
-                            <?php
-                                $arrO= json_decode($i->option); 
-                                $arrA= json_decode($i->add); 
-                                $arrD= json_decode($i->remove); 
-                            ?>
-                            <div class="product">
-                                <div class="counter">* {{$i->quantity}}</div>              
-                                <div class="name">{{$name}}</div>
-                                <div class="variations">
-                                    @if ($arrO !== [])
-                                    <div class="options">
-                                        <h5>Opzioni:</h5>
-                                        @foreach ($arrO as $a)
+ 
+                            </div>
+                            
+                        </div>
+                    @endforeach
+                    @foreach ($order->products as $o)                
+                        <?php
+                            $arrO= json_decode($o->pivot->option); 
+                            $arrA= json_decode($o->pivot->add); 
+                            $arrD= json_decode($o->pivot->remove); 
+                        ?>
+                        <div class="product">
+                            <div class="counter">* {{$o->pivot->quantity}}</div>              
+                            <div class="name">{{$o->name}}</div>
+                            <div class="variations">
+                                @if ($arrO !== [])
+                                <div class="options">
+                                    <h5>Opzioni:</h5>
+                                    @foreach ($arrO as $a)
+                                    <span>+ {{$a}}</span>
+                                    @endforeach
+                                </div>
+                                @endif
+                                <div class="bottom-var">
+                                    @if ($arrA !== [])
+                                    <div class="add">
+                                        <h5>Ingredienti extra:</h5>
+                                        @foreach ($arrA as $a)
                                         <span>+ {{$a}}</span>
                                         @endforeach
                                     </div>
                                     @endif
-                                    <div class="bottom-var">
-                                        @if ($arrA !== [])
-                                        <div class="add">
-                                            <h5>Ingredienti extra:</h5>
-                                            @foreach ($arrA as $a)
-                                            <span>+ {{$a}}</span>
-                                            @endforeach
-                                        </div>
-                                        @endif
-                                        @if ($arrD !== [])
-                                        <div class="removed">
-                                            <h5>Ingredienti rimossi:</h5>
-                                            @foreach ($arrD as $a)
-                                            <span>- {{$a}}</span>
-                                            @endforeach       
-                                        </div>
-                                        @endif
+                                    @if ($arrD !== [])
+                                    <div class="removed">
+                                        <h5>Ingredienti rimossi:</h5>
+                                        @foreach ($arrD as $a)
+                                        <span>- {{$a}}</span>
+                                        @endforeach       
                                     </div>
+                                    @endif
                                 </div>
-                                
                             </div>
-                        @endif
+                            
+                        </div>
                     @endforeach
-                    
+
+                    @if ($delivery_cost)
+                        
                     <div class="price">Costo di consegna €{{$delivery_cost / 100}}</div>
+                    @endif
                     <div class="t_price">€{{$order->tot_price / 100}}</div>
                     {{-- <div class="t_price">{{$order->total_pz_q}} pezzi taglio</div>
                     <div class="t_price">{{$order->total_pz_t}} pizze piatte</div>
