@@ -80,16 +80,16 @@
                             <div class="counter">* {{$o->pivot->quantity}}</div>              
                             <div class="name">{{$o->name}}</div>
                             <div class="variations">
-                                @if($o->pivot->choices !== '1')
+                                @if($o->fixed_menu == '2')
                                     <div class="choices">
                                         <h5>Prodotti:</h5>
-                                        @foreach ($o->r_choice as $c)
-                                        <span>{{$c['label']}}:</span>
-                                        <span>{{$c['product']['name']}}</span>
+                                        @foreach ($o->products as $c)
+                                        <span>{{$c->pivot->label}}:</span>
+                                        <span>{{$c->name}}({{$c->category->name}})</span>
                                         @endforeach
                                         
                                     </div>
-                                    @else
+                                @else
                                     <div class="prod">
                                         <h5>Prodotti:</h5>
                                         @foreach ($o->products as $c)
