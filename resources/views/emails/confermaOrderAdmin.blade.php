@@ -50,7 +50,59 @@
         @if($content_mail['type'] == 'or')
 
             <div class="carrello" style="width: 100%;">
-                @foreach ($content_mail['cart'] as $i)               
+                @foreach ($content_mail['cart']['menus'] as $i)               
+                    <div class="product" style="margin: 5px 0; background-color: #0f0744; padding: 8px; border-radius: 8px;">
+                        @if (isset($i->image))
+                        <div>
+                            <center>
+                                <img style="width: 100px; margin: 0 5px; border-radius: 8px;" src="{{ asset('public/storage/' . $i->image) }}" alt="{{$i->name}}">
+                            </center>
+                        </div>
+                        @endif
+                        <span style="width: 120px; margin: 0 5px; color: #f4f4f4; font-size: 25px;"> ☛ </span>
+                        @if ($i->pivot->quantity > 1)
+                            <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
+                        @endif
+                        <span style="color: #f4f4f4; font-size: 18px; font-weight: bold; margin-left: 10px;">{{$i->name}}</span>
+                        <span style="color: #f4f4f4; font-size: 20px;  margin-left: auto;">€{{$i->price / 100 }}</span>
+                        <br>
+                        @if($i->fixed_menu == '2')
+                            <div class="choices">
+                                <h5>Prodotti:</h5>
+                                @php
+                                    // 
+                                    $right_c = [];
+                                    $scelti = json_decode($i->pivot->choices);
+                                    foreach ($scelti as $id) {
+                                        foreach ($i->products as $p) {
+                                            if($p->id == $id){
+                                                array_push($right_c , $p);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @foreach ($right_c as $c)
+
+                                    <strong>{{$c->pivot->label}}: </strong>
+                                    <span>{{$c->name}}({{$c->category->name}})</span>
+
+                                @endforeach
+                                
+                            </div>
+                        @else
+                            <div class="prod">
+                                <h5>Prodotti:</h5>
+                                @foreach ($i->products as $c)
+                                <span>{{$c->name}}:</span>
+                                <span>({{$c->category->name}})</span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    {{-- <hr style="height: 1px; background-color: #04001da1; border: none; margin: 10px 0; order-radius: 20px"> --}}
+                @endforeach
+                @foreach ($content_mail['cart']['products'] as $i)               
                     <?php
                         $arrO= json_decode($i->pivot->option); 
                         $arrA= json_decode($i->pivot->add); 
@@ -111,6 +163,7 @@
                     </div>
                     {{-- <hr style="height: 1px; background-color: #04001da1; border: none; margin: 10px 0; order-radius: 20px"> --}}
                 @endforeach
+                
             
             </div>
             <!-- Totale carrello -->

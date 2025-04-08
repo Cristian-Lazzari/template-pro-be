@@ -464,6 +464,10 @@ class OrderController extends Controller
                 }else{
                     $telefono = '3332222333';
                 }
+                $cart_mail = [
+                    'proudcts' => $newOrder->products,
+                    'menus' => $newOrder->menus,
+                ];
                 $bodymail = [
                     'type' => 'or',
                     'to' => 'admin',
@@ -487,7 +491,7 @@ class OrderController extends Controller
                     
                     'whatsapp_message_id' => null,
                     'status' => $newOrder->status,
-                    'cart' => $newOrder->products,
+                    'cart' => $cart_mail,
                     'total_price' => $newOrder->tot_price,
                     
                     
