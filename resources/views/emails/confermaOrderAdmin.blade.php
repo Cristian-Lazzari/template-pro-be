@@ -68,7 +68,7 @@
                         <br>
                         @if($i->fixed_menu == '2')
                             <div class="choices">
-                                <h5>Prodotti:</h5>
+                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Prodotti nel menu:</h5>
                                 @php
                                     // 
                                     $right_c = [];
@@ -85,17 +85,17 @@
                                 @foreach ($right_c as $c)
 
                                     <strong>{{$c->pivot->label}}: </strong>
-                                    <span>{{$c->name}}({{$c->category->name}})</span>
+                                    <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;"><strong style="color: #f4f4f4; opacity: .7; font-size: 13px; font-weight:900;">(+ €{{$c->pivot->extra_price / 100}})</strong> {{$c->name}} ({{$c->category->name}})</span>
 
                                 @endforeach
                                 
                             </div>
                         @else
                             <div class="prod">
-                                <h5>Prodotti:</h5>
+                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Prodotti nel menu:</h5>
                                 @foreach ($i->products as $c)
-                                <span>{{$c->name}}:</span>
-                                <span>({{$c->category->name}})</span>
+                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">{{$c->name}} ({{$c->category->name}})</span>
+
                                 @endforeach
                             </div>
                         @endif
