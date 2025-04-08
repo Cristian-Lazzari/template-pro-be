@@ -97,10 +97,10 @@
                                             }
                                         @endphp
                                         @foreach ($right_c as $c)
-                                            @if()
-                                                <strong>{{$c->pivot->label}}: </strong>
-                                                <span>{{$c->name}}({{$c->category->name}})</span>
-                                            @endif
+
+                                            <strong>{{$c->pivot->label}}: </strong>
+                                            <span>{{$c->name}}({{$c->category->name}})</span>
+
                                         @endforeach
                                         
                                     </div>
