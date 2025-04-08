@@ -84,8 +84,12 @@
                                 @endphp
                                 @foreach ($right_c as $c)
 
-                                    <strong>{{$c->pivot->label}}: </strong>
-                                    <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;"><strong style="color: #f4f4f4; opacity: .7; font-size: 13px; font-weight:900;">(+ €{{$c->pivot->extra_price / 100}})</strong> {{$c->name}} ({{$c->category->name}})</span>
+                                    <strong style="color: #f4f4f4; opacity: .7; font-size: 17px; font-weight:900; ">{{$c->pivot->label}}: </strong>
+                                    <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
+                                        @if ($c->pivot->extra_price)   
+                                            <strong style="color: #f4f4f4; opacity: .7; font-size: 13px; font-weight:900;">(+ €{{$c->pivot->extra_price / 100}})</strong>
+                                        @endif
+                                         {{$c->name}} ({{$c->category->name}})</span>
 
                                 @endforeach
                                 
