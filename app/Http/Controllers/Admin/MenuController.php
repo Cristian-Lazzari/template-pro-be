@@ -109,6 +109,7 @@ class MenuController extends Controller
             //dd($data['radio_choice']);
             $request->validate([ 'products' => 'required',]);
             $menu->fixed_menu = $data['radio_choice'];
+            $menu->save();
             $product = [];
             
             foreach ($data['products'] as $v) {
