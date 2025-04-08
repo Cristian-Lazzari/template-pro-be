@@ -36,7 +36,7 @@ class PaymentController extends Controller
             ];
             if ($menu->fixed_menu == '2') {
 
-                $choices = json_encode($menu->pivot->choices);
+                $choices = json_decode($menu->pivot->choices, 1);
                 foreach ($choices as $key => $value) {
                     foreach ($menu->products as $p) {
                         if ($p->id == $value) {
