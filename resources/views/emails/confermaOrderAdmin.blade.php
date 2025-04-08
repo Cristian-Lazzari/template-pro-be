@@ -114,14 +114,7 @@
                 @endforeach
                 @foreach ($content_mail['cart']['products'] as $i)               
                     <?php
-                        $arrO= json_decode($i->pivot->option); 
-                        $arrA= json_decode($i->pivot->add); 
-                        $arrD= json_decode($i->pivot->remove); 
-                        // dd($i->pivot->option);
-                        // dd($i->pivot->add);
-                        //dd($i->pivot->quantity);
-
-                    ?>
+                        $arrD= json_decode($i->pivot->remove); ?>
                     <div class="product" style="margin: 5px 0; background-color: #0f0744; padding: 8px; border-radius: 8px;">
                         @if (isset($i->image))
                         <div>
@@ -139,25 +132,39 @@
                             <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
                         </div>
                         <br>
-                        @if (count($arrO) || count($arrA) || count($arrD))
+                        @if (count($i->r_option) || count($i->r_add) || count($arrD))
                             <div style="margin: 5px;">
                                 <!-- Opzioni prodotto -->
-                                @if (count($arrO))
+                                @if (count($i->r_option))
                                     <div style="margin: 5px;">
                                         <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Opzioni:</h5>
-                                        @foreach ($arrO as $a)
-                                            <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">+ {{$a}} </span>
+                                        @foreach ($i->r_option as $a)
+                                            <div style="margin: 0 5px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
+                                                    {{$a->name}}
+                                                </span>
+                                                @if ($a->price)   
+                                                    <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$a->price / 100}}</strong>
+                                                @endif    
+                                            </div>
                                         @endforeach
                                     </div>
                                 @endif
                                 <div style="margin: 5px;">
                                     <!-- Ingredienti extra -->
-                                    @if (count($arrA))
+                                    @if (count($$i->r_add))
                                         <div style="margin: 5px;">
                                             <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Ingredienti extra:</h5>
-                                            @foreach ($arrA as $a)
-                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">+ {{$a}}</span>
-                                            @endforeach
+                                            @foreach ($i->r_add as $a)
+                                            <div style="margin: 0 10px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
+                                                    {{$a->name}}
+                                                </span>
+                                                @if ($a->price)   
+                                                    <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$a->price / 100}}</strong>
+                                                @endif    
+                                            </div>
+                                        @endforeach
                                         </div>
                                     @endif
                                     <!-- Ingredienti rimossi -->
