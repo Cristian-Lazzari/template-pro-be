@@ -465,8 +465,8 @@ class OrderController extends Controller
                 }
                 $product_r = [];
                 foreach ($newOrder->products as $p) {
-                    $arrO = json_decode($p->pivot->option, 1);
-                    $arrA = json_decode($p->pivot->add, 1);
+                    $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, 1) : [];
+                    $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, 1) : [];
                     $p->r_option = [];
                     $p->r_add = [];
                     foreach ($arrO as $o) {
