@@ -152,7 +152,7 @@
                                 @endif
                                 <div style="margin: 5px;">
                                     <!-- Ingredienti extra -->
-                                    @if (count($$i->r_add))
+                                    @if (count($i->r_add))
                                         <div style="margin: 5px;">
                                             <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 0;">Ingredienti extra:</h5>
                                             @foreach ($i->r_add as $a)
