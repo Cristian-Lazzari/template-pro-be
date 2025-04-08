@@ -67,8 +67,9 @@
                             @endif
                             <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
                         </div>
+                        <br>
                         @if($i->fixed_menu == '2')
-                            <div class="choices">
+                            <div style="margin: 5px;" class="choices">
                                 <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti scelti:</h5>
                                 @php
                                     // 
@@ -100,7 +101,7 @@
                                 
                             </div>
                         @else
-                            <div class="prod">
+                            <div style="margin: 5px;" class="prod">
                                 <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti nel menu:</h5>
                                 @foreach ($i->products as $c)
                                     <div style="margin: 2px 10px;">
@@ -150,33 +151,32 @@
                                         @endforeach
                                     </div>
                                 @endif
-                                <div style="margin: 5px;">
-                                    <!-- Ingredienti extra -->
-                                    @if (count($i->r_add))
-                                        <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti extra:</h5>
-                                            @foreach ($i->r_add as $a)
-                                            <div style="margin: 0 10px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
-                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
-                                                    {{$a->name}}
-                                                </span>
-                                                @if ($a->price)   
-                                                    <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$a->price / 100}}</strong>
-                                                @endif    
-                                            </div>
-                                        @endforeach
+                                <!-- Ingredienti extra -->
+                                @if (count($i->r_add))
+                                    <div style="margin: 5px;">
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti extra:</h5>
+                                        @foreach ($i->r_add as $a)
+                                        <div style="margin: 0 10px; display: flex; width:100%; justify-content: space-between; flex-wrap:wrap;">
+                                            <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
+                                                {{$a->name}}
+                                            </span>
+                                            @if ($a->price)   
+                                                <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$a->price / 100}}</strong>
+                                            @endif    
                                         </div>
-                                    @endif
-                                    <!-- Ingredienti rimossi -->
-                                    @if (count($arrD))
-                                        <div style="margin: 5px;">
-                                            <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti rimossi:</h5>
-                                            @foreach ($arrD as $a)
-                                                <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 0px 10px;">- {{$a}}</span>
-                                            @endforeach       
-                                        </div>
-                                    @endif
-                                </div>
+                                    @endforeach
+                                    </div>
+                                @endif
+                                <!-- Ingredienti rimossi -->
+                                @if (count($arrD))
+                                    <div style="margin: 5px;">
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti rimossi:</h5>
+                                        @foreach ($arrD as $a)
+                                            <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 0px 10px;">- {{$a}}</span>
+                                        @endforeach       
+                                    </div>
+                                @endif
+                   
                             </div>
                         @endif
                     </div>
@@ -186,7 +186,10 @@
             
             </div>
             <!-- Totale carrello -->
-            <p style="color: #04001d; font-size: 22px; margin: 15px 0; text-align:end;">Totale carrello: €{{$content_mail['total_price'] / 100}}</p>
+            <div style="color: #04001d; font-size: 22px; margin: 15px 0; display:flex;">
+                <h5 style="color: #04001d; font-size: 22px;">Totale carrello: </h5>
+                <h5 style="margin-left: auto; color: #04001d; font-size: 20px; font-family: monospace">€{{$content_mail['total_price'] / 100}}</h5>
+            </div>
             
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
