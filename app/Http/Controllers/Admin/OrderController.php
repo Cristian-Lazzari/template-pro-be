@@ -340,7 +340,7 @@ class OrderController extends Controller
             $cart_price += $menu->price * ($menu->pivot->quantity ? $menu->pivot->quantity : 1);
             if($menu->fixed_menu == '2'){
                 foreach ($menu->products as $p) {  
-                    if(in_array($p->id, array_column($menu->products, 'id'))){
+                    if(in_array($p->id, array_column($menu->products->toArray(), 'id'))){
                         $cart_price += $p->pivot->extra_price * ($menu->pivot->quantity > 0 ? $menu->pivot->quantity : 1);
                     } 
                 }
@@ -468,7 +468,7 @@ class OrderController extends Controller
             'address' => $order->address,
             'address_n' => $order->address_n,
             'delivery_cost' => $delivery_cost,
-            
+
             'title' =>  'Ciao ' . $order->name . ' ti informiamo che il tuo ordine è stato confermato',
             'subtitle' => $sub,
             'whatsapp_message_id' => $order->whatsapp_message_id,
