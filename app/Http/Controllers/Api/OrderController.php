@@ -289,7 +289,7 @@ class OrderController extends Controller
                     if ($menu->fixed_menu) {
                         $count = 1;
                         foreach (json_decode($menu->pivot->choices) as $id) {
-                            $p_name = Prouct::where('id', $id)->first()->name;
+                            $p_name = Product::where('id', $id)->first()->name;
                             if($count == count(json_decode($menu->pivot->choices))){
                                 $info .= "\n " . $p_name . ".  " ;
                                 $order_mess .= $p_name . ".  " ;
