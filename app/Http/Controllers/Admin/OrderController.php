@@ -339,10 +339,9 @@ class OrderController extends Controller
         foreach ($order->menus as $menu) {
             $cart_price += $menu->price * $menu->pivot->quantity;
             if($menu->fixed_menu == '2'){
-                foreach ($menu->pivot->products as $p) {  
-                    // if(in_array($p->id, array_column($menu->products->toArray(), 'id'))){
-                        $cart_price += $p->pivot->extra_price * $menu->pivot->quantity;
-                    // } 
+                $choices = json_decode($menu->pivot->choices, 1);
+                foreach ($choices as $p) {     
+                    $cart_price += Product::where('id', $p)->first()->pivot->extra_price * $menu->pivot->quantity;
                 }
             }
         }
