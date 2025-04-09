@@ -286,7 +286,7 @@ class OrderController extends Controller
                     // Gestisci le opzioni del prodotto
                     $info .= "\n ```Prodotti:``` " ;
                     $order_mess .= " ```Prodotti:``` " ;
-                    foreach ($menu->products as $p) {
+                    foreach ($menu->pivot->products as $p) {
                         $info .= "\n " . $p->name . " " ;
                         $order_mess .= $p->name . " " ;
                     }
