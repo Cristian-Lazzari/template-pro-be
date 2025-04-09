@@ -286,7 +286,7 @@ class OrderController extends Controller
                     // Gestisci le opzioni del prodotto
                     $info .= "\n ```Prodotti:``` " ;
                     $order_mess .= " ```Prodotti:``` " ;
-                    if ($menu->fixed_menu) {
+                    if ($menu->fixed_menu == '2') {
                         $count = 1;
                         foreach (json_decode($menu->pivot->choices) as $id) {
                             $p_name = Product::where('id', $id)->first()->name;
