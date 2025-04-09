@@ -152,7 +152,7 @@ class StripeWebhookController extends Controller
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
-        foreach ($order->menus as $menu) {
+        foreach ($newOrder->menus as $menu) {
             // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
             $order_mess .= "☞ ";
@@ -165,9 +165,31 @@ class StripeWebhookController extends Controller
             // Gestisci le opzioni del prodotto
             $info .= "\n ```Prodotti:``` " ;
             $order_mess .= " ```Prodotti:``` " ;
-            foreach ($menu->products as $p) {
-                $info .= "\n " . $p->name . " " ;
-                $order_mess .= $p->name . " " ;
+            if ($menu->fixed_menu == '2') {
+                $count = 1;
+                foreach (json_decode($menu->pivot->choices) as $id) {
+                    $p_name = Product::where('id', $id)->first()->name;
+                    if($count == count(json_decode($menu->pivot->choices))){
+                        $info .= "\n " . $p_name . ".  " ;
+                        $order_mess .= $p_name . ".  " ;
+                    }else{
+                        $info .= "\n " . $p_name . ", " ;
+                        $order_mess .= $p_name . ", " ;
+                    }
+                    $count ++;
+                }
+            }else{
+                $count = 1;
+                foreach ($menu->products as $p) {
+                    if($count == count($menu->products)){
+                        $info .= "\n " . $p->name . ".  " ;
+                        $order_mess .= $p->name . ".  " ;
+                    }else{
+                        $info .= "\n " . $p->name . ", " ;
+                        $order_mess .= $p->name . ", " ;
+                    }
+                    $count ++;
+                }
             }
             // Separatore tra i prodotti
             $info .= " \n\n";
