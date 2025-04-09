@@ -343,6 +343,7 @@ class OrderController extends Controller
                 foreach ($choices as $p) {  
                     foreach ($menu->products as $diocane) {
                         if($diocane->id == $p){
+                            dump($diocane->pivot->extra_price);
                             $cart_price += $diocane->pivot->extra_price * $menu->pivot->quantity;
                         }
                         break;
