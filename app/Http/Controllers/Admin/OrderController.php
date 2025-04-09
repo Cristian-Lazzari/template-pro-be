@@ -349,7 +349,7 @@ class OrderController extends Controller
         $delivery_cost = $order->tot_price - $cart_price;
         
 
-        return view('admin.Orders.show', compact('order', 'orderProduct', 'delivery_cost'));
+        return view('admin.Orders.show', compact('order', 'delivery_cost'));
     }
 
     public function destroy($id)
