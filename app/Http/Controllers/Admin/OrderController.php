@@ -342,7 +342,7 @@ class OrderController extends Controller
                 $choices = json_decode($menu->pivot->choices, 1);
                 foreach ($choices as $p) {  
                     foreach ($menu->products as $diocane) {
-                        if($diocane->id == $p->id){
+                        if($diocane->id == $p){
                             $cart_price += $diocane->pivot->extra_price * $menu->pivot->quantity;
                         }
                         break;
