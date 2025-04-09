@@ -340,9 +340,9 @@ class OrderController extends Controller
             $cart_price += $menu->price * $menu->pivot->quantity;
             if($menu->fixed_menu == '2'){
                 foreach ($menu->pivot->products as $p) {  
-                    if(in_array($p->id, array_column($menu->products->toArray(), 'id'))){
+                    // if(in_array($p->id, array_column($menu->products->toArray(), 'id'))){
                         $cart_price += $p->pivot->extra_price * $menu->pivot->quantity;
-                    } 
+                    // } 
                 }
             }
         }
