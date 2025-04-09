@@ -134,8 +134,8 @@
                                             @if (isset($p->image))
                                                 <img class="img_p" src="{{ asset('public/storage/' . $p->image) }}" alt="{{$item->title}}">
                                             @endif
-                                            @if ($p->extra_price)
-                                            <span class="ext_p">+ € {{$p->extra_price / 100}}</span>
+                                            @if ($p->pivot->extra_price)
+                                            <span class="ext_p">+ € {{$p->pivot->extra_price / 100}}</span>
                                             @endif
                                             <span class="name">{{$p->name}}</span>
                                             <span class="cat">{{$p->category->name}}</span>
