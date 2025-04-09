@@ -508,6 +508,35 @@ class OrderController extends Controller
                     'products' => $product_r,
                     'menus' => $newOrder->menus,
                 ];
+                
+                $cart_price = 0;
+                $delivery_cost = 0;
+                if($newOrder->comune){
+                    foreach ($newOrder->products as $o) {
+                        $add = json_decode( $o->pivot->add , 1);
+                        $option = json_decode( $o->pivot->option , 1);
+                        foreach ($add as $a) {
+                            $ing = Ingredient::where('name', $a)->first();
+                            $cart_price += $ing->price * $o->pivot->quantity;
+                        }
+                        foreach ($option as $a) {
+                            $ing = Ingredient::where('name', $a)->first();
+                            $cart_price += $ing->price * $o->pivot->quantity;
+                        }
+                        $cart_price += $o->price * $o->pivot->quantity;
+                    }
+                    foreach ($newOrder->menus as $menu) {
+                        $cart_price += $menu->price * ($menu->pivot->quantity ? $menu->pivot->quantity : 1);
+                        if($menu->fixed_menu == '2'){
+                            foreach ($menu->products as $p) {  
+                                if(in_array($p->id, array_column($menu->products, 'id'))){
+                                    $cart_price += $p->pivot->extra_price * ($menu->pivot->quantity > 0 ? $menu->pivot->quantity : 1);
+                                } 
+                            }
+                        }
+                    }
+                    $delivery_cost = $newOrder->tot_price - $cart_price;
+                }
                 //new menu
                 $bodymail = [
                     'type' => 'or',
@@ -529,6 +558,7 @@ class OrderController extends Controller
                     'comune' => $newOrder->comune,
                     'address' => $newOrder->address,
                     'address_n' => $newOrder->address_n,
+                    'delivery_cost' => $delivery_cost,
                     
                     'whatsapp_message_id' => null,
                     'status' => $newOrder->status,

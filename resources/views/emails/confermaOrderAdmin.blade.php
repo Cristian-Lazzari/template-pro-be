@@ -67,8 +67,8 @@
                             @endif
                             <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
                         </div>
-                        <br>
                         @if($i->fixed_menu == '2')
+                        <br>
                             <div style="margin: 5px;" class="choices">
                                 <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti scelti:</h5>
                                 @php
@@ -132,8 +132,8 @@
                             @endif
                             <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
                         </div>
-                        <br>
                         @if (count($i->r_option) || count($i->r_add) || count($arrD))
+                        <br>
                             <div style="margin: 5px;">
                                 <!-- Opzioni prodotto -->
                                 @if (count($i->r_option))
@@ -185,18 +185,26 @@
                 
             
             </div>
-            <!-- Totale carrello -->
-            <div style="color: #04001d; font-size: 22px; margin: 15px 0; display:flex;">
-                <h5 style="color: #04001d; font-size: 22px;">Totale carrello: </h5>
-                <h5 style="margin-left: auto; color: #04001d; font-size: 20px; font-family: monospace">€{{$content_mail['total_price'] / 100}}</h5>
-            </div>
-            
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
                 <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">Indirizzo per la consegna:</h3>
-                <p style="color: #04001d; font-size: 16px; margin: 7px 0 15px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
-                <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p>
+                <p style="color: #04001d; font-size: 16px; margin: 7px 0 0px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
+                <div style="margin: 10px 0; 0 display: flex; justify-content: space-between; flex-wrap:wrap;">
+                    <span style="color: #04001d; opacity: .8; font-size: 16px; font-family: monospace">
+                        Costo della consegna a domicilio.
+                    </span>
+                    @if ($a->price)   
+                        <strong style="color: #04001d; opacity: .8; font-size: 15px;  margin-left: auto; font-family: monospace">+ €{{$content_mail['delivery_cost'] / 100}}</strong>
+                    @endif    
+                </div>
+                {{-- <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p> --}}
             @else
+            <!-- Totale carrello -->
+            <div style="color: #04001d; font-size: 22px; margin: 15px 0; display:flex;">
+                <h5 style="color: #04001d; font-size: 22px;">Totale carrello: </h5>
+                <h5 style="margin-left: auto; color: #04001d; font-size: 20px; font-family: monospace;">€{{$content_mail['total_price'] / 100}}</h5>
+            </div>
+            
                 <p style="color: #04001d; font-size: 16px; margin: 10px 0;">Modalità consegna: Ritiro asporto presso {{config('configurazione.APP_NAME')}}</p>
             @endif
     

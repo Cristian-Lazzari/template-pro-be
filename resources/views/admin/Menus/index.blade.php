@@ -112,7 +112,6 @@
                     @endif
                 </div>
                 @if($item->fixed_menu == 1)
-                ma comeee s
                     <div class="products">
                         @foreach ($item->products as $p)
                             <div class="product">
@@ -126,7 +125,6 @@
                     </div>
                 @else
                     <div class="scelte">
-                        eheheheheheh
                         @foreach ($item->fixed_menu as $key => $c)
                             <div class="scelta">
                                 <h5>{{$key}}</h5>
@@ -136,11 +134,11 @@
                                             @if (isset($p->image))
                                                 <img class="img_p" src="{{ asset('public/storage/' . $p->image) }}" alt="{{$item->title}}">
                                             @endif
-                                            @if ($p['extra_price'] > 0)
-                                            <span class="ext_p">+ € {{$p['extra_price'] / 100}}</span>
+                                            @if ($p->extra_price > 0)
+                                            <span class="ext_p">+ € {{$p->extra_price / 100}}</span>
                                             @endif
-                                            <span class="name">{{$p['name']}}</span>
-                                            <span class="cat">{{$p['category']['name']}}</span>
+                                            <span class="name">{{$p->name}}</span>
+                                            <span class="cat">{{$p->category->name}}</span>
                                         </div>
                                     @endforeach
                                 </div>

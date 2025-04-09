@@ -82,7 +82,7 @@ class StripeWebhookController extends Controller
     {
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        $order = Order::where('id', $orderId)->with('products')->firstOrFail();
+        $order = Order::where('id', $orderId)->with('products', 'menus')->firstOrFail();
         $date = Date::where('date_slot', $order->date_slot)->first();
         $vis = json_decode($date->visible, true);
         $av = json_decode($date->availability, true);
@@ -152,7 +152,27 @@ class StripeWebhookController extends Controller
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
-        $lastProduct = end($order->products);
+        foreach ($order->menus as $menu) {
+            // Aggiungi il nome e la quantità del prodotto
+            $info .= "☞ ";
+            $order_mess .= "☞ ";
+            if ($menu->pivot->quantity !== 1) {
+                $info .= "** {$menu->pivot->quantity}* ";
+                $order_mess .= "** {$menu->pivot->quantity}* ";
+            }
+            $info .= "*```" . $menu->name. "```*";
+            $order_mess .= "*```" . $menu->name. "```*";
+            // Gestisci le opzioni del prodotto
+            $info .= "\n ```Prodotti:``` " ;
+            $order_mess .= " ```Prodotti:``` " ;
+            foreach ($menu->products as $p) {
+                $info .= "\n " . $p->name . " " ;
+                $order_mess .= $p->name . " " ;
+            }
+            // Separatore tra i prodotti
+            $info .= " \n\n";
+            $order_mess .= " " . " ";
+        }
         foreach ($order->products as $product) {
             // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
@@ -392,6 +412,58 @@ class StripeWebhookController extends Controller
         
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
+        //new menu
+        $product_r = [];
+        foreach ($order->products as $p) {
+            $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
+            $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
+            $r_option = [];
+            $r_add = [];
+            foreach ($arrO as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_option[] = $ingredient;
+            }
+            foreach ($arrA as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_add[] = $ingredient;
+            }
+            $p->setAttribute('r_option', $r_option);
+            $p->setAttribute('r_add', $r_add);
+            $product_r[] = $p;
+        }
+        $cart_mail = [
+            'products' => $product_r,
+            'menus' => $order->menus,
+        ];
+        //new menu
+        $cart_price = 0;
+        $delivery_cost = 0;
+        if($order->comune){
+            foreach ($order->products as $o) {
+                $add = json_decode( $o->pivot->add , 1);
+                $option = json_decode( $o->pivot->option , 1);
+                foreach ($add as $a) {
+                    $ing = Ingredient::where('name', $a)->first();
+                    $cart_price += $ing->price * $o->pivot->quantity;
+                }
+                foreach ($option as $a) {
+                    $ing = Ingredient::where('name', $a)->first();
+                    $cart_price += $ing->price * $o->pivot->quantity;
+                }
+                $cart_price += $o->price * $o->pivot->quantity;
+            }
+            foreach ($order->menus as $menu) {
+                $cart_price += $menu->price * ($menu->pivot->quantity ? $menu->pivot->quantity : 1);
+                if($menu->fixed_menu == '2'){
+                    foreach ($menu->products as $p) {  
+                        if(in_array($p->id, array_column($menu->products, 'id'))){
+                            $cart_price += $p->pivot->extra_price * ($menu->pivot->quantity > 0 ? $menu->pivot->quantity : 1);
+                        } 
+                    }
+                }
+            }
+            $delivery_cost = $order->tot_price - $cart_price;
+        }
         
         $bodymail = [
             'type' => 'or',
@@ -412,9 +484,10 @@ class StripeWebhookController extends Controller
             'comune' => $order->comune,
             'address' => $order->address,
             'address_n' => $order->address_n,
+            'delivery_cost' => $delivery_cost,
             
             'status' => $order->status,
-            'cart' => $order->products,
+            'cart' => $cart_mail,
             'total_price' => $order->tot_price,
         ];
 

@@ -189,8 +189,58 @@ class OrderController extends Controller
             
         }
         $order->update();
-        
-
+        //new menu
+        $product_r = [];
+        foreach ($order->products as $p) {
+            $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
+            $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
+            $r_option = [];
+            $r_add = [];
+            foreach ($arrO as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_option[] = $ingredient;
+            }
+            foreach ($arrA as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_add[] = $ingredient;
+            }
+            $p->setAttribute('r_option', $r_option);
+            $p->setAttribute('r_add', $r_add);
+            $product_r[] = $p;
+        }
+        $cart_mail = [
+            'products' => $product_r,
+            'menus' => $order->menus,
+        ];
+        //new menu
+        $cart_price = 0;
+        $delivery_cost = 0;
+        if($order->comune){
+            foreach ($order->products as $o) {
+                $add = json_decode( $o->pivot->add , 1);
+                $option = json_decode( $o->pivot->option , 1);
+                foreach ($add as $a) {
+                    $ing = Ingredient::where('name', $a)->first();
+                    $cart_price += $ing->price * $o->pivot->quantity;
+                }
+                foreach ($option as $a) {
+                    $ing = Ingredient::where('name', $a)->first();
+                    $cart_price += $ing->price * $o->pivot->quantity;
+                }
+                $cart_price += $o->price * $o->pivot->quantity;
+            }
+            foreach ($order->menus as $menu) {
+                $cart_price += $menu->price * ($menu->pivot->quantity ? $menu->pivot->quantity : 1);
+                if($menu->fixed_menu == '2'){
+                    foreach ($menu->products as $p) {  
+                        if(in_array($p->id, array_column($menu->products, 'id'))){
+                            $cart_price += $p->pivot->extra_price * ($menu->pivot->quantity > 0 ? $menu->pivot->quantity : 1);
+                        } 
+                    }
+                }
+            }
+            $delivery_cost = $order->tot_price - $cart_price;
+        }
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
         $bodymail = [
@@ -208,13 +258,14 @@ class OrderController extends Controller
             'comune' => $order->comune,
             'address' => $order->address,
             'address_n' => $order->address_n,
+            'delivery_cost' => $delivery_cost,
             
             'title' =>  $c_a ? 'Ti confermiamo che il tuo ordine è stato accettato' : 'Ci dispiace informarti che il tuo ordine è stato annullato',
             'subtitle' => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 gironi lavorativi' : '',
             'whatsapp_message_id' => $order->whatsapp_message_id,
 
             'status' => $order->status,
-            'cart' => $order->products,
+            'cart' => $cart_mail,
             'total_price' => $order->tot_price,
         ];
 
@@ -270,8 +321,8 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::where('id', $id)->with('products', 'menus.products.category')->firstOrFail();
-        $orderProduct = OrderProduct::all();
         $cart_price = 0;
+        $delivery_cost = 0;
         foreach ($order->products as $o) {
             $add = json_decode( $o->pivot->add , 1);
             $option = json_decode( $o->pivot->option , 1);
@@ -286,9 +337,12 @@ class OrderController extends Controller
             $cart_price += $o->price * $o->pivot->quantity;
         }
         foreach ($order->menus as $menu) {
+            $cart_price += $menu->price * ($menu->pivot->quantity ? $menu->pivot->quantity : 1);
             if($menu->fixed_menu == '2'){
-                foreach ($menu->products as $p) {
-                    $cart_price +=$p->pivot->extra_price* $menu->pivot->quantity;
+                foreach ($menu->products as $p) {  
+                    if(in_array($p->id, array_column($menu->products, 'id'))){
+                        $cart_price += $p->pivot->extra_price * ($menu->pivot->quantity > 0 ? $menu->pivot->quantity : 1);
+                    } 
                 }
             }
         }
@@ -339,9 +393,62 @@ class OrderController extends Controller
 
         $date->reserving = json_encode($reserving);
         $date->visible = json_encode($vis);
-        $date->update();
+
         $order->status = $order->status == 3 ? 5 : 1;
         $order->update();
+
+        //new menu
+        $product_r = [];
+        foreach ($order->products as $p) {
+            $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
+            $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
+            $r_option = [];
+            $r_add = [];
+            foreach ($arrO as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_option[] = $ingredient;
+            }
+            foreach ($arrA as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_add[] = $ingredient;
+            }
+            $p->setAttribute('r_option', $r_option);
+            $p->setAttribute('r_add', $r_add);
+            $product_r[] = $p;
+        }
+        $cart_mail = [
+            'products' => $product_r,
+            'menus' => $order->menus,
+        ];
+        //new menu
+        $cart_price = 0;
+        $delivery_cost = 0;
+        if($order->comune){
+            foreach ($order->products as $o) {
+                $add = json_decode( $o->pivot->add , 1);
+                $option = json_decode( $o->pivot->option , 1);
+                foreach ($add as $a) {
+                    $ing = Ingredient::where('name', $a)->first();
+                    $cart_price += $ing->price * $o->pivot->quantity;
+                }
+                foreach ($option as $a) {
+                    $ing = Ingredient::where('name', $a)->first();
+                    $cart_price += $ing->price * $o->pivot->quantity;
+                }
+                $cart_price += $o->price * $o->pivot->quantity;
+            }
+            foreach ($order->menus as $menu) {
+                $cart_price += $menu->price * ($menu->pivot->quantity ? $menu->pivot->quantity : 1);
+                if($menu->fixed_menu == '2'){
+                    foreach ($menu->products as $p) {  
+                        if(in_array($p->id, array_column($menu->products, 'id'))){
+                            $cart_price += $p->pivot->extra_price * ($menu->pivot->quantity > 0 ? $menu->pivot->quantity : 1);
+                        } 
+                    }
+                }
+            }
+            $delivery_cost = $order->tot_price - $cart_price;
+        }
 
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
@@ -360,13 +467,14 @@ class OrderController extends Controller
             'comune' => $order->comune,
             'address' => $order->address,
             'address_n' => $order->address_n,
+            'delivery_cost' => $delivery_cost,
             
             'title' =>  'Ciao ' . $order->name . ' ti informiamo che il tuo ordine è stato confermato',
             'subtitle' => $sub,
             'whatsapp_message_id' => $order->whatsapp_message_id,
 
             'status' => $order->status,
-            'cart' => $order->products,
+            'cart' => $cart_mail,
             'total_price' => $order->tot_price,
         ];
 
