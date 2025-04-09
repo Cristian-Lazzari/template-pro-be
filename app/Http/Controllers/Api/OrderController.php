@@ -263,11 +263,7 @@ class OrderController extends Controller
                 ]);
                 
             }else{
-                
                 $date->update();
-                // Ottieni le impostazioni di contatto
-                        
-
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
                 $order_mess = "";
