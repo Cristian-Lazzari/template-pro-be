@@ -286,9 +286,31 @@ class OrderController extends Controller
                     // Gestisci le opzioni del prodotto
                     $info .= "\n ```Prodotti:``` " ;
                     $order_mess .= " ```Prodotti:``` " ;
-                    foreach ($menu->pivot->products as $p) {
-                        $info .= "\n " . $p->name . " " ;
-                        $order_mess .= $p->name . " " ;
+                    if ($menu->fixed_menu) {
+                        $count = 1;
+                        foreach (json_decode($menu->pivot->choice) as $id) {
+                            $p_name = Prouct::where('id', $id)->first()->name;
+                            if($count == count(json_decode($menu->pivot->choice))){
+                                $info .= "\n " . $p_name . ".  " ;
+                                $order_mess .= $p_name . ".  " ;
+                            }else{
+                                $info .= "\n " . $p_name . ", " ;
+                                $order_mess .= $p_name . ", " ;
+                            }
+                            $count ++;
+                        }
+                    }else{
+                        $count = 1;
+                        foreach ($menu->products as $p) {
+                            if($count == count($menu->products)){
+                                $info .= "\n " . $p->name . ".  " ;
+                                $order_mess .= $p->name . ".  " ;
+                            }else{
+                                $info .= "\n " . $p->name . ", " ;
+                                $order_mess .= $p->name . ", " ;
+                            }
+                            $count ++;
+                        }
                     }
                     // Separatore tra i prodotti
                     $info .= " \n\n";
