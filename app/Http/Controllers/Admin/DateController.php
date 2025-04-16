@@ -226,7 +226,7 @@ class DateController extends Controller
         $property_adv = json_decode($adv_s->property, 1);  
         $set_time = $property_adv['set_time'];
         //dd($property_adv);
-        return view('admin.Dates.showDay', compact('day', 'set_time'));   
+        return view('admin.Dates.showDay', compact('day', 'set_time', 'property_adv'));   
     }
     public function status(Request $request){
         $id = $request->input('id');

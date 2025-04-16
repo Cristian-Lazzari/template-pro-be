@@ -104,7 +104,7 @@
                         @foreach ($t->res as $tk) 
                         <a href="{{ route('admin.reservations.show', $tk->id) }}" class="tiket {{ in_array($tk->status, [0, 6]) ? 'null' : '' }} ">
                             <p>{{$tk->name}}</p>
-                            @if ($dt)
+                            @if ($property_adv['dt'])
                             <p class="sala" >{{config('configurazione.set_time_dt')[$tk->sala - 1] }}</p>   
                             @endif
                             <div class="person">
