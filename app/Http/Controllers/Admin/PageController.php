@@ -129,7 +129,7 @@ class PageController extends Controller
             $property_adv = [
                 'too' => false,
                 'dt' => false,
-                'services' => '3', //1 asport // 2 tavoli //3 entrambi
+                'services' => '4', //1 niente // 2 tavoli // 3 asporto // 4 tutti
                 
                 'menu_fix_set' => '1',
                 'too_1' => 'pizza',
@@ -138,7 +138,7 @@ class PageController extends Controller
                 'sala_2' => 'Sala ITA',
                 'p_iva' => '',
                 'r_sociale' => '',
-                'times_start' => '17:20',
+                'times_start' => '11:20',
                 'times_end' => '22:20',
                 'max_day_res' => '20',
                 'times_interval' => 20,

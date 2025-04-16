@@ -152,13 +152,13 @@
         @endif
         @if ( $pack > 2)  
             @if ($type)  
-                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['type_1']}} (cucina 1) per asporto/delivery</h5>
+                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['too_1']}} per asporto/delivery</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
                     <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" placeholder="N° di pezzi">
                 </div> @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
                 
-                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['type_2']}} (cucina 2) per asporto/delivery</h5>
+                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['too_2']}} per asporto/delivery</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_2" class="input-group-text" >N° di pizze</label>
                     <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" placeholder="N° di pezzi">

@@ -222,7 +222,11 @@ class DateController extends Controller
             $time->or = $order;
             $time->res = $reservation;
         }
-        return view('admin.Dates.showDay', compact('day'));   
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+        $set_time = $property_adv['set_time'];
+        //dd($property_adv);
+        return view('admin.Dates.showDay', compact('day', 'set_time'));   
     }
     public function status(Request $request){
         $id = $request->input('id');

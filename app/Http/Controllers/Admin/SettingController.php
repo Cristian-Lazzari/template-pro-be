@@ -92,17 +92,19 @@ class SettingController extends Controller
             $property['method'] = $request->method ? $request->method : [];
             $property['set_time'] = [];
             $property['max_day_res'] = $request->max_day_res;
-            if($request->dt && $request->services > 1){
+            if($request->dt && in_array($request->services, [2,4])){
                 $property['set_time'][] = $request->sala_1;
                 $property['set_time'][] = $request->sala_2;
-            }elseif($request->services > 1){
+            }elseif(in_array($request->services, [2,4])){
                 $property['set_time'][] = 'tavoli';
             }
-            if($request->too && in_array($request->services, [1,3])){
+            if($request->too && in_array($request->services, [3,4])){
                 $property['set_time'][] = $request->too_1;
                 $property['set_time'][] = $request->too_2;   
-            }elseif(in_array($request->services, [1,3])){
+                $property['set_time'][] = 'domiciilio';
+            }elseif(in_array($request->services, [4,3])){
                 $property['set_time'][] = 'asporto';
+                $property['set_time'][] = 'domiciilio';
             }
             $adv->property = json_encode($property);
 

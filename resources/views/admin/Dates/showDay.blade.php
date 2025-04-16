@@ -186,7 +186,7 @@
                                         <h5>{{$set_time[$i]}}:</h5>
                                         <input type="number" name="av{{$key}}" value="{{$value}}" class="">   
                                     </div>
-                                    @php $i ++ @endphp
+                                     @php $i ++ @endphp
                                 @endforeach
                             </div>
                         </section>
