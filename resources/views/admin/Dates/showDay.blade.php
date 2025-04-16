@@ -49,30 +49,15 @@
                 <h3>{{$t->time}}</h3>
                 <button type="button" class="my_btn_1" data-bs-toggle="modal" data-bs-target="#exampleModal{{$t->id}}">Vedi dettagli</button>
                 <div class="dati">
-                    @if (isset($reserving->table) && $reserving->table !== 0)
-                        <p>Tavoli: {{$reserving->table}} / {{$availability->table}}</p>   
-                    @endif
-    
-                    @if (isset($reserving->table_1) && $reserving->table_1 !== 0)
-                        <p> {{config('configurazione.set_time_dt')[0]}} : {{$reserving->table_1}} / {{$availability->table_1}}</p>   
-                    @endif
-                    @if (isset($reserving->table_2) && $reserving->table_2 !== 0)
-                        <p> {{config('configurazione.set_time_dt')[1]}} : {{$reserving->table_2}} / {{$availability->table_2}}</p>   
-                    @endif
-    
-                    @if (isset($reserving->cucina_1) && $reserving->cucina_1 !== 0)
-                        <p>{{config('configurazione.set_time')[1]}}: {{$reserving->cucina_1}} / {{$availability->cucina_1}}</p>   
-                    @endif
-                    @if (isset($reserving->cucina_2) && $reserving->cucina_2 !== 0)
-                        <p>{{config('configurazione.set_time')[2]}}: {{$reserving->cucina_2}} / {{$availability->cucina_2}}</p>   
-                    @endif
-                    @if (isset($reserving->asporto) && $reserving->asporto !== 0)
-                        <p>{{config('configurazione.set_time_2')[1]}}: {{$reserving->asporto}} / {{$availability->asporto}}</p>   
-                    @endif
-                    
-                    @if (isset($reserving->domicilio) && $reserving->domicilio !== 0)
-                        <p>Domicilio: {{$reserving->domicilio}} / {{$availability->domicilio}}</p>                
-                    @endif
+
+                    @php $i = 0; @endphp
+                    @foreach ($reserving as $key => $value)
+
+                        <p>{{$set_time[$i]}}: {{$value}} </p>   
+
+                        @php $i ++; @endphp
+                    @endforeach
+
                     
                     
                 </div>
