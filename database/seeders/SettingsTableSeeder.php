@@ -16,7 +16,7 @@ class SettingsTableSeeder extends Seeder
         if(config('configurazione.subscription') > 1 ){
             $settings = [
                 [
-                    'name' => 'Prenotaione Tavoli',  
+                    'name' => 'Prenotazione Tavoli',  
                     'status' => 1,
                     'property' => [
                         'empty' => 0
