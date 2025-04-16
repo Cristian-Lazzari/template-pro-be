@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\Category;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
@@ -160,8 +161,10 @@ class ProductController extends Controller
     {
         $categories     = Category::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
         
-        return view('admin.Products.create', compact('categories', 'ingredients'));
+        return view('admin.Products.create', compact('categories', 'ingredients', 'property_adv'));
     }
     protected function cleanArray($array) {
         $hasGluten = false;
@@ -182,8 +185,16 @@ class ProductController extends Controller
         }  
         return array_values($filteredArray);
     }
-    public function store(Request $request)
-    {   
+    public function store(Request $request){   
+        // Recupera le configurazioni
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+            
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
+
+
         //funzione del cazzo di chat per controllare la questione glutine e senza glutine
         
         //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
@@ -239,7 +250,7 @@ class ProductController extends Controller
             return to_route('admin.products.create')->with('ingredient_success', $data);     
         }
 
-        if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2) {        
+        if ($too && $pack > 2) {        
             $request->validate($this->validationsTrue);
         }else{
             $request->validate($this->validationsFalse);
@@ -305,9 +316,9 @@ class ProductController extends Controller
         $product->allergens    = is_array($allergens_m) ? json_encode($this->cleanArray($allergens_m)) : $allergens_m;
         
         
-        if(config('configurazione.pack') > 2){
+        if($pack > 2){
             $product->tag_set       = $data['tag_set'];
-            if( config('configurazione.typeOfOrdering') ){
+            if( $too ){
                 $product->type_plate    = $data['type_plate'];     
                 $product->slot_plate    = $data['slot_plate'];     
             }
@@ -332,7 +343,9 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::where('id', $id)->firstOrFail();
-        return view('admin.Products.show', ['product' => $product]);      
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+        return view('admin.Products.show', compact( 'product', 'property_adv'));      
     }
     
     public function edit($id)
@@ -340,11 +353,20 @@ class ProductController extends Controller
         $product = Product::where('id', $id)->firstOrFail();
         $categories     = Category::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
-        
-        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients'));        
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+
+        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients', 'property_adv'));        
     }
     
     public function update(Request $request, $id){
+        // Recupera le configurazioni
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+            
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
 
         $product = Product::where('id', $id)->firstOrFail();
         $data = $request->all();
@@ -388,7 +410,7 @@ class ProductController extends Controller
             unset( $data['image_ing']);
             return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
-        if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2) {        
+        if ($too && $pack > 2) {        
             $request->validate($this->validationsTrue1);
         }else{
             $request->validate($this->validationsFalse1);
@@ -469,9 +491,9 @@ class ProductController extends Controller
         $product->promotion   = isset($data['promotion']) ? true : false;
         $product->old_price   = intval(round($prezzo_float1 * 100));
         
-        if(config('configurazione.pack') > 2){
+        if($pack > 2){
             $product->tag_set       = $data['tag_set'];
-            if( config('configurazione.typeOfOrdering') ){
+            if( $too){
                 $product->type_plate    = $data['type_plate'];     
                 $product->slot_plate    = $data['slot_plate'];     
             }

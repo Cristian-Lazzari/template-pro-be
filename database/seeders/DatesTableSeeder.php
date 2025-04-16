@@ -6,6 +6,7 @@ use DateTime;
 use App\Models\Day;
 use App\Models\Date;
 use App\Models\Month;
+use App\Models\Setting;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -37,6 +38,12 @@ class DatesTableSeeder extends Seeder
 
         $currentMounth = $currentDate->format('n');
 
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
+
         for ($i = 1; $i <= 12; $i++) {
             $daysInMonth = $currentDate->format('t'); //n giorni nel mese
 
@@ -50,14 +57,14 @@ class DatesTableSeeder extends Seeder
                     if ($time['set']) {
                         $add = true;
                         
-                        if( config('configurazione.double_t')){
-                            if( config('configurazione.pack') == 2 ){ 
+                        if( $double){
+                            if( $pack == 2 ){ 
                                 $visible = [
                                     'table_1' => $time['set'] == 1 ? 1 : 0,
                                     'table_2' => $time['set'] == 1 ? 1 : 0,
                                 ];
-                            }elseif( config('configurazione.pack') == 3){
-                                if(config('configurazione.typeOfOrdering')){
+                            }elseif( $pack == 3){
+                                if($type){
                                     $visible = [
                                         'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
                                         'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
@@ -71,8 +78,8 @@ class DatesTableSeeder extends Seeder
                                     ];
                                     
                                 }
-                            }elseif( config('configurazione.pack') == 4){     
-                                if(config('configurazione.typeOfOrdering')){
+                            }elseif( $pack == 4){     
+                                if($type){
                                     $visible = [
                                         'table_1' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
                                         'table_2' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
@@ -92,12 +99,12 @@ class DatesTableSeeder extends Seeder
                                 }
                             }
                         }else{
-                            if( config('configurazione.pack') == 2 ){ 
+                            if( $pack == 2 ){ 
                                 $visible = [
                                     'table' => $time['set'] == 1 ? 1 : 0,
                                 ];
-                            }elseif( config('configurazione.pack') == 3){
-                                if(config('configurazione.typeOfOrdering')){
+                            }elseif( $pack == 3){
+                                if($type){
                                     $visible = [
                                         'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
                                         'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
@@ -111,8 +118,8 @@ class DatesTableSeeder extends Seeder
                                     ];
                                     
                                 }
-                            }elseif( config('configurazione.pack') == 4){     
-                                if(config('configurazione.typeOfOrdering')){
+                            }elseif( $pack == 4){     
+                                if($type){
                                     $visible = [
                                         'table' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
                                         'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,

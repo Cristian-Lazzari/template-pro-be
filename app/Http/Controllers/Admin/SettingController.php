@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Date;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
@@ -54,17 +55,72 @@ class SettingController extends Controller
         return redirect()->back()->with('success', $m); 
     }
     
+    public function advanced(Request $request){
+
+        $adv = Setting::where('name', 'advanced')->first();
+        if($adv){
+
+            
+            $property =json_decode($adv->property, 1);
+
+            if($property['services'] !==  $request->services ||
+                $property['too'] !==  $request->too ||
+                $property['dt'] !==  $request->dt 
+            ){
+                // Pulisco le tabelle
+                DB::table('dates')->truncate(); 
+            }
+
+            $property['too'] = $request->too;
+            $property['dt'] = $request->dt;
+            $property['services'] = $request->services;
+            $property['menu_fix_set'] = $request->menu_fix_set;
+            
+
+            $property['too_1'] = $request->too_1;
+            $property['too_2'] = $request->too_2;
+            $property['sala_1'] = $request->sala_1;
+            $property['sala_2'] = $request->sala_2;
+            $property['times_end'] = $request->times_end;
+            $property['times_start'] = $request->times_start;
+            $property['times_interval'] = $request->times_interval;
+            $property['p_iva'] = $request->p_iva;
+            $property['r_sociale'] = $request->r_sociale;
+            $property['c_rea'] = $request->c_rea;
+            $property['c_sociale'] = $request->c_sociale;
+            $property['u_imprese'] = $request->u_imprese;
+            $property['method'] = $request->method ? $request->method : [];
+            $property['set_time'] = [];
+            $property['max_day_res'] = $request->max_day_res;
+            if($request->dt && $request->services > 1){
+                $property['set_time'][] = $request->sala_1;
+                $property['set_time'][] = $request->sala_2;
+            }elseif($request->services > 1){
+                $property['set_time'][] = 'tavoli';
+            }
+            if($request->too && in_array($request->services, [1,3])){
+                $property['set_time'][] = $request->too_1;
+                $property['set_time'][] = $request->too_2;   
+            }elseif(in_array($request->services, [1,3])){
+                $property['set_time'][] = 'asporto';
+            }
+            $adv->property = json_encode($property);
+
+            $adv->update();
+            $m = 'Le impostazioni sono state ggiornate correttamente';
+        }else{
+            $m = 'ERRORE 404!';
+        }
+        
+        return redirect()->back()->with('success', $m); 
+    }
     public function numbers(Request $request){
         $numbers = $request->numbers;
-
-     //   dd($numbers);
-        $setting = Setting::where('name', 'wa')->firstOrFail();
+        $setting = Setting::where('name', 'wa')->first();
         $old_p = json_decode($setting->property, true);
+        
         $old_p['numbers'] = $numbers;
-        //$array_filtrato = array_filter($old_p);
-        // $array_filtrato = array_filter($old_p, function($value) {
-        //     return $value !== null && $value !== ''; // Filtra valori null e stringhe vuote
-        // });
+       
         $array_filtrato = [];
         foreach ($numbers as $n) {
            if($n !== null && $n !== ' '){
@@ -99,10 +155,11 @@ class SettingController extends Controller
         $setting[0]->status = $tavoli;
         $setting[0]->save();
 
-        
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
         
         $setting[1]->status = $asporto;
-        if (config('configurazione.pack') > 2) {
+        if ($property_adv['services'] > 2) {
             $prop_apsorto = [
                 'pay' => intval($pay_a),
                 'min_price' => $min_price_a * 100,
@@ -171,7 +228,8 @@ class SettingController extends Controller
         $setting[5]->property = json_encode($contatti);
         $setting[5]->save();      
         
-        if (config('configurazione.pack') == 3 || config('configurazione.pack') == 4) {
+
+        if ($property_adv['services'] > 2) {
             $setting[7]->property = json_encode($setting[7]->property);
             $setting[6]->status = $request->domicilio_status;
             $prop_domicilio = [

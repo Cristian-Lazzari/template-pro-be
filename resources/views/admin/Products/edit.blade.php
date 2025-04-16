@@ -108,11 +108,11 @@
             <textarea name="description" id="description" cols="30" rows="10" >{{ old('description', $product->description) }}</textarea>
         </p>
     </section>
-    @if (config('configurazione.pack') > 2)
+    @if ($property_adv['services'] > 2)
     <section class="set" >
         <div class="split-3">
             
-            @if (config('configurazione.typeOfOrdering'))
+            @if ($property_adv['too'])
             <div>
                 <label class="label_c" for="slot_plate">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-123" viewBox="0 0 16 16">

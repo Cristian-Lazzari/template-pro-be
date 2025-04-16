@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Models\Date;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
@@ -11,9 +12,11 @@ use App\Http\Controllers\Controller;
 class DateController extends Controller
 {
     public function getDays(Request $request) {
-
-        $filter = $request->query('filter'); // 1 tavol1 // 2 asporto // 3 domicillio
         
+        $filter = $request->query('filter'); // 1 tavol1 // 2 asporto // 3 domicillio
+
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
         // Ottieni la data e l'ora attuale 
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
 
@@ -21,12 +24,11 @@ class DateController extends Controller
         $startDateTime = Carbon::now()->addMinutes(45)->format('Y-m-d H:i:s');
 
         // Ottieni la data di fine (ad esempio, la fine della giornata attuale)
-        $endDateTime = Carbon::now()->addDays(config('configurazione.maxdayres'))->format('Y-m-d H:i:s');
+        $endDateTime = Carbon::now()->addDays($property_adv['max_day_res'])->format('Y-m-d H:i:s');
         //$dates = Date::all();
 
-
         $vis_a = '"asporto":1';
-        if (config('configurazione.double_t')) {
+        if ($property_adv['dt']) {
             $double_t = $request->query('double_t');
             $vis_t_1 = '"table_1":1';
             $vis_t_2 = '"table_2":1';
@@ -41,7 +43,7 @@ class DateController extends Controller
         $query = Date::whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') BETWEEN ? AND ?", [$startDateTime, $endDateTime]);
 
         if ($filter == 1) {
-            if (config('configurazione.double_t')) {
+            if ($property_adv['dt']) {
                 if($double_t == 1){
                     $query->where('visible', 'like',  '%' . $vis_t_1 . '%');
                 }else{
@@ -55,7 +57,7 @@ class DateController extends Controller
             //$query->where('visible', 'like',  '%' . $vis_t . '%');
             $dates = $query->get();
         }elseif($filter == 2){
-            if ( config('configurazione.typeOfOrdering') == false) {
+            if ( $property_adv['too'] == false) {
                 $query->where('visible', 'like',  '%' . $vis_a . '%');
                 $dates = $query->get();          
             }else{
@@ -66,7 +68,7 @@ class DateController extends Controller
                 //dd($query);
             }
         }else{
-            if ( config('configurazione.typeOfOrdering') == false) {
+            if ( $property_adv['too'] == false) {
                 $query->where('visible', 'like',  '%' . $vis_d . '%');
                 $dates = $query->get();          //1 3 5 7 
             }else{
@@ -100,6 +102,9 @@ class DateController extends Controller
             'month' => $dates[0]['month'],
             'day' => $dates[0]['day'],
         ];
+
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
                
         foreach ($dates as $d) {
             list($date, $time) = explode(" ", $d['date_slot']);
@@ -108,8 +113,8 @@ class DateController extends Controller
                 $res = json_decode($d['reserving'], 1);
                 $vis = json_decode($d['visible'], 1);
                 $max = json_decode($d['availability'], 1);
-                if( config('configurazione.pack') == 2 ){  
-                    if (config('configurazione.double_t')) {
+                if( $property_adv['services'] == 2 ){  
+                    if ($property_adv['dt']) {
                         $av = [
                             'table_1' => $max['table_1'] - $res['table_1'],
                             'table_2' => $max['table_2'] - $res['table_2'],
@@ -120,8 +125,8 @@ class DateController extends Controller
                         ]; 
                     }   
                     
-                }elseif( config('configurazione.pack') == 3){
-                    if ( config('configurazione.typeOfOrdering') == false) {
+                }elseif( $property_adv['services'] == 3){
+                    if ( $property_adv['too'] == false) {
                         $av = [
                             'asporto' => $max['asporto'] - $res['asporto'],
                             'domicilio' => $max['domicilio'] - $res['domicilio'],
@@ -134,9 +139,9 @@ class DateController extends Controller
                         ];
                     }
                     
-                }elseif( config('configurazione.pack') == 4){
-                    if (config('configurazione.double_t')) {
-                        if ( config('configurazione.typeOfOrdering') == false) {
+                }elseif( $property_adv['services'] == 4){
+                    if ($property_adv['dt']) {
+                        if ( $property_adv['too'] == false) {
                             $av = [
                                 'table_1' => $max['table_1'] - $res['table_1'],
                                 'table_2' => $max['table_2'] - $res['table_2'],
@@ -153,7 +158,7 @@ class DateController extends Controller
                             ];
                         }
                     }else{
-                        if ( config('configurazione.typeOfOrdering') == false) {
+                        if ( $property_adv['too'] == false) {
                             $av = [
                                 'asporto' => $max['asporto'] - $res['asporto'],
                                 'table' => $max['table'] - $res['table'],
@@ -202,8 +207,8 @@ class DateController extends Controller
                 }elseif($d['day'] == $firstDay['day']){
                     $d_y = count($year[$cy]['days']) - 1;
                     // prima correggo i dati del giorno in cui poi pusho l orario
-                    if( config('configurazione.pack') == 2 ){
-                        if(config('configurazione.double_t')){
+                    if( $property_adv['services'] == 2 ){
+                        if($property_adv['dt']){
                             $year[$cy]['days'][$d_y]['vis']['table_1'] += $day['vis']['table_1'];
                             if($year[$cy]['days'][$d_y]['vis']['table_1'] >= 1){
                                 $year[$cy]['days'][$d_y]['vis']['table_1'] = 1;
@@ -226,8 +231,8 @@ class DateController extends Controller
                             $year[$cy]['days'][$d_y]['av']['table'] += $day['av']['table'];       
                         }
 
-                    }elseif( config('configurazione.pack') == 3){
-                        if ( config('configurazione.typeOfOrdering') == false) {
+                    }elseif( $property_adv['services'] == 3){
+                        if ( $property_adv['too'] == false) {
                             $year[$cy]['days'][$d_y]['vis']['asporto'] += $day['vis']['asporto'];
                             if($year[$cy]['days'][$d_y]['vis']['asporto'] >= 1){
                                 $year[$cy]['days'][$d_y]['vis']['asporto'] = 1;
@@ -258,9 +263,9 @@ class DateController extends Controller
                             $year[$cy]['days'][$d_y]['av']['domicilio'] += $day['av']['domicilio'];
                         }
                         
-                    }elseif( config('configurazione.pack') == 4){
-                        if ( config('configurazione.typeOfOrdering') == false) {
-                            if(config('configurazione.double_t')){
+                    }elseif( $property_adv['services'] == 4){
+                        if ( $property_adv['too'] == false) {
+                            if($property_adv['dt']){
                                 $year[$cy]['days'][$d_y]['vis']['table_1'] += $day['vis']['table_1'];
                                 if($year[$cy]['days'][$d_y]['vis']['table_1'] >= 1){
                                     $year[$cy]['days'][$d_y]['vis']['table_1'] = 1;
@@ -293,7 +298,7 @@ class DateController extends Controller
                             $year[$cy]['days'][$d_y]['av']['asporto'] += $day['av']['asporto'];
                             $year[$cy]['days'][$d_y]['av']['domicilio'] += $day['av']['domicilio'];   
                         }else{
-                            if(config('configurazione.double_t')){
+                            if($property_adv['dt']){
                                 $year[$cy]['days'][$d_y]['vis']['table_1'] += $day['vis']['table_1'];
                                 if($year[$cy]['days'][$d_y]['vis']['table_1'] >= 1){
                                     $year[$cy]['days'][$d_y]['vis']['table_1'] = 1;
@@ -367,7 +372,7 @@ class DateController extends Controller
             'success'   => true,
             'results'   => $year,    
             'filter'   => $filter,    
-            'typeOfOrdering'   => config('configurazione.typeOfOrdering'),    
+            'typeOfOrdering'   => $property_adv['too'],    
             'count'   => count($year),    
         ]);
     }

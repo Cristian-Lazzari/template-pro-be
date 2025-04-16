@@ -89,7 +89,9 @@ class StripeWebhookController extends Controller
         $res = json_decode($date->reserving, true);
 
         // aggiorno la disponibilità in date
-        if(config('configurazione.typeOfOrdering')){
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1); 
+        if($property_adv['too']){
             $res_c1 = $res['cucina_1'];
             $res_c2 = $res['cucina_2'];
             $av_c1  = $av['cucina_1'];
@@ -486,6 +488,8 @@ class StripeWebhookController extends Controller
             }
             $delivery_cost = $order->tot_price - $cart_price;
         }
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
         
         $bodymail = [
             'type' => 'or',
@@ -511,6 +515,9 @@ class StripeWebhookController extends Controller
             'status' => $order->status,
             'cart' => $cart_mail,
             'total_price' => $order->tot_price,
+            
+            'property_adv' => $property_adv,
+            
         ];
 
         $mail = new confermaOrdineAdmin($bodymail);

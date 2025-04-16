@@ -256,7 +256,9 @@ class SettingController extends Controller
         $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
         $vis = json_decode($date->visible, 1); 
         $reserving = json_decode($date->reserving, 1);
-        if(config('configurazione.typeOfOrdering')){
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+        if($property_adv['too']){
             $np_cucina_1 = 0;
             $np_cucina_2 = 0;
             foreach ($order->products as $p) {
@@ -310,6 +312,8 @@ class SettingController extends Controller
     
         $order->update();
         
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
         $bodymail = [
@@ -337,6 +341,8 @@ class SettingController extends Controller
             'status' => $order->status,
             'cart' => $order->products,
             'total_price' => $order->tot_price,
+
+            'property_adv' => $property_adv,
         ];
 
        

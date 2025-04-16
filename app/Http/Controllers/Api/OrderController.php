@@ -46,8 +46,10 @@ class OrderController extends Controller
             $arrvar = str_replace('\\', '', $data['cart']);
             $cart = json_decode($arrvar, true);
            // return response()->json($cart);
-    
-            if(config('configurazione.typeOfOrdering')){
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);  
+           
+            if($property_adv['too']){
                 $res_c1 = $res['cucina_1'];
                 $res_c2 = $res['cucina_2'];
                 $av_c1 = $av['cucina_1'];
@@ -556,6 +558,8 @@ class OrderController extends Controller
                     $delivery_cost = $newOrder->tot_price - $cart_price;
                 }
                 //new menu
+                $adv_s = Setting::where('name', 'advanced')->first();
+                $property_adv = json_decode($adv_s->property, 1);
                 $bodymail = [
                     'type' => 'or',
                     'to' => 'admin',
@@ -583,6 +587,7 @@ class OrderController extends Controller
                     'cart' => $cart_mail,
                     'total_price' => $newOrder->tot_price,
                     
+                    'property_adv' => $property_adv,
                     
                 ];
                 $mailAdmin = new confermaOrdineAdmin($bodymail);

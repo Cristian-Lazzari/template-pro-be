@@ -73,6 +73,9 @@ class ReservationController extends Controller
         $c_a = $request->input('c_a');
         $id = $request->input('id');
         $res = Reservation::where('id', $id)->firstOrFail();
+
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
         if($c_a){
             $res->status = 1;
             $m = 'La prenotazione e\' stata confermata correttamente';
@@ -87,7 +90,8 @@ class ReservationController extends Controller
             $reserving = json_decode($date->reserving, 1);
             $_p = json_decode($res->n_person);
             $tot_p = $_p->child + $_p->adult;
-            if(config('configurazione.double_t')){
+
+            if($property_adv['dt']){
                 if($res->sala == 1){
                     if($vis['table_1'] == 0){
                         $vis['table_1'] = 1;
@@ -121,7 +125,8 @@ class ReservationController extends Controller
         }
         $res->update();
         
-
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
         $bodymail = [
@@ -143,6 +148,7 @@ class ReservationController extends Controller
                
             'n_person' => $res->n_person,
             'status' => $res->status,
+            'property_adv' => $property_adv,
         ];
 
        

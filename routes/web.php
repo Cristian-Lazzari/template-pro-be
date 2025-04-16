@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])
         // Rotte setting
 
         Route::post('settings/numbers',  [SettingController::class, 'numbers'])->name('settings.numbers');
+        Route::post('settings/advanced',  [SettingController::class, 'advanced'])->name('settings.advanced');
         Route::post('settings/updateAll',  [SettingController::class, 'updateAll'])->name('settings.updateAll');
         Route::post('settings/updateAree', [SettingController::class, 'updateAree'])->name('settings.updateAree');
 

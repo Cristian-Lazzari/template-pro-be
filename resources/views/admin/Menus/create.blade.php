@@ -118,13 +118,13 @@
                     <div class="prod_cont">
                         <h3>{{$c->name}}</h3>
                         @foreach ($c->product as $p)
-                            <input type="checkbox" class="btn-check" id="product{{ $p->id }}" name="products[]" 
+                            <input type="checkbox" class="btn-check" id="product{{ $p->id }}{{$c->name}}" name="products[]" 
                             value="{{ $p->id }}"
                             @if(in_array($p->id, old('products', [])))
                                 checked
                             @endif>
         
-                            <label class="btn btn-outline-light shadow-sm" for="product{{ $p->id }}">{{ $p->name }}</label> 
+                            <label class="btn btn-outline-light shadow-sm" for="product{{ $p->id }}{{$c->name}}">{{ $p->name }}</label> 
                         @endforeach
                     </div>
                    

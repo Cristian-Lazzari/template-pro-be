@@ -58,14 +58,14 @@ $domain = 'https://future-plus.it/allergens/';
     <div class="prod-spec">
         <div class="set_plate">
             <div class="title">
-                @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
+                @if ($property_adv['too'] && $property_adv['services'] > 2)
                 <p>Slot piatto:</p>
                 <p>Tipo piatto:</p>
                 @endif
                 <p>Costum cliente:</p>
             </div>
             <div class="res">
-                @if (config('configurazione.typeOfOrdering') && config('configurazione.pack') > 2)
+                @if ($property_adv['too'] && $property_adv['services'] > 2)
                     <p>{{$product->slot_plate}}</p>
                     @if($product->type_plate == 0) <p>Altro</p> @elseif($product->type_plate == 1) <p>Cucina 1</p> @else <p>Cucina 2</p> @endif
                 @endif

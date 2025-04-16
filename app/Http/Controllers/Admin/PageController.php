@@ -20,7 +20,7 @@ use App\Http\Controllers\Controller;
 class PageController extends Controller
 {
     public function dashboard() {
-        $dates = Date::all();
+
         $setting = Setting::all();
         $product_ = [
             1 => Product::where('visible', 1)->where('archived', 0)->count(),
@@ -98,238 +98,126 @@ class PageController extends Controller
         // Prepare the data for the chart
        // Prepare the data for the chart
 
-       $chartData = [
-        'labels' => $allDates->map(fn($date) => Carbon::parse($date))->values()->toArray(),
-        'datasets' => [
-            [
-                'label' => 'Prenotazioni',
-                'data' => $allDates->map(fn($date) => isset($reservations[$date]) ? (int)$reservations[$date]['count'] : 0)->values()->toArray(),
+        $chartData = [
+            'labels' => $allDates->map(fn($date) => Carbon::parse($date))->values()->toArray(),
+            'datasets' => [
+                [
+                    'label' => 'Prenotazioni',
+                    'data' => $allDates->map(fn($date) => isset($reservations[$date]) ? (int)$reservations[$date]['count'] : 0)->values()->toArray(),
+                    
+                    'borderColor' => '#090333',
+                    'backgroundColor' => '#090333',
+                ],
+                [
+                    'label' => ' Delivery',
+                    'data' => $allDates->map(fn($date) => isset($ordersDelivery[$date]) ? (int)$ordersDelivery[$date]['count'] : 0)->values()->toArray(),
+                    'borderColor' => '#10b793',
+                    'backgroundColor' => '#10b793',
+                ],
+                [
+                    'label' => 'Asporto',
+                    'data' => $allDates->map(fn($date) => isset($ordersAsporto[$date]) ? (int)$ordersAsporto[$date]['count'] : 0)->values()->toArray(),
+                    'borderColor' => '#10b7937b',
+                    'backgroundColor' => '#10b7937b',
+                ],
+            ],
+        ];
+        $adv_s = Setting::where('name', 'advanced')->first();
+        if(!$adv_s){
+            $setting = new Setting();
+            $setting->name = 'advanced';
+            $property_adv = [
+                'too' => false,
+                'dt' => false,
+                'services' => '3', //1 asport // 2 tavoli //3 entrambi
                 
-                'borderColor' => '#090333',
-                'backgroundColor' => '#090333',
-            ],
-            [
-                'label' => ' Delivery',
-                'data' => $allDates->map(fn($date) => isset($ordersDelivery[$date]) ? (int)$ordersDelivery[$date]['count'] : 0)->values()->toArray(),
-                'borderColor' => '#10b793',
-                'backgroundColor' => '#10b793',
-            ],
-            [
-                'label' => 'Asporto',
-                'data' => $allDates->map(fn($date) => isset($ordersAsporto[$date]) ? (int)$ordersAsporto[$date]['count'] : 0)->values()->toArray(),
-                'borderColor' => '#10b7937b',
-                'backgroundColor' => '#10b7937b',
-            ],
-        ],
-    ];
-    
-    
-
-    $notify = [];
-
-
+                'menu_fix_set' => '1',
+                'too_1' => 'pizza',
+                'too_2' => 'fritti',
+                'sala_1' => 'Sala Sushi',
+                'sala_2' => 'Sala ITA',
+                'p_iva' => '',
+                'r_sociale' => '',
+                'times_start' => '17:20',
+                'times_end' => '22:20',
+                'max_day_res' => '20',
+                'times_interval' => 20,
+                'c_rea' => '',
+                'c_sociale' => '',
+                'u_imprese' => '',
+                'method' => [],
+                'set_time'=> [
+                    'Sala Sushi', 
+                    'Sala ITA', 
+                    'asporto',
+                    'domicilio',
+                ]
+            ];
+            $setting->property = json_encode($property_adv);
+            $setting->save();
+            $adv_s = $setting;
+        }else{
+            $property_adv = json_decode($adv_s->property, 1);  
+        }
+        $notify = [];
+        $dates = Date::all();
         if(count($dates) == 0){
-            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify'));
+            return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify','adv_s'));
         };
-        $year = [
-            1 => [
-                'year' => $dates[0]['year'],
-                'month'=> $dates[0]['month'],
-                'days'=> [],
-            ]
-        ];
-        //dd($dates[1]);
-        $firstDay = [
-            'year' => $dates[0]['year'],
-            'month' => $dates[0]['month'],
-            'day' => $dates[0]['day'],
-        ];
-               
+        // creo calendario 
+        $year = [1 => ['year' => $dates[0]['year'],'month'=> $dates[0]['month'],'days'=> [],]];
+
+        // Recupera configurazioni
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
+        $firstDay = [ 'year' => $dates[0]['year'], 'month' => $dates[0]['month'], 'day' => $dates[0]['day'],];       
         foreach ($dates as $d) {
             list($date, $time) = explode(" ", $d['date_slot']);
             
             if($d['reserving'] !== '0'){
                 $res = json_decode($d['reserving'], 1);
-                // dump($date . $time);
-                // dump($res);
-                if( config('configurazione.double_t')){
-                    if( config('configurazione.pack') == 2 ){        
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-                            
-                            'table' => $res['table_1'] + $res['table_2'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-                            
-                            'table' => $res['table_1'] + $res['table_2'],
-                        ];
-                    }elseif( config('configurazione.pack') == 3){
-                        if(config('configurazione.typeOfOrdering')){
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }elseif( config('configurazione.pack') == 4){
-                        if(config('configurazione.typeOfOrdering')){ 
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }
-                }else{
-                    if( config('configurazione.pack') == 2 ){        
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-    
-                            'table' => $res['table'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-    
-                            'table' => $res['table'],
-                        ];
-                    }elseif( config('configurazione.pack') == 3){
-                        if(config('configurazione.typeOfOrdering')){
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }elseif( config('configurazione.pack') == 4){
-                        if(config('configurazione.typeOfOrdering')){ 
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }
 
+                // Prepara base comune per $day
+                $day = [
+                    'day' => $d['day'],
+                    'day_w' => $d['day_w'],
+                    'date' => $date,
+                    'time' => [],
+                ];
+
+                // Prepara base comune per $time
+                $time = [
+                    'time' => $d['time'],
+                ];
+
+                if ($pack == 2) {
+                    $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
+                    $day['table'] = $table;
+                    $time['table'] = $table;
+                } elseif ($pack == 3) {
+                    $asporto = $type 
+                    ? ($res['cucina_1'] + $res['cucina_2']) 
+                    : ($res['asporto'] ?? null);
+                    $domicilio = $res['domicilio'] ?? null;
+                    $day['asporto'] = $asporto;
+                    $day['domicilio'] = $domicilio;
+                    $time['asporto'] = $asporto;
+                    $time['domicilio'] = $domicilio;
+                } elseif ($pack == 4) {
+                    $asporto = $type 
+                    ? ($res['cucina_1'] + $res['cucina_2']) 
+                    : ($res['asporto'] ?? null);
+                    $domicilio = $res['domicilio'] ?? null;
+                    $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
+                    $day['asporto'] = $asporto;
+                    $day['domicilio'] = $domicilio;
+                    $day['table'] = $table;
+                    $time['asporto'] = $asporto;
+                    $time['domicilio'] = $domicilio;
+                    $time['table'] = $table;
                 }
+
             }
             
             $cy = count($year);
@@ -343,13 +231,13 @@ class PageController extends Controller
                     array_push($year[$cy]['days'], $day);
                     array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
                 }elseif($d['day'] == $firstDay['day']){
-                    if( config('configurazione.pack') == 2 ){        
+                    if( $pack == 2 ){        
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
-                    }elseif( config('configurazione.pack') == 3){
+                    }elseif( $pack == 3){
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
                         
-                    }elseif( config('configurazione.pack') == 4){
+                    }elseif( $pack == 4){
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
                         $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
@@ -357,8 +245,7 @@ class PageController extends Controller
                     }
                     array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
                 }
-            }else{
-                
+            }else{ 
                 $month = [
                     'year' =>  $d['year'],
                     'month' => $d['month'],
@@ -381,12 +268,11 @@ class PageController extends Controller
             ];
             
         };
-
         // Ottieni ordini non notificati
         $not_or = Order::where('notificated', 0)->where('status', '!=', 4)->get();
         $not_res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
-
-        
+        //fine date
+        //cerco notifiche
         if (count($not_or) || count($not_res)) {
             if (count($not_or)){
                 foreach ($not_or as $o) {
@@ -410,8 +296,7 @@ class PageController extends Controller
                 }
             }
         }
-
-        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify'));
+        return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify','adv_s'));
        // dd($year);
     }
     public function statistics()
@@ -541,25 +426,5 @@ class PageController extends Controller
             'reservations' => $reservations,
         ]);
     }
-    public function sendNotification()
-    {
-        // Imposta le intestazioni per SSE
-        header('Content-Type: text/event-stream');
-        header('Cache-Control: no-cache');
-        header('Connection: keep-alive');
-        
-        // Mantieni attivo il ciclo per continuare a inviare dati
-        while (true) {
-            if (connection_aborted()) {
-                break; // Esce dal ciclo se la connessione viene interrotta
-            }
-            
-            
-    
-            // Intervallo di attesa per ridurre il carico sul server
-            //sleep(7); // 5 secondi di pausa tra le verifiche
-        }
-    }    
-
 }
 

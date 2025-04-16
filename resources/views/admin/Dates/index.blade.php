@@ -130,16 +130,16 @@
     <h1>Genera nuove disponibilità</h1>
         @csrf
         
-        @if ( config('configurazione.pack') == 2 ||  config('configurazione.pack') == 4)  
-            @if (config('configurazione.double_t'))  
-                <h5 class="pt-4 ">Indica il numero di posti a sedere per la sala sushi per fascia oraria</h5>
+        @if ( $pack == 2 ||  $pack == 4)  
+            @if ($double)  
+                <h5 class="pt-4 ">Indica il numero di posti a sedere per  "{{$property_adv['sala_1']}}" per fascia oraria</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_reservations_1" class="input-group-text" >N° di posti a sedere Sushi</label>
+                    <label for="max_reservations_1" class="input-group-text" >N° di posti a sedere {{$property_adv['sala_1']}}</label>
                     <input name="max_reservations_1" id="max_reservations_1" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
                 </div> @error('max_reservations_1') <p class="error">{{ $message }}</p> @enderror
-                <h5 class="pt-4 ">Indica il numero di posti a sedere per la sala ITA per fascia oraria</h5>
+                <h5 class="pt-4 ">Indica il numero di posti a sedere per  "{{$property_adv['sala_2']}}" per fascia oraria</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_reservations_2" class="input-group-text" >N° di posti a sedere ITA</label>
+                    <label for="max_reservations_2" class="input-group-text" >N° di posti a sedere {{$property_adv['sala_2']}}</label>
                     <input name="max_reservations_2" id="max_reservations_2" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
                 </div> @error('max_reservations_2') <p class="error">{{ $message }}</p> @enderror
             @else
@@ -150,15 +150,15 @@
                 </div> @error('max_reservations') <p class="error">{{ $message }}</p> @enderror
             @endif
         @endif
-        @if ( config('configurazione.pack') == 3 ||  config('configurazione.pack') == 4)  
-            @if (config('configurazione.typeOfOrdering'))  
-                <h5 class="pt-4 ">Indica il numero massimo di {{config('configurazione.set_time')[1]}} (cucina 1) per asporto/delivery</h5>
+        @if ( $pack > 2)  
+            @if ($type)  
+                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['type_1']}} (cucina 1) per asporto/delivery</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
                     <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" placeholder="N° di pezzi">
                 </div> @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
                 
-                <h5 class="pt-4 ">Indica il numero massimo di {{config('configurazione.set_time')[2]}} (cucina 2) per asporto/delivery</h5>
+                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['type_2']}} (cucina 2) per asporto/delivery</h5>
                 <div class="input-group w-auto flex-nowrap py-2 ">
                     <label for="max_cucina_2" class="input-group-text" >N° di pizze</label>
                     <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" placeholder="N° di pezzi">
@@ -187,13 +187,7 @@
                     <label class="my_btn_1 my_btn_2 scale-none  " for="day_{{ $day }}">{{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }}
                         <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
                             <div class="card card-body">
-                                {{-- <input
-                                    type="checkbox"
-                                    class="btn-check"
-                                    id="days_on_{{ $day }}"
-                                    name="days_on[]"
-                                    value="{{ $day }}">
-                                <label class="btn btn-outline-dark w-auto m-auto" for="days_on_{{ $day }}">Attiva</label> --}}
+
 
                                 <label class="theme-switch" for="days_on_{{ $day }}" id="themeswitch">
                                     <input type="checkbox" id="days_on_{{ $day }}" name="days_on[]" value="{{ $day }}">
@@ -202,12 +196,14 @@
                                     <div class="back"></div>
                                 </label>
                                 <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
+
                                 @php
+
                                     $day_time = [];
-                                    $start = new DateTime(config('configurazione.times_start'));
-                                    $end = new DateTime(config('configurazione.times_end'));
+                                    $start = new DateTime($times_start);
+                                    $end = new DateTime($times_end);
                                     $index = 1;
-                                    $interval = config('configurazione.times_interval');
+                                    $interval = $times_interval;
 
                                     // Loop finché l'orario di inizio è inferiore all'orario di fine
                                     while ($start <= $end) {
@@ -220,18 +216,17 @@
                                         $index++;
                                     }
                                 @endphp
-
                                 @foreach ($day_time as $time)
                                     <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
-                                        @if ( config('configurazione.pack') == 2)
+                                        @if ($pack == 2)
                                             <option value="0">{{ $time['time'] }} - ND</option>
                                             <option value="1">{{ $time['time'] }} - attivo</option>  
-                                        @elseif ( config('configurazione.pack') == 3)  
+                                        @elseif ($pack == 3)  
                                             <option value="0">{{ $time['time'] }} - ND</option>
                                             <option value="1">{{ $time['time'] }} - asporto</option>
                                             <option value="4">{{ $time['time'] }} - domicilio</option>
                                             <option value="7">{{ $time['time'] }} - tutti</option>
-                                        @elseif ( config('configurazione.pack') == 4)     
+                                        @elseif ($pack == 4)     
                                             <option value="0">{{ $time['time'] }} - ND</option>
                                             <option value="1">{{ $time['time'] }} - asporto</option>
                                             <option value="2">{{ $time['time'] }} - tavoli</option>

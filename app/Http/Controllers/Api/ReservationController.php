@@ -32,6 +32,9 @@ class ReservationController extends Controller
 
             // Ottieni i dati dalla richiesta
             $data = $request->all();
+
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);
             
             // Cerca la data corrispondente
             $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
@@ -48,7 +51,7 @@ class ReservationController extends Controller
                 'child' => $n_child,
             ];
             // Controlla la disponibilità e aggiorna le prenotazioni
-            if(config('configurazione.double_t')){
+            if($property_adv['dt']){
                 $sala = $data['sala'];
                 if($sala == 1){
                     if(($res['table_1'] + $tot_p) < $av['table_1']){
@@ -113,7 +116,7 @@ class ReservationController extends Controller
             $newRes->message = $data['message'];
             $newRes->status = 2;
             $newRes->news_letter = $data['news_letter'];
-            if(config('configurazione.double_t')){
+            if($property_adv['dt']){
                 $newRes->sala = $data['sala'];
             }
             
@@ -135,7 +138,7 @@ class ReservationController extends Controller
                 $info .= $n_child . " bambini \n\n";
                 $guest .= $n_child . " bambini ";
             }
-            if (config("configurazione.double_t") && $newRes->sala ) {
+            if ($property_adv['dt'] && $newRes->sala ) {
                 $info .= " *_Sala prenota: ";
                 $sala_mess .= " *_Sala prenota: ";
                 if ($newRes->sala == 1) {
@@ -366,6 +369,8 @@ class ReservationController extends Controller
     protected function send_mail($newRes){
         try{
             // Ottieni le impostazioni di contatto
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);
             $set = Setting::where('name', 'Contatti')->firstOrFail();
             $p_set = json_decode($set->property, true);
             if(isset($p_set['telefono'])){
@@ -392,6 +397,7 @@ class ReservationController extends Controller
                 'n_person' => $newRes->n_person,
                 'status' => $newRes->status,
                 'whatsapp_message_id' => $newRes->whatsapp_message_id,
+                'property_adv' => $property_adv,
             ];
 
             // Invia le email

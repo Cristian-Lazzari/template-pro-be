@@ -119,7 +119,7 @@
                         @foreach ($t->res as $tk) 
                         <a href="{{ route('admin.reservations.show', $tk->id) }}" class="tiket {{ in_array($tk->status, [0, 6]) ? 'null' : '' }} ">
                             <p>{{$tk->name}}</p>
-                            @if (config('configurazione.double_t'))
+                            @if ($dt)
                             <p class="sala" >{{config('configurazione.set_time_dt')[$tk->sala - 1] }}</p>   
                             @endif
                             <div class="person">
@@ -167,20 +167,10 @@
                             @php $i = 0 @endphp
                             <div class="cont">
                                 @foreach ($reserving as $key => $value)
-                                <div class="not-set">
-                                        @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3 && config('configurazione.double_t'))
-                                            <h5>{{config('configurazione.set_time_dt')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3 && config('configurazione.double_t'))
-                                            <h5>{{config('configurazione.set_time_dt')[$i + 1]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3)
-                                            <h5>{{config('configurazione.set_time')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
-                                            <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
-                                        @elseif(config('configurazione.double_t') && !config('configurazione.typeOfOrdering'))
-                                            <h5>{{config('configurazione.set_time_2_dt')[$i]}}:</h5>
-                                        @else
-                                            <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
-                                        @endif
+                                    <div class="not-set">
+
+                                        <h5>{{$set_time[$i]}}:</h5>
+
                                         <span class="">{{$value}}</span>
                                     </div>
                                     @php $i ++ @endphp
@@ -193,19 +183,7 @@
                             <div class="cont">
                                 @foreach ($availability as $key => $value)
                                     <div class="set">
-                                         @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3 && config('configurazione.double_t'))
-                                            <h5>{{config('configurazione.set_time_dt')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3 && config('configurazione.double_t'))
-                                            <h5>{{config('configurazione.set_time_dt')[$i + 1]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3)
-                                            <h5>{{config('configurazione.set_time')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
-                                            <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
-                                        @elseif(config('configurazione.double_t') && !config('configurazione.typeOfOrdering'))
-                                            <h5>{{config('configurazione.set_time_2_dt')[$i]}}:</h5>
-                                        @else
-                                            <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
-                                        @endif
+                                        <h5>{{$set_time[$i]}}:</h5>
                                         <input type="number" name="av{{$key}}" value="{{$value}}" class="">   
                                     </div>
                                     @php $i ++ @endphp
@@ -218,19 +196,7 @@
                             <div class="cont">
                                 @foreach ($visible as $key => $value)
                                     <div class="set">
-                                         @if(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3 && config('configurazione.double_t'))
-                                            <h5>{{config('configurazione.set_time_dt')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3 && config('configurazione.double_t'))
-                                            <h5>{{config('configurazione.set_time_dt')[$i + 1]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') !== 3)
-                                            <h5>{{config('configurazione.set_time')[$i]}}:</h5>
-                                        @elseif(config('configurazione.typeOfOrdering') && config('configurazione.pack') == 3) 
-                                            <h5>{{config('configurazione.set_time')[$i + 1]}}:</h5>
-                                        @elseif(config('configurazione.double_t') && !config('configurazione.typeOfOrdering'))
-                                            <h5>{{config('configurazione.set_time_2_dt')[$i]}}:</h5>
-                                        @else
-                                            <h5>{{config('configurazione.set_time_2')[$i]}}:</h5>
-                                        @endif
+                                        <h5>{{$set_time[$i]}}:</h5>
                                         <select name="vis{{$key}}" class="">
                                             <option @if ($value) selected @endif value="1">SI</option>
                                             <option @if (!$value) selected @endif value="0">NO</option>

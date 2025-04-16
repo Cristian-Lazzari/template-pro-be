@@ -211,12 +211,10 @@
         @elseif($content_mail['type'] == 'res')
 
             <!-- Sala prenotata (se applicabile) -->
-            @if (config('configurazione.double_t') && $content_mail['sala'] !== 0)
-                @if (config('configurazione.typeOfOrdering'))
-                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
-                @else
-                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? config('configurazione.set_time_2_dt')[0] : config('configurazione.set_time_2_dt')[1]}}</strong></h3>
-                @endif
+            @if ($content_mail['property_adv']['dt'] && $content_mail['sala'] !== 0)
+
+                <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? $content_mail['property_adv']['sala_1'] : $content_mail['property_adv']['sala_2']}}</strong></h3>
+
             @endif
 
             <!-- Numero di persone -->

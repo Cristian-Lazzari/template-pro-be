@@ -133,7 +133,10 @@ class OrderController extends Controller
             
             $vis = json_decode($date->visible, 1); 
             $reserving = json_decode($date->reserving, 1);
-            if(config('configurazione.typeOfOrdering')){
+
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);  
+            if($property_adv['too']){
                 $np_cucina_1 = 0;
                 $np_cucina_2 = 0;
                 foreach ($order->products as $p) {
@@ -241,7 +244,9 @@ class OrderController extends Controller
             }
             $delivery_cost = $order->tot_price - $cart_price;
         }
-        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+        $set = Setting::where('name', 'Contatti')->first();
         $p_set = json_decode($set->property, true);
         $bodymail = [
             'type' => 'or',
@@ -267,6 +272,8 @@ class OrderController extends Controller
             'status' => $order->status,
             'cart' => $cart_mail,
             'total_price' => $order->tot_price,
+
+            'property_adv' => $property_adv,
         ];
 
        
@@ -382,9 +389,13 @@ class OrderController extends Controller
         $vis = json_decode($date->visible, 1); 
         $reserving = json_decode($date->reserving, 1);
 
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+
         if($request['cancel'] == 0){
             $content_notify .= ' e l\'orario è stato bloccato';
-            if(config('configurazione.typeOfOrdering')){
+            if($property_adv['too']
+            ){
                 $vis['cucina_1'] = 0;
                 $vis['cucina_2'] = 0;
                 $vis['domicilio'] = 0;

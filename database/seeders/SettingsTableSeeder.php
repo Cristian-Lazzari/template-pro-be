@@ -13,7 +13,7 @@ class SettingsTableSeeder extends Seeder
     {
         
         
-        if(config('configurazione.pack') > 1 ){
+        if(config('configurazione.subscription') > 1 ){
             $settings = [
                 [
                     'name' => 'Prenotaione Tavoli',  

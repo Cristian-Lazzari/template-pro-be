@@ -258,7 +258,9 @@ class WaController extends Controller
             $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
             $vis = json_decode($date->visible, 1); 
             $reserving = json_decode($date->reserving, 1);
-            if(config('configurazione.typeOfOrdering')){
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1); 
+            if( $property_adv['too']){
                 $np_cucina_1 = 0;
                 $np_cucina_2 = 0;
                 foreach ($order->products as $p) {
@@ -409,6 +411,8 @@ class WaController extends Controller
         }
         $res->update();
         
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
 
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
@@ -432,6 +436,8 @@ class WaController extends Controller
             'whatsapp_message_id' => $res->whatsapp_message_id,
             'n_person' => $res->n_person,
             'status' => $res->status,
+            
+            'property_adv' => $property_adv,
         ];
 
        

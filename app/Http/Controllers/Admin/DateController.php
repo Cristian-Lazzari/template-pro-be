@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use App\Models\Date;
 use App\Models\Order;
+use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,266 +63,140 @@ class DateController extends Controller
         'max_asporto'           => 'required|integer',
         'days_on'               => 'required',
     ];
-    public function index()
-    {
-        
-        $dates = Date::all();
-        if(count($dates) == 0){
-            return view('admin.Dates.index');
-        }
-        $year = [
-            1 => [
-                'year' => $dates[0]['year'],
-                'month'=> $dates[0]['month'],
-                'days'=> [],
-            ]
-        ];
-        //dd($dates[1]);
-        $firstDay = [
-            'year' => $dates[0]['year'],
-            'month' => $dates[0]['month'],
-            'day' => $dates[0]['day'],
-        ];
-               
-        foreach ($dates as $d) {
-            list($date, $time) = explode(" ", $d['date_slot']);
-            
-            if($d['reserving'] !== '0'){
-                $res = json_decode($d['reserving'], 1);
+    public function index() {
+            // Recupera le configurazioni
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);  
                 
-                if( config('configurazione.double_t')){
-                    if( config('configurazione.pack') == 2 ){        
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-                            
-                            'table' => $res['table_1'] + $res['table_2'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-                            
-                            'table' => $res['table_1'] + $res['table_2'],
-                        ];
-                    }elseif( config('configurazione.pack') == 3){
-                        if(config('configurazione.typeOfOrdering')){
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }elseif( config('configurazione.pack') == 4){
-                        if(config('configurazione.typeOfOrdering')){ 
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-                                
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-                                
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table_1'] + $res['table_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }
-                }else{
-                    if( config('configurazione.pack') == 2 ){        
-                        $day = [
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date,
-                            'time' => [],
-    
-                            'table' => $res['table'],
-                        ];
-                        $time = [
-                            'time' => $d['time'],
-    
-                            'table' => $res['table'],
-                        ];
-                    }elseif( config('configurazione.pack') == 3){
-                        if(config('configurazione.typeOfOrdering')){
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['asporto'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }elseif( config('configurazione.pack') == 4){
-                        if(config('configurazione.typeOfOrdering')){ 
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['cucina_1'] + $res['cucina_2'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }else{
-                            $day = [
-                                'day' => $d['day'],
-                                'day_w' => $d['day_w'],
-                                'date' => $date,
-                                'time' => [],
-    
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                            $time = [
-                                'time' => $d['time'],
-    
-                                'asporto' => $res['asporto'],
-                                'table' => $res['table'],
-                                'domicilio' => $res['domicilio'],
-                            ];
-                        }
-                    }
+            $double = $property_adv['dt'];
+            $pack = $property_adv['services'];
+            $type = $property_adv['too'];
+            $times_end = $property_adv['times_end'];
+            $times_start = $property_adv['times_start'];
+            $times_interval = $property_adv['times_interval'];
 
-                }
-                  
-
+            $dates = Date::all();
+            if(count($dates) == 0){
+                return view('admin.Dates.index', compact('double', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
             }
-            
-            $cy = count($year);
-            if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
-                if( $d['time'] == 0 ){
-                    array_push($year[$cy]['days'], $dayoff = [
-                        'day' => $d['day'],
-                        'day_w' => $d['day_w'],
-                        'date' => $date]);
-                }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
-                    array_push($year[$cy]['days'], $day);
-                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
-                }elseif($d['day'] == $firstDay['day']){
-                    if( config('configurazione.pack') == 2 ){        
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
-                    }elseif( config('configurazione.pack') == 3){
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
-                        
-                    }elseif( config('configurazione.pack') == 4){
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
-                        
-                    }
-                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
-                }
-            }else{
-                
-                $month = [
-                    'year' =>  $d['year'],
-                    'month' => $d['month'],
-                    'days' => [],
-                ];
-                if($d['reserving'] !== '0'){
-                    array_push($month['days'], $day);
-                }else{
-                    array_push($month['days'], $dayoff = [
-                        'day' => $d['day'],
-                        'day_w' => $d['day_w'],
-                        'date' => $date]);
-                }
-                array_push($year, $month);
-            }
-            $firstDay = [
-                'year' => $d['year'],
-                'month' => $d['month'],
-                'day' => $d['day'],
+            $year = [
+                1 => [
+                    'year' => $dates[0]['year'],
+                    'month'=> $dates[0]['month'],
+                    'days'=> [],
+                ]
             ];
-            
-        };
-        return view('admin.Dates.index', compact('year'));
-    }
+            //dd($dates[1]);
+            $firstDay = [
+                'year' => $dates[0]['year'],
+                'month' => $dates[0]['month'],
+                'day' => $dates[0]['day'],
+            ];
+                
+            foreach ($dates as $d) {
+                list($date, $time) = explode(" ", $d['date_slot']);
+                
+                if($d['reserving'] !== '0'){
+                    $res = json_decode($d['reserving'], 1);
+
+                    // Prepara base comune per $day
+                    $day = [
+                        'day' => $d['day'],
+                        'day_w' => $d['day_w'],
+                        'date' => $date,
+                        'time' => [],
+                    ];
+
+                    // Prepara base comune per $time
+                    $time = [
+                        'time' => $d['time'],
+                    ];
+
+    
+                    // Helpers per assegnare valori in base alla configurazione
+                    
+                    
+                    // Assegnazione in base al pack
+                    if ($pack == 2) {
+                        $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
+                        $day['table'] = $table;
+                        $time['table'] = $table;
+                    } elseif ($pack == 3) {
+                        $asporto = $type 
+                        ? ($res['cucina_1'] + $res['cucina_2']) 
+                        : ($res['asporto'] ?? null);
+                        $domicilio = $res['domicilio'] ?? null;
+                        $day['asporto'] = $asporto;
+                        $day['domicilio'] = $domicilio;
+                        $time['asporto'] = $asporto;
+                        $time['domicilio'] = $domicilio;
+                    } elseif ($pack == 4) {
+                        $asporto = $type 
+                        ? ($res['cucina_1'] + $res['cucina_2']) 
+                        : ($res['asporto'] ?? null);
+                        $domicilio = $res['domicilio'] ?? null;
+                        $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
+                        $day['asporto'] = $asporto;
+                        $day['domicilio'] = $domicilio;
+                        $day['table'] = $table;
+                        $time['asporto'] = $asporto;
+                        $time['domicilio'] = $domicilio;
+                        $time['table'] = $table;
+                    }
+
+                }
+                
+                $cy = count($year);
+                if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
+                    if( $d['time'] == 0 ){
+                        array_push($year[$cy]['days'], $dayoff = [
+                            'day' => $d['day'],
+                            'day_w' => $d['day_w'],
+                            'date' => $date]);
+                    }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
+                        array_push($year[$cy]['days'], $day);
+                        array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
+                    }elseif($d['day'] == $firstDay['day']){
+                        if($pack == 2 ){        
+                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
+                        }elseif($pack == 3){
+                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
+                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
+                            
+                        }elseif($pack == 4){
+                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];
+                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
+                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
+                            
+                        }
+                        array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
+                    }
+                }else{
+                    
+                    $month = [
+                        'year' =>  $d['year'],
+                        'month' => $d['month'],
+                        'days' => [],
+                    ];
+                    if($d['reserving'] !== '0'){
+                        array_push($month['days'], $day);
+                    }else{
+                        array_push($month['days'], $dayoff = [
+                            'day' => $d['day'],
+                            'day_w' => $d['day_w'],
+                            'date' => $date]);
+                    }
+                    array_push($year, $month);
+                }
+                $firstDay = [
+                    'year' => $d['year'],
+                    'month' => $d['month'],
+                    'day' => $d['day'],
+                ];
+                
+            };
+            return view('admin.Dates.index', compact('year', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
+        }
 
     public function showDay(Request $request){
         $date = $request->input('date');
@@ -352,130 +227,83 @@ class DateController extends Controller
     public function status(Request $request){
         $id = $request->input('id');
         $date = Date::where('id', $id)->firstOrFail();
-           
-        if( config('configurazione.double_t') == true ){
-            if( config('configurazione.pack') == 2 ){ 
+
+        // Recupera le configurazioni
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+            
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
+
+
+        switch ($pack) {
+            case 2:
                 $av = [
-                    'table_1' =>intval($request->avtable_1),
-                    'table_2' =>intval($request->avtable_2),
+                    'table' => $double ? intval($request->avtable_1) : intval($request->avtable),
                 ];
                 $vis = [
-                    'table_1' =>intval($request->vistable_1),
-                    'table_2' =>intval($request->vistable_2),
+                    'table' => $double ? intval($request->vistable_1) : intval($request->vistable),
                 ];
-            }elseif( config('configurazione.pack') == 3){
-                if(config('configurazione.typeOfOrdering')){
+                if ($double) {
+                    $av['table_2'] = intval($request->avtable_2);
+                    $vis['table_2'] = intval($request->vistable_2);
+                }
+                break;
+
+            case 3:
+                if ($type) {
                     $av = [
-                        'cucina_1' =>intval($request->avcucina_1),
-                        'cucina_2' =>intval($request->avcucina_2),
-                        'domicilio' =>intval($request->avdomicilio),
+                        'cucina_1' => intval($request->avcucina_1),
+                        'cucina_2' => intval($request->avcucina_2),
+                        'domicilio' => intval($request->avdomicilio),
                     ];
                     $vis = [
-                        'cucina_1' =>intval($request->viscucina_1),
-                        'cucina_2' =>intval($request->viscucina_2),
-                        'domicilio' =>intval($request->visdomicilio),
+                        'cucina_1' => intval($request->viscucina_1),
+                        'cucina_2' => intval($request->viscucina_2),
+                        'domicilio' => intval($request->visdomicilio),
                     ];
-                }else{
+                } else {
                     $av = [
-                        'asporto' =>intval($request->avasporto),
-                        'domicilio' =>intval($request->avdomicilio),
+                        'asporto' => intval($request->avasporto),
+                        'domicilio' => intval($request->avdomicilio),
                     ];
                     $vis = [
-                        'asporto' =>intval($request->visasporto),
-                        'domicilio' =>intval($request->visdomicilio),
+                        'asporto' => intval($request->visasporto),
+                        'domicilio' => intval($request->visdomicilio),
                     ];
                 }
-               
-            }elseif( config('configurazione.pack') == 4){
-                if(config('configurazione.typeOfOrdering')){
-                    $av = [
-                        'table_1' =>intval($request->avtable_1),
-                        'table_2' =>intval($request->avtable_2),
-                        'cucina_1' =>intval($request->avcucina_1),
-                        'cucina_2' =>intval($request->avcucina_2),
-                        'domicilio' =>intval($request->avdomicilio),
-                    ];
-                    $vis = [
-                        'table_1' =>intval($request->vistable_1),
-                        'table_2' =>intval($request->vistable_2),
-                        'cucina_1' =>intval($request->viscucina_1),
-                        'cucina_2' =>intval($request->viscucina_2),
-                        'domicilio' =>intval($request->visdomicilio),
-                    ];
-                }else{
-                    $av = [
-                        'table_1' =>intval($request->avtable_1),
-                        'table_2' =>intval($request->avtable_2),
-                        'asporto' =>intval($request->avasporto),
-                        'domicilio' =>intval($request->avdomicilio),
-                    ];
-                    $vis = [
-                        'table_1' =>intval($request->vistable_1),
-                        'table_2' =>intval($request->vistable_2),
-                        'asporto' =>intval($request->visasporto),
-                        'domicilio' =>intval($request->visdomicilio),
-                    ];
+                break;
+
+            case 4:
+                $av = $vis = [];
+                if ($double) {
+                    $av['table_1'] = intval($request->avtable_1);
+                    $av['table_2'] = intval($request->avtable_2);
+                    $vis['table_1'] = intval($request->vistable_1);
+                    $vis['table_2'] = intval($request->vistable_2);
+                } else {
+                    $av['table'] = intval($request->avtable);
+                    $vis['table'] = intval($request->vistable);
                 }
-            }
-        }else{
-            if( config('configurazione.pack') == 2 ){ 
-                $av = [
-                    'table' =>$request->avtable
-                ];
-                $vis = [
-                    'table' =>intval($request->vistable)
-                ];
-            }elseif( config('configurazione.pack') == 3){
-                if(config('configurazione.typeOfOrdering')){
-                    $av = [
-                        'cucina_1' =>intval($request->avcucina_1),
-                        'cucina_2' =>intval($request->avcucina_2),
-                        'domicilio' =>intval($request->avdomicilio),
-                    ];
-                    $vis = [
-                        'cucina_1' =>intval($request->viscucina_1),
-                        'cucina_2' =>intval($request->viscucina_2),
-                        'domicilio' =>intval($request->visdomicilio),
-                    ];
-                }else{
-                    $av = [
-                        'asporto' =>intval($request->avasporto),
-                        'domicilio' =>intval($request->avdomicilio),
-                    ];
-                    $vis = [
-                        'asporto' =>intval($request->visasporto),
-                        'domicilio' =>intval($request->visdomicilio),
-                    ];
+                if ($type) {
+                    $av['cucina_1'] = intval($request->avcucina_1);
+                    $av['cucina_2'] = intval($request->avcucina_2);
+                    $av['domicilio'] = intval($request->avdomicilio);
+
+                    $vis['cucina_1'] = intval($request->viscucina_1);
+                    $vis['cucina_2'] = intval($request->viscucina_2);
+                    $vis['domicilio'] = intval($request->visdomicilio);
+                } else {
+                    $av['asporto'] = intval($request->avasporto);
+                    $av['domicilio'] = intval($request->avdomicilio);
+
+                    $vis['asporto'] = intval($request->visasporto);
+                    $vis['domicilio'] = intval($request->visdomicilio);
                 }
-               
-            }elseif( config('configurazione.pack') == 4){
-                if(config('configurazione.typeOfOrdering')){
-                    $av = [
-                        'table' =>intval($request->avtable),
-                        'cucina_1' =>intval($request->avcucina_1),
-                        'cucina_2' =>intval($request->avcucina_2),
-                        'domicilio' =>intval($request->avdomicilio),
-                    ];
-                    $vis = [
-                        'table' =>intval($request->vistable),
-                        'cucina_1' =>intval($request->viscucina_1),
-                        'cucina_2' =>intval($request->viscucina_2),
-                        'domicilio' =>intval($request->visdomicilio),
-                    ];
-                }else{
-                    $av = [
-                        'table' =>intval($request->avtable),
-                        'asporto' =>intval($request->avasporto),
-                        'domicilio' =>intval($request->avdomicilio),
-                    ];
-                    $vis = [
-                        'table' =>intval($request->vistable),
-                        'asporto' =>intval($request->visasporto),
-                        'domicilio' =>intval($request->visdomicilio),
-                    ];
-                }
-            }
+                break;
         }
+
         $date->availability = json_encode($av);
         $date->visible = json_encode($vis);
         $date->update();
@@ -491,137 +319,122 @@ class DateController extends Controller
     {    
         $data = $request->all();
         
-        if( config('configurazione.double_t') == true ){
-            if( config('configurazione.pack') == 2 ){ 
-                $request->validate($this->validations2dt);
-                $availability = [
-                    'table_1' =>  $data['max_reservations_1'],
-                    'table_2' =>  $data['max_reservations_2'],
-                ];
-                $reserving = [
-                    'table_1' => 0,
-                    'table_2' => 0,
-                ];
-            }elseif( config('configurazione.pack') == 3){
-                if(config('configurazione.typeOfOrdering')){
-                    $request->validate($this->validations3t);
-                    $availability = [
-                        'cucina_1' => $data['max_cucina_1'],
-                        'cucina_2' => $data['max_cucina_2'],
-                        'domicilio' => $data['max_domicilio'],
-                    ];
-                    $reserving = [
-                        'cucina_1' => 0,
-                        'cucina_2' => 0,
-                        'domicilio' => 0,
-                    ];
-                }else{
-                    $request->validate($this->validations3f);
-                    $availability = [
-                        'asporto' => $data['max_asporto'],
-                        'domicilio' => $data['max_domicilio'],
-                    ];
-                    $reserving = [
-                        'asporto' => 0,
-                        'domicilio' => 0,
-                    ];
-                } 
-            }elseif( config('configurazione.pack') == 4){
-                if(config('configurazione.typeOfOrdering')){
-                $request->validate($this->validations4tdt);
-                $availability = [
-                    'table_1' =>  $data['max_reservations_1'],
-                    'table_2' =>  $data['max_reservations_2'],
-                    'cucina_1' => $data['max_cucina_1'],
-                    'cucina_2' => $data['max_cucina_2'],
-                    'domicilio' => $data['max_domicilio'],
-                ];
-                $reserving = [
-                    'table_1' => 0,
-                    'table_2' => 0,
-                    'cucina_1' => 0,
-                    'cucina_2' => 0,
-                    'domicilio' => 0,
-                ];
-                }else{
-                    $request->validate($this->validations4fdt);
-                    $availability = [
-                        'table_1' =>  $data['max_reservations_1'],
-                        'table_2' =>  $data['max_reservations_2'],
-                        'asporto' => $data['max_asporto'],
-                        'domicilio' => $data['max_domicilio'],
-                    ];
-                    $reserving = [
-                        'table_1' => 0,
-                        'table_2' => 0,
-                        'asporto' => 0,
-                        'domicilio' => 0,
-                    ];
-                }
-            }
-        }else{
-            if( config('configurazione.pack') == 2 ){ 
-                $request->validate($this->validations2);
-                $availability = [
-                    'table' =>  $data['max_reservations'],
-                ];
-                $reserving = [
-                    'table' => 0,
-                ];
-            }elseif( config('configurazione.pack') == 3){
-                if(config('configurazione.typeOfOrdering')){
-                    $request->validate($this->validations3t);
-                    $availability = [
-                        'cucina_1' => $data['max_cucina_1'],
-                        'cucina_2' => $data['max_cucina_2'],
-                        'domicilio' => $data['max_domicilio'],
-                    ];
-                    $reserving = [
-                        'cucina_1' => 0,
-                        'cucina_2' => 0,
-                        'domicilio' => 0,
-                    ];
-                }else{
-                    $request->validate($this->validations3f);
-                    $availability = [
-                        'asporto' => $data['max_asporto'],
-                        'domicilio' => $data['max_domicilio'],
-                    ];
-                    $reserving = [
-                        'asporto' => 0,
-                        'domicilio' => 0,
-                    ];
-                } 
-            }elseif( config('configurazione.pack') == 4){
-                if(config('configurazione.typeOfOrdering')){
-                $request->validate($this->validations4t);
-                $availability = [
-                    'table' =>  $data['max_reservations'],
-                    'cucina_1' => $data['max_cucina_1'],
-                    'cucina_2' => $data['max_cucina_2'],
-                    'domicilio' => $data['max_domicilio'],
-                ];
-                $reserving = [
-                    'table' => 0,
-                    'cucina_1' => 0,
-                    'cucina_2' => 0,
-                    'domicilio' => 0,
-                ];
-                }else{
-                    $request->validate($this->validations4f);
-                    $availability = [
-                        'table' =>  $data['max_reservations'],
-                        'asporto' => $data['max_asporto'],
-                        'domicilio' => $data['max_domicilio'],
-                    ];
-                    $reserving = [
-                        'table' => 0,
-                        'asporto' => 0,
-                        'domicilio' => 0,
-                    ];
-                }
-            }
+        // Configurazione delle validazioni e disponibilità
+        $configs = [
+            // double_t = false
+            false => [
+                2 => [
+                    'validation' => 'validations2',
+                    'availability' => fn($data) => ['table' => $data['max_reservations']],
+                ],
+                3 => [
+                    true => [
+                        'validation' => 'validations3t',
+                        'availability' => fn($data) => [
+                            'cucina_1' => $data['max_cucina_1'],
+                            'cucina_2' => $data['max_cucina_2'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                    false => [
+                        'validation' => 'validations3f',
+                        'availability' => fn($data) => [
+                            'asporto' => $data['max_asporto'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                ],
+                4 => [
+                    true => [
+                        'validation' => 'validations4t',
+                        'availability' => fn($data) => [
+                            'table' => $data['max_reservations'],
+                            'cucina_1' => $data['max_cucina_1'],
+                            'cucina_2' => $data['max_cucina_2'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                    false => [
+                        'validation' => 'validations4f',
+                        'availability' => fn($data) => [
+                            'table' => $data['max_reservations'],
+                            'asporto' => $data['max_asporto'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                ],
+            ],
+            // double_t = true
+            true => [
+                2 => [
+                    'validation' => 'validations2dt',
+                    'availability' => fn($data) => [
+                        'table_1' => $data['max_reservations_1'],
+                        'table_2' => $data['max_reservations_2'],
+                    ],
+                ],
+                3 => [
+                    true => [
+                        'validation' => 'validations3t',
+                        'availability' => fn($data) => [
+                            'cucina_1' => $data['max_cucina_1'],
+                            'cucina_2' => $data['max_cucina_2'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                    false => [
+                        'validation' => 'validations3f',
+                        'availability' => fn($data) => [
+                            'asporto' => $data['max_asporto'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                ],
+                4 => [
+                    true => [
+                        'validation' => 'validations4tdt',
+                        'availability' => fn($data) => [
+                            'table_1' => $data['max_reservations_1'],
+                            'table_2' => $data['max_reservations_2'],
+                            'cucina_1' => $data['max_cucina_1'],
+                            'cucina_2' => $data['max_cucina_2'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                    false => [
+                        'validation' => 'validations4fdt',
+                        'availability' => fn($data) => [
+                            'table_1' => $data['max_reservations_1'],
+                            'table_2' => $data['max_reservations_2'],
+                            'asporto' => $data['max_asporto'],
+                            'domicilio' => $data['max_domicilio'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        // Recupera le configurazioni
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+           
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
+
+        // Estraggo config corretta
+        $config = $configs[$double][$pack] ?? null;
+        if (is_array($config) && array_key_exists($type, $config)) {
+            $config = $config[$type];
         }
+
+        if ($config) {
+            $request->validate($this->{$config['validation']});
+            $availability = $config['availability']($data);
+
+            // Inizializza reserving a 0
+            $reserving = array_map(fn() => 0, $availability);
+        }
+
         $days_on = $request->input("days_on");
         $times_slot1 = $request->input("times_slot_1");
         $times_slot2 = $request->input("times_slot_2");
@@ -633,10 +446,10 @@ class DateController extends Controller
         $timesDay = [];
 
         $day = [];
-        $start = new DateTime(config('configurazione.times_start'));
-        $end = new DateTime(config('configurazione.times_end'));
+        $start = new DateTime($property_adv['times_start']);
+        $end = new DateTime($property_adv['times_end']);
         $index = 1;
-        $interval = config('configurazione.times_interval');
+        $interval = $property_adv['times_interval'];
 
         // Loop finché l'orario di inizio è inferiore all'orario di fine
         while ($start <= $end) {
@@ -650,8 +463,7 @@ class DateController extends Controller
         }
 
 
-        //$day = config('configurazione.times');
-        
+
         for ($i = 0; $i < 7; $i++) { 
             array_push($timesDay, $day);
         }
