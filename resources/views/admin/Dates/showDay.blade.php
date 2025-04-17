@@ -105,7 +105,7 @@
                         <a href="{{ route('admin.reservations.show', $tk->id) }}" class="tiket {{ in_array($tk->status, [0, 6]) ? 'null' : '' }} ">
                             <p>{{$tk->name}}</p>
                             @if ($property_adv['dt'])
-                            <p class="sala" >{{config('configurazione.set_time_dt')[$tk->sala - 1] }}</p>   
+                            <p class="sala" >{{$tk->sala ? $property_adv['sala_1' : $property_adv['sala_2']]}} </p>   
                             @endif
                             <div class="person">
                                 @php $p = json_decode($tk->n_person, 1);
