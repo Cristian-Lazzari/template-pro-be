@@ -335,7 +335,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($ingredients ?? []);  
         }
         
-        return view('admin.Products.show', compact( 'product'));
+        return view('admin.Products.show', compact( 'product', 'property_adv'));
         
     }
     
@@ -512,7 +512,7 @@ class ProductController extends Controller
             $product->ingredients()->sync([] ?? []);  
         }
         
-        return view('admin.Products.show', compact( 'product'));     
+        return view('admin.Products.show', compact( 'product', 'property_adv'));     
     }
 
     public function destroy(Product $product)
