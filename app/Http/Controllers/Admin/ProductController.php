@@ -366,7 +366,7 @@ class ProductController extends Controller
             
         $double = $property_adv['dt'];
         $pack = $property_adv['services'];
-        $type = $property_adv['too'];
+        $too = $property_adv['too'];
 
         $product = Product::where('id', $id)->firstOrFail();
         $data = $request->all();
