@@ -78,11 +78,14 @@ class SettingController extends Controller
             $string = json_decode($s['property'], true);  
             $s['property'] = $string;
         }
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1); 
 
         return response()->json([
             'success' => true,
             'results' => $settings,
-            'double_t'=> config('configurazione.double_t'),
+            'double_t'=> $property_adv['dt'],
+            'typeOfOrdering'   => $property_adv['too'],
         ]);
     }
     protected function message_default($o_r, $p, $or_res, $number, $link_id){
