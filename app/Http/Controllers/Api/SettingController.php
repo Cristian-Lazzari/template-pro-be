@@ -84,8 +84,8 @@ class SettingController extends Controller
         return response()->json([
             'success' => true,
             'results' => $settings,
-            'double_t'=> $property_adv['dt'],
-            'typeOfOrdering'   => $property_adv['too'],
+            'double_t'=> $property_adv['dt'] == '0' ? false : true,
+            'typeOfOrdering'   => $property_adv['too'] == '0' ? false : true,
         ]);
     }
     protected function message_default($o_r, $p, $or_res, $number, $link_id){
