@@ -430,7 +430,7 @@ class SettingController extends Controller
             'whatsapp_message_id' => $res->whatsapp_message_id,
             'n_person' => $res->n_person,
             'status' => $res->status,
-            
+
             'property_adv' => $property_adv,
         ];
 

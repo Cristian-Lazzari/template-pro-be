@@ -46,8 +46,8 @@
 
                 </section>
                 <section class="myres-center-res">
-                    @if (config('configurazione.double_t') && $reservation->sala !== 0)
-                        <h3>Sala prenota: <strong>{{$reservation->sala == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
+                    @if ($reservation->sala !== null && $reservation->sala !== 0)
+                        <h3>Sala prenota: <strong>{{$reservation->sala == 1 ? $property_adv['sala_1'] : $property_adv['sala_2']}}</strong></h3>
                     @endif
                     <h5>Numero di Ospiti</h5> 
                     @php $n_person = json_decode($reservation->n_person); @endphp

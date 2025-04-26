@@ -116,7 +116,7 @@
         <section class="top">
             <div class="name">
                 <h4>{{$date}}</h4>
-                @if (config('configurazione.double_t') && $reservation->sala !== 0)
+                @if ($reservation->sala !== null && $reservation->sala !== 0)
                     <h3><strong>{{$reservation->sala == 1 ? config('configurazione.set_time_dt')[0] : config('configurazione.set_time_dt')[1]}}</strong></h3>
                 @endif
                 <h4>{{$reservation->surname}} {{$reservation->name}} <strong>#r-{{$reservation->id}}</strong></h4>
