@@ -223,7 +223,7 @@ class SettingController extends Controller
         }
     
         if(in_array($order->status, [3, 5])){
-            $m = 'L\'ordine è stata annullato e RIMBORSATO correttamente';
+            $m = 'L\'ordine è stato annullato e RIMBORSATO correttamente';
             
             //codice per rimborso
             try {
@@ -249,7 +249,7 @@ class SettingController extends Controller
             }
             
         }elseif(in_array($order->status, [2, 1])){
-            $m = 'L\'ordine è stata annullato correttamente';
+            $m = 'L\'ordine è stato annullato correttamente';
             $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
             $order->status = 0;
         }else{
@@ -414,7 +414,7 @@ class SettingController extends Controller
             'type' => 'res',
             'to' => 'user',
 
-            'title' => 'Come richiesto la tua prenotazione è stata annullato',
+            'title' => 'Come richiesto la tua prenotazione è stata annullata',
             'subtitle' => '',
 
             'res_id' => $res->id,

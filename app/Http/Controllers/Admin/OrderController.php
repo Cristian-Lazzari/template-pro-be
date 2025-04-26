@@ -96,7 +96,7 @@ class OrderController extends Controller
             $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;    
         }else{
             if(in_array($order->status, [3, 5])){
-                $m = 'L\'ordine è stata annullato e RIMBORSATO correttamente';
+                $m = 'L\'ordine è stato annullato e RIMBORSATO correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
                 //codice per rimborso
                 try {
@@ -123,7 +123,7 @@ class OrderController extends Controller
                 }
                 
             }elseif(in_array($order->status, [2, 1])){
-                $m = 'L\'ordine è stata annullato correttamente';
+                $m = 'L\'ordine è stato annullato correttamente';
                 $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
                 $order->status = 0;
             }else{
