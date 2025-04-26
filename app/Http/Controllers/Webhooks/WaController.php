@@ -377,7 +377,9 @@ class WaController extends Controller
             $reserving = json_decode($date->reserving, 1);
             $_p = json_decode($res->n_person);
             $tot_p = $_p->child + $_p->adult;
-            if(config('configurazione.double_t')){
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);
+            if($property_adv['dt']){
                 if($res->sala == 1){
                     if($vis['table_1'] == 0){
                         $vis['table_1'] = 1;
@@ -411,9 +413,6 @@ class WaController extends Controller
         }
         $res->update();
         
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1);
-
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
         $bodymail = [
