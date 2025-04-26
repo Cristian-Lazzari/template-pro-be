@@ -363,6 +363,8 @@ class WaController extends Controller
         }elseif(in_array($res->status, [1, 5, 0, 6])){
             return;
         }
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
         if($c_a == 1){
             $res->status = 1;
             $m = 'La prenotazione e\' stata confermata correttamente';
@@ -377,8 +379,7 @@ class WaController extends Controller
             $reserving = json_decode($date->reserving, 1);
             $_p = json_decode($res->n_person);
             $tot_p = $_p->child + $_p->adult;
-            $adv_s = Setting::where('name', 'advanced')->first();
-            $property_adv = json_decode($adv_s->property, 1);
+            
             if($property_adv['dt']){
                 if($res->sala == 1){
                     if($vis['table_1'] == 0){
