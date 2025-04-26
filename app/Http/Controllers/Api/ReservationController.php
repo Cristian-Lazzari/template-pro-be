@@ -142,11 +142,11 @@ class ReservationController extends Controller
                 $info .= " *_Sala prenota: ";
                 $sala_mess .= " *_Sala prenota: ";
                 if ($newRes->sala == 1) {
-                    $info .= config("configurazione.set_time_dt")[0];
-                    $sala_mess .= config("configurazione.set_time_dt")[0];
+                    $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
+                    $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
                 }else{
-                    $info .= config("configurazione.set_time_dt")[1];
-                    $sala_mess .= config("configurazione.set_time_dt")[1];
+                    $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
+                    $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
                 }
                 $info .="_* \n\n ";
                 $sala_mess .="_*";
