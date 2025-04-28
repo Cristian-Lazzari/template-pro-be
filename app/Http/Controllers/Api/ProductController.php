@@ -39,7 +39,7 @@ class ProductController extends Controller
                         'open' => false,
                         'products' => []
                     ];
-                    $product = Product::where('id', $item->id)->first();
+                    $product = Product::where('id', $item->id)->with('ingredients')->first();
                     $f_prod = [
                         'selcted' => false,
                         'product' => $product ? $product : null,
