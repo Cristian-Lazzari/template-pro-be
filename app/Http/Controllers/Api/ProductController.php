@@ -41,7 +41,7 @@ class ProductController extends Controller
                     ];
                     $product = Product::where('id', $item->id)->with('ingredients')->first();
                     $f_prod = [
-                        'selcted' => false,
+                        'selected' => false,
                         'product' => $product ? $product : null,
                         'extra_price' => $item->pivot->extra_price
                     ];
