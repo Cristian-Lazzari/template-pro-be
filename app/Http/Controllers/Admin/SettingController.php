@@ -72,7 +72,7 @@ class SettingController extends Controller
             }
 
             $property['too'] = $request->too;
-            $property['dt'] = $request->dt;
+            $property['dt'] = $request->services == 3 ? $request->dt :  0;
             $property['services'] = $request->services;
             $property['menu_fix_set'] = $request->menu_fix_set;
             
