@@ -86,6 +86,15 @@ class SettingController extends Controller
             'results' => $settings,
             'double_t'=> $property_adv['dt'] == '0' ? false : true,
             'typeOfOrdering'   => $property_adv['too'] == '0' ? false : true,
+            'legal' => [
+                'p_iva' => $property_adv['p_iva'],
+                'r_sociale' => $property_adv['r_sociale'],
+                'c_rea' => $property_adv['c_rea'],
+                'c_sociale' => $property_adv['c_sociale'],
+                'u_imprese' => $property_adv['u_imprese'],
+                'c_ateco' => $property_adv['c_ateco'],
+                'method' => $property_adv['method'],
+            ],
         ]);
     }
     protected function message_default($o_r, $p, $or_res, $number, $link_id){

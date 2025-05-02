@@ -837,6 +837,10 @@ $p_adv = json_decode($adv_s->property, 1);
                     </div>
 
                     <div class="input_label ">
+                        <label class="" id="basic-addon1">Codice Ateco</label>
+                        <input type="text" name="c_ateco" value="{{isset($adv['c_ateco']) ? $adv['c_ateco'] : ''}}">
+                    </div>
+                    <div class="input_label ">
                         <label class="" id="basic-addon1">Iscrizione Ufficio Imprese</label>
                         <input type="text" name="u_imprese" value="{{$adv['u_imprese']}}">
                     </div>
@@ -977,128 +981,127 @@ $p_adv = json_decode($adv_s->property, 1);
 
 @endif
 @if (config('configurazione.subscription') > 1 )
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
-<script>
-    
-    document.addEventListener('DOMContentLoaded', async function() {
-        // Fetch the chart data
-        const data = @json($chartData); 
-        console.log('Chart Data:', data);
-        // Initialize the chart
-       
-        const ctx = document.getElementById('chartCanvas').getContext('2d');
-        const totalDuration = 1000;
-        const delayBetweenPoints = totalDuration / data.labels.length;
-        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(10) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
-        const animation = {
-            x: {
-                type: 'number',
-                easing: 'linear',
-                duration: delayBetweenPoints,
-                from: NaN, // the point is initially skipped
-                delay(ctx) {
-                if (ctx.type !== 'data' || ctx.xStarted) {
-                    return 0;
-                }
-                ctx.xStarted = true;
-                return ctx.index * delayBetweenPoints;
-                }
-            },
-            y: {
-                type: 'number',
-                easing: 'linear',
-                duration: delayBetweenPoints,
-                from: previousY,
-                delay(ctx) {
-                if (ctx.type !== 'data' || ctx.yStarted) {
-                    return 0;
-                }
-                ctx.yStarted = true;
-                return ctx.index * delayBetweenPoints;
-                }
-            }
-        };
-              let c3 = '#090333'
-              let c2 = '#10b793'
-              let c1 = '#d8dde8'
-              let ct = 'rgba(244, 243, 0, 0)'
-                
-
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.labels,
-                datasets: data.datasets
-            },
-            options: {
-                animation,
-                interaction: {
-                    intersect: false
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Fetch the chart data
+            const data = @json($chartData); 
+            console.log('Chart Data:', data);
+            // Initialize the chart
+        
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
+            const totalDuration = 1000;
+            const delayBetweenPoints = totalDuration / data.labels.length;
+            const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(10) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+            const animation = {
+                x: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: delayBetweenPoints,
+                    from: NaN, // the point is initially skipped
+                    delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.xStarted) {
+                        return 0;
+                    }
+                    ctx.xStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                    }
                 },
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            pointStyle: 'rectRounded',
+                y: {
+                    type: 'number',
+                    easing: 'linear',
+                    duration: delayBetweenPoints,
+                    from: previousY,
+                    delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.yStarted) {
+                        return 0;
+                    }
+                    ctx.yStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                    }
+                }
+            };
+                let c3 = '#090333'
+                let c2 = '#10b793'
+                let c1 = '#d8dde8'
+                let ct = 'rgba(244, 243, 0, 0)'
+                    
+
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options: {
+                    animation,
+                    interaction: {
+                        intersect: false
+                    },
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rectRounded',
+                                color: c3
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Andamento ordini e prenotazioni nel tempo',
                             color: c3
                         }
                     },
-                    title: {
-                        display: true,
-                        text: 'Andamento ordini e prenotazioni nel tempo',
-                        color: c3
-                    }
-                },
-                scales: {
-                    x: {
-                        // grid: {
-                        //     color : ct
-                        // },
-                        ticks: {
-                            color: c3
-                        },
-                        title: {
-                            display: false,
-                            text: 'Count'
-                        },
-                        beginAtZero: true,
-                        type: 'time', // Configura l'asse X come asse temporale
-                        time: {
-                            unit: 'week', // Mostra un intervallo basato sui giorni
-                            tooltipFormat: 'MM-dd', // Formato per il tooltip
-                            displayFormats: {
-                                week: 'MM-dd' // Formato per le etichette
+                    scales: {
+                        x: {
+                            // grid: {
+                            //     color : ct
+                            // },
+                            ticks: {
+                                color: c3
+                            },
+                            title: {
+                                display: false,
+                                text: 'Count'
+                            },
+                            beginAtZero: true,
+                            type: 'time', // Configura l'asse X come asse temporale
+                            time: {
+                                unit: 'week', // Mostra un intervallo basato sui giorni
+                                tooltipFormat: 'MM-dd', // Formato per il tooltip
+                                displayFormats: {
+                                    week: 'MM-dd' // Formato per le etichette
+                                },
                             },
                         },
-                    },
-                    y: {
-                        grid: {
-                            color : ct
-                        },
-                        ticks: {
-                            color: c3
-                        },
-                        title: {
-                            display: false,
-                            text: 'Count'
-                        },
-                        beginAtZero: true
+                        y: {
+                            grid: {
+                                color : ct
+                            },
+                            ticks: {
+                                color: c3
+                            },
+                            title: {
+                                display: false,
+                                text: 'Count'
+                            },
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // messaggio nel form advanced
-    }); 
-</script>
+            // messaggio nel form advanced
+        }); 
+    </script>
 
 @endif
-<script>
-    
+<script>  
     document.addEventListener('DOMContentLoaded', async function() {
         const originalValue1 = document.getElementById('attivo-originale1').value;
         const originalValue2 = document.getElementById('attivo-originale2').value;
@@ -1130,8 +1133,14 @@ $p_adv = json_decode($adv_s->property, 1);
                 radio.addEventListener('change', checkChanges);
             });
         });
+
+        // Ascolta tutti i cambiamenti nei radio
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', aggiornaStato);
+        });
         
     });
 </script>
+
 @endsection
 

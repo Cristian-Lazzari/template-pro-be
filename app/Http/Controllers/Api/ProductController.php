@@ -66,20 +66,7 @@ class ProductController extends Controller
                 }
                 $c->fixed_menu = $choices;
             }
-            // if($c->fixed_menu !== '1'){
-            //     $fixed_menu = json_decode($c->fixed_menu, 1);
-            //     $f_choices = [];
-            //     foreach ($fixed_menu as $choice) {
-                    
-            //         foreach ($choice['products'] as $p) {
-                        
-                        
-            //             array_push($f_choice['products'], $f_prod);
-            //         }
-            //         array_push($f_choices, $f_choice);
-            //     }
-            //     $c->fixed_menu = $f_choices;
-            // }
+           
         }
         
         
@@ -93,6 +80,15 @@ class ProductController extends Controller
         ]);
     }
 
+    public function menuFissi(){
+
+        $query =  Menu::where('fixed_menu',  '0')->where('visible', 1);
+        $menu = $query->with('products.ingredients', 'category', 'products.category')->orderBy('updated_at', 'desc')->get();
+        return response()->json([
+            'success'   => true,
+            'results'   => $menu,
+        ]);
+    }
     public function promoHome()
     {
         

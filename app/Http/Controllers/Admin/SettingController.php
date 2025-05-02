@@ -88,6 +88,7 @@ class SettingController extends Controller
             $property['r_sociale'] = $request->r_sociale;
             $property['c_rea'] = $request->c_rea;
             $property['c_sociale'] = $request->c_sociale;
+            $property['c_ateco'] = $request->c_ateco;
             $property['u_imprese'] = $request->u_imprese;
             $property['method'] = $request->method ? $request->method : [];
             $property['set_time'] = [];

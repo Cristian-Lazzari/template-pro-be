@@ -144,6 +144,7 @@ class PageController extends Controller
                 'times_interval' => 20,
                 'c_rea' => '',
                 'c_sociale' => '',
+                'c_ateco' => '',
                 'u_imprese' => '',
                 'method' => [],
                 'set_time'=> [
@@ -376,11 +377,6 @@ class PageController extends Controller
                 'x' => $order->date,
                 'y' => $order->total_price / 100,
             ];
-            //dump('ciao');
-            // /dump($order);
-            // dump($order->status);
-            // dump($order->date);
-
             switch ($order->status) {
                 case 5:
                     $revenueOverTime['paid'][] = $point;
@@ -412,11 +408,6 @@ class PageController extends Controller
         ->groupBy('date')
         ->orderBy('date', 'ASC')
         ->get();
-
-        
-        
-
-        
 
         return view('admin.statistics', [
             'topProducts' => $topProducts,
