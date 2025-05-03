@@ -87,6 +87,7 @@ class ProductController extends Controller
         return response()->json([
             'success'   => true,
             'results'   => $menu,
+            'allergens'   => config('configurazione.allergens'),
         ]);
     }
     public function promoHome()
