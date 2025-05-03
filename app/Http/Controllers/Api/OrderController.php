@@ -222,7 +222,8 @@ class OrderController extends Controller
 
                 $setting = Setting::where('name', 'Possibilità di consegna a domicilio')->first();
                 $shipping_cost = json_decode($setting->property, 1);
-                $newOrder->tot_price = $total_price + $shipping_cost['delivery_cost'] ;
+
+                $newOrder->tot_price = $total_price + $shipping_cost['delivery_cost'] + $data['extra_delivery_cost'];
             }else{
                 $newOrder->tot_price = $total_price;
             }
