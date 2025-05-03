@@ -76,7 +76,6 @@ class SettingController extends Controller
             $property['services'] = $request->services;
             $property['menu_fix_set'] = $request->menu_fix_set;
             
-
             $property['too_1'] = $request->too_1;
             $property['too_2'] = $request->too_2;
             $property['sala_1'] = $request->sala_1;

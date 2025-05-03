@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\ReservationController as AdminReservationControll
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
 
 
+Route::get('menus',             [ProductController::class, 'menuFissi'])->name('api.products.menuFissi');
 Route::get('products',          [ProductController::class, 'index'])->name('api.products.index');
 Route::get('promoHome',         [ProductController::class, 'promoHome'])->name('api.promoHome.index');
 

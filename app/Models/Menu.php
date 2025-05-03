@@ -19,6 +19,6 @@ class Menu extends Model
     }
     public function products(){
         return $this->belongsToMany(Product::class)
-        ->withPivot('label', 'extra_price'); // <- fondamentale!
+        ->withPivot('label', 'extra_price')->orderBy('updated_at', 'asc'); // <- fondamentale!
     }
 }

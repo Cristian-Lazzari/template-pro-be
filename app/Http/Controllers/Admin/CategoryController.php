@@ -37,6 +37,7 @@ class CategoryController extends Controller
         
         $category = new Category();
         $category->name = $data['name'];
+        $category->description = $data['description'];
         if (isset($data['icon'])) {
             $iconPath = Storage::put('public/uploads', $data['icon']);
             $category->icon = $iconPath;
@@ -100,6 +101,7 @@ class CategoryController extends Controller
         
         $category = Category::where('id', $id)->firstOrFail();
         $category->name = $data['name'];
+        $category->description = $data['description'];
         if (isset($data['icon'])) {
             $iconPath = Storage::put('public/uploads', $data['icon']);
             if ($category->icon) {
