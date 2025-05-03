@@ -15,11 +15,11 @@ class SettingController extends Controller
         $setting = Setting::where('name', 'Comuni per il domicilio')->firstOrFail();
         $ar = $request->ar;
         if($ar == 'add'){ //se positivo aggiungie senno elimina
-            $comune = $request->comune;
-            $provincia = $request->provincia;
             $newarea = [
-                'comune' => $comune,
-                'provincia' => $provincia,
+                'comune' => $request->comune,
+                'provincia' => $request->provincia,
+                'cap' => $request->cap,
+                'price' => $request->price * 100,
             ];
             $setting['property'] = json_decode($setting['property'], true);
             $isnew = true;

@@ -625,9 +625,7 @@ $p_adv = json_decode($adv_s->property, 1);
                                         $setting[7]['property'] = json_decode($setting[7]['property'], true);
                                     } 
                                 @endphp
-                                <h2 >Gestione indirizzi di consegna</h2>
-                              
-                                
+                                <h2 >Gestione indirizzi di consegna</h2>     
                                 <div class="address"> 
                                     @foreach ($setting[7]['property'] as $i)
                                         <span class="">
@@ -936,6 +934,14 @@ $p_adv = json_decode($adv_s->property, 1);
                         <div class="input-group flex-nowrap py-2 w-auto">
                             <label for="provincia" class="input-group-text" >Provincia</label>
                             <input name="provincia" id="provincia" type="text" class="form-control" placeholder="sigla della provincia es: AN">
+                        </div>
+                        <div class="input-group flex-nowrap py-2 w-auto">
+                            <label for="cap" class="input-group-text" >Cap</label>
+                            <input name="cap" id="cap" type="text" class="form-control" placeholder="cap">
+                        </div>
+                        <div class="input-group flex-nowrap py-2 w-auto">
+                            <label for="price" class="input-group-text" >Costo consegna €</label>
+                            <input name="price" id="price" type="number" step="0.01" class="form-control" placeholder="price">
                         </div>
                     </div>
                     <div class="modal-footer">
