@@ -86,7 +86,7 @@ class SettingController extends Controller
             'results' => $settings,
             'double_t'=> $property_adv['dt'] == '0' ? false : true,
             'typeOfOrdering'   => $property_adv['too'] == '0' ? false : true,
-            'menu_fix_set'   => $property_adv['menu_fix_set'],
+            'menu_fix_set'   => intval($property_adv['menu_fix_set']),
             'legal' => [
                 'p_iva' => $property_adv['p_iva'],
                 'r_sociale' => $property_adv['r_sociale'],
