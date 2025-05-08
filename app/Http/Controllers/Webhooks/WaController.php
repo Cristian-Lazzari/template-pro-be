@@ -316,7 +316,29 @@ class WaController extends Controller
             
         }
         $order->update();
-        
+        //new menu
+        $product_r = [];
+        foreach ($order->products as $p) {
+            $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
+            $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
+            $r_option = [];
+            $r_add = [];
+            foreach ($arrO as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_option[] = $ingredient;
+            }
+            foreach ($arrA as $o) {
+                $ingredient = Ingredient::where('name', $o)->first();
+                $r_add[] = $ingredient;
+            }
+            $p->setAttribute('r_option', $r_option);
+            $p->setAttribute('r_add', $r_add);
+            $product_r[] = $p;
+        }
+        $cart_mail = [
+            'products' => $product_r,
+            'menus' => $order->menus,
+        ];
 
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
@@ -343,7 +365,7 @@ class WaController extends Controller
 
             
             'status' => $order->status,
-            'cart' => $order->products,
+            'cart' => $cart_mail,
             'total_price' => $order->tot_price,
         ];
 

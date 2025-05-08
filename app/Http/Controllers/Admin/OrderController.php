@@ -435,7 +435,7 @@ class OrderController extends Controller
             'products' => $product_r,
             'menus' => $order->menus,
         ];
-        //new menu
+        //new menu end
         $cart_price = 0;
         $delivery_cost = 0;
         if($order->comune){
