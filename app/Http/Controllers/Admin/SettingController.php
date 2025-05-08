@@ -110,10 +110,10 @@ class SettingController extends Controller
             if($request->too && in_array($request->services, [3,4])){
                 $property['set_time'][] = $request->too_1;
                 $property['set_time'][] = $request->too_2;   
-                $property['set_time'][] = 'domiciilio';
+                $property['set_time'][] = 'domicilio';
             }elseif(in_array($request->services, [4,3])){
                 $property['set_time'][] = 'asporto';
-                $property['set_time'][] = 'domiciilio';
+                $property['set_time'][] = 'domicilio';
             }
             $adv->property = json_encode($property);
 
