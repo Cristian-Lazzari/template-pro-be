@@ -52,7 +52,7 @@ class ProductController extends Controller
                                 $check = $i;
                             }
                         }
-                        if ($check !== false) {
+                        if ($check === false) {
                             array_push($f_choice['products'], $f_prod);
                             array_push($choices, $f_choice);
                         }else{
