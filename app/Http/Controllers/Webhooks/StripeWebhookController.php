@@ -154,7 +154,7 @@ class StripeWebhookController extends Controller
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
-        foreach ($newOrder->menus as $menu) {
+        foreach ($order->menus as $menu) {
             // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
             $order_mess .= "☞ ";
