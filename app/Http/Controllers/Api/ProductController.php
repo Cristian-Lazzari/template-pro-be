@@ -49,14 +49,14 @@ class ProductController extends Controller
                     if(count($choices)){
                         for ($i=0; $i < count($choices); $i++) { 
                             if ($choices[$i]['label'] == $label) {
-                                $check = true;
+                                $check = $i;
                             }
                         }
-                        if (!$check) {
+                        if ($check !== false) {
                             array_push($f_choice['products'], $f_prod);
                             array_push($choices, $f_choice);
                         }else{
-                            array_push($choices[count($choices) - 1]['products'], $f_prod);
+                            array_push($choices[$check]['products'], $f_prod);
                         }
                     }else{
                         array_push($f_choice['products'], $f_prod);       
