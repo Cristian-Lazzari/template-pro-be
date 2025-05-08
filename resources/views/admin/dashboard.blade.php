@@ -625,18 +625,20 @@ $p_adv = json_decode($adv_s->property, 1);
                                         $setting[7]['property'] = json_decode($setting[7]['property'], true);
                                     } 
                                 @endphp
-                                <h2 >Gestione indirizzi di consegna</h2>     
+                                <h2>Rimuovi Aree di consegna</h2>     
                                 <div class="address"> 
                                     @foreach ($setting[7]['property'] as $i)
-                                        <span class="">
+                                        <span class="w-100">
                                             ({{$i['provincia']}})
-                                            {{$i['comune']}}
+                                            {{$i['comune']}} -
+                                            {{$i['cap']}} -
+                                            {{$i['price'] ? '€' . ($i['price'] / 100) : ''}}
                                         </span>    
                                     @endforeach
                                 </div>   
                                 <div class="actions">
-                                    <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">Crea nuovo </button>
-                                    <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> Modifica selezione </button>
+                                    <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">Aggiungi </button>
+                                    <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> Rimuovi </button>
                                 </div>                       
                             </div>
                         </div>
@@ -940,8 +942,8 @@ $p_adv = json_decode($adv_s->property, 1);
                             <input name="cap" id="cap" type="text" class="form-control" placeholder="cap">
                         </div>
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="price" class="input-group-text" >Costo consegna €</label>
-                            <input name="price" id="price" type="number" step="0.01" class="form-control" placeholder="price">
+                            <label for="price" class="input-group-text" >Costo extra consegna</label>
+                            <input name="price" id="price" type="number" step="0.01" class="form-control" placeholder="€ extra">
                         </div>
                     </div>
                     <div class="modal-footer">

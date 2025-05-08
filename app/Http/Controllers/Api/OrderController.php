@@ -35,7 +35,6 @@ class OrderController extends Controller
     public function store(Request $request)
     { 
         $request->validate($this->validations);
-        $delivery = false;
         $data = $request->all();
         try {       
             $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
@@ -213,17 +212,27 @@ class OrderController extends Controller
             $newOrder->email = $data['email'];
             $newOrder->message = $data['message'];
             $newOrder->news_letter = $data['news_letter'];
+            $tot_delivery_cost = 0;
             $newOrder->status = $data['paying'] ? 4 : 2;
             if (isset($data['comune'])) {
                 $newOrder->comune = $data['comune'];
                 $newOrder->address = $data['via'];
                 $newOrder->address_n = $data['cv'];
-                $delivery = true;
 
+                
                 $setting = Setting::where('name', 'Possibilità di consegna a domicilio')->first();
+                $setting_1 = Setting::where('name', 'Comuni per il domicilio')->first();
                 $shipping_cost = json_decode($setting->property, 1);
+                $tot_delivery_cost += $shipping_cost['delivery_cost'];
+                $comuni = json_decode($setting_1->property, 1);
+                foreach ($comuni as $c) {
+                    if($c['cap'] == $data['cap']){
+                        $total_price +=$c['price'];
+                        $tot_delivery_cost +=$c['price'];
+                    }
+                }
 
-                $newOrder->tot_price = $total_price + $shipping_cost['delivery_cost'] + $data['extra_delivery_cost'];
+                $newOrder->tot_price = $total_price + $shipping_cost['delivery_cost'];
             }else{
                 $newOrder->tot_price = $total_price;
             }
@@ -252,11 +261,11 @@ class OrderController extends Controller
             
             
 
-            $payment_controller = new PaymentController();
             
             if($data['paying']){   
+                $payment_controller = new PaymentController();
                 
-                $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $delivery, $newOrder->menus);
+                $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $tot_delivery_cost, $newOrder->menus);
                 
                 return response()->json([
                     'success'   => true,

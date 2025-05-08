@@ -11,24 +11,33 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
+    private $aree = [
+        'comune'       => 'required',
+        'cap'          => 'required',
+        'provincia'    => 'required',
+    ];
     public function updateAree(Request $request){
         $setting = Setting::where('name', 'Comuni per il domicilio')->firstOrFail();
         $ar = $request->ar;
         if($ar == 'add'){ //se positivo aggiungie senno elimina
+            $request->validate($this->aree);  
+            $setting['property'] = json_decode($setting['property'], true);
             $newarea = [
+                'id' => (count($setting['property']) + 1) . $request->cap ,
                 'comune' => $request->comune,
                 'provincia' => $request->provincia,
                 'cap' => $request->cap,
                 'price' => $request->price * 100,
             ];
-            $setting['property'] = json_decode($setting['property'], true);
             $isnew = true;
             foreach ($setting['property']  as $k) {
-                if($k['comune'] == $comune){
+                if($k['cap'] == $request->cap){
                     $isnew = false;
+                    $m = 'L\'area inserita era già presente! Non puoi avere due aree uguali o con lo stesso cap!';
+                    return redirect()->back()->with('success', $m); 
                 }
             }
-            if ($isnew && $comune !== " ") {
+            if ($isnew) {
                 $newp = $setting['property'];
 
                 array_push( $newp, $newarea);
@@ -141,7 +150,6 @@ class SettingController extends Controller
     {
         $setting = Setting::all();
 
-    
         $tavoli = $request->tavoli_status;
         $asporto = $request->asporto_status;
         $ferie = $request->ferie_status;

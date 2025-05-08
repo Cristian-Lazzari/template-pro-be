@@ -189,14 +189,14 @@
             @if (isset($content_mail['comune']))
                 <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">Indirizzo per la consegna:</h3>
                 <p style="color: #04001d; font-size: 16px; margin: 7px 0 0px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
+                @if ($content_mail['delivery_cost'])   
                 <div style="margin: 10px 0; 0 display: flex; justify-content: space-between; flex-wrap:wrap;">
                     <span style="color: #04001d; opacity: .8; font-size: 16px; font-family: monospace">
-                        Costo della consegna a domicilio.
+                        Costo della consegna a domicilio:
                     </span>
-                    @if ($a->price)   
                         <strong style="color: #04001d; opacity: .8; font-size: 15px;  margin-left: auto; font-family: monospace">+ €{{$content_mail['delivery_cost'] / 100}}</strong>
-                    @endif    
-                </div>
+                    </div>
+                @endif    
                 {{-- <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p> --}}
             @else
             <!-- Totale carrello -->

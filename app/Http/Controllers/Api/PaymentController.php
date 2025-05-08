@@ -139,21 +139,16 @@ class PaymentController extends Controller
             }
         }
         if($delivery){
-            $setting = Setting::where('name', 'Possibilità di consegna a domicilio')->first();
-            $shipping_cost = json_decode($setting->property, 1);
-            // Aggiungi costo di spedizione come item separato se non è 0
-            if($shipping_cost['delivery_cost'] > 0) {
-                $line_items[] = [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => 'Spese di spedizione',
-                        ],
-                        'unit_amount' => $shipping_cost['delivery_cost'], // Costo di spedizione in centesimi
+            $line_items[] = [
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => [
+                        'name' => 'Spese di spedizione',
                     ],
-                    'quantity' => 1,
-                ];
-            }
+                    'unit_amount' => $delivery, // Costo di spedizione in centesimi
+                ],
+                'quantity' => 1,
+            ];
         }
 
         $checkout_session = $stripe->checkout->sessions->create([
