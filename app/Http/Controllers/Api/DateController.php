@@ -17,15 +17,16 @@ class DateController extends Controller
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);  
+        $max_time_res = 55;
         // Ottieni la data e l'ora attuale 
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
 
         // Ottieni la data di inizio (ad esempio, l'inizio della giornata attuale)
-        $startDateTime = Carbon::now()->addMinutes(45)->format('Y-m-d H:i:s');
+        $startDateTime = Carbon::now()->addMinutes($max_time_res)->format('Y-m-d H:i:s');
 
         // Ottieni la data di fine (ad esempio, la fine della giornata attuale)
         $endDateTime = Carbon::now()->addDays($property_adv['max_day_res'])->format('Y-m-d H:i:s');
-        //$dates = Date::all();
+
 
         $vis_a = '"asporto":1';
         if ($property_adv['dt']) {
@@ -40,7 +41,25 @@ class DateController extends Controller
         $vis_c2 = '"cucina_2":1';
         $vis_d = '"domicilio":1';
 
-        $query = Date::whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') BETWEEN ? AND ?", [$startDateTime, $endDateTime]);
+        $query = Date::select('*')
+            ->selectRaw("
+                STR_TO_DATE(
+                    CASE
+                        WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
+                        ELSE date_slot
+                    END,
+                    '%d/%m/%Y %H:%i'
+                ) AS order_slot
+            ")
+            ->whereRaw("STR_TO_DATE(
+                CASE
+                    WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
+                    ELSE date_slot
+                END, '%d/%m/%Y %H:%i') BETWEEN ? AND ?", [$startDateTime, $endDateTime])
+            ->orderBy('order_slot');
+
+
+        //$query = Date::whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') BETWEEN ? AND ?", [$startDateTime, $endDateTime]);
 
         if ($filter == 1) {
             if ($property_adv['dt']) {

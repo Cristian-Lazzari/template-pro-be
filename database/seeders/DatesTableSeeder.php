@@ -51,104 +51,54 @@ class DatesTableSeeder extends Seeder
                 $currentDayOfWeek = $currentDate->format('N'); //giorno della settimana in numero 1-7
 
                 $add = false;
-                foreach ($times[$currentDayOfWeek - 1] as $time) {
-                    
-                    
-                    if ($time['set']) {
+                foreach ($times[$currentDayOfWeek - 1] as $key => $value) {
+                    if ($value) {
                         $add = true;
+                        $visible = [
+                            'table' => in_array($value,[2,3,6,7]) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
+                            'table_1' => in_array($value,[2,3,6,7]) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
+                            'table_2' => in_array($value,[2,3,6,7]) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
+                            'asporto' => (in_array($value,[1,3,4,5]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                            'cucina_1' => (in_array($value,[1,3,4,5]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                            'cucina_2' => (in_array($value,[1,3,4,5]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                            'domicilio' => ($value >= 4 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                        ];
                         
-                        if( $double){
-                            if( $pack == 2 ){ 
-                                $visible = [
-                                    'table_1' => $time['set'] == 1 ? 1 : 0,
-                                    'table_2' => $time['set'] == 1 ? 1 : 0,
-                                ];
-                            }elseif( $pack == 3){
-                                if($type){
-                                    $visible = [
-                                        'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }else{
-                                    $visible = [
-                                        'asporto' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }
-                            }elseif( $pack == 4){     
-                                if($type){
-                                    $visible = [
-                                        'table_1' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                                        'table_2' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                                        'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }else{
-                                    $visible = [
-                                        'table_1' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                                        'table_2' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                                        'asporto' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }
+                        if( $pack == 2 ){ 
+                            if($double){
+                                unset($visible['table']);
+                            }else{
+                                unset($visible['table_1'], $visible['table_2']);
                             }
-                        }else{
-                            if( $pack == 2 ){ 
-                                $visible = [
-                                    'table' => $time['set'] == 1 ? 1 : 0,
-                                ];
-                            }elseif( $pack == 3){
-                                if($type){
-                                    $visible = [
-                                        'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }else{
-                                    $visible = [
-                                        'asporto' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }
-                            }elseif( $pack == 4){     
-                                if($type){
-                                    $visible = [
-                                        'table' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                                        'cucina_1' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'cucina_2' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }else{
-                                    $visible = [
-                                        'table' => ($time['set'] == 2 || $time['set'] == 3 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                                        'asporto' => (($time['set'] == 1 || $time['set'] == 3 || $time['set'] == 4 || $time['set'] == 5 || $time['set'] == 6 || $time['set'] == 7) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                        'domicilio' => ($time['set'] >= 4 && $time['set'] <= 7 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                                    ];
-                                    
-                                }
+                            unset($visible['asporto'], $visible['cucina_1'], $visible['cucina_2'], $visible['domicilio']);
+                        }elseif( $pack == 3){
+                            if($type){
+                                unset($visible['asporto']);
+                            }else{
+                                unset($visible['cucina_1'], $visible['cucina_2']);
+                            }
+                            unset($visible['table'], $visible['table_1'], $visible['table_2']);
+                        }elseif( $pack == 4){    
+                            if($double){
+                                unset($visible['table']);
+                            }else{
+                                unset($visible['table_1'], $visible['table_2']);
+                            }
+                            if($type){
+                                unset($visible['asporto']);
+                            }else{
+                                unset($visible['cucina_1'], $visible['cucina_2']);
                             }
                         }
                         
-
                         Date::create([  
                             'year' => $currentDate->format('Y'),
                             'month' => $currentDate->format('n'),
                             'day' => $currentDate->format('d'),
                             'day_w' => $currentDayOfWeek,
-                            'time' => $time['time'],
-                            'date_slot' => $currentDate->format('d') . '/' .  $currentDate->format('m') . '/' .  $currentDate->format('Y') . ' ' . $time['time'],
-
-                            'status' => $time['set'],
-                            
+                            'time' => $key,
+                            'date_slot' => $currentDate->format('d') . '/' .  $currentDate->format('m') . '/' .  $currentDate->format('Y') . ' ' . $key,
+                            'status' => $value,
                             'reserving' => json_encode($reserving),
                             'visible' => json_encode($visible),
                             'availability' => json_encode($availability),

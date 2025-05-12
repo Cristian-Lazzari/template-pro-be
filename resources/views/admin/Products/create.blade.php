@@ -238,11 +238,7 @@
                     @endif>
 
                     <label class="btn btn-outline-light shadow-sm" for="ingredient{{ $ingredient->id }}">{{ $ingredient->name }}</label>
-                    @error('ingredients') 
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror      
+   
                 @endforeach
             </p>
         </div>

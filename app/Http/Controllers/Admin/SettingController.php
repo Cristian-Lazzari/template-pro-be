@@ -68,8 +68,7 @@ class SettingController extends Controller
 
         $adv = Setting::where('name', 'advanced')->first();
         if($adv){
-
-            
+  
             $property =json_decode($adv->property, 1);
 
             if($property['services'] !==  $request->services ||
@@ -122,7 +121,6 @@ class SettingController extends Controller
         }else{
             $m = 'ERRORE 404!';
         }
-        
         return redirect()->back()->with('success', $m); 
     }
     public function numbers(Request $request){
@@ -210,8 +208,7 @@ class SettingController extends Controller
                 'foto_maps' =>  $oldPosition['foto_maps'],
                 'link_maps' =>  $request->link_maps,
                 'indirizzo' =>  $request->indirizzo,
-            ]; 
-            
+            ];
         
             if (isset($request->foto_maps)) {
                 $imagePath = $request->file('foto_maps')->store('public/uploads');

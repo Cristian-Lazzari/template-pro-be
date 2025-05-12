@@ -148,8 +148,7 @@ class PageController extends Controller
                 'u_imprese' => '',
                 'method' => [],
                 'set_time'=> [
-                    'Sala Sushi', 
-                    'Sala ITA', 
+                    'tavoli',
                     'asporto',
                     'domicilio',
                 ]
@@ -161,7 +160,18 @@ class PageController extends Controller
             $property_adv = json_decode($adv_s->property, 1);  
         }
         $notify = [];
-        $dates = Date::all();
+        $dates = Date::select('*') // o specifica i campi che ti servono
+        ->selectRaw("
+            STR_TO_DATE(
+                CASE
+                    WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
+                    ELSE date_slot
+                END,
+                '%d/%m/%Y %H:%i'
+            ) AS order_slot
+        ")
+        ->orderBy('order_slot')
+        ->get();
         if(count($dates) == 0){
             return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify','adv_s'));
         };

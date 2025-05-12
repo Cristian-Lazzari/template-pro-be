@@ -62,10 +62,7 @@ class SettingsTableSeeder extends Seeder
                 [
                     'name' => 'Comuni per il domicilio',
                     'property' => [
-                        [
-                            'comune' => 'Monte San Vito',
-                            'provincia' => 'AN',
-                        ]
+                        
                     ]
                 ],
                 [

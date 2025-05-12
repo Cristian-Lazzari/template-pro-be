@@ -16,12 +16,12 @@ use Database\Seeders\DatesTableSeeder;
 class DateController extends Controller
 {
     private $validations2 = [
-        'max_reservations'      => 'required|integer',
+        'max_table'      => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations2dt = [
-        'max_reservations_1'    => 'required|integer',
-        'max_reservations_2'    => 'required|integer',
+        'max_table_1'    => 'required|integer',
+        'max_table_2'    => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations3t = [
@@ -37,29 +37,29 @@ class DateController extends Controller
     ];
     private $validations4t = [
         'max_domicilio'         => 'required|integer',
-        'max_reservations'      => 'required|integer',
+        'max_table'      => 'required|integer',
         'max_cucina_1'          => 'required|integer',
         'max_cucina_2'          => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations4f = [
         'max_domicilio'         => 'required|integer',
-        'max_reservations'      => 'required|integer',
+        'max_table'      => 'required|integer',
         'max_asporto'           => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations4tdt = [
         'max_domicilio'         => 'required|integer',
-        'max_reservations_1'    => 'required|integer',
-        'max_reservations_2'    => 'required|integer',
+        'max_table_1'    => 'required|integer',
+        'max_table_2'    => 'required|integer',
         'max_cucina_1'          => 'required|integer',
         'max_cucina_2'          => 'required|integer',
         'days_on'               => 'required',
     ];
     private $validations4fdt = [
         'max_domicilio'         => 'required|integer',
-        'max_reservations_1'    => 'required|integer',
-        'max_reservations_2'    => 'required|integer',
+        'max_table_1'    => 'required|integer',
+        'max_table_2'    => 'required|integer',
         'max_asporto'           => 'required|integer',
         'days_on'               => 'required',
     ];
@@ -75,7 +75,18 @@ class DateController extends Controller
             $times_start = $property_adv['times_start'];
             $times_interval = $property_adv['times_interval'];
 
-            $dates = Date::all();
+            $dates = Date::select('*') // o specifica i campi che ti servono
+                ->selectRaw("
+                    STR_TO_DATE(
+                        CASE
+                            WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
+                            ELSE date_slot
+                        END,
+                        '%d/%m/%Y %H:%i'
+                    ) AS order_slot
+                ")
+                ->orderBy('order_slot')
+                ->get();
             if(count($dates) == 0){
                 return view('admin.Dates.index', compact('double', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
             }
@@ -101,6 +112,7 @@ class DateController extends Controller
 
                     // Prepara base comune per $day
                     $day = [
+                        'id' => $d['id'],
                         'day' => $d['day'],
                         'day_w' => $d['day_w'],
                         'date' => $date,
@@ -150,6 +162,7 @@ class DateController extends Controller
                 if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
                     if( $d['time'] == 0 ){
                         array_push($year[$cy]['days'], $dayoff = [
+                            'id' =>  $d['id'],
                             'day' => $d['day'],
                             'day_w' => $d['day_w'],
                             'date' => $date]);
@@ -182,6 +195,7 @@ class DateController extends Controller
                         array_push($month['days'], $day);
                     }else{
                         array_push($month['days'], $dayoff = [
+                            'id' =>  $d['id'],
                             'day' => $d['day'],
                             'day_w' => $d['day_w'],
                             'date' => $date]);
@@ -317,11 +331,120 @@ class DateController extends Controller
 
         return redirect()->back()->with('success', $m);
     }
+    public function editDays(Request $request){
+        $data = $request->all();
+        //dd($data);
+        $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1);  
+                
+            $double = $property_adv['dt'];
+            $pack = $property_adv['services'];
+            $type = $property_adv['too'];
+        foreach ($data['dates'] as $d) {
+            $date = Date::where('id' , $d)->first();
+            foreach ($data['times'] as $key => $value) {
+                $status = $this->getStatus($value);
+                $visible = [
+                    'table' => in_array($status,[2,3,6,7]) ? 1 : 0,
+                    'table_1' => in_array($status,[2,3,6,7]) ? 1 : 0,
+                    'table_2' => in_array($status,[2,3,6,7]) ? 1 : 0,
+                    'asporto' => in_array($status,[1,3,4,5]) ? 1 : 0,
+                    'cucina_1' => in_array($status,[1,3,4,5]) ? 1 : 0,
+                    'cucina_2' => in_array($status,[1,3,4,5]) ? 1 : 0,
+                    'domicilio' => $status >= 4 ? 1 : 0,
+                ];
+                $availability = [
+                    'table' => $data['max_table'],
+                    'table_1' => $data['max_table_1'],
+                    'table_2' => $data['max_table_2'],
+                    'asporto' => $data['max_asporto'],
+                    'cucina_1' => $data['max_cucina_1'],
+                    'cucina_2' => $data['max_cucina_2'],
+                    'domicilio' => $data['max_domicilio'],
+                ];
+                $reserving = [
+                    'table' => 0,
+                    'table_1' => 0,
+                    'table_2' => 0,
+                    'asporto' => 0,
+                    'cucina_1' => 0,
+                    'cucina_2' => 0,
+                    'domicilio' => 0,
+                ];
+                
+                if( $pack == 2 ){ 
+                    if($double){
+                        unset($visible['table']);
+                        unset($reserving['table']);
+                        unset($availability['table']);
+                    }else{
+                        unset($visible['table_1'], $visible['table_2']);
+                        unset($reserving['table_1'], $reserving['table_2']);
+                        unset($availability['table_1'], $availability['table_2']);
+                    }
+                    unset($visible['asporto'], $visible['cucina_1'], $visible['cucina_2'], $visible['domicilio']);
+                    unset($reserving['asporto'], $reserving['cucina_1'], $reserving['cucina_2'], $reserving['domicilio']);
+                    unset($availability['asporto'], $availability['cucina_1'], $availability['cucina_2'], $availability['domicilio']);
+                }elseif( $pack == 3){
+                    if($type){
+                        unset($visible['asporto']);
+                        unset($reserving['asporto']);
+                        unset($availability['asporto']);
+                    }else{
+                        unset($visible['cucina_1'], $visible['cucina_2']);
+                        unset($reserving['cucina_1'], $reserving['cucina_2']);
+                        unset($availability['cucina_1'], $availability['cucina_2']);
+                    }
+                    unset($visible['table'], $visible['table_1'], $visible['table_2']);
+                    unset($reserving['table'], $reserving['table_1'], $reserving['table_2']);
+                    unset($availability['table'], $availability['table_1'], $availability['table_2']);
+                }elseif( $pack == 4){    
+                    if($double){
+                        unset($visible['table']);
+                        unset($reserving['table']);
+                        unset($availability['table']);
+                    }else{
+                        unset($visible['table_1'], $visible['table_2']);
+                        unset($reserving['table_1'], $reserving['table_2']);
+                        unset($availability['table_1'], $availability['table_2']);
+                    }
+                    if($type){
+                        unset($visible['asporto']);
+                        unset($reserving['asporto']);
+                        unset($availability['asporto']);
+                    }else{
+                        unset($visible['cucina_1'], $visible['cucina_2']);
+                        unset($reserving['cucina_1'], $reserving['cucina_2']);
+                        unset($availability['cucina_1'], $availability['cucina_2']);
+                    }
+                }
+                $date->delete();
+                
+                Date::create([  
+                    'year' => $date->year,
+                    'month' => $date->month,
+                    'day' => $date->day,
+                    'day_w' => $date->day_w,
+                    'time' => $key,
+                    'date_slot' => str_replace("null.", $key, $date->date_slot),
+                    'status' => $status,
+                    'reserving' => json_encode($reserving),
+                    'visible' => json_encode($visible),
+                    'availability' => json_encode($availability),
+                ]);
+            }
+        }
+        $m = 'Giorni aggiunti correttamente!';
+        return back()->with('success', $m);
+
+
+    }
 
 
     public function generate(Request $request)
     {    
         $data = $request->all();
+        //dd($data);
         
         // Configurazione delle validazioni e disponibilità
         $configs = [
@@ -329,7 +452,7 @@ class DateController extends Controller
             false => [
                 2 => [
                     'validation' => 'validations2',
-                    'availability' => fn($data) => ['table' => $data['max_reservations']],
+                    'availability' => fn($data) => ['table' => $data['max_table']],
                 ],
                 3 => [
                     true => [
@@ -352,7 +475,7 @@ class DateController extends Controller
                     true => [
                         'validation' => 'validations4t',
                         'availability' => fn($data) => [
-                            'table' => $data['max_reservations'],
+                            'table' => $data['max_table'],
                             'cucina_1' => $data['max_cucina_1'],
                             'cucina_2' => $data['max_cucina_2'],
                             'domicilio' => $data['max_domicilio'],
@@ -361,7 +484,7 @@ class DateController extends Controller
                     false => [
                         'validation' => 'validations4f',
                         'availability' => fn($data) => [
-                            'table' => $data['max_reservations'],
+                            'table' => $data['max_table'],
                             'asporto' => $data['max_asporto'],
                             'domicilio' => $data['max_domicilio'],
                         ],
@@ -373,8 +496,8 @@ class DateController extends Controller
                 2 => [
                     'validation' => 'validations2dt',
                     'availability' => fn($data) => [
-                        'table_1' => $data['max_reservations_1'],
-                        'table_2' => $data['max_reservations_2'],
+                        'table_1' => $data['max_table_1'],
+                        'table_2' => $data['max_table_2'],
                     ],
                 ],
                 3 => [
@@ -398,8 +521,8 @@ class DateController extends Controller
                     true => [
                         'validation' => 'validations4tdt',
                         'availability' => fn($data) => [
-                            'table_1' => $data['max_reservations_1'],
-                            'table_2' => $data['max_reservations_2'],
+                            'table_1' => $data['max_table_1'],
+                            'table_2' => $data['max_table_2'],
                             'cucina_1' => $data['max_cucina_1'],
                             'cucina_2' => $data['max_cucina_2'],
                             'domicilio' => $data['max_domicilio'],
@@ -408,8 +531,8 @@ class DateController extends Controller
                     false => [
                         'validation' => 'validations4fdt',
                         'availability' => fn($data) => [
-                            'table_1' => $data['max_reservations_1'],
-                            'table_2' => $data['max_reservations_2'],
+                            'table_1' => $data['max_table_1'],
+                            'table_2' => $data['max_table_2'],
                             'asporto' => $data['max_asporto'],
                             'domicilio' => $data['max_domicilio'],
                         ],
@@ -432,21 +555,14 @@ class DateController extends Controller
         }
 
         if ($config) {
-            $request->validate($this->{$config['validation']});
+            //$request->validate($this->{$config['validation']});
             $availability = $config['availability']($data);
-
             // Inizializza reserving a 0
             $reserving = array_map(fn() => 0, $availability);
         }
 
-        $days_on = $request->input("days_on");
-        $times_slot1 = $request->input("times_slot_1");
-        $times_slot2 = $request->input("times_slot_2");
-        $times_slot3 = $request->input("times_slot_3");
-        $times_slot4 = $request->input("times_slot_4");
-        $times_slot5 = $request->input("times_slot_5");
-        $times_slot6 = $request->input("times_slot_6");
-        $times_slot7 = $request->input("times_slot_7");
+        $days_on     = $request->input("days_on");
+
         $timesDay = [];
 
         $day = [];
@@ -456,45 +572,58 @@ class DateController extends Controller
         $interval = $property_adv['times_interval'];
 
         // Loop finché l'orario di inizio è inferiore all'orario di fine
-        while ($start <= $end) {
-            $day[$index] = [
-                'time' => $start->format('H:i'),
-                'set' => ''
-            ];
-            // Incrementa l'orario di inizio con l'intervallo specificato
-            $start->modify("+$interval minutes");
-            $index++;
-        }
-
+        // while ($start <= $end) {
+        //     $day[$index] = [ $start->format('H:i') => '' ];
+        //     // Incrementa l'orario di inizio con l'intervallo specificato
+        //     $start->modify("+$interval minutes");
+        //     $index++;
+        // }
 
 
         for ($i = 0; $i < 7; $i++) { 
             array_push($timesDay, $day);
         }
-        //dd(count($timesDay[0]));
-        for ($i = 0; $i < count($timesDay[0]); $i++) {
-            // dump($timesDay[0][$i + 1]['set']);
-            // dump($times_slot1[$i]);
-            $timesDay[0][$i+1]['set'] = $times_slot1[$i];
+
+
+        if(isset($data["times_slot_1"])){
+            foreach ($data["times_slot_1"] as $key => $value) {
+                $timesDay[0][$key] = $this->getStatus($value);
+            }
         }
-        for ($i = 0; $i < count($timesDay[1]); $i++) {
-            $timesDay[1][$i+1]['set'] = $times_slot2[$i];
+        if(isset($data["times_slot_2"])){
+            foreach ($data["times_slot_2"] as $key => $value) {
+                $timesDay[1][$key] = $this->getStatus($value);
+            }
         }
-        for ($i = 0; $i < count($timesDay[2]); $i++) {
-            $timesDay[2][$i+1]['set'] = $times_slot3[$i];
+        if(isset($data["times_slot_3"])){
+            foreach ($data["times_slot_3"] as $key => $value) {
+                $timesDay[2][$key] = $this->getStatus($value);
+            }
         }
-        for ($i = 0; $i < count($timesDay[3]); $i++) {
-            $timesDay[3][$i+1]['set'] = $times_slot4[$i];
+        if(isset($data["times_slot_4"])){
+            foreach ($data["times_slot_4"] as $key => $value) {
+                $timesDay[3][$key] = $this->getStatus($value);
+            }
         }
-        for ($i = 0; $i < count($timesDay[4]); $i++) {
-            $timesDay[4][$i+1]['set'] = $times_slot5[$i];
+        if(isset($data["times_slot_5"])){
+            foreach ($data["times_slot_5"] as $key => $value) {
+                $timesDay[4][$key] = $this->getStatus($value);
+            }
         }
-        for ($i = 0; $i < count($timesDay[5]); $i++) {
-            $timesDay[5][$i+1]['set'] = $times_slot6[$i];
+        if(isset($data["times_slot_6"])){
+            foreach ($data["times_slot_6"] as $key => $value) {
+                $timesDay[5][$key] = $this->getStatus($value);
+            }
         }
-        for ($i = 0; $i < count($timesDay[6]); $i++) {
-            $timesDay[6][$i+1]['set'] = $times_slot7[$i];
+        if(isset($data["times_slot_7"])){
+            foreach ($data["times_slot_7"] as $key => $value) {
+                $timesDay[6][$key] = $this->getStatus($value);
+            }
         }
+       
+
+
+      
         // Pulisco le tabelle
         DB::table('dates')->truncate();
         // Eseguo il seeder
@@ -507,48 +636,26 @@ class DateController extends Controller
         return back()->with('success', $m);
  
     }
-    //da fixare
-    public function restoreReservationsAndOrders()
-    {
-        $reservations = Reservation::where('status' , 2)->orWhere('status', 1)->all();
-        if ($reservations) {
-            foreach ($reservations as $reservation) {
-                $date = Date::where('date_slot', $reservation->date_slot)->firstOrFail();
-                if ($date) {
-                    $av = json_decode($date->availability);
-                    $res = json_decode($date->reserved);
-                    $res['table'] += $reservation->n_person;
-                    if($res['table'] >= $av['table']){
-                        $vis = json_decode($date->visible);
-                        $vis = 0;
-                    }
-                    $date->save();
-                }
-            }
-        }
 
-        $orders = Order::where('status' , 2)->orWhere('status', 1)->all();
-        if ($orders) {
-            foreach ($orders as $order) {
-                $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
-                if ($date) {
-                    $av = json_decode($date->availability);
-                    $res = json_decode($date->reserved);
-                    $products = $order->products;
-                    foreach ($products as $key => $value) {
-                        # code...
-                    }
-                    $res['cucina_1'] += $npezzi;
-                    $res['cucina_2'] += $order->n_person;
-                    if($res['cucina_1'] >= $av['cucina_1']){
-                        $vis = json_decode($date->visible);
-                        $vis = 0;
-                    }
-                    $date->save();
-                }
-            }
+    //da fixare
+    protected function getStatus($value){
+        $status = 7;
+        if(in_array(1,$value) && count($value) == 1){
+            $status = 1; //asporto
+        }elseif (in_array(2,$value) && count($value) == 1) {
+            $status = 2; //tavoli
+        }elseif (in_array(3,$value) && count($value) == 1) {
+            $status = 4; //domicilio
+        }elseif (in_array(1,$value) && in_array(2,$value) && count($value) == 2) {
+            $status = 3; //asporto tavoli
+        }elseif(in_array(1,$value) && in_array(3,$value) && count($value) == 2) {
+            $status = 5; //asporto domicilio
+        }elseif(in_array(2,$value) && in_array(3,$value) && count($value) == 2) {
+            $status = 6; //tavoli domicilio
         }
+        return $status;
     }
+
 
 
 }

@@ -256,7 +256,7 @@ $p_adv = json_decode($adv_s->property, 1);
     <div class="bottom-c">
         <div class="date">
             @if (isset($year) && config('configurazione.subscription') > 1)
-                <div class="date_index">
+                <div class="">
                     <div id="carouselExampleIndicators" class="carousel slide my_carousel">
                         <div class="carousel-indicators">
 
