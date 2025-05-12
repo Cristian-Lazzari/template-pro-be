@@ -182,12 +182,12 @@
                     @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
                 </div>
                 <div class="input_c @if(!(in_array($pack, [3,4]) && $type)) d-none @endif" >
-                    <label for="max_cucina_1">N° di pezzi{{$property_adv['too_1']}}</label>
+                    <label for="max_cucina_1">N° porzioni di {{$property_adv['too_1']}}</label>
                     <input name="max_cucina_1" id="max_cucina_1" type="number" placeholder="N° di{{$property_adv['too_1']}} per fascia oraria" value="0"> 
                     @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
                 </div>
                 <div class="input_c @if(!(in_array($pack, [3,4]) && $type)) d-none @endif" >
-                    <label for="max_cucina_2">N° di pezzi{{$property_adv['too_2']}}</label>
+                    <label for="max_cucina_2">N° porzioni di {{$property_adv['too_2']}}</label>
                     <input name="max_cucina_2" id="max_cucina_2" type="number" placeholder="N° di{{$property_adv['too_2']}} per fascia oraria" value="0"> 
                     @error('max_cucina_2') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -269,12 +269,12 @@
                     @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
                 </div>
                 <div class="input_c @if(!(in_array($pack, [3,4]) && $type)) d-none @endif" >
-                    <label for="max_cucina_1">N° di pezzi{{$property_adv['too_1']}}</label>
+                    <label for="max_cucina_1">N° porzioni di {{$property_adv['too_1']}}</label>
                     <input name="max_cucina_1" id="max_cucina_1" type="number" placeholder="N° di{{$property_adv['too_1']}} per fascia oraria" value="0"> 
                     @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
                 </div>
                 <div class="input_c @if(!(in_array($pack, [3,4]) && $type)) d-none @endif" >
-                    <label for="max_cucina_2">N° di pezzi{{$property_adv['too_2']}}</label>
+                    <label for="max_cucina_2">N° porzioni di {{$property_adv['too_2']}}</label>
                     <input name="max_cucina_2" id="max_cucina_2" type="number" placeholder="N° di{{$property_adv['too_2']}} per fascia oraria" value="0"> 
                     @error('max_cucina_2') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -342,107 +342,7 @@
         </form>
     </div>
 </div>
-{{-- <div class="container ">
-    <form class="d-flex flex-column py-5"  action="{{ route('admin.dates.generate') }}" method="post" enctype="multipart/form-data">
-    <h1>Genera nuove disponibilità</h1>
-        @csrf
-        
-        @if ( $pack == 2 ||  $pack == 4)  
-            @if ($double)  
-                <h5 class="pt-4 ">Indica il numero di posti a sedere per  "{{$property_adv['sala_1']}}" per fascia oraria</h5>
-                <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_reservations_1" class="input-group-text" >N° di posti a sedere {{$property_adv['sala_1']}}</label>
-                    <input name="max_reservations_1" id="max_reservations_1" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
-                </div> @error('max_reservations_1') <p class="error">{{ $message }}</p> @enderror
-                <h5 class="pt-4 ">Indica il numero di posti a sedere per  "{{$property_adv['sala_2']}}" per fascia oraria</h5>
-                <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_reservations_2" class="input-group-text" >N° di posti a sedere {{$property_adv['sala_2']}}</label>
-                    <input name="max_reservations_2" id="max_reservations_2" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
-                </div> @error('max_reservations_2') <p class="error">{{ $message }}</p> @enderror
-            @else
-                <h5 class="pt-4 ">Indica il numero di posti a sedere per fascia oraria</h5>
-                <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_reservations" class="input-group-text" >N° di posti a sedere</label>
-                    <input name="max_reservations" id="max_reservations" type="number" class="form-control" placeholder="N° di posti a sedere" aria-label="N° di posti a sedere" aria-describedby="addon-wrapping" >
-                </div> @error('max_reservations') <p class="error">{{ $message }}</p> @enderror
-            @endif
-        @endif
-        @if ( $pack > 2)  
-            @if ($type)  
-                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['too_1']}} per asporto/delivery</h5>
-                <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_cucina_1" class="input-group-text" >N° di pezzi</label>
-                    <input name="max_cucina_1" id="max_cucina_1" type="number" class="form-control" placeholder="N° di pezzi">
-                </div> @error('max_cucina_1') <p class="error">{{ $message }}</p> @enderror
-                
-                <h5 class="pt-4 ">Indica il numero massimo di {{$property_adv['too_2']}} per asporto/delivery</h5>
-                <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_cucina_2" class="input-group-text" >N° di pizze</label>
-                    <input name="max_cucina_2" id="max_cucina_2" type="number" class="form-control" placeholder="N° di pezzi">
-                </div> @error('max_cucina_2') <p class="error">{{ $message }}</p> @enderror
-            @else
-                <h5 class="pt-4 ">Indica il numero massimo di ordini per l'asporto</h5>
-                <div class="input-group w-auto flex-nowrap py-2 ">
-                    <label for="max_asporto" class="input-group-text" >N° di ordini</label>
-                    <input name="max_asporto" id="max_asporto" type="number" class="form-control" placeholder="N° di ordini per fascia oraria">
-                </div> @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
-                    
-            @endif
-            <h5 class="pt-4 ">Indica il numero massimo di ordini con la consegna a domicilio</h5>
-            <div class="input-group w-auto flex-nowrap py-2 ">
-                <label for="max_domicilio" class="input-group-text" >N° di oridini a domicilio</label>
-                <input name="max_domicilio" id="max_domicilio" type="number" class="form-control" placeholder="N° di ordini per fascia oraria">
-            </div> @error('max_domicilio') <p class="error">{{ $message }}</p> @enderror
-        @endif
-        <div>
-            <h5 class="pt-4">Seleziona i giorni in cui sei attivo</h5>
-            <div class="day_form" role="group" aria-label="Basic checkbox toggle button group">
 
-                @foreach ([1, 2, 3, 4, 5, 6, 7] as $day)
-                    <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <label class="my_btn_1 my_btn_2 scale-none" for="day_{{ $day }}">{{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }}
-                        <div class="collapse multi-collapse" id="multiCollapseExample{{$day}}">
-                            <div class="card card-body">
-
-                                <label class="theme-switch" for="days_on_{{ $day }}" id="themeswitch">
-                                    <input type="checkbox" id="days_on_{{ $day }}" name="days_on[]" value="{{ $day }}">
-                                    <div class="slider round"></div>
-                                    <span class="name"></span>
-                                    <div class="back"></div>
-                                </label>
-                                <h5 class="p-3">Seleziona le fasce orarie disponibili</h5>
-                                @foreach ($day_time as $time)
-                                    <select  class="form-select col" name="times_slot_{{$day}}[]" id="">
-                                        @if ($pack == 2)
-                                            <option value="0">{{ $time['time'] }} - ND</option>
-                                            <option value="1">{{ $time['time'] }} - attivo</option>  
-                                        @elseif ($pack == 3)  
-                                            <option value="0">{{ $time['time'] }} - ND</option>
-                                            <option value="1">{{ $time['time'] }} - asporto</option>
-                                            <option value="4">{{ $time['time'] }} - domicilio</option>
-                                            <option value="7">{{ $time['time'] }} - tutti</option>
-                                        @elseif ($pack == 4)     
-                                            <option value="0">{{ $time['time'] }} - ND</option>
-                                            <option value="1">{{ $time['time'] }} - asporto</option>
-                                            <option value="2">{{ $time['time'] }} - tavoli</option>
-                                            <option value="3">{{ $time['time'] }} - asporto/tavoli</option>
-                                            <option value="4">{{ $time['time'] }} - domicilio</option>
-                                            <option value="5">{{ $time['time'] }} - domicilio/asporto</option>
-                                            <option value="6">{{ $time['time'] }} - domicilio/tavoli</option>
-                                            <option value="7">{{ $time['time'] }} - tutti</option>
-                                        @endif
-                                    </select>
-                                @endforeach                    
-                            </div>
-                        </div>
-                    </label>
-                @endforeach
-            </div>
-        </div>
-        @error('days_on') <p class="error m-2">seleziona "Attiva" nei giorni i cui sei operativo</p> @enderror
-        <button class="btn btn-outline-light mt-4 w-100">Modifica</button>
-    </form>
-</div> --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
