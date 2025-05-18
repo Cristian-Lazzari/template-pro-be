@@ -167,10 +167,11 @@ class ReservationController extends Controller
     {
         $query = Reservation::whereRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) >= ?", [now()->toDateString()]);
 
-        
-        
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+
         $reservations = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
-        return view('admin.Reservations.index', compact('reservations'));
+        return view('admin.Reservations.index', compact('reservations', 'property_adv'));
     }
     
     public function show($id)
