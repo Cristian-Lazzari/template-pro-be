@@ -182,7 +182,11 @@ class PageController extends Controller
         $double = $property_adv['dt'];
         $pack = $property_adv['services'];
         $type = $property_adv['too'];
+
+        
         $firstDay = [ 'year' => $dates[0]['year'], 'month' => $dates[0]['month'], 'day' => $dates[0]['day'],];       
+        dump($firstDay);
+        dd('inizio');
         foreach ($dates as $d) {
             list($date, $time) = explode(" ", $d['date_slot']);
             
