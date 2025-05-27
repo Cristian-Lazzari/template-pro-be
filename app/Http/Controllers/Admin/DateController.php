@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use DateTime;
 use Exception;
+use Carbon\Carbon;
 use App\Models\Date;
 use App\Models\Order;
 use App\Models\Setting;
@@ -209,8 +210,8 @@ class DateController extends Controller
                 ];
                 
             };
-            return view('admin.Dates.index', compact('year', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
-        }
+        return view('admin.Dates.index', compact('year', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
+    }
 
     public function showDay(Request $request){
         $date = $request->input('date');
@@ -242,6 +243,7 @@ class DateController extends Controller
         //dd($property_adv);
         return view('admin.Dates.showDay', compact('day', 'set_time', 'property_adv'));   
     }
+
     public function status(Request $request){
         $id = $request->input('id');
         $date = Date::where('id', $id)->firstOrFail();
@@ -440,7 +442,6 @@ class DateController extends Controller
 
     }
 
-
     public function generate(Request $request)
     {    
         $data = $request->all();
@@ -631,13 +632,104 @@ class DateController extends Controller
         $seeder->setVariables($reserving, $availability, $timesDay, $days_on);
         $seeder->run();
         // Ripristino le prenotazioni
-        //$this->restoreReservationsAndOrders();
+        $this->restoreReservationsAndOrders();
         $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
         return back()->with('success', $m);
  
     }
 
-    //da fixare
+    protected function restoreReservationsAndOrders() {
+        // Ripristino le prenotazioni
+        $reservations = Reservation::all();
+        $orders = Order::all();
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+        foreach ($reservations as $reservation) {
+            if (in_array($reservation->status, [2, 1, 3, 5])) {
+                
+                $date = Date::where('date_slot', $reservation->date_slot)->first();
+                if ($date) {
+                    $reserving = json_decode($date->reserving, true);
+                    $visible = json_decode($date->visible, true);
+                    $availability = json_decode($date->availability, true);
+                    if($property_adv['dt']){
+                        if($reservation->sala == 1){
+                            $reserving['table_1'] += json_decode($reservation->n_person, true)['adult'] + json_decode($reservation->n_person, true)['child'];
+                            $visible['table_1'] = $availability['table_1'] > $reserving['table_1'] ? 1 : 0;
+                        }else{
+                            $reserving['table_2'] += json_decode($reservation->n_person, true)['adult'] + json_decode($reservation->n_person, true)['child'];
+                            $visible['table_2'] = $availability['table_2'] > $reserving['table_2'] ? 1 : 0;
+                        }
+                    }else{
+                        $reserving['table'] += json_decode($reservation->n_person, true)['adult'] + json_decode($reservation->n_person, true)['child'];
+                        $visible['table'] = $availability['table'] > $reserving['table'] ? 1 : 0;
+                    }
+                    $date->reserving = json_encode($reserving);
+                    $date->visible = json_encode($visible);
+                    $date->availability = json_encode($availability);
+                    $date->save();
+                }else{
+                    $datetime = Carbon::createFromFormat('d/m/Y H:i', $reservation->date_slot);
+                    if($property_adv['dt']){
+                        $reserving = [
+                            'table_1' => 0,
+                            'table_2' => 0,
+                        ];
+                        $visible = [
+                            'table_1' => 0,
+                            'table_2' => 0,
+                        ];
+                        if($reservation->sala == 1){
+                            $reserving['table_1'] = json_decode($reservation->n_person, true)['adult'] + json_decode($reservation->n_person, true)['child'];
+                        }else{
+                            $reserving['table_2'] = json_decode($reservation->n_person, true)['adult'] + json_decode($reservation->n_person, true)['child'];
+                        }
+                    }else{
+                        $reserving = [
+                            'table' => json_decode($reservation->n_person, true)['adult'] + json_decode($reservation->n_person, true)['child'],
+                        ];
+                        $visible = [
+                            'table' => 0,
+                        ];
+                    }
+                    $soloData = explode(' ', $reservation->date_slot)[0] . ' null.';
+                    $data_delete = Date::where('date_slot', $soloData )->first();
+                    if($data_delete){
+                        $data_delete->delete();
+                    }
+                    
+                    Date::create([  
+                        'year' => $datetime->year,
+                        'month' => $datetime->month,
+                        'day' => $datetime->day,
+                        'day_w' => $datetime->isoWeekday(),
+                        'time' =>  $datetime->format('H:i'),
+                        'date_slot' => $reservation->date_slot,
+                        'status' => 7,
+                        'reserving' => json_encode($reserving),
+                        'visible' => json_encode($visible),
+                        'availability' => json_encode($visible),
+                    ]);
+                }
+            }
+        }
+        // $reserving['asporto'] += $reservation->asporto;
+        // $reserving['cucina_1'] += $reservation->cucina_1;
+        // $reserving['cucina_2'] += $reservation->cucina_2;
+        // $reserving['domicilio'] += $reservation->domicilio;
+        // Date::create([  
+        //     'year' => ,
+        //     'month' => ,
+        //     'day' => ,
+        //     'day_w' => ,
+        //     'time' => ,
+        //     'date_slot' =>,
+        //     'status' => ,
+        //     'reserving' => ,
+        //     'visible' => ,
+        //     'availability' => ,
+        // ]);
+    }
     protected function getStatus($value){
         $status = 7;
         if(in_array(1,$value) && count($value) == 1){

@@ -79,7 +79,7 @@ $domain = 'https://future-plus.it/allergens/';
             </div>
         </div>
        
-        <div class="actions">
+        <div class="ml-auto d-flex gap-3">
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="archive" value="0">
@@ -110,7 +110,7 @@ $domain = 'https://future-plus.it/allergens/';
                 <input type="hidden" name="v" value="0">
                 <input type="hidden" name="a" value="1">
                 <input type="hidden" name="id" value="{{$product->id}}">
-                <button class="my_btn_3" type="submit">{{$product->archived == 1 ? 'Ripristina': 'Archivia'}}</button>
+                <button class="my_btn_4" type="submit">{{$product->archived == 1 ? 'Ripristina': 'Archivia'}}</button>
             </form>
             
             <form action="{{ route('admin.products.destroy', ['product'=>$product]) }}" method="post" >

@@ -18,7 +18,7 @@
         $data = session('delete_success')
     @endphp
     <div class="alert alert-danger">
-       " {{ $data->title }} " e stato eliminato correttamente
+       " {{ $data->name }} " e stato eliminato correttamente
     </div>
 @endif
 
@@ -67,7 +67,13 @@
                 </div>
             </div>
             <div class="actions">
-                <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
+                <form action="{{ route('admin.menus.destroy', ['menu'=>$item]) }}" method="post" >
+                    @method('delete')
+                    @csrf
+                    <input type="hidden" name="f" value="1">
+                    <button class="my_btn_2 bg-danger" type="submit">Elimina</button>
+                </form>
+                {{-- <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
                 <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
                     <input type="hidden" name="archive" value="0">
@@ -90,13 +96,13 @@
                         </button>
                     @endif
                     
-                </form>
+                </form> --}}
             </div>
 
         </div>
     @endforeach
 </div>
-<h2>Combo prodotti</h2>
+<h2 class="my-3">Combo prodotti</h2>
 <div class="object-container post-container">
     @foreach ($combo as $item)
 
@@ -156,7 +162,7 @@
                     <h5 class="price">€{{$item->price / 100}}</h5>
                 </div>
             </div>
-            <div class="actions">
+            {{-- <div class="actions">
                 <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
                 <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
@@ -181,7 +187,7 @@
                     @endif
                     
                 </form>
-            </div>
+            </div> --}}
 
         </div>
     @endforeach

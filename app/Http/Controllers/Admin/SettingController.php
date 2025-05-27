@@ -73,13 +73,12 @@ class SettingController extends Controller
 
             if($property['services'] !==  $request->services ||
                 $property['too'] !==  $request->too ||
-                $property['dt'] !==  $request->dt 
-            ){
+                $property['dt'] !==  $request->dt ){
                 // Pulisco le tabelle
                 DB::table('dates')->truncate(); 
             }
 
-            $property['too'] = $request->too;
+            $property['too'] = $request->services == 2 ? 0 : $request->too;
             $property['dt'] = $request->services == 3 ? 0 : $request->dt;
             $property['services'] = $request->services;
             $property['menu_fix_set'] = $request->menu_fix_set;

@@ -155,13 +155,16 @@ class MenuController extends Controller
         
         $menu->update();
         $m = ' "' . $menu['name'] . '" è stato modificato correttamente';
-        return to_route('admin.Menus.index')->with('store_success', $m);    
+        return to_route('admin.menus.index')->with('store_success', $m);    
     }
 
 
     public function destroy($id)
     {
+        $menu = Menu::findOrFail($id);
+        $menu->products()->detach();
+        $menu->orders()->detach();
         $menu->delete();
-        return to_route('admin.Menus.index')->with('delete_success', $menu);
+        return to_route('admin.menus.index')->with('delete_success', $menu);
     }
 }
