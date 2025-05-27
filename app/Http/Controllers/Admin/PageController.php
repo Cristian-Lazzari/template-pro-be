@@ -185,8 +185,8 @@ class PageController extends Controller
 
         
         $firstDay = [ 'year' => $dates[0]['year'], 'month' => $dates[0]['month'], 'day' => $dates[0]['day'],];       
-        dump($firstDay);
-        dd('inizio');
+        // dump($firstDay);
+        // dd('inizio');
         foreach ($dates as $d) {
             list($date, $time) = explode(" ", $d['date_slot']);
             
