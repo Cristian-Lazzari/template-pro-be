@@ -185,14 +185,51 @@ class PageController extends Controller
 
         
         $firstDay = [ 'year' => $dates[0]['year'], 'month' => $dates[0]['month'], 'day' => $dates[0]['day'],];       
-        // dump($firstDay);
-        // dd('inizio');
+        
         foreach ($dates as $d) {
             list($date, $time) = explode(" ", $d['date_slot']);
+            $cy = count($year);
+           
             
+            $d1 = Carbon::create($firstDay['year'], $firstDay['month'], $firstDay['day']);
+            $d2 = Carbon::create($d['year'], $d['month'], $d['day']);
+            if ($d1->gt($d2)) {
+                [$d1, $d2] = [$d2, $d1];
+            }
+            $diffInDays = $d1->diffInDays($d2);
+            if ($diffInDays >= 1) {
+                // Altrimenti crea array di giorni mancanti
+                $current = $d1->copy()->addDay();
+
+                for ($i = 1; $i < $diffInDays; $i++) {
+                    array_push($year[$cy]['days'], [
+                        'day' => $current->day,
+                        'day_w' => $current->dayOfWeekIso,
+                        'date' => $current->format('d/m/Y')]);
+                        
+                    if($current->isLastOfMonth()){
+                        $current->addDay();
+                        array_push($year, [
+                            'year' =>  $current->year,
+                            'month' => $current->month,
+                            'days' => [],
+                        ]);
+                        //dump($diffInDays);
+                        $cy++;
+                    }else{
+                        $current->addDay();
+                    }
+                    //dump($current->day);
+                }
+                $current->subDay(); // Rimuove il giorno corrente per evitare duplicati
+                $firstDay = [
+                    'year' =>  $current->year,
+                    'month' =>  $current->month,
+                    'day' =>  $current->day,
+                ];
+            }
             if($d['reserving'] !== '0'){
                 $res = json_decode($d['reserving'], 1);
-
                 // Prepara base comune per $day
                 $day = [
                     'day' => $d['day'],
@@ -200,12 +237,10 @@ class PageController extends Controller
                     'date' => $date,
                     'time' => [],
                 ];
-
                 // Prepara base comune per $time
                 $time = [
                     'time' => $d['time'],
                 ];
-
                 if ($pack == 2) {
                     $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
                     $day['table'] = $table;
@@ -228,15 +263,13 @@ class PageController extends Controller
                     $day['asporto'] = $asporto;
                     $day['domicilio'] = $domicilio;
                     $day['table'] = $table;
-                    $time['asporto'] = $asporto;
-                    $time['domicilio'] = $domicilio;
-                    $time['table'] = $table;
                 }
 
             }
-            
-            $cy = count($year);
+            $cd = count($year[$cy]['days']) - 1;
             if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
+                
+                
                 if( $d['time'] == 0 ){
                     array_push($year[$cy]['days'], $dayoff = [
                         'day' => $d['day'],
@@ -244,22 +277,23 @@ class PageController extends Controller
                         'date' => $date]);
                 }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
                     array_push($year[$cy]['days'], $day);
-                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
+                    $cd ++;
+                    array_push($year[$cy]['days'][$cd]['time'], $time);
                 }elseif($d['day'] == $firstDay['day']){
                     if( $pack == 2 ){        
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
+                        $year[$cy]['days'][$cd]['table'] += $day['table'];        
                     }elseif( $pack == 3){
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
-                        
+                        $year[$cy]['days'][$cd]['asporto'] += $day['asporto'];
+                        $year[$cy]['days'][$cd]['domicilio'] += $day['domicilio'];
                     }elseif( $pack == 4){
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
-                        $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
+                        $year[$cy]['days'][$cd]['table'] += $day['table'];
+                        $year[$cy]['days'][$cd]['domicilio'] += $day['domicilio'];
+                        $year[$cy]['days'][$cd]['asporto'] += $day['asporto'];
                         
                     }
                     array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
                 }
+               
             }else{ 
                 $month = [
                     'year' =>  $d['year'],
@@ -276,11 +310,13 @@ class PageController extends Controller
                 }
                 array_push($year, $month);
             }
+        
             $firstDay = [
-                'year' => $d['year'],
-                'month' => $d['month'],
-                'day' => $d['day'],
+                'year' =>  $d['year'],
+                'month' =>  $d['month'],
+                'day' =>  $d['day'],
             ];
+           
             
         };
         // Ottieni ordini non notificati
@@ -314,6 +350,14 @@ class PageController extends Controller
         return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify','adv_s'));
        // dd($year);
     }
+
+    function getMissingDays($date1, $date2, ) {
+        // Crea oggetti Carbon dalle date
+        
+
+        return $missingDays;
+    }
+
     public function statistics()
     {
         // Grafico a torta: Prodotti più ordinati

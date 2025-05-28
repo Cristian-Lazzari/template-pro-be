@@ -85,7 +85,7 @@
                             
                                 <form action="{{ route('admin.dates.showDay') }}"  style="grid-column-start:{{$d['day_w'] }}" method="get">
                                     @csrf
-                                    @if(!isset($d['time']))
+                                    @if(!isset($d['time']) && isset($d['id']))
                                         <input 
                                             type="checkbox" 
                                             class="btn-check d-none day-checkbox" 

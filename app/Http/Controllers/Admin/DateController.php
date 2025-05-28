@@ -65,151 +65,177 @@ class DateController extends Controller
         'days_on'               => 'required',
     ];
     public function index() {
-            // Recupera le configurazioni
-            $adv_s = Setting::where('name', 'advanced')->first();
-            $property_adv = json_decode($adv_s->property, 1);  
-                
-            $double = $property_adv['dt'];
-            $pack = $property_adv['services'];
-            $type = $property_adv['too'];
-            $times_end = $property_adv['times_end'];
-            $times_start = $property_adv['times_start'];
-            $times_interval = $property_adv['times_interval'];
+        // Recupera le configurazioni
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);  
+            
+        $double = $property_adv['dt'];
+        $pack = $property_adv['services'];
+        $type = $property_adv['too'];
+        $times_end = $property_adv['times_end'];
+        $times_start = $property_adv['times_start'];
+        $times_interval = $property_adv['times_interval'];
 
-            $dates = Date::select('*') // o specifica i campi che ti servono
-                ->selectRaw("
-                    STR_TO_DATE(
-                        CASE
-                            WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
-                            ELSE date_slot
-                        END,
-                        '%d/%m/%Y %H:%i'
-                    ) AS order_slot
-                ")
-                ->orderBy('order_slot')
-                ->get();
-            if(count($dates) == 0){
-                return view('admin.Dates.index', compact('double', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
-            }
-            $year = [
-                1 => [
-                    'year' => $dates[0]['year'],
-                    'month'=> $dates[0]['month'],
-                    'days'=> [],
-                ]
-            ];
-            //dd($dates[1]);
-            $firstDay = [
+        $dates = Date::select('*') // o specifica i campi che ti servono
+            ->selectRaw("
+                STR_TO_DATE(
+                    CASE
+                        WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
+                        ELSE date_slot
+                    END,
+                    '%d/%m/%Y %H:%i'
+                ) AS order_slot
+            ")
+            ->orderBy('order_slot')
+            ->get();
+        if(count($dates) == 0){
+            return view('admin.Dates.index', compact('double', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
+        }
+        $year = [
+            1 => [
                 'year' => $dates[0]['year'],
-                'month' => $dates[0]['month'],
-                'day' => $dates[0]['day'],
-            ];
-                
-            foreach ($dates as $d) {
-                list($date, $time) = explode(" ", $d['date_slot']);
-                
-                if($d['reserving'] !== '0'){
-                    $res = json_decode($d['reserving'], 1);
+                'month'=> $dates[0]['month'],
+                'days'=> [],
+            ]
+        ];
+        //dd($dates[1]);
+        $firstDay = [ 'year' => $dates[0]['year'], 'month' => $dates[0]['month'], 'day' => $dates[0]['day'],];       
+        
+        foreach ($dates as $d) {
+            list($date, $time) = explode(" ", $d['date_slot']);
+            $cy = count($year);
 
-                    // Prepara base comune per $day
-                    $day = [
-                        'id' => $d['id'],
+            $d1 = Carbon::create($firstDay['year'], $firstDay['month'], $firstDay['day']);
+            $d2 = Carbon::create($d['year'], $d['month'], $d['day']);
+            if ($d1->gt($d2)) {
+                [$d1, $d2] = [$d2, $d1];
+            }
+            $diffInDays = $d1->diffInDays($d2);
+            if ($diffInDays >= 1) {
+                // Altrimenti crea array di giorni mancanti
+                $current = $d1->copy()->addDay();
+
+                for ($i = 1; $i < $diffInDays; $i++) {
+                    array_push($year[$cy]['days'], [
+                        'day' => $current->day,
+                        'day_w' => $current->dayOfWeekIso,
+                        'date' => $current->format('d/m/Y')]);
+                        
+                    if($current->isLastOfMonth()){
+                        $current->addDay();
+                        array_push($year, [
+                            'year' =>  $current->year,
+                            'month' => $current->month,
+                            'days' => [],
+                        ]);
+                        //dump($diffInDays);
+                        $cy++;
+                    }else{
+                        $current->addDay();
+                    }
+                    //dump($current->day);
+                }
+                $current->subDay(); // Rimuove il giorno corrente per evitare duplicati
+                $firstDay = [
+                    'year' =>  $current->year,
+                    'month' =>  $current->month,
+                    'day' =>  $current->day,
+                ];
+            }
+            if($d['reserving'] !== '0'){
+                $res = json_decode($d['reserving'], 1);
+                // Prepara base comune per $day
+                $day = [
+                    'id' =>  $d['id'],
+                    'day' => $d['day'],
+                    'day_w' => $d['day_w'],
+                    'date' => $date,
+                    'time' => [],
+                ];
+                // Prepara base comune per $time
+                $time = [
+                    'time' => $d['time'],
+                ];
+                if ($pack == 2) {
+                    $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
+                    $day['table'] = $table;
+                    $time['table'] = $table;
+                } elseif ($pack == 3) {
+                    $asporto = $type 
+                    ? ($res['cucina_1'] + $res['cucina_2']) 
+                    : ($res['asporto'] ?? null);
+                    $domicilio = $res['domicilio'] ?? null;
+                    $day['asporto'] = $asporto;
+                    $day['domicilio'] = $domicilio;
+                    $time['asporto'] = $asporto;
+                    $time['domicilio'] = $domicilio;
+                } elseif ($pack == 4) {
+                    $asporto = $type 
+                    ? ($res['cucina_1'] + $res['cucina_2']) 
+                    : ($res['asporto'] ?? null);
+                    $domicilio = $res['domicilio'] ?? null;
+                    $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
+                    $day['asporto'] = $asporto;
+                    $day['domicilio'] = $domicilio;
+                    $day['table'] = $table;
+                }
+
+            }
+            $cd = count($year[$cy]['days']) - 1;
+            if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
+                
+                
+                if( $d['time'] == 0 ){
+                    array_push($year[$cy]['days'], $dayoff = [
+                        'id' =>  $d['id'],
                         'day' => $d['day'],
                         'day_w' => $d['day_w'],
-                        'date' => $date,
-                        'time' => [],
-                    ];
-
-                    // Prepara base comune per $time
-                    $time = [
-                        'time' => $d['time'],
-                    ];
-
-    
-                    // Helpers per assegnare valori in base alla configurazione
-                    
-                    
-                    // Assegnazione in base al pack
-                    if ($pack == 2) {
-                        $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
-                        $day['table'] = $table;
-                        $time['table'] = $table;
-                    } elseif ($pack == 3) {
-                        $asporto = $type 
-                        ? ($res['cucina_1'] + $res['cucina_2']) 
-                        : ($res['asporto'] ?? null);
-                        $domicilio = $res['domicilio'] ?? null;
-                        $day['asporto'] = $asporto;
-                        $day['domicilio'] = $domicilio;
-                        $time['asporto'] = $asporto;
-                        $time['domicilio'] = $domicilio;
-                    } elseif ($pack == 4) {
-                        $asporto = $type 
-                        ? ($res['cucina_1'] + $res['cucina_2']) 
-                        : ($res['asporto'] ?? null);
-                        $domicilio = $res['domicilio'] ?? null;
-                        $table = $double ? $res['table_1'] + $res['table_2'] : $res['table'];
-                        $day['asporto'] = $asporto;
-                        $day['domicilio'] = $domicilio;
-                        $day['table'] = $table;
-                        $time['asporto'] = $asporto;
-                        $time['domicilio'] = $domicilio;
-                        $time['table'] = $table;
+                        'date' => $date]);
+                }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
+                    array_push($year[$cy]['days'], $day);
+                    $cd ++;
+                    array_push($year[$cy]['days'][$cd]['time'], $time);
+                }elseif($d['day'] == $firstDay['day']){
+                    if( $pack == 2 ){        
+                        $year[$cy]['days'][$cd]['table'] += $day['table'];        
+                    }elseif( $pack == 3){
+                        $year[$cy]['days'][$cd]['asporto'] += $day['asporto'];
+                        $year[$cy]['days'][$cd]['domicilio'] += $day['domicilio'];
+                    }elseif( $pack == 4){
+                        $year[$cy]['days'][$cd]['table'] += $day['table'];
+                        $year[$cy]['days'][$cd]['domicilio'] += $day['domicilio'];
+                        $year[$cy]['days'][$cd]['asporto'] += $day['asporto'];
+                        
                     }
-
+                    array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
                 }
-                
-                $cy = count($year);
-                if($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']){
-                    if( $d['time'] == 0 ){
-                        array_push($year[$cy]['days'], $dayoff = [
-                            'id' =>  $d['id'],
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date]);
-                    }elseif($d['day'] !== $firstDay['day'] || count($year[1]['days']) == 0){
-                        array_push($year[$cy]['days'], $day);
-                        array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
-                    }elseif($d['day'] == $firstDay['day']){
-                        if($pack == 2 ){        
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];        
-                        }elseif($pack == 3){
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
-                            
-                        }elseif($pack == 4){
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['table'] += $day['table'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['domicilio'] += $day['domicilio'];
-                            $year[$cy]['days'][count($year[$cy]['days']) - 1]['asporto'] += $day['asporto'];
-                            
-                        }
-                        array_push($year[$cy]['days'][count($year[$cy]['days']) - 1]['time'], $time);
-                    }
-                }else{
-                    
-                    $month = [
-                        'year' =>  $d['year'],
-                        'month' => $d['month'],
-                        'days' => [],
-                    ];
-                    if($d['reserving'] !== '0'){
-                        array_push($month['days'], $day);
-                    }else{
-                        array_push($month['days'], $dayoff = [
-                            'id' =>  $d['id'],
-                            'day' => $d['day'],
-                            'day_w' => $d['day_w'],
-                            'date' => $date]);
-                    }
-                    array_push($year, $month);
-                }
-                $firstDay = [
-                    'year' => $d['year'],
+               
+            }else{ 
+                $month = [
+                    'year' =>  $d['year'],
                     'month' => $d['month'],
-                    'day' => $d['day'],
+                    'days' => [],
                 ];
-                
-            };
+                if($d['reserving'] !== '0'){
+                    array_push($month['days'], $day);
+                }else{
+                    array_push($month['days'], $dayoff = [
+                        'id' =>  $d['id'],
+                        'day' => $d['day'],
+                        'day_w' => $d['day_w'],
+                        'date' => $date]);
+                }
+                array_push($year, $month);
+            }
+        
+            $firstDay = [
+                'year' =>  $d['year'],
+                'month' =>  $d['month'],
+                'day' =>  $d['day'],
+            ];
+           
+            
+        };
         return view('admin.Dates.index', compact('year', 'times_end', 'times_start', 'times_interval', 'double', 'pack', 'type', 'property_adv'));
     }
 
