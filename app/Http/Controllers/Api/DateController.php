@@ -91,6 +91,7 @@ class DateController extends Controller
                 $query->where('visible', 'like',  '%' . $vis_d . '%');
                 $dates = $query->get();          //1 3 5 7 
             }else{
+                $query->where('visible', 'like',  '%' . $vis_d . '%');
                 $query->where('visible', 'like',  '%' . $vis_c2 . '%' . $vis_d . '%')
                     ->orWhere('visible', 'like', '%' . $vis_c1 . '%' . $vis_d . '%');
                     
@@ -101,7 +102,7 @@ class DateController extends Controller
 
         if(count($dates) == 0){
             return response()->json([
-                'startDateTime' =>$startDateTime,
+                'startDateTime' => $startDateTime,
                 'success'   => false,
                 'results'   => [],    
                 'filter'   => $filter,    

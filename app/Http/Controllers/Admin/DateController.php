@@ -299,6 +299,16 @@ class DateController extends Controller
 
             case 3:
                 if ($type) {
+                    if (($request->viscucina_1 == '1' || $request->viscucina_2 == '1') && $request->visdomicilio == '1') {
+                        $date->status = 5; // tutti
+                    }elseif(($request->viscucina_1 == '1' || $request->viscucina_2 == '1') && $request->visdomicilio == '0') {
+                        $date->status = 3; // solo asporto
+                    }elseif(($request->viscucina_1 == '0' || $request->viscucina_2 == '0') && $request->visdomicilio == '0') {
+                        $date->status = 0; // niente
+                    }else{
+                        $date->status = 4; // solo domicilio
+                    }
+            
                     $av = [
                         'cucina_1' => intval($request->avcucina_1),
                         'cucina_2' => intval($request->avcucina_2),
@@ -333,6 +343,15 @@ class DateController extends Controller
                     $vis['table'] = intval($request->vistable);
                 }
                 if ($type) {
+                    if (($request->viscucina_1 == '1' || $request->viscucina_2 == '1') && $request->visdomicilio == '1') {
+                        $date->status = 7; // tutti
+                    }elseif(($request->viscucina_1 == '1' || $request->viscucina_2 == '1') && $request->visdomicilio == '0') {
+                        $date->status = 3; // solo asporto
+                    }elseif(($request->viscucina_1 == '0' || $request->viscucina_2 == '0') && $request->visdomicilio == '0') {
+                        $date->status = 2; // niente
+                    }else{
+                        $date->status = 4; // solo domicilio
+                    }
                     $av['cucina_1'] = intval($request->avcucina_1);
                     $av['cucina_2'] = intval($request->avcucina_2);
                     $av['domicilio'] = intval($request->avdomicilio);
