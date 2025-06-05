@@ -39,7 +39,7 @@
                     <path d="M2.873 11.297V4.142H1.699L0 5.379v1.137l1.64-1.18h.06v5.961zm3.213-5.09v-.063c0-.618.44-1.169 1.196-1.169.676 0 1.174.44 1.174 1.106 0 .624-.42 1.101-.807 1.526L4.99 10.553v.744h4.78v-.99H6.643v-.069L8.41 8.252c.65-.724 1.237-1.332 1.237-2.27C9.646 4.849 8.723 4 7.308 4c-1.573 0-2.36 1.064-2.36 2.15v.057zm6.559 1.883h.786c.823 0 1.374.481 1.379 1.179.01.707-.55 1.216-1.421 1.21-.77-.005-1.326-.419-1.379-.953h-1.095c.042 1.053.938 1.918 2.464 1.918 1.478 0 2.642-.839 2.62-2.144-.02-1.143-.922-1.651-1.551-1.714v-.063c.535-.09 1.347-.66 1.326-1.678-.026-1.053-.933-1.855-2.359-1.845-1.5.005-2.317.88-2.348 1.898h1.116c.032-.498.498-.944 1.206-.944.703 0 1.206.435 1.206 1.07.005.64-.504 1.106-1.2 1.106h-.75z"/>
                     </svg>
                     Prezzo</label>
-                <p>€<input @if($product->price) value="{{  $product->price / 100 }}" @else value="{{ old('price')}}" @endif  step="0.01" type="number" name="price" id="price" placeholder=" inserisci il prezzo "></p>
+                <p>€<input @if(!isset($data)) value="{{  $product->price / 100 }}" @else value="{{ $data['price']}}" @endif  step="0.01" type="number" name="price" id="price" placeholder=" inserisci il prezzo "></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -47,7 +47,7 @@
             <div>
                 <label class="label_c" for="promotion">Prodotto in evidenza</label>
                 <label class="container_star">
-                    <input name="promotion" type="checkbox" @if (old('promotion', $product->promotion))  checked  @elseif(isset($data) && $data['promotion']) checked @endif>
+                    <input name="promotion" type="checkbox" @if (old('promotion', $product->promotion))  checked  @endif>
                     <svg height="24px" id="promotion" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
                 </label>
             </div>
