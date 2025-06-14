@@ -252,32 +252,71 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-checks-grid" viewBox="0 0 16 16">
                 <path d="M2 10h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m9-9h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1m0 9a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zm0-10a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2zm7 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2zM0 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.354.854a.5.5 0 1 0-.708-.708L3 3.793l-.646-.647a.5.5 0 1 0-.708.708l1 1a.5.5 0 0 0 .708 0z"/>
             </svg>
-            Abbina Ingredienti</h2>
-        <div class="check_c">
-            <p>
-                @foreach($ingredients as $ingredient)
-                    <input type="checkbox" class="btn-check" id="ingredient{{ $ingredient->id }}" name="ingredients[]" 
-                    value="{{ $ingredient->id }}"
+            Abbina Ingredienti
+        </h2>
+        <div id="associated-ingredients" class="check_c">
+            <h3>Ingredienti abbinati</h3>
+            <p id="associated-list">
+                @if(isset($data['ingredients']))
+                    @foreach($ingredients as $ingredient)
+                        @php
+                            $alreadyLinked = (isset($data['ingredients']) && in_array($ingredient->id, $data['ingredients']));
+                        @endphp
+            
+                        @if($alreadyLinked)
+                            <button type="button" class="available-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
+                                {{ $ingredient->name }}
+                                <span class="remove-ingredient">−</span>
+                            </button>
+                        @endif
+                    @endforeach
+                @else
                     
-                    @if(isset($data['ingredients']) && in_array($ingredient->id, $data['ingredients']))   
-                        checked 
-                    @elseif(in_array($ingredient->id, old('ingredients', $product->ingredients->pluck('id')->all())))
-                        checked
-                    @endif
-                    >
-
-                    <label class="btn btn-outline-light shadow-sm" for="ingredient{{ $ingredient->id }}">{{ $ingredient->name }}</label>
-                    @error('ingredients') 
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror      
-                @endforeach
+                    @foreach ($product->ingredients as $ingredient)
+                        <button type="button" class="associated-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
+                            {{ $ingredient->name }}
+                            <span class="remove-ingredient">−</span>
+                        </button>
+                    @endforeach
+                @endif
             </p>
         </div>
+
+        <div class="check_c">
+            <h3>Ingredienti disponibili</h3>
+            <p id="available-ingredients">
+                @foreach($ingredients as $ingredient)
+                    @php
+                        $alreadyLinked = (isset($data['ingredients']) && in_array($ingredient->id, $data['ingredients'])) 
+                            || in_array($ingredient->id, old('ingredients', $product->ingredients->pluck('id')->all()));
+                    @endphp
+
+                    @if(!$alreadyLinked)
+                        <button type="button" class="available-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
+                            {{ $ingredient->name }}
+                        </button>
+                    @endif
+                @endforeach
+
+                @error('ingredients') 
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror  
+            </p>
+        </div>
+
+        <!-- Hidden container con input per submit -->
+        <div id="selected-ingredients">
+            @foreach ($product->ingredients as $ingredient)
+                <input type="hidden" name="ingredients[]" value="{{ $ingredient->id }}" data-id="{{ $ingredient->id }}" >
+            @endforeach
+        </div>
+
+
             <!-- Button trigger modal -->
         <h5 class="text-center" >Se non hai ancora creato tutti gli ingedienti per il tuo prodotto puoi farlo ora</h5>
-        <button type="button" class="my_btn_4" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        <button type="button" class="my_btn_5 m-auto" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Crea Ingredienti mancanti
         </button>
     </section>
@@ -312,6 +351,100 @@
     <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Prodotto</button>
 
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const associatedContainer = document.getElementById('associated-list');
+    const availableContainer = document.getElementById('available-ingredients');
+    const hiddenInputsContainer = document.getElementById('selected-ingredients');
+
+    function createAvailableIngredientButton(id, name) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'available-ingredient';
+        button.dataset.id = id;
+        button.dataset.name = name;
+        button.textContent = name;
+
+        button.addEventListener('click', () => {
+            button.remove();
+            addAssociatedIngredient(id, name);
+        });
+
+        return button;
+    }
+
+    function addAssociatedIngredient(id, name) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'associated-ingredient';
+        button.dataset.id = id;
+        button.dataset.name = name;
+        button.innerHTML = `${name} <span class="remove-ingredient">−</span>`;
+
+        button.querySelector('.remove-ingredient').addEventListener('click', () => {
+            button.remove();
+            removeHiddenInput(id);
+            const availableBtn = createAvailableIngredientButton(id, name);
+            availableContainer.prepend(availableBtn);
+        });
+
+        associatedContainer.appendChild(button);
+        addHiddenInput(id);
+    }
+
+    function addHiddenInput(id) {
+        // Evita duplicati
+        if (hiddenInputsContainer.querySelector(`input[data-id="${id}"]`)) return;
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'ingredients[]';
+        input.value = id;
+        input.dataset.id = id;
+        hiddenInputsContainer.appendChild(input);
+    }
+
+    function removeHiddenInput(id) {
+        const input = hiddenInputsContainer.querySelector(`input[data-id="${id}"]`);
+        if (input) {
+            input.remove();
+        } else {
+            console.warn('Hidden input non trovato per ID:', id);
+        }
+    }
+
+    // Associa eventi su bottoni già renderizzati
+    availableContainer.querySelectorAll('.available-ingredient').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.id;
+            const name = button.dataset.name;
+            button.remove();
+            addAssociatedIngredient(id, name);
+        });
+    });
+
+    associatedContainer.querySelectorAll('.associated-ingredient').forEach(button => {
+        const id = button.dataset.id;
+        const name = button.dataset.name;
+        const removeBtn = button.querySelector('.remove-ingredient');
+
+        removeBtn?.addEventListener('click', () => {
+            button.remove();
+            removeHiddenInput(id);
+            const availableBtn = createAvailableIngredientButton(id, name);
+            availableContainer.prepend(availableBtn);
+        });
+
+        // Aggiunge hidden anche per quelli già associati
+        addHiddenInput(id);
+    });
+});
+
+</script>
+
+
+
 
 
 

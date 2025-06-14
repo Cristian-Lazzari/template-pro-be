@@ -503,14 +503,19 @@ class ProductController extends Controller
         $product->save();
         
         $ingredients = [];
-        if(isset($data['ingredients'])){     
-            foreach ($data['ingredients'] as $v) {
-                array_push($ingredients, $v);
+        if (isset($data['ingredients']) && is_array($data['ingredients'])) {
+            $syncData = [];
+
+            foreach ($data['ingredients'] as $index => $ingredientId) {
+                $syncData[$ingredientId] = ['sort_order' => $index];
             }
-            $product->ingredients()->sync($ingredients ?? []);  
-        }else{
-            $product->ingredients()->sync([] ?? []);  
+
+            $product->ingredients()->sync($syncData);
+        } else {
+            // Nessun ingrediente selezionato
+            $product->ingredients()->sync([]);
         }
+
         
         return view('admin.Products.show', compact( 'product', 'property_adv'));     
     }

@@ -79,7 +79,7 @@ $domain = 'https://future-plus.it/allergens/';
             </div>
         </div>
        
-        <div class="ml-auto d-flex gap-3">
+        <div class="ml-auto d-flex gap-2 flex-wrap">
             <form action="{{ route('admin.products.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="archive" value="0">

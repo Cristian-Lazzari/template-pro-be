@@ -11,6 +11,7 @@ $c3: #d8dde8;
     --c1_op:#1e2d6472;
     --c2_op:#10b7937b;
     --c3_op:#d8dde880;
+    --c3_op_3:#d8dde836;
     --c1: #090333;
     --c2:#0eb792;
     --c3: #d8dde8;
@@ -30,6 +31,7 @@ $c3: #d8dde8;
     --c3_op:#1e2d6472;
     --c2_op:#10b7937b;
     --c1_op:#d8dde880;
+    --c3_op_3:#1e2d6428;
     --c3: #090333;
     --c2:#10b793;
     --c1: #d8dde8;
@@ -1615,11 +1617,6 @@ body{
 
 }
 
-.btn_special{
-    border: 1px solid var(--c2);
-    color: var(--c2);
-    background-color: var(--c1_op);
-}
 .creation{
     .img-cont{
         //background-color: red;
@@ -1650,10 +1647,10 @@ body{
         font-weight: bolder;
     }
     section{
-        background: var(--c2_op);
+        //background: var(--c2_op);
         //background: linear-gradient(-15deg, var(--c1_op), var(--c2));
         width: 100%;
-        padding: 1rem;
+        //padding: 1rem;
         border-radius: 18px;
         display: flex;
         flex-direction: column;
@@ -1753,7 +1750,7 @@ body{
             border: none;
             border-radius: 10px;
             padding: 10px;
-            background-color: rgba(255, 255, 255, 0.163);
+            background-color: var(--c3_op_3);
             color: var(--c3);
 
         }
@@ -1771,8 +1768,8 @@ body{
     }
     .cont_i{
         .check_c{
-            background-color: rgba(5, 7, 49, 0.41);
-
+            background-color: var(--c3);
+            color: var(--c1);
             max-height: 50vh;
             border-radius: 12px;
             border-bottom: 2px solid var(--c3_op);
@@ -1783,26 +1780,72 @@ body{
     }
 
     .check_c{
-        .p,
-        p{
+        .p, p{
             display: flex;
             flex-wrap: wrap;
             gap: .4rem;
             label{
-                //max-width: 50%;
-                //flex: 1 ;
-                background-color: rgba(5, 7, 49, 0.41);
+                border-color: var(--c3);
+                color: var(--c3);
                 padding: .2rem 1.2rem;
                 border-radius: 100px;
                 white-space: nowrap;
-                // margin-left:  auto;
                 font-size: clamp(13px, 1.6vw, 14px) !important;
-                //font-size: clamp(14px, 2.2vw, 16px);
             }
+            input[type="checkbox"]:checked + label{
+                border-color: var(--c2) !important;
+                background-color: var(--c3) !important;
+                color: var(--c1) !important;
+            }
+            .btn_special{
+                border-color: var(--c2) ;
+                background-color: rgba($c2, .2) !important;
+                color: var(--c3) !important;
+            }
+            input[type="checkbox"]:checked + .btn_special{
+                border-color: var(--c3) !important;
+                background-color: var(--c2) !important;
+                color: var(--c1) !important;
+                font-weight: 500;
+            }
+        }
+        h3{
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        .associated-ingredient, .available-ingredient{
+            border-radius: 30px !important;
+            padding: .5rem 1rem;
+            border: none;
+            transition: all .2s ease-in-out;
+        }
+        .associated-ingredient{
+            background-color: var(--c1);
+            color: var(--c3);
+            font-weight: 700;
+            display: flex;
+            
+            align-items: center;
+            gap: .3rem;
+            span{
+                background-color: red;
+                color: white;
+                width: 20px;
+                height: 20px;
+                border-radius: 100%;
+            }
+        }
+        .available-ingredient{
+            background-color: var(--c1_op);
+            color: var(--c1);
+        }
+        .available-ingredient:hover{
+            background-color: var(--c1);
+            color: var(--c3);
+            transition: all .2s ease-in-out;
         }
     }
 }
-
 
 //-index order
 .or-res-cont{
@@ -2896,6 +2939,7 @@ body{
     }
 }
 // per menu
+
 .creation{
     #section_fix, #section_combo{
         overflow: hidden !important;
