@@ -94,6 +94,21 @@ return [
             'img' => 'https://future-plus.it/allergens/sulphur.png',
             'name' => 'Anidride solforosa e solfiti'
         ],
+        17 => [
+            'special' => 0,
+            'img' => 'https://future-plus.it/allergens/garlic.png',
+            'name' => 'Aglio'
+        ],
+        18 => [
+            'special' => 0,
+            'img' => 'https://future-plus.it/allergens/lupins.png',
+            'name' => 'Lupini'
+        ],
+        19 => [
+            'special' => 0,
+            'img' => 'https://future-plus.it/allergens/origano.png',
+            'name' => 'Origano'
+        ],
     ],
     
 ];
