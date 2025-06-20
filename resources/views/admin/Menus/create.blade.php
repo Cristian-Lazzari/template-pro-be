@@ -4,7 +4,7 @@
     
 
  
-<a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">Torna ai Prodotti</a>
+<a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">Torna ai Menu</a>
 
 <h1>Crea un nuovo Menu</h1>
 <form class="creation"  action="{{ route('admin.menus.store') }}"  enctype="multipart/form-data"  method="POST">
