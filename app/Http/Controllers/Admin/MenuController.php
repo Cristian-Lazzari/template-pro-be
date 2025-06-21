@@ -141,7 +141,7 @@ class MenuController extends Controller
         $data = $request->all();
         $request->validate($this->validation_edit);      
         
-        $menu = new Menu();
+        $menu = Menu::findOrFail($id);
 
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
@@ -155,7 +155,6 @@ class MenuController extends Controller
         $menu->category_id   = $data['category_id'];
         $menu->name          = $data['name'];
         $menu->description   = $data['description'];
-        $menu->fixed_menu    = isset($data['fixed_menu']) ? true : false;
         
         $menu->update();
         $m = ' "' . $menu['name'] . '" è stato modificato correttamente';
