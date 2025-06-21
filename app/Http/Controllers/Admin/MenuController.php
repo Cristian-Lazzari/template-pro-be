@@ -51,6 +51,7 @@ class MenuController extends Controller
         return view('admin.Menus.create', compact('categories', 'products'));
     }
 
+
     public function store(Request $request)
     {
         // dd($request->all());
@@ -129,7 +130,10 @@ class MenuController extends Controller
 
     public function edit($id)
     {
-        return view('admin.Menus.create');
+        $menu = Menu::findOrFail($id);
+        $categories = Category::all();
+        $products = Category::where('id', '!=', 1)->with('product')->get();
+        return view('admin.Menus.edit', compact('categories', 'products', 'menu'));
     }
 
     public function update(Request $request, $id)

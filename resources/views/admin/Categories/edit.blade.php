@@ -31,7 +31,7 @@
                       </svg>
                       Nome
                 </label>
-                <p><input value="{{ old('name', $category->name) }}" type="text" name="name" id="name" placeholder=" inserisci il nome"></p>
+                <p><input value="{{ old('name', $category->name) }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             

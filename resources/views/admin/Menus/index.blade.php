@@ -73,7 +73,7 @@
                     <input type="hidden" name="f" value="1">
                     <button class="my_btn_2 bg-danger" type="submit">Elimina</button>
                 </form>
-                {{-- <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
+                <a class="my_btn_1 m" href="{{ route('admin.menus.edit', $item) }}">Modifica</a>
                 <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
                     <input type="hidden" name="archive" value="0">
@@ -96,7 +96,7 @@
                         </button>
                     @endif
                     
-                </form> --}}
+                </form>
             </div>
 
         </div>
@@ -162,8 +162,8 @@
                     <h5 class="price">€{{$item->price / 100}}</h5>
                 </div>
             </div>
-            {{-- <div class="actions">
-                <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
+            <div class="actions">
+                <a class="my_btn_1 m" href="{{ route('admin.menus.edit', $item) }}">Modifica</a>
                 <form action="{{ route('admin.posts.status') }}" method="POST">
                     @csrf
                     <input type="hidden" name="archive" value="0">
@@ -187,7 +187,7 @@
                     @endif
                     
                 </form>
-            </div> --}}
+            </div>
 
         </div>
     @endforeach

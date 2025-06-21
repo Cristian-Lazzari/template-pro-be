@@ -4,10 +4,10 @@
     
 
  
-<a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">Torna ai Menu</a>
-
-<h1>Crea un nuovo Menu</h1>
 <form class="creation"  action="{{ route('admin.menus.store') }}"  enctype="multipart/form-data"  method="POST">
+    <a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">Torna ai Menu</a>
+    
+    <h1>Crea un nuovo Menu</h1>
     @csrf
     
     <section class="base">
@@ -19,16 +19,16 @@
                     </svg>
                     Nome
                 </label>
-                <p><input  value="{{ old('name') }}"  type="text" name="name" id="name" placeholder=" inserisci il nome"></p>
+                <p><input  value="{{ old('name') }}"  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
-            <div>
+            <div class="price_input">
                 <label class="label_c" for="price">   
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-123" viewBox="0 0 16 16">
                     <path d="M2.873 11.297V4.142H1.699L0 5.379v1.137l1.64-1.18h.06v5.961zm3.213-5.09v-.063c0-.618.44-1.169 1.196-1.169.676 0 1.174.44 1.174 1.106 0 .624-.42 1.101-.807 1.526L4.99 10.553v.744h4.78v-.99H6.643v-.069L8.41 8.252c.65-.724 1.237-1.332 1.237-2.27C9.646 4.849 8.723 4 7.308 4c-1.573 0-2.36 1.064-2.36 2.15v.057zm6.559 1.883h.786c.823 0 1.374.481 1.379 1.179.01.707-.55 1.216-1.421 1.21-.77-.005-1.326-.419-1.379-.953h-1.095c.042 1.053.938 1.918 2.464 1.918 1.478 0 2.642-.839 2.62-2.144-.02-1.143-.922-1.651-1.551-1.714v-.063c.535-.09 1.347-.66 1.326-1.678-.026-1.053-.933-1.855-2.359-1.845-1.5.005-2.317.88-2.348 1.898h1.116c.032-.498.498-.944 1.206-.944.703 0 1.206.435 1.206 1.07.005.64-.504 1.106-1.2 1.106h-.75z"/>
                     </svg>
                     Prezzo</label>
-                <p>€<input value="{{ old('price') }}" type="number" name="price" id="price" step="0.01" placeholder=" inserisci il prezzo "></p>
+                <p><span>€</span><input value="{{ old('price') }}" type="number" name="price" id="price" step="0.01" placeholder=" Inserisci il prezzo "></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -40,13 +40,13 @@
                     <svg height="24px" id="promo" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
                 </label>
             </div>
-            <div>
+            <div class="price_input">
                 <label class="label_c" for="old_price">   
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-123" viewBox="0 0 16 16">
                     <path d="M2.873 11.297V4.142H1.699L0 5.379v1.137l1.64-1.18h.06v5.961zm3.213-5.09v-.063c0-.618.44-1.169 1.196-1.169.676 0 1.174.44 1.174 1.106 0 .624-.42 1.101-.807 1.526L4.99 10.553v.744h4.78v-.99H6.643v-.069L8.41 8.252c.65-.724 1.237-1.332 1.237-2.27C9.646 4.849 8.723 4 7.308 4c-1.573 0-2.36 1.064-2.36 2.15v.057zm6.559 1.883h.786c.823 0 1.374.481 1.379 1.179.01.707-.55 1.216-1.421 1.21-.77-.005-1.326-.419-1.379-.953h-1.095c.042 1.053.938 1.918 2.464 1.918 1.478 0 2.642-.839 2.62-2.144-.02-1.143-.922-1.651-1.551-1.714v-.063c.535-.09 1.347-.66 1.326-1.678-.026-1.053-.933-1.855-2.359-1.845-1.5.005-2.317.88-2.348 1.898h1.116c.032-.498.498-.944 1.206-.944.703 0 1.206.435 1.206 1.07.005.64-.504 1.106-1.2 1.106h-.75z"/>
                     </svg>
                     Prezzo Barrato</label>
-                <p>€<input value="{{ old('old_price') }}" type="number" name="old_price" id="old_price" step="0.01" placeholder=" inserisci il prezzo "></p>
+                <p><span>€</span><input value="{{ old('old_price') }}" type="number" name="old_price" id="old_price" step="0.01" placeholder=" Inserisci il prezzo "></p>
                 @error('old_price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -118,7 +118,7 @@
                     <div class="prod_cont">
                         <h3>{{$c->name}}</h3>
                         @foreach ($c->product as $p)
-                            <input type="checkbox" class="btn-check" id="product{{ $p->id }}{{$c->name}}" name="products[]" 
+                            <input type="checkbox" style="visibility: hidden; position: absolute;" class="btn-check" id="product{{ $p->id }}{{$c->name}}" name="products[]" 
                             value="{{ $p->id }}"
                             @if(in_array($p->id, old('products', [])))
                                 checked
@@ -139,7 +139,7 @@
     </section>
     <section id="section_combo" class="cont_i d-none">
         <h2>Imposta le scelte che puo fare il cliente</h2>
-        <button class="my_btn_1" id="btn-aggiungi" type="button" onclick="aggiungiCampo()">Crea nuova scelta</button>
+        <button class="my_btn_3 m-auto" id="btn-aggiungi" type="button" onclick="aggiungiCampo()">Crea nuova scelta</button>
         <div id="campi-wrapper"></div>
     </section>
     <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Menu</button>
@@ -166,7 +166,6 @@
         const div = document.createElement('div');
         div.classList.add('campo-opzione');
         div.innerHTML = `
-            <hr>
             <div class="mb-2 d-flex justify-content-between gap-2">
                 <input type="text" name="choice[${number_field}][label]" placeholder="Nome del campo">
                 <button type="button" class="btn btn-danger" onclick="this.closest('.campo-opzione').remove(); number_field--">Rimuovi</button>
@@ -176,7 +175,7 @@
                     <h3>${cat.name}</h3>
                     <p class="prod_cont">
                     ${cat.product.map(prod => `
-                            <input type="checkbox" id="${number_field}${prod.id}" class="btn-check" onchange="toggleExtra(this, ${number_field}, ${prod.id})"
+                            <input type="checkbox" style="visibility: hidden; position: absolute;"  id="${number_field}${prod.id}" class="btn-check" onchange="toggleExtra(this, ${number_field}, ${prod.id})"
                                 name="choice[${number_field}][products][${prod.id}][id]"
                                 value="${prod.id}">
                             <label class="btn btn-outline-light shadow-sm" for="${number_field}${prod.id}">
