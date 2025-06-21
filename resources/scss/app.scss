@@ -29,7 +29,7 @@ $c3: #d8dde8;
 }
 
 [data-theme="dark"] {
-    --c3_op:#1e2d6472;
+    --c3_op:#1e2d6485;
     --c2_op:#10b7937b;
     --c1_op:#d8dde880;
     --c3_op_3:#1e2d6447;
@@ -170,22 +170,39 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     margin-left: auto;
 }
 .nav{
-    background-color: var(--c3)!important;
+    max-width: 1450px;
+    margin: 6px auto;
+    width: calc(100% - 12px);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--c3_op)!important;
+    backdrop-filter: blur(18px);
     position: fixed;
-    padding-left: 15px;
     top: 0;
     left: 0;
     right: 0;
     z-index: 200;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    padding: .4rem;
+    .container-fluid{
+        padding: 0;
+    }
     .mylinknav{
-        font-size: $fs_sm;
+        font-size: $fs_sm_2;
         font-weight: light !important;
         color: var(--c1)!important;
-        }
-        .mylinknavs{
+    }
+    .mylinknavs{
         font-size: $fs_md !important;
+        background: linear-gradient(25deg, var(--c1), var(--c1_op));
+        color: var(--c3) !important;
+    }
+    .navbar-toggler{
+        border: 3px solid rgba(0, 0, 0, 0) !important;
+        background-color: rgba(0, 0, 0, 0);
+        .navbar-toggler-icon{
         }
+    }
 }
 .scale-none{
     h5{
