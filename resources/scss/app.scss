@@ -174,7 +174,6 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     margin: 6px auto;
     width: calc(100% - 12px);
     border-radius: 10px;
-    overflow: hidden;
     background-color: var(--c3_op)!important;
     backdrop-filter: blur(18px);
     position: fixed;
@@ -200,7 +199,30 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     .navbar-toggler{
         border: 3px solid rgba(0, 0, 0, 0) !important;
         background-color: rgba(0, 0, 0, 0);
-        .navbar-toggler-icon{
+    }
+    .dropdown-menu.show{
+        background-color: var(--c3_op) !important;
+        backdrop-filter: blur(18px);
+        color: var(--c1) !important;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        a.dropdown-item{
+            color: var(--c1) !important;
+            font-size: $fs_sm;
+            font-weight: 300 !important;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            transition: all .2s ease-in-out;
+        }
+        a.dropdown-item:hover{
+            background-color: var(--c1_op_3) !important;
+            color: var(--c2) !important;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+        }
+        .dropdown-header{
+            color: var(--c1_op);
+        }
+        hr{
+            border-color: var(--c1_op_3) !important;
         }
     }
 }
