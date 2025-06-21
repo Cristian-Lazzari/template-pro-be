@@ -35,7 +35,7 @@ $c3: #d8dde8;
     --c3_op_3:#1e2d6447;
     --c1_op_3:#d8dde836;
     --c3: #090333;
-    --c2:#10b793;
+    --c2:#0eb792;
     --c1: #d8dde8;
     #light{
         display: none;
@@ -513,8 +513,11 @@ body{
                 justify-content: center;
                 align-items: center;
                 a{
-                    color: var(--c2);
+                    color: var(--c3);
                     text-decoration: none;
+                    background-color: var(--c2_op);
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
                 }
             }
         }
@@ -525,7 +528,7 @@ body{
             border-radius: 20px;
             text-align: center;
             background-color: var(--c3);
-            color:#090333;
+            color:var(--c1);
             display: flex;
             flex-direction: column;
             
@@ -536,21 +539,60 @@ body{
                 flex-direction: column;
                 gap: 1.2rem;
             }
+            input.form-control::placeholder, input::placeholder{
+                color: var(--c1_op_3);
+                text-align: center;
+            }
+            .form-control{
+                color: var(--c1) !important;
+            }
             .bottom-set{
-                h4{
-                    color:#090333;
-                    button{
-                        font-size: clamp(15px, 2.7vw, 17px);
-                        color:#090333;
-                    }
-                }
                 border-radius: 20px;
                 overflow: hidden;
+
+                .accordion{
+                    box-shadow: 0 0 0 #111111 !important;
+                }
+                .accordion-item{
+                    border-radius: 8px !important;
+                    border: none !important;
+                    box-shadow: 0 0 0 #111111 !important;
+                    background-color: var(--c3) !important;
+                    margin: 1rem 0;
+                    h4.accordion-header{
+                        border: none !important;
+                        button.accordion-button{
+                            padding: .5rem;
+                            box-shadow: 0 0 0 #111111 !important;
+                            background-color: rgba(255, 0, 0, 0) !important;
+                        }
+                        .accordion-button::after {
+                            background-color: var(--c2);
+                            padding: .3rem !important;
+                            height: 25px !important;
+                            width: 25px !important;
+                            background-position: center;
+                            border-radius: 5px;
+                        }
+                    }
+                    .accordion-body{
+                        background-color: var(--c3) !important;
+                        padding: .5rem;
+                        .my_btn_1{
+                            margin: 0 auto;
+                        }
+                    }
+                }
+                h4{
+                    color:var(--c1);
+                    button{
+                        font-size: clamp(15px, 2.7vw, 17px);
+                        color:var(--c1);
+                    }
+                }
                 .activity-day{
                     label{
                         min-width: 80px;
-                        width: 35%;
-                        text-align: center;
                         text-transform: capitalize;
                     }
                 }
@@ -572,6 +614,42 @@ body{
                     justify-content: flex-end;
                     gap: 4px;
                     margin: 13px 0;
+                }
+                .input-group{
+                    gap: 10px;
+                    .input-group-text{
+                        background-color: var(--c3) !important;
+                        color: var(--c1) !important;
+                        border: var(--c1) solid 2px;
+                        border-radius: 7px;
+                    }
+                    
+                    .form-control{
+                        border-radius: 0;
+                        background-color: var(--c3) !important;
+                        border: 0px solid var(--c1);
+                        border-bottom: 2px solid var(--c1) !important;
+                        text-align: center;
+                    }
+                    input.form-control:focus{
+                        box-shadow: 0 0 0 var(--c1_op_3);
+                    }
+                }
+                #file-input{
+                    padding: 0;
+                    color: var(--c1_op_3);
+                    border-bottom: solid 2px var(--c1) ;
+                    border-bottom-right-radius: 0 !important;
+                    border-radius: 7px;
+                }
+                #file-input::file-selector-button {
+                    color: var(--c1);
+                    border-radius: 6px;
+                    border: solid 2px var(--c1) !important;
+                    border-bottom: 0px solid var(--c1) !important;
+                    border-bottom-right-radius: 0 !important;
+                    font-weight: 400;
+                    background: var(--c3);
                 }
             }
             .set{
@@ -1146,11 +1224,23 @@ body{
         }
     }
 }
+
+.menu-containers{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    .menu-container{
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+}
 .menu{
     .m_card{
-        border-radius: 10px;
-        color: var(--c1);
-        background-color: var(--c3) !important;
+        //border-radius: 10px;
+        color: var(--c3);
+        //background-color: var(--c3) !important;
         display: flex;
         flex-direction: column;
         gap: .5rem;
@@ -1161,14 +1251,14 @@ body{
             margin: 0;
         }
         .top{
-            background-color: var(--c2);
+            //background-color: var(--c2);
             padding: .5rem 0 0  ;
             h2,p{
-                padding:  0 .5rem 0  ;
+                padding: 0 0 .5rem;
             }
         }
         img{
-            background-color: var(--c1_op);
+            background-color: var(--c3_op);
             max-height: 195px;
             object-fit: cover;
             width: 100%;
@@ -1183,7 +1273,6 @@ body{
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            padding: 0 .5rem;
         }
         .scelta{
             display: flex;
@@ -1199,26 +1288,20 @@ body{
                 flex-direction: column;
             }
             .product{
-                display: flex;
-                justify-content: space-between;
                 align-items: center;
                 flex-wrap: wrap;
                 gap: .4rem;
-                border-bottom: 1px dashed var(--c1_op);
-                border-right: 1px solid var(--c1_op);
-                border-radius: 5px;
-                padding-right: 3px;
                 .name{
                     //line-height: $fs_md;
                     flex: 1;
-                    text-align: end;
+                    //text-align: end;
                     white-space: wrap;
                 }
                 .ext_p{
                     white-space: nowrap;
                 }
                 .cat{
-                    text-align: end;
+                    //text-align: end;
                     flex: 0 0 auto;
                     display: block;
                     width: 100% !important;
@@ -1229,21 +1312,22 @@ body{
             }
             
         }
+        .product{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--c3_op);
+            border-left: 1px solid var(--c3_op);
+            border-radius: 5px;
+            padding: 5px;
+        }
         .products{
             display: flex;
             flex-direction: column;
             gap: .3rem;
-            padding: 0 0.5rem;
             .product{
-                text-align: end;
-                display: flex;
                 gap: .1rem;
-                flex-wrap: wrap !important;
-                justify-content: space-between;
-                border-bottom: 1px dashed var(--c1_op);
-                border-right: 1px solid var(--c1_op);
-                border-radius: 5px;
-                padding-right: 3px;
+                
                 span{
                     flex: 1;
                 }
@@ -1269,6 +1353,9 @@ body{
         .old_price{
             text-decoration: line-through;
         }
+        .menus-actions{
+            gap: .3rem !important;
+        }
         
         
     }
@@ -1291,7 +1378,7 @@ body{
 }
 .slim_cont{
     display: flex;
-    gap: 1rem;
+    gap: .8rem;
     flex-wrap: wrap;
     margin: 1rem 0;
     //align-items: flex-start; 
@@ -1355,13 +1442,13 @@ body{
 }
 .slim_{
     //width: calc(50% - 1.2rem) !important;
-    flex-grow: 1;
-    padding: 1rem;
+    flex: 1 0 20%;
+    padding: .6rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    border-radius: 16px;
+    border-radius: 8px;
     background-color: var(--c3);
     gap: 1rem ;
     a{
@@ -1391,7 +1478,7 @@ body{
         justify-content: space-between;
         align-items: center;
         display: flex;
-        gap: 1rem;
+        gap: .4rem;
         .price{
             font-size:clamp(17px, 3vw, 23px) ;
             font-weight: bolder;
@@ -1436,8 +1523,12 @@ body{
     }
     .s1{
         flex-wrap: wrap;
+        gap: .2rem;
         align-items: flex-start !important;
         text-align: end;
+        h3{
+            margin: 0 !important;
+        }
     }
 }
 
@@ -1629,7 +1720,34 @@ body{
         border-radius: 10px;
     }
 }
-
+#file-input, #file-input1 {
+    padding: 2px;
+    width: 100%; 
+    text-align: center; 
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--c3_op_3);
+}
+#file-input::file-selector-button , 
+#file-input1::file-selector-button {
+    font-size: 14px;
+    font-weight: 700;
+    border: none !important;
+    background: var(--c3);
+    height: 100%;
+    padding-inline: 10px;
+    width: 100px;
+    padding: .3rem ;
+    border-radius: 7px;
+    color: var(--c1);
+    cursor: pointer;
+    transition: background .2s ease-in-out;
+}
+#file-input::file-selector-button:hover, 
+#file-input1::file-selector-button:hover {
+    background: var(--c2);
+    color: var(--c3);
+}
 .creation{
     max-width: 700px;
     padding-inline: 1rem ;
@@ -1718,34 +1836,7 @@ body{
             transition: all .3s ease-in-out;
             //background: linear-gradient(-25deg, #09033300 10%, var(--c3_op_3)40%, #09033300 60%, var(--c3_op_3));
         }
-        #file-input, #file-input1 {
-            padding: 2px;
-            width: 100%; 
-            text-align: center; 
-            font-size: 15px;
-            font-weight: 400;
-            color: var(--c3_op_3);
-        }
-        #file-input::file-selector-button , 
-        #file-input1::file-selector-button {
-            font-size: 14px;
-            font-weight: 700;
-            border: none !important;
-            background: var(--c3);
-            height: 100%;
-            padding-inline: 10px;
-            width: 100px;
-            padding: .3rem ;
-            border-radius: 7px;
-            color: var(--c1);
-            cursor: pointer;
-            transition: background .2s ease-in-out;
-        }
-        #file-input::file-selector-button:hover, 
-        #file-input1::file-selector-button:hover {
-            background: var(--c2);
-            color: var(--c3);
-        }
+        
         .split, .split-3{
             display: flex;
             justify-content: space-between;
@@ -2348,6 +2439,37 @@ body{
     }
     .calendar{
         gap: 3px !important;
+        .day{
+            height: 70px;
+            //aspect-ratio: .5 !important;
+            border-radius: 5px !important;
+            p{
+                gap: 2px !important;
+                margin: 0 !important;
+                width: 80% !important;
+                justify-content: flex-end !important;
+
+                svg{
+                    //max-width: 9px !important;
+                    //flex-shrink: .7 !important;
+                    width: 30% !important;
+                    //display: none;
+                }
+            }
+            .pop2{
+                top: 1.1rem !important;
+                right: 3px !important;
+                left: unset !important;
+            }
+            .pop1{
+                left: unset !important;
+                right: 3px !important;
+            }
+            .pop3{
+                left: unset !important;
+                right: 3px !important;
+            }
+        }
     }
     .c-name{
 
@@ -2357,37 +2479,7 @@ body{
             max-width: 30px;
         }
     }
-    .day{
-        height: 70px;
-        //aspect-ratio: .5 !important;
-        border-radius: 5px !important;
-        p{
-            gap: 2px !important;
-            margin: 0 !important;
-            width: 80% !important;
-            justify-content: flex-end !important;
-
-            svg{
-                //max-width: 9px !important;
-                //flex-shrink: .7 !important;
-                width: 30% !important;
-                //display: none;
-            }
-        }
-        .pop2{
-            top: 1.1rem !important;
-            right: 3px !important;
-            left: unset !important;
-        }
-        .pop1{
-            left: unset !important;
-            right: 3px !important;
-        }
-        .pop3{
-            left: unset !important;
-            right: 3px !important;
-        }
-    }
+    
     .myres-c{
         .body, .mail-tel{
             flex-direction: column !important;
@@ -3326,6 +3418,19 @@ body{
 
         }
     }
+    .top_day{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between !important;
+        gap: .4rem;
+        h4{
+            margin: 0;
+            font-weight: 600;
+            text-transform: capitalize;
+            margin: 0 !important;
+        }
+    }
     .modal_body{
         display: flex;
         flex-direction: column;
@@ -3333,6 +3438,8 @@ body{
         h4{
             width: 100%;
         }
+
+
         .scroller:hover{
             box-shadow: inset 0px 0px 15px rgba(176, 222, 224, 0.375);
             transition: all ease-in .3s;
@@ -3368,12 +3475,17 @@ body{
                 color: var(--c3);
                 padding: .4rem;
                 border-radius: 8px;
-                flex: 1;
+                flex: 1 0 auto;
                 h5{
                     width: 48px;
                     //padding-inline: .4rem;
                     text-align: left;
-                    margin: 0  !important;
+                    margin: 0 5px 0 0  !important;
+                     user-select: none;
+                    /* Per compatibilità con browser più vecchi: */
+                    -webkit-user-select: none;  /* Safari */
+                    -moz-user-select: none;     /* Firefox */
+                    -ms-user-select: none;      /* Internet Explorer/Edge */
                 }
                 label{
                     flex: 1;
@@ -3432,7 +3544,7 @@ body{
         background-color: var(--c1);
         padding: .4em .6em .7em;
         border-radius: 12px;
-        gap: .5rem;
+
         color: var(--c3);
         .split{
             align-items:center;

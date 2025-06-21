@@ -292,9 +292,9 @@
             <h4>Seleziona i giorni in cui sei attivo</h4>
             <div class="days">
                 @foreach ([1, 2, 3, 4, 5, 6, 7] as $day)
-                <input class="btn-check"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
+                <input class="btn-check" style="visibility: hidden; position: absolute;"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="false" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
                 <label class="day" for="day_{{ $day }}">
-                    <div class="split">
+                    <div class="top_day">
                         <h4>{{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }}
                         </h4>
                         <label class="theme-switch" for="days_on_{{ $day }}" id="themeswitch">
@@ -310,7 +310,7 @@
                             <div class="scroller">
                                 @foreach ($day_time as $time) @php $time = $time['time']; @endphp
                                     <div class="time">
-                                        <h5>{{$time}}</h5>
+                                        <h5 onclick="event.preventDefault()">{{$time}}</h5>
                                         @if (in_array($pack, [2, 4]))
                                             <input type="checkbox" class="btn-check" id="times_{{$day}}_{{$time}}t" name="times_slot_{{$day}}[{{$time}}][]" value="2">
                                             <label class="btn btn-outline-light shadow-sm left" for="times_{{$day}}_{{$time}}t">
@@ -318,6 +318,7 @@
                                                     <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
                                                 </svg>
                                             </label>
+                                            
                                         @endif 
                                         @if (in_array($pack, [3, 4]))
                                             <input type="checkbox" class="btn-check" id="times_{{$day}}_{{$time}}a" name="times_slot_{{$day}}[{{$time}}][]" value="1">

@@ -444,7 +444,7 @@ $p_adv = json_decode($adv_s->property, 1);
                             <h5>Generali</h5>
                             <div class="input-group mb-3">
                                 <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
-                                <input type="number" class="form-control" aria-describedby="basic-addon1" name="min_price_a" value="{{$asporto_p['min_price'] / 100}}">
+                                <input type="number" class="form-control"  name="min_price_a" value="{{$asporto_p['min_price'] / 100}}">
                             </div>
                         @endif
                         
@@ -486,11 +486,11 @@ $p_adv = json_decode($adv_s->property, 1);
                         <h5>Generali</h5>
                         <div class="input-group mb-3">
                             <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
-                            <input type="number" class="form-control" aria-describedby="basic-addon1" name="min_price_d" value="{{$domicilio_p['min_price'] / 100}}">
+                            <input type="number" class="form-control"  name="min_price_d" value="{{$domicilio_p['min_price'] / 100}}">
                         </div>
                         <div class="input-group mb-3">
                             <label class="input-group-text" id="basic-addon1">Prezzo consegna</label>
-                            <input type="number" class="form-control" aria-describedby="basic-addon1" name="delivery_cost" value="{{$domicilio_p['delivery_cost'] / 100}}">
+                            <input type="number" class="form-control"  name="delivery_cost" value="{{$domicilio_p['delivery_cost'] / 100}}">
                         </div>
                     </div>
                 </div>
@@ -539,11 +539,10 @@ $p_adv = json_decode($adv_s->property, 1);
                                     $property_contatti = json_decode($setting[5]['property'], true);
                                 @endphp
                                 <section class="activity-day">
-                                    <h3> Giorni di attività </h3>
                                     @foreach (['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'] as $giorno)
                                         <div class="input-group mb-3">
-                                            <label for="{{$giorno}}" class="input-group-text" id="basic-addon2">{{ $giorno }}</label>
-                                            <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" aria-describedby="basic-addon2">
+                                            <label for="{{$giorno}}" class="input-group-text">{{ $giorno }}</label>
+                                            <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" id="{{$giorno}}">
                                         </div>
                                     @endforeach
                                 </section>
@@ -552,7 +551,6 @@ $p_adv = json_decode($adv_s->property, 1);
                         </div>
                     </div>
                     <div class="accordion-item">
-                        
                         <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
                             Posizione del tuo locale
@@ -561,48 +559,42 @@ $p_adv = json_decode($adv_s->property, 1);
                         <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <section>
-                                    <h3> Posizione </h3>
+
                                     @if(isset($property_posizione["foto_maps"]) && $property_posizione['foto_maps'] !== "")
                                         <img class="w-100 rounded mb-2" src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}" alt="{{ $property_posizione['foto_maps'] }}">
-                                        <div class="input-group mb-3">
-                                            <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
-                                        </div>
-                                    @else
-                                        <div class="input-group mb-3">    
-                                            <input type="file" class="form-control" aria-describedby="basic-addon1" name="foto_maps">
-                                        </div>
                                     @endif
+                                    <div class="input-group mb-3">    
+                                        <input type="file" id="file-input" name="foto_maps">
+                                    </div>
                                     <div class="input-group mb-3">
                                         <label class="input-group-text" id="basic-addon1">Link Google Maps</label>
-                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="link_maps" @if($property_contatti) value="{{ $property_posizione['link_maps'] }}" @endif>
+                                        <input type="text" class="form-control"  name="link_maps" @if($property_contatti) value="{{ $property_posizione['link_maps'] }}" @endif>
                                     </div>
                                     <div class="input-group mb-3">
                                         <label class="input-group-text" id="basic-addon1">Indirizzo</label>
-                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="indirizzo" @if($property_contatti) value="{{ $property_posizione['indirizzo'] }}" @endif>
+                                        <input type="text" class="form-control"  name="indirizzo" @if($property_contatti) value="{{ $property_posizione['indirizzo'] }}" @endif>
                                     </div>          
                                 </section>
                                 <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
                             </div>
                         </div>
                     </div>
-                    <div class="accordion-item">
-                        
+                    <div class="accordion-item"> 
                         <h4 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                            Contatti
+                                Contatti
                             </button>
                         </h4>
                         <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <section>
-                                    <h3> Contatti </h3>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text" id="basic-addon1">Telefono</span>
-                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="telefono" @if($property_contatti) value="{{ $property_contatti['telefono'] }}" @endif>
+                                        <label for="telefono" class="input-group-text">Telefono</label>
+                                        <input type="text" class="form-control"  name="telefono" @if($property_contatti) value="{{ $property_contatti['telefono'] }}" @endif>
                                     </div>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text" id="basic-addon1">Email</span>
-                                        <input type="text" class="form-control" aria-describedby="basic-addon1" name="email" @if($property_contatti) value="{{ $property_contatti['email'] }}" @endif>
+                                        <label for="email" class="input-group-text">Email</label>
+                                        <input type="text" class="form-control"  name="email" @if($property_contatti) value="{{ $property_contatti['email'] }}" @endif>
                                     </div>        
                                 </section>
                                 <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
@@ -625,7 +617,7 @@ $p_adv = json_decode($adv_s->property, 1);
                                         $setting[7]['property'] = json_decode($setting[7]['property'], true);
                                     } 
                                 @endphp
-                                <h2>Rimuovi Aree di consegna</h2>     
+   
                                 <div class="address"> 
                                     @foreach ($setting[7]['property'] as $i)
                                         <span class="w-100">
@@ -661,7 +653,7 @@ $p_adv = json_decode($adv_s->property, 1);
                                     } 
                                   //  dd($setting[8]['property'])
                                 @endphp
-                                <h2 >Gestione notifiche whatsapp</h2>
+
                  
                                 
                                 <div class="address"> 

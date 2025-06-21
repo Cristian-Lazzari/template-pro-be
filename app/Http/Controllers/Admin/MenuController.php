@@ -125,7 +125,7 @@ class MenuController extends Controller
        
 
         $m = ' "' . $menu['name'] . '" è stato creato correttamente';
-        return to_route('admin.menus.index')->with('store_success', $m);    
+        return to_route('admin.menus.index')->with('success', $m);    
     }
 
     public function edit($id)
@@ -158,7 +158,7 @@ class MenuController extends Controller
         
         $menu->update();
         $m = ' "' . $menu['name'] . '" è stato modificato correttamente';
-        return to_route('admin.menus.index')->with('store_success', $m);    
+        return to_route('admin.menus.index')->with('success', $m);    
     }
 
 
