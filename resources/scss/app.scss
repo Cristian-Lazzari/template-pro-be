@@ -365,6 +365,12 @@ body{
     }
 }
 .dash-c{
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    justify-content: center;
+    align-items: center;
+    
     .plus{
         background-color: var(--c1); 
         height: 33px;
@@ -391,11 +397,6 @@ body{
         justify-content: center;
         align-items: center;
     }
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    justify-content: center;
-    align-items: center;
     .top-c, .bottom-c{
         width: 100%;
         display: flex;
@@ -403,7 +404,6 @@ body{
         align-items: stretch;
         gap: 1rem;
         .prod, .result-bar, .delivery-c{
-            
             a{
                 color: var(--c3);
                 text-decoration: none;
@@ -452,6 +452,7 @@ body{
                 display: flex;
                 gap: 5px;
                 justify-content: space-between;
+                flex-wrap: wrap;
                 .my_btn_1{
                     flex-grow: 1;
                 }
@@ -466,6 +467,7 @@ body{
                 width: 100%;
                 flex-direction: row;
                 justify-content: space-around;
+                flex-wrap: wrap;
                 .stat{
                     display: flex;
                     align-items: center;
