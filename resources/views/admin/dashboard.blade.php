@@ -33,7 +33,9 @@ $p_adv = json_decode($adv_s->property, 1);
 <div class="dash-c">
     <div class="targhetta">
         <div class="title">
-            <img src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
+            <div class="img_bg">
+                <img src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
+            </div>
             <a href="{{config('configurazione.domain')}}">
                 <h1 >{{config('configurazione.APP_NAME')}}</h1>
             </a>
@@ -96,9 +98,9 @@ $p_adv = json_decode($adv_s->property, 1);
                 </div>
             </div>
             <div class="action">
+                <a href="{{ route('admin.menus.index') }}" class="my_btn_1">Menu</a>
                 <a href="{{ route('admin.categories.index') }}" class="my_btn_1">Categorie</a>
                 <a href="{{ route('admin.ingredients.index') }}" class="my_btn_1">Ingredienti</a>
-                <a href="{{ route('admin.menus.index') }}" class="my_btn_1">Menu</a>
             </div>
         </div>      
         @if (config('configurazione.subscription') > 1 )

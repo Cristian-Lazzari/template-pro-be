@@ -8,6 +8,7 @@ use Stripe\Webhook;
 use App\Models\Date;
 use App\Models\Order;
 use App\Models\Setting;
+use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\Log;
