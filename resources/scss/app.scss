@@ -171,8 +171,8 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 }
 .nav{
     max-width: 1450px;
-    margin: 6px auto;
-    width: calc(100% - 12px);
+    margin: 10px auto;
+    width: calc(100% - 20px);
     border-radius: 10px;
     background-color: var(--c3_op)!important;
     backdrop-filter: blur(18px);

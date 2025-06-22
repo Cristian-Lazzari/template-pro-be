@@ -20,7 +20,7 @@
         <div class="collapse navbar-collapse flex-grow-0 " id="navbarNavDropdown">
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-2">
-                <li class="nav-item dropdown">
+                <li class="nav-item mx-auto dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Prodotti
                     </a>
@@ -37,7 +37,7 @@
                     </ul>
                 </li>
                 
-                <li class="nav-item dropdown">
+                <li class="nav-item mx-auto dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Post
                     </a>
@@ -47,7 +47,7 @@
                     </ul>
                 </li>
                 @if (config('configurazione.subscription') > 1)    
-                <li class="nav-item dropdown">
+                <li class="nav-item mx-auto dropdown">
                     <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Prenotazioni & Ordini
                     </a>
@@ -61,7 +61,7 @@
                 @endif
                 
                 @if (config('configurazione.subscription') > 1)  
-                <li class="nav-item ">
+                <li class="nav-item mx-auto ">
                     <a class="nav-link mylinknav" href="{{ route('admin.dates.index') }}">
                         Gestione date
                     </a>
@@ -69,14 +69,14 @@
                 @endif
 
                 @if (config('configurazione.subscription') > 2)  
-                <li class="nav-item ">
+                <li class="nav-item mx-auto ">
                     <a class="nav-link mylinknav" href="{{ route('admin.statistics') }}">
                         Statistiche
                     </a>
                 </li>      
                 @endif
 
-                <button id="theme-toggle" class="my_btn_1">
+                <button id="theme-toggle" class="my_btn_1 mx-auto">
                     <svg id="dark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
                         <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
                     </svg>
