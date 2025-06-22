@@ -98,7 +98,7 @@ $p_adv = json_decode($adv_s->property, 1);
                 </div>
             </div>
             <div class="action">
-                <a href="{{ route('admin.menus.index') }}" class="my_btn_1">Menu</a>
+                <a href="{{ route('admin.menus.index') }}" class="my_btn_1">Menu Fissi</a>
                 <a href="{{ route('admin.categories.index') }}" class="my_btn_1">Categorie</a>
                 <a href="{{ route('admin.ingredients.index') }}" class="my_btn_1">Ingredienti</a>
             </div>

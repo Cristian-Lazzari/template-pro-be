@@ -2,7 +2,7 @@
     <div class="container-fluid">
 
         <div class="d-flex">
-            <a class="my_btn_1 mylinknavs" href="{{ route('admin.dashboard') }}">Dashboard</a>
+            <a class="{{ request()->routeIs('admin.dashboard') ? 'my_btn_1 mylinknavs active_link' : 'my_btn_1 mylinknavs' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
             {{-- <div class="notifications_container h-100 ms-2">
                 <button class="my_btn_1 search" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                     <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-bell-fill" viewBox="0 0 16 16">
@@ -19,18 +19,20 @@
 
         <div class="collapse navbar-collapse flex-grow-0 " id="navbarNavDropdown">
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-2">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
                 <li class="nav-item mx-auto dropdown">
-                    <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Prodotti
+                    <a class="{{ request()->routeIs('admin.products.index') ? 'nav-link mylinknav dropdown-toggle active_link' : 'nav-link mylinknav dropdown-toggle' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Menu
                     </a>
                     <ul class="dropdown-menu">
+                        <li><h5 class="dropdown-header">Prodotti</h5></li>
                         <li><a class="dropdown-item" href="{{ route('admin.products.index') }}">Mostra tutti</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.products.create') }}">Aggiungi</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><h5 class="dropdown-header">Categorie</h5></li>
                         <li><a class="dropdown-item" href="{{ route('admin.categories.index') }}">Mostra tutti</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.categories.create') }}">Aggiungi</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><h5 class="dropdown-header">Ingredienti</h5></li>
                         <li><a class="dropdown-item" href="{{ route('admin.ingredients.index') }}">Mostra tutti</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.ingredients.create') }}">Aggiungi</a></li>
@@ -38,7 +40,7 @@
                 </li>
                 
                 <li class="nav-item mx-auto dropdown">
-                    <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="{{ request()->routeIs('admin.posts.index') ? 'nav-link mylinknav dropdown-toggle active_link' : 'nav-link mylinknav dropdown-toggle' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Post
                     </a>
                     <ul class="dropdown-menu">
@@ -48,7 +50,7 @@
                 </li>
                 @if (config('configurazione.subscription') > 1)    
                 <li class="nav-item mx-auto dropdown">
-                    <a class="nav-link mylinknav dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="{{ request()->routeIs('admin.reservations.index') ? 'nav-link mylinknav dropdown-toggle active_link' : 'nav-link mylinknav dropdown-toggle' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Prenotazioni & Ordini
                     </a>
                     <ul class="dropdown-menu">
@@ -62,7 +64,7 @@
                 
                 @if (config('configurazione.subscription') > 1)  
                 <li class="nav-item mx-auto ">
-                    <a class="nav-link mylinknav" href="{{ route('admin.dates.index') }}">
+                    <a class="{{ request()->routeIs('admin.dates.index') ? 'nav-link mylinknav active_link' : 'nav-link mylinknav' }}" href="{{ route('admin.dates.index') }}">
                         Gestione date
                     </a>
                 </li>      
@@ -70,7 +72,7 @@
 
                 @if (config('configurazione.subscription') > 2)  
                 <li class="nav-item mx-auto ">
-                    <a class="nav-link mylinknav" href="{{ route('admin.statistics') }}">
+                    <a class="{{ request()->routeIs('admin.statistics') ? 'nav-link mylinknav active_link' : 'nav-link mylinknav' }}" href="{{ route('admin.statistics') }}">
                         Statistiche
                     </a>
                 </li>      
