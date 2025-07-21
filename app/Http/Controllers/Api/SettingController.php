@@ -435,7 +435,7 @@ class SettingController extends Controller
 
         $res->status = 0;
         $m = 'La prenotazione e\' stata annullata correttamente';
-        $message = 'Ci spiace informarti che la tua prenotazione e\' stata annullata per la data e l\'orario che hai scelto... ' . $res->date_slot ;
+        $message = 'Ci spiace informarti che la tua prenotazione in data ' . $res->date_slot .' e\' stata annullata';
         
         $res->update();
         
