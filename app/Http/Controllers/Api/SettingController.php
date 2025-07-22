@@ -73,20 +73,26 @@ class SettingController extends Controller
         return view('guests.delete_success');
     }
     public function index() {
-        $settings = Setting::all();
-        foreach ($settings as $s) {
-            $string = json_decode($s['property'], true);  
-            $s['property'] = $string;
-        }
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1); 
+        $settings = Setting::all()->keyBy('name');
 
+        $property_adv = json_decode($settings['advanced']->property, 1); 
         return response()->json([
             'success' => true,
-            'results' => $settings,
-            'double_t'=> $property_adv['dt'] == '0' ? false : true,
+            'asporto'   => optional($settings['Prenotazione Asporti'] ?? null),
+            'domicilio' => optional($settings['Possibilità di consegna a domicilio'] ?? null),
+            
+            'tavoli'    => optional($settings['Prenotazione Tavoli'] ?? null)->status,
+            'comuni'    => optional($settings['Comuni per il domicilio'] ?? null)->property,
+            
+            'orari'     => optional($settings['Orari di attività'] ?? null)->property,
+            'position'  => optional($settings['Posizione'] ?? null)->property,
+            'contacts'  => optional($settings['Contatti'] ?? null)->property,
+            'ferie'     => optional($settings['Periodo di Ferie'] ?? null),
+
+            'double_t'         => $property_adv['dt'] == '0' ? false : true,
             'typeOfOrdering'   => $property_adv['too'] == '0' ? false : true,
-            'menu_fix_set'   => intval($property_adv['menu_fix_set']),
+            'menu_fix_set'     => intval($property_adv['menu_fix_set']),
+
             'legal' => [
                 'p_iva' => $property_adv['p_iva'],
                 'r_sociale' => $property_adv['r_sociale'],

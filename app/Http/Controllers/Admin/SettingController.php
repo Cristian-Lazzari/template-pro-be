@@ -126,9 +126,7 @@ class SettingController extends Controller
         $numbers = $request->numbers;
         $setting = Setting::where('name', 'wa')->first();
         $old_p = json_decode($setting->property, true);
-        
-        $old_p['numbers'] = $numbers;
-       
+    
         $array_filtrato = [];
         foreach ($numbers as $n) {
            if($n !== null && $n !== ' '){
@@ -136,6 +134,8 @@ class SettingController extends Controller
            }
         }
         $old_p['numbers'] = $array_filtrato;
+        $old_p['last_response_wa_'] = $data = Carbon::today()->subDays(5)->toDateTimeString(); 
+        $old_p['last_response_wa_2'] = $data = Carbon::today()->subDays(5)->toDateTimeString(); 
         $setting->property = json_encode($old_p);
         $setting->update();
 
@@ -158,7 +158,13 @@ class SettingController extends Controller
         $min_price_d = $request->min_price_d;
         $pay_a = $request->asporto_pay;
         $pay_d = $request->domicilio_pay;
-    
+
+        $linK_fb = $request->facebook;
+        $link_ig = $request->instagram;
+        $link_yt = $request->youtube;
+        $link_tt = $request->tiktok;
+        $whatsapp = $request->whatsapp;
+
         $setting[0]->status = $tavoli;
         $setting[0]->save();
 
@@ -166,16 +172,13 @@ class SettingController extends Controller
         $property_adv = json_decode($adv_s->property, 1);  
         
         $setting[1]->status = $asporto;
-        if ($property_adv['services'] > 2) {
-            $prop_apsorto = [
-                'pay' => intval($pay_a),
-                'min_price' => $min_price_a * 100,
-            ];
-            $setting[1]->property = json_encode($prop_apsorto);
-        }
+        $prop_apsorto = [
+            'pay' => intval($pay_a),
+            'min_price' => $min_price_a * 100,
+        ];
+        $setting[1]->property = json_encode($prop_apsorto);
         $setting[1]->save();
         
-        // Aggiornare il terzo setting
         $setting[2]->status = $ferie;
         
         $propertyArray = [
@@ -198,7 +201,6 @@ class SettingController extends Controller
         ];
         $setting[3]->property = json_encode($giorni_attivita);
         $setting[3]->save();
-        //dd( $request['foto_maps']);
 
         $oldPosition = json_decode($setting[4]['property'], 1);
 
@@ -230,6 +232,11 @@ class SettingController extends Controller
         $contatti = [
             'telefono'  => $request->telefono,
             'email'     => $request->email,
+            'instagram' => $link_ig,
+            'facebook'  => $linK_fb,
+            'youtube'   => $link_yt,
+            'tiktok'    => $link_tt,
+            'whatsapp'  => $whatsapp,
         ];
         $setting[5]->property = json_encode($contatti);
         $setting[5]->save();      
