@@ -74,21 +74,19 @@ class SettingController extends Controller
     }
     public function index() {
         $settings = Setting::all()->keyBy('name');
-       // $tt = Setting::where('name, Prenotazione Tavoli')->first();
 
         $property_adv = json_decode($settings['advanced']->property, 1); 
         return response()->json([
-            '1t' => $settings,
             'success' => true,
             'asporto'   => $settings['Prenotazione Asporti'],
             'domicilio' => $settings['Possibilità di consegna a domicilio'],
             
-            'tavoli'    => optional($settings['Prenotazione Tavoli'] ?? 0)->status ?? 0,
-            'comuni'    => optional($settings['Comuni per il domicilio'] ?? 0)->property,
+            'tavoli'    => $settings['Prenotazione Tavoli']->status,
+            'comuni'    => $settings['Comuni per il domicilio']->property,
             
-            'orari'     => optional($settings['Orari di attività'] ?? 0)->property,
-            'position'  => optional($settings['Posizione'] ?? 0)->property,
-            'contacts'  => optional($settings['Contatti'] ?? 0)->property,
+            'orari'     => $settings['Orari di attività']->property,
+            'position'  => $settings['Posizione']->property,
+            'contacts'  => $settings['Contatti']->property,
             'ferie'     => $settings['Periodo di Ferie'],
 
             'double_t'         => $property_adv['dt'] == '0' ? false : true,
