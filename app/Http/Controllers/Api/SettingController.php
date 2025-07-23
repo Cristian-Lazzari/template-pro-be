@@ -78,7 +78,7 @@ class SettingController extends Controller
 
         $property_adv = json_decode($settings['advanced']->property, 1); 
         return response()->json([
-            '1t' => $tt,
+            '1t' => $settings,
             'success' => true,
             'asporto'   => $settings['Prenotazione Asporti'],
             'domicilio' => $settings['Possibilità di consegna a domicilio'],
