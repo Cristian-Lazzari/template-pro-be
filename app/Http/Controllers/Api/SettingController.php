@@ -74,7 +74,7 @@ class SettingController extends Controller
     }
     public function index() {
         $settings = Setting::all()->keyBy('name');
-        $tt = Setting::where('name, Prenotazione Tavoli')->first();
+       // $tt = Setting::where('name, Prenotazione Tavoli')->first();
 
         $property_adv = json_decode($settings['advanced']->property, 1); 
         return response()->json([
