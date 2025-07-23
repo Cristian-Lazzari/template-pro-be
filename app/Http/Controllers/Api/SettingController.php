@@ -81,7 +81,7 @@ class SettingController extends Controller
             'asporto'   => $settings['Prenotazione Asporti'],
             'domicilio' => $settings['Possibilità di consegna a domicilio'],
             
-            'tavoli'    => optional($settings['Prenotazione Tavoli'] ?? 0)->status,
+            'tavoli'    => optional($settings['Prenotazione Tavoli'] ?? 0)->status ?? 0,
             'comuni'    => optional($settings['Comuni per il domicilio'] ?? 0)->property,
             
             'orari'     => optional($settings['Orari di attività'] ?? 0)->property,
