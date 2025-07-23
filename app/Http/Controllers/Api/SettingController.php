@@ -78,8 +78,8 @@ class SettingController extends Controller
         $property_adv = json_decode($settings['advanced']->property, 1); 
         return response()->json([
             'success' => true,
-            'asporto'   => optional($settings['Prenotazione Asporti'] ?? null),
-            'domicilio' => optional($settings['Possibilità di consegna a domicilio'] ?? null),
+            'asporto'   => $settings['Prenotazione Asporti'],
+            'domicilio' => $settings['Possibilità di consegna a domicilio'],
             
             'tavoli'    => optional($settings['Prenotazione Tavoli'] ?? null)->status,
             'comuni'    => optional($settings['Comuni per il domicilio'] ?? null)->property,
@@ -87,7 +87,7 @@ class SettingController extends Controller
             'orari'     => optional($settings['Orari di attività'] ?? null)->property,
             'position'  => optional($settings['Posizione'] ?? null)->property,
             'contacts'  => optional($settings['Contatti'] ?? null)->property,
-            'ferie'     => optional($settings['Periodo di Ferie'] ?? null),
+            'ferie'     => $settings['Periodo di Ferie'],
 
             'double_t'         => $property_adv['dt'] == '0' ? false : true,
             'typeOfOrdering'   => $property_adv['too'] == '0' ? false : true,
