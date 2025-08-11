@@ -146,50 +146,49 @@ class SettingController extends Controller
     }
     public function updateAll(Request $request)
     {
-        $setting = Setting::all();
+        $setting = Setting::all()->keyBy('name');
 
-        $tavoli = $request->tavoli_status;
-        $asporto = $request->asporto_status;
-        $ferie = $request->ferie_status;
-        $ferie_from = $request->from;
-        $ferie_to = $request->to;
-
-        $delivery_cost = $request->delivery_cost;
-        $min_price_a = $request->min_price_a;
-        $min_price_d = $request->min_price_d;
-        $pay_a = $request->asporto_pay;
-        $pay_d = $request->domicilio_pay;
-
-        $linK_fb = $request->facebook;
-        $link_ig = $request->instagram;
-        $link_yt = $request->youtube;
-        $link_tt = $request->tiktok;
-        $whatsapp = $request->whatsapp;
-
-        $setting[0]->status = $tavoli;
-        $setting[0]->save();
+        $setting['Prenotazione Tavoli']->status = $request->tavoli_status;
+        $setting['Prenotazione Tavoli']->save();
+        
+        $setting['Promozione Tavoli']->status = $request->table_promo;
+        $prop_promo = [
+            'title' => $request->promo_table_title,
+            'body' => $request->promo_table_body,
+        ];
+        $setting['Promozione Tavoli']->property = json_encode($prop_promo);
+        $setting['Promozione Tavoli']->save();
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);  
         
-        $setting[1]->status = $asporto;
+        $setting['Prenotazione Asporti']->status = $request->asporto_status;
         $prop_apsorto = [
-            'pay' => intval($pay_a),
-            'min_price' => $min_price_a * 100,
+            'pay' => intval($request->asporto_pay),
+            'min_price' => $request->min_price_a * 100,
         ];
-        $setting[1]->property = json_encode($prop_apsorto);
-        $setting[1]->save();
+        if ($property_adv['services'] > 2) {
+            $setting['Comuni per il domicilio']->property = json_encode($setting['Comuni per il domicilio']->property);
+            $setting['Possibilità di consegna a domicilio']->status = $request->domicilio_status;
+            $prop_domicilio = [
+                'pay' => intval($request->domicilio_pay),
+                'min_price' => $request->min_price_d * 100,
+                'delivery_cost' => $request->delivery_cost * 100,
+            ];
+            $setting['Possibilità di consegna a domicilio']->property = json_encode($prop_domicilio);
+            $setting['Possibilità di consegna a domicilio']->save();
+        }
+        $setting['Prenotazione Asporti']->property = json_encode($prop_apsorto);
+        $setting['Prenotazione Asporti']->save();
         
-        $setting[2]->status = $ferie;
         
+        $setting['Periodo di Ferie']->status = $request->ferie_status;
         $propertyArray = [
-            'from' => $ferie_from,
-            'to' => $ferie_to,
+            'from' => $request->from,
+            'to' => $request->to,
         ];
-        // Aggiorna il terzo setting
-        $setting[2]->status = $ferie;
-        $setting[2]->property = json_encode($propertyArray);
-        $setting[2]->save();
+        $setting['Periodo di Ferie']->property = json_encode($propertyArray);
+        $setting['Periodo di Ferie']->save();
 
         $giorni_attivita = [
             'lunedì'    =>  $request->lunedì,
@@ -200,10 +199,10 @@ class SettingController extends Controller
             'sabato'    =>  $request->sabato,
             'domenica'  =>  $request->domenica,
         ];
-        $setting[3]->property = json_encode($giorni_attivita);
-        $setting[3]->save();
+        $setting['Orari di attività']->property = json_encode($giorni_attivita);
+        $setting['Orari di attività']->save();
 
-        $oldPosition = json_decode($setting[4]['property'], 1);
+        $oldPosition = json_decode($setting['Posizione']['property'], 1);
 
         if(isset($oldPosition['foto_maps'])){
             $posizione = [
@@ -227,33 +226,23 @@ class SettingController extends Controller
                 $posizione['foto_maps'] = $imagePath;
             }
         }
-        $setting[4]->property = json_encode($posizione);
-        $setting[4]->save();
+        $setting['Posizione']->property = json_encode($posizione);
+        $setting['Posizione']->save();
 
         $contatti = [
             'telefono'  => $request->telefono,
             'email'     => $request->email,
-            'instagram' => $link_ig,
-            'facebook'  => $linK_fb,
-            'youtube'   => $link_yt,
-            'tiktok'    => $link_tt,
-            'whatsapp'  => $whatsapp,
+            'instagram' => $request->instagram,
+            'facebook'  => $request->facebook,
+            'youtube'   => $request->youtube,
+            'tiktok'    => $request->tiktok,
+            'whatsapp'  => $request->whatsapp,
         ];
-        $setting[5]->property = json_encode($contatti);
-        $setting[5]->save();      
+        $setting['Contatti']->property = json_encode($contatti);
+        $setting['Contatti']->save();      
         
 
-        if ($property_adv['services'] > 2) {
-            $setting[7]->property = json_encode($setting[7]->property);
-            $setting[6]->status = $request->domicilio_status;
-            $prop_domicilio = [
-                'pay' => intval($pay_d),
-                'min_price' => $min_price_d * 100,
-                'delivery_cost' => $delivery_cost * 100,
-            ];
-            $setting[6]->property = json_encode($prop_domicilio);
-            $setting[6]->save();
-        }
+       
         
         $m = 'Le impostazioni sono state ggiornate correttamente';
 

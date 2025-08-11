@@ -21,7 +21,7 @@ class PageController extends Controller
 {
     public function dashboard() {
 
-        $setting = Setting::all();
+        $setting = Setting::all()->keyBy('name');
         $product_ = [
             1 => Product::where('visible', 1)->where('archived', 0)->count(),
             2 => Product::where('archived', 1)->count(),
@@ -123,41 +123,12 @@ class PageController extends Controller
             ],
         ];
         $adv_s = Setting::where('name', 'advanced')->first();
-        if(!$adv_s){
-            $setting = new Setting();
-            $setting->name = 'advanced';
-            $property_adv = [
-                'too' => false,
-                'dt' => false,
-                'services' => '4', //1 niente // 2 tavoli // 3 asporto // 4 tutti
-                
-                'menu_fix_set' => '1',
-                'too_1' => 'pizza',
-                'too_2' => 'fritti',
-                'sala_1' => 'Sala Sushi',
-                'sala_2' => 'Sala ITA',
-                'p_iva' => '',
-                'r_sociale' => '',
-                'times_start' => '11:20',
-                'times_end' => '22:20',
-                'max_day_res' => '20',
-                'times_interval' => 20,
-                'c_rea' => '',
-                'c_sociale' => '',
-                'c_ateco' => '',
-                'u_imprese' => '',
-                'method' => [],
-                'set_time'=> [
-                    'tavoli',
-                    'asporto',
-                    'domicilio',
-                ]
-            ];
-            $setting->property = json_encode($property_adv);
-            $setting->save();
-            $adv_s = $setting;
-        }else{
+        if($adv_s){
             $property_adv = json_decode($adv_s->property, 1);  
+        }else{
+            dump('Non sono state trovate le impostazioni avanzate');
+            dump('Per favore, imposta le opzioni avanzate nella pagina delle impostazioni o contatta l assistenza tecnica.');
+            dd('Error: Impostazioni avanzate non trovate');  
         }
         $notify = [];
         $dates = Date::select('*') // o specifica i campi che ti servono

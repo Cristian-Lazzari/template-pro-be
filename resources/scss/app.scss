@@ -654,6 +654,29 @@ body{
             .form-control{
                 color: var(--c1) !important;
             }
+            .promo_set{
+                .promo_b{
+                    display: flex;
+                    flex-direction: column !important;
+                    align-items: flex-end;
+                    .input-group-text{
+                        border-radius: 8px 8px 0 0 !important;
+                        width: fit-content;
+                    }
+                    .form-control{
+                        text-align: left !important;
+                        border-radius: 8px 0 8px 8px !important;
+                        width: 100%;
+                        text-align: center;
+                        color: var(--c1) !important;
+                        margin-bottom: .4rem;
+                    }
+                }
+                h5{
+                    text-align: right;
+                }
+
+            }
             .bottom-set{
                 border-radius: 20px;
                 overflow: hidden;
@@ -791,7 +814,7 @@ body{
                     border-top-left-radius: $brr-set;
                     border-bottom-left-radius: $brr-set;
                 }
-                input.form-control{
+                .form-control{
                     background-color: var(--c3);
                     border-radius: $brr-set;
                     border: var(--c1) solid 2px;
@@ -835,6 +858,8 @@ body{
     }
     
 }
+
+
 @media (max-width: 1000px) {
     .dash-c{
         .top-c, .bottom-c{

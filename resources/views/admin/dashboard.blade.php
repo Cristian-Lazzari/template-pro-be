@@ -12,7 +12,8 @@
 @endif
 @php
 $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' ];
-$p_adv = json_decode($adv_s->property, 1);
+$adv = json_decode($adv_s->property, 1);
+
 @endphp
 @if (count($notify))
     <div id="alert-container" >
@@ -107,13 +108,13 @@ $p_adv = json_decode($adv_s->property, 1);
             <div class="right-t">
                 @if (config('configurazione.subscription') > 1 )
                 <div class="result-bar">
-                    @if ($p_adv['services'] > 2)
+                    @if ($adv['services'] > 2)
                     <div class="stat">
                         <h2>€{{$traguard[1] / 100}}</h2>
                         <span>questo mese</span>
                     </div>
                     @endif
-                    @if ($p_adv['services'] == 2 || $p_adv['services'] == 4)
+                    @if ($adv['services'] == 2 || $adv['services'] == 4)
                     <div class="stat">
                         <h2> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
@@ -123,13 +124,13 @@ $p_adv = json_decode($adv_s->property, 1);
                         <span>questo mese</span>
                     </div>
                     @endif
-                    @if ($p_adv['services'] > 2)
+                    @if ($adv['services'] > 2)
                     <div class="stat">
                         <h2>€{{$traguard[2] / 100}}</h2>
                         <span>questo anno</span>
                     </div>
                     @endif
-                    @if ($p_adv['services'] == 2 || $p_adv['services'] == 4)
+                    @if ($adv['services'] == 2 || $adv['services'] == 4)
                     <div class="stat">
                         <h2> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
@@ -141,7 +142,7 @@ $p_adv = json_decode($adv_s->property, 1);
                     @endif
                 </div>
                 @endif
-                @if ($p_adv['services'] > 2)
+                @if ($adv['services'] > 2)
                     <div class="delivery-c">
                         <div class="top-p">
                             <a class="title" href="{{ route('admin.orders.index') }}"> <h3>Ordini asporto/delivery</h3></a>
@@ -179,7 +180,7 @@ $p_adv = json_decode($adv_s->property, 1);
                         </div>
                     </div>
                 @endif
-                @if ($p_adv['services'] == 2 || $p_adv['services'] == 4)
+                @if ($adv['services'] == 2 || $adv['services'] == 4)
                     <div class="delivery-c">
                         <div class="top-p">
                             <a class="title" href="{{ route('admin.reservations.index') }}"> <h3>Prenotazioni Tavoli</h3></a>
@@ -382,24 +383,24 @@ $p_adv = json_decode($adv_s->property, 1);
             <div class="top-set">
                 @csrf
                 @php
-                    $asporto_p = json_decode($setting[1]['property'] , 1);
-                    $domicilio_p = json_decode($setting[6]['property'] , 1);
+                    $asporto_p = json_decode($setting['Prenotazione Asporti']['property'] , 1);
+                    $domicilio_p = json_decode($setting['Possibilità di consegna a domicilio']['property'] , 1);
                     //dd($domicilio_p['pay'])
                 @endphp
                 <div class="set">
                     <h4>Tavoli</h4>
                     <div class="radio-inputs">
                         <label class="radio">
-                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 0) checked  @endif value="0" >
+                            <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 0) checked  @endif value="0" >
                             <span class="name">Off</span>
                         </label>
                         <label class="radio">
-                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 1) checked  @endif value="1" >
+                            <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 1) checked  @endif value="1" >
                             <span class="name">Chiamate</span>
                         </label>
                         @if (config('configurazione.subscription') > 1 )   
                         <label class="radio">
-                            <input type="radio" name="tavoli_status"  @if($setting[0]['status'] == 2) checked  @endif value="2" >
+                            <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 2) checked  @endif value="2" >
                             <span class="name">Web App</span>
                         </label>
                         @endif
@@ -411,16 +412,16 @@ $p_adv = json_decode($adv_s->property, 1);
                         <h5>Servizio</h5>
                         <div class="radio-inputs">
                             <label class="radio">
-                                <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 0) checked  @endif value="0" >
+                                <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 0) checked  @endif value="0" >
                                 <span class="name">Off</span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 1) checked  @endif value="1" >
+                                <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 1) checked  @endif value="1" >
                                 <span class="name">Chiamate</span>
                             </label>
                             @if (config('configurazione.subscription') > 1)   
                             <label class="radio">
-                                <input type="radio" name="asporto_status"  @if($setting[1]['status'] == 2) checked  @endif value="2" >
+                                <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 2) checked  @endif value="2" >
                                 <span class="name">Web App</span>
                             </label>
                             @endif
@@ -460,11 +461,11 @@ $p_adv = json_decode($adv_s->property, 1);
                         <h5>Servizio</h5>
                         <div class="radio-inputs">
                             <label class="radio">
-                                <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 0) checked  @endif value="0" >
-                                <span class="name">off</span>
+                                <input type="radio" name="domicilio_status"  @if($setting['Possibilità di consegna a domicilio']['status'] == 0) checked  @endif value="0" >
+                                <span class="name">Off</span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="domicilio_status"  @if($setting[6]['status'] == 1) checked  @endif value="1" >
+                                <input type="radio" name="domicilio_status"  @if($setting['Possibilità di consegna a domicilio']['status'] == 1) checked  @endif value="1" >
                                 <span class="name">On</span>
                             </label>
                         </div>
@@ -498,26 +499,57 @@ $p_adv = json_decode($adv_s->property, 1);
                 </div>
                 @endif
                 @php
-                    $setting[2]['property'] = json_decode($setting[2]['property'], true);
+                    $setting['Periodo di Ferie']['property'] = json_decode($setting['Periodo di Ferie']['property'], true);
                 @endphp
                 <div class="set">
                     <h4>Ferie</h4>
                     <div class="sets">
                         <div class="radio-inputs">
                             <label class="radio">
-                                <input type="radio" name="ferie_status"  @if($setting[2]['status'] == 0) checked  @endif value="0" >
+                                <input type="radio" name="ferie_status"  @if($setting['Periodo di Ferie']['status'] == 0) checked  @endif value="0" >
                                 <span class="name">A lavoro</span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="ferie_status"  @if($setting[2]['status'] == 1) checked  @endif value="1" >
+                                <input type="radio" name="ferie_status"  @if($setting['Periodo di Ferie']['status'] == 1) checked  @endif value="1" >
                                 <span class="name">In ferie</span>
                             </label>
                         </div>
+                        
                         <div class="input-group flex-nowrap">
                             <label for="form" class="input-group-text" >Da</label>
-                            <input name="from" id="form" type="date" class="form-control" placeholder="da" @if($setting[2]['property']['from'] !== '') value="{{$setting[2]['property']['from']}}"  @endif>
+                            <input name="from" id="form" type="date" class="form-control" placeholder="da" @if($setting['Periodo di Ferie']['property']['from'] !== '') value="{{$setting['Periodo di Ferie']['property']['from']}}"  @endif>
                             <label for="to" class="input-group-text" >A</label>
-                            <input name="to" id="to" type="date" class="form-control" placeholder="da" @if($setting[2]['property']['to'] !== '') value="{{$setting[2]['property']['to']}}"  @endif>
+                            <input name="to" id="to" type="date" class="form-control" placeholder="da" @if($setting['Periodo di Ferie']['property']['to'] !== '') value="{{$setting['Periodo di Ferie']['property']['to']}}"  @endif>
+                        </div>
+                    </div>
+                </div>
+                <div class="set">
+                    @php
+                        $promo_table = json_decode($setting['Promozione Tavoli']['property'], true);
+                    @endphp
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
+                            <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A3 3 0 0 1 3 2.506zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43zM9 3h2.932l.023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0zm6 4v7.5a1.5 1.5 0 0 1-1.5 1.5H9V7zM2.5 16A1.5 1.5 0 0 1 1 14.5V7h6v9z"/>
+                        </svg>
+                        Promo 
+                    </h4>
+                    <div class="sets promo_set">
+                        <div class="radio-inputs">
+                            <label class="radio">
+                                <input type="radio" name="table_promo"  @if($setting['Promozione Tavoli']['status']== 0) checked  @endif value="0" >
+                                <span class="name">Off</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="table_promo"  @if($setting['Promozione Tavoli']['status']== 1) checked  @endif value="1" >
+                                <span class="name">On</span>
+                            </label>
+                        </div>
+                        <div class="mb-3 promo_b">
+                            <label class="input-group-text" >Titolo</label>
+                            <input type="text" class="form-control"  name="promo_table_title" value="{{$promo_table['title']}}">
+
+                            <label class="input-group-text" >Corpo</label>
+                            <textarea type="text" class="form-control"  cols="10" rows="10"  name="promo_table_body">{{$promo_table['body']}}</textarea>
                         </div>
                     </div>
                 </div>
@@ -536,9 +568,9 @@ $p_adv = json_decode($adv_s->property, 1);
                         <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 @php 
-                                    $property_orari = json_decode($setting[3]['property'], true);
-                                    $property_posizione = json_decode($setting[4]['property'], true);
-                                    $property_contatti = json_decode($setting[5]['property'], true);
+                                    $property_orari = json_decode($setting['Orari di attività']['property'], true);
+                                    $property_posizione = json_decode($setting['Posizione']['property'], true);
+                                    $property_contatti = json_decode($setting['Contatti']['property'], true);
                                 @endphp
                                 <section class="activity-day">
                                     @foreach (['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'] as $giorno)
@@ -655,13 +687,13 @@ $p_adv = json_decode($adv_s->property, 1);
                         <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">                            
                                 @php
-                                    if (is_string($setting[7]['property'])) {
-                                        $setting[7]['property'] = json_decode($setting[7]['property'], true);
+                                    if (is_string($setting['Comuni per il domicilio']['property'])) {
+                                        $setting['Comuni per il domicilio']['property'] = json_decode($setting['Comuni per il domicilio']['property'], true);
                                     } 
                                 @endphp
    
                                 <div class="address"> 
-                                    @foreach ($setting[7]['property'] as $i)
+                                    @foreach ($setting['Comuni per il domicilio']['property'] as $i)
                                         <span class="w-100">
                                             ({{$i['provincia']}})
                                             {{$i['comune']}} -
@@ -690,16 +722,16 @@ $p_adv = json_decode($adv_s->property, 1);
                         <div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">                            
                                 @php
-                                    if (is_string($setting[8]['property'])) {
-                                        $setting[8]['property'] = json_decode($setting[8]['property'], true);
+                                    if (is_string($setting['wa']['property'])) {
+                                        $setting['wa']['property'] = json_decode($setting['wa']['property'], true);
                                     } 
-                                  //  dd($setting[8]['property'])
+                                  //  dd($setting['wa']['property'])
                                 @endphp
 
                  
                                 
                                 <div class="address"> 
-                                    @foreach ($setting[8]['property']['numbers'] as $i)
+                                    @foreach ($setting['wa']['property']['numbers'] as $i)
                                         <span class="">
                                             {{ $i }}
                                         </span>    
@@ -725,9 +757,6 @@ $p_adv = json_decode($adv_s->property, 1);
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable large_m">
             <form action="{{ route('admin.settings.advanced')}}" method="POST" class="modal-content s_advanced">
                 @csrf
-                @php
-                    $adv = json_decode($adv_s->property, 1);
-                @endphp
                 <h2>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
@@ -936,11 +965,11 @@ $p_adv = json_decode($adv_s->property, 1);
                     </div>
                     <div class="modal-body">
                         @php
-                            if (is_string($setting[7]['property'])) {
-                                $setting[7]['property'] = json_decode($setting[7]['property'], true);
+                            if (is_string($setting['Comuni per il domicilio']['property'])) {
+                                $setting['Comuni per il domicilio']['property'] = json_decode($setting['Comuni per il domicilio']['property'], true);
                             } 
                         @endphp
-                        @foreach ($setting[7]['property'] as $i)
+                        @foreach ($setting['Comuni per il domicilio']['property'] as $i)
                             <input type="checkbox" class="btn-check" id="a{{ $i['comune'] }}" name="comuni[]" value="{{ $i['comune'] }}" >
                             <label class="btn btn-outline-danger" for="a{{ $i['comune'] }}">{{ $i['provincia'] }} - {{ $i['comune'] }}</label>
                         @endforeach
@@ -1019,7 +1048,7 @@ $p_adv = json_decode($adv_s->property, 1);
     
     @endif
 </div>
-@if (config('configurazione.subscription') > 1 && ($setting[0]['status'] == 2 || $setting[1]['status'] == 2) && config('configurazione.APP_URL') !== 'http://127.0.0.1:8000')
+@if (config('configurazione.subscription') > 1 && ($setting['Prenotazione Tavoli']['status'] == 2 || $setting['Prenotazione Asporti']['status'] == 2) && config('configurazione.APP_URL') !== 'http://127.0.0.1:8000')
 
 @endif
 @if (config('configurazione.subscription') > 1 )
