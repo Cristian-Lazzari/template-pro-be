@@ -88,6 +88,10 @@ class SettingController extends Controller
             $property['too_2'] = $request->too_2;
             $property['sala_1'] = $request->sala_1;
             $property['sala_2'] = $request->sala_2;
+            
+            $property['delay_res'] = $request->delay_res;
+            $property['delay_or'] = $request->delay_or;
+            
             $property['times_end'] = $request->times_end;
             $property['times_start'] = $request->times_start;
             $property['times_interval'] = $request->times_interval;

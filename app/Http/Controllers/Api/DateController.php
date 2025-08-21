@@ -17,14 +17,16 @@ class DateController extends Controller
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);  
-        $max_time_res = 55;
-        // Ottieni la data e l'ora attuale 
-        $currentDateTime = Carbon::now()->format('Y-m-d H:i:s');
 
-        // Ottieni la data di inizio (ad esempio, l'inizio della giornata attuale)
-        $startDateTime = Carbon::now()->addMinutes($max_time_res)->format('Y-m-d H:i:s');
 
-        // Ottieni la data di fine (ad esempio, la fine della giornata attuale)
+        $timeString = $filter == 1 ? $property_adv['delay_res'] : $property_adv['delay_or'];
+        list($hours, $minutes) = explode(":", $timeString);
+        $totalMinutes = ($hours * 60) + $minutes;
+
+        // Ottieni la data di inizio 
+        $startDateTime = Carbon::now()->addMinutes($totalMinutes)->format('Y-m-d H:i:s');
+
+        // Ottieni la data di fine 
         $endDateTime = Carbon::now()->addDays($property_adv['max_day_res'])->format('Y-m-d H:i:s');
 
 

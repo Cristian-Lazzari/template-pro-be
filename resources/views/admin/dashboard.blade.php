@@ -853,6 +853,16 @@ $adv = json_decode($adv_s->property, 1);
                         </h4>
                         <div class="split">
                             <div class="input_label">
+                                <label class="" id="basic-addon1">Latenza orario - Ordini</label>
+                                <input type="time" class="" name="delay_or" value="{{$adv['delay_or']}}">
+                            </div>
+                            <div class="input_label">
+                                <label class="" id="basic-addon1">Latenza orario - Prenotazioni</label>
+                                <input type="time" class="" name="delay_res" value="{{$adv['delay_res']}}">
+                            </div>
+                        </div>
+                        <div class="split">
+                            <div class="input_label">
                                 <label class="" id="basic-addon1">Latenza prenotazioni (Giorni)</label>
                                 <input type="number" class="" name="max_day_res" value="{{$adv['max_day_res']}}">
                             </div>

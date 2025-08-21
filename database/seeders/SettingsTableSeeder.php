@@ -94,6 +94,8 @@ class SettingsTableSeeder extends Seeder
                     'too_2' => 'tipo 2',
                     'sala_1' => 'Interno',
                     'sala_2' => 'Esterno',
+                    'delay_res' => '30',
+                    'delay_or' => '30',
                     'p_iva' => '',
                     'r_sociale' => '',
                     'times_start' => '12:00',
