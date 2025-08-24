@@ -576,7 +576,7 @@ $adv = json_decode($adv_s->property, 1);
                                     @foreach (['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'] as $giorno)
                                         <div class="input-group mb-3">
                                             <label for="{{$giorno}}" class="input-group-text">{{ $giorno }}</label>
-                                            <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_contatti) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" id="{{$giorno}}">
+                                            <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_orari) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" id="{{$giorno}}">
                                         </div>
                                     @endforeach
                                 </section>
