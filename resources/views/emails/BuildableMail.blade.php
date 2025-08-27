@@ -95,7 +95,7 @@
                 Instagram: <span style="color: white; font-weight: 900"> @future.plus_</span>
             </a>
         </div>
-        <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 10px 5px;">&copy; 2024 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
+        <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 10px 5px;">&copy; 2025 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
         <p style="font-size: 15px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none; font-weight:900;" href="https://future-plus.it">Future +</a></p>
     </footer>
 </body>
