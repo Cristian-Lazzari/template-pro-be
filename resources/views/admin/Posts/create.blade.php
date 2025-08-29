@@ -2,14 +2,6 @@
 
 @section('contents')
     
-@if (session('ingredient_success'))
-    @php
-        $data = session('ingredient_success')
-    @endphp
-    <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
-    </div>
-@endif
     
 
 
