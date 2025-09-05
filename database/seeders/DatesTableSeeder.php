@@ -58,9 +58,9 @@ class DatesTableSeeder extends Seeder
                             'table' => in_array($value,[2,3,6,7]) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
                             'table_1' => in_array($value,[2,3,6,7]) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
                             'table_2' => in_array($value,[2,3,6,7]) && in_array($currentDayOfWeek, $abledDays) ? 1 : 0,
-                            'asporto' => (in_array($value,[1,3,4,5]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                            'cucina_1' => (in_array($value,[1,3,4,5]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
-                            'cucina_2' => (in_array($value,[1,3,4,5]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                            'asporto' => (in_array($value,[1,3,4,5,7]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                            'cucina_1' => (in_array($value,[1,3,4,5,7]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
+                            'cucina_2' => (in_array($value,[1,3,4,5,7]) && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
                             'domicilio' => ($value >= 4 && in_array($currentDayOfWeek, $abledDays)) ? 1 : 0,
                         ];
                         

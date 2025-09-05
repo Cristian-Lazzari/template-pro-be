@@ -436,6 +436,8 @@ class ReservationController extends Controller
                     // Confronta la data salvata con le ultime 24 ore
                     $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
                     return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }else{
+                    return false; // Se la data non è impostata, considera che non è entro 24 ore
                 }
             }else{
                  // Controlla se 'last_response_wa' è impostato
@@ -443,6 +445,8 @@ class ReservationController extends Controller
                     // Confronta la data salvata con le ultime 24 ore
                     $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
                     return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
+                }else{
+                    return false; // Se la data non è impostata, considera che non è entro 24 ore
                 }
             }
         }else{

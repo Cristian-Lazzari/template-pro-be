@@ -139,8 +139,8 @@ class SettingController extends Controller
            }
         }
         $old_p['numbers'] = $array_filtrato;
-        $old_p['last_response_wa_'] = $data = Carbon::today()->subDays(5)->toDateTimeString(); 
-        $old_p['last_response_wa_2'] = $data = Carbon::today()->subDays(5)->toDateTimeString(); 
+        $old_p['last_response_wa_1'] = $data = Carbon::today()->subDays(2)->toDateTimeString(); 
+        $old_p['last_response_wa_2'] = $data = Carbon::today()->subDays(2)->toDateTimeString(); 
         $setting->property = json_encode($old_p);
         $setting->update();
 

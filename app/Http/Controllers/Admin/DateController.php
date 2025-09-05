@@ -617,19 +617,9 @@ class DateController extends Controller
         $index = 1;
         $interval = $property_adv['times_interval'];
 
-        // Loop finché l'orario di inizio è inferiore all'orario di fine
-        // while ($start <= $end) {
-        //     $day[$index] = [ $start->format('H:i') => '' ];
-        //     // Incrementa l'orario di inizio con l'intervallo specificato
-        //     $start->modify("+$interval minutes");
-        //     $index++;
-        // }
-
-
         for ($i = 0; $i < 7; $i++) { 
             array_push($timesDay, $day);
         }
-
 
         if(isset($data["times_slot_1"])){
             foreach ($data["times_slot_1"] as $key => $value) {
