@@ -26,7 +26,7 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        try {
+        //try {
             // Validazione della richiesta
             $request->validate($this->validations);
 
@@ -300,7 +300,7 @@ class ReservationController extends Controller
             // Log dei dati inviati
             Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
             
-            try {
+            // try {
                 // Log dei dati inviati
                 Log::info('Dati inviati alla API:', $data_am1);
                 
@@ -328,44 +328,44 @@ class ReservationController extends Controller
                         'message' => 'Errore dalla API esterna.',
                     ], $response_am1->status());
                 }
-            } catch (Exception $e) {
-                // Gestione degli errori
-                Log::error('Errore nell\'invio della richiesta POST:', [
-                    'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                ]);
+            // } catch (Exception $e) {
+            //     // Gestione degli errori
+            //     Log::error('Errore nell\'invio della richiesta POST:', [
+            //         'message' => $e->getMessage(),
+            //         'trace' => $e->getTraceAsString(),
+            //     ]);
             
-                return response()->json([
-                    'status' => 'error',
-                    'success' => false,
-                    'message' => 'Errore durante l\'invio della richiesta.',
-                ], 500);
-            }
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'success' => false,
+            //         'message' => 'Errore durante l\'invio della richiesta.',
+            //     ], 500);
+            // }
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // Errore nel trovare una risorsa
-            return response()->json([
-                'success' => false,
-                'message' => 'Data o impostazione non trovata: ' . $e->getMessage(),
-            ], 200);
+        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        //     // Errore nel trovare una risorsa
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Data o impostazione non trovata: ' . $e->getMessage(),
+        //     ], 200);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Errore di validazione
-            return response()->json([
-                'success' => false,
-                'message' => 'Errore di validazione: ' . $e->getMessage(),
-                'errors' => $e->errors(),
-            ], 200);
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     // Errore di validazione
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Errore di validazione: ' . $e->getMessage(),
+        //         'errors' => $e->errors(),
+        //     ], 200);
 
-        } catch (\Exception $e) {
-            // Gestione generale degli errori
-            return response()->json([
-                'success' => false,
-                'message' => 'Si è verificato un errore: ' . $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ], 200);
-        }
+        // } catch (\Exception $e) {
+        //     // Gestione generale degli errori
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Si è verificato un errore: ' . $e->getMessage(),
+        //         'file' => $e->getFile(),
+        //         'line' => $e->getLine(),
+        //     ], 200);
+        // }
     }
 
     protected function send_mail($newRes){
