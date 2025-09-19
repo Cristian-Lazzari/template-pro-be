@@ -319,11 +319,13 @@ class ReservationController extends Controller
                     ]);
                 } else {
                     Log::error('Errore nella risposta API:', [
-                        'status' => $response_am1->status(),
+                        'status' => 'false',
+                        'success' => false,
                         'body' => $response_am1->body(),
                     ]);
                     return response()->json([
                         'status' => 'error',
+                         'success' => false,
                         'message' => 'Errore dalla API esterna.',
                     ], $response_am1->status());
                 }
