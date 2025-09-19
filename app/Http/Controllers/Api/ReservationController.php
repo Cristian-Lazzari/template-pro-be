@@ -324,7 +324,7 @@ class ReservationController extends Controller
                     ]);
                     return response()->json([
                         'status' => 'error',
-                         'success' => false,
+                        'success' => false,
                         'message' => 'Errore dalla API esterna.',
                     ], $response_am1->status());
                 }
