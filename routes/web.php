@@ -115,7 +115,7 @@ Route::middleware('auth')
 require __DIR__ . '/auth.php';
 
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWebhook']);
-Route::post('/webhook/wa', [WaController::class, 'handle']);
+Route::post('/webhook/wa', [WaController::class, 'handle'])->middleware('apikey');
 
 //Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);
 
