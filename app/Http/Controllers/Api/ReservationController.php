@@ -295,7 +295,6 @@ class ReservationController extends Controller
                 'type_1' => $type_m_1,
                 'type_2' => $type_m_2,
                 'source' => config('configurazione.APP_URL'),
-                '_token' => csrf_token(),
             ];
             
             // Log dei dati inviati
@@ -306,13 +305,9 @@ class ReservationController extends Controller
             Log::info('Dati inviati alla API:', $data_am1);
             
             // Invio della richiesta POST
-            $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                ],
-                'json' => $data_am1
-            ]);
+            //$response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
+            $response_am1 = Http::withHeaders([ 'X-API-KEY' => 'd1oporcomaialeschifos0'])
+                ->post('https://db-demo4.future-plus.it/api/messages', $data_am1);
         
             // Controllo della risposta prima di restituirla
             if ($response_am1->successful()) {
