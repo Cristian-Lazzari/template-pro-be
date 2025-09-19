@@ -325,9 +325,9 @@ class ReservationController extends Controller
                     'body' => $response_am1->body(),
                 ]);
                 return response()->json([
-                    'status' => 'error',
                     'success' => false,
                     'message' => 'Errore dalla API esterna.',
+                    'data' => $response_am1->json(),
                 ], $response_am1->status());
             }
 
