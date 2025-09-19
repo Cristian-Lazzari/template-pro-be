@@ -295,40 +295,47 @@ class ReservationController extends Controller
                 'type_1' => $type_m_1,
                 'type_2' => $type_m_2,
                 'source' => config('configurazione.APP_URL'),
+                '_token' => csrf_token(),
             ];
             
             // Log dei dati inviati
             Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
             
             // try {
-                // Log dei dati inviati
-                Log::info('Dati inviati alla API:', $data_am1);
-                
-                // Invio della richiesta POST
-                $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
+            // Log dei dati inviati
+            Log::info('Dati inviati alla API:', $data_am1);
             
-                // Controllo della risposta prima di restituirla
-                //if ($response_am1->successful()) {
-                    Log::info('Risposta ricevuta con successo:');
-                    Log::info($response_am1);
-                 //   Log::info('Risposta ricevuta con successo:', $response_am1);
-                    return response()->json([
-                        'status' => 'success',
-                        'success' => true,
-                        'data' => $response_am1->json(),
-                    ]);
-                // } else {
-                //     Log::error('Errore nella risposta API:', [
-                //         'status' => 'false',
-                //         'body' => $response_am1->body(),
-                //     ]);
-                //     return response()->json([
-                //         'status' => 'error',
-                //         'success' => false,
-                //         'message' => 'Errore dalla API esterna.',
-                //     ], $response_am1->status());
-                // }
-                
+            // Invio della richiesta POST
+            $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'json' => $data_am1
+            ]);
+        
+            // Controllo della risposta prima di restituirla
+            if ($response_am1->successful()) {
+                Log::info('Risposta ricevuta con successo:');
+                Log::info($response_am1);
+                //   Log::info('Risposta ricevuta con successo:', $response_am1);
+                return response()->json([
+                    'status' => 'success',
+                    'success' => true,
+                    'data' => $response_am1->json(),
+                ]);
+            } else {
+                Log::error('Errore nella risposta API:', [
+                    'status' => 'false',
+                    'body' => $response_am1->body(),
+                ]);
+                return response()->json([
+                    'status' => 'error',
+                    'success' => false,
+                    'message' => 'Errore dalla API esterna.',
+                ], $response_am1->status());
+            }
+
             // } catch (Exception $e) {
             //     // Gestione degli errori
             //     Log::error('Errore nell\'invio della richiesta POST:', [
