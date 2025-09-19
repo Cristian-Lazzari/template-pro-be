@@ -320,7 +320,6 @@ class ReservationController extends Controller
                 } else {
                     Log::error('Errore nella risposta API:', [
                         'status' => 'false',
-                        'success' => false,
                         'body' => $response_am1->body(),
                     ]);
                     return response()->json([
@@ -338,6 +337,7 @@ class ReservationController extends Controller
             
                 return response()->json([
                     'status' => 'error',
+                    'success' => false,
                     'message' => 'Errore durante l\'invio della richiesta.',
                 ], 500);
             }
