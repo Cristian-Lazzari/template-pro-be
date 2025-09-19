@@ -306,7 +306,7 @@ class ReservationController extends Controller
             
             // Invio della richiesta POST
             //$response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
-            $response_am1 = Http::withHeaders([ 'X-API-KEY' => 'd1oporcomaialeschifos0'])
+            $response_am1 = Http::withHeaders([ 'X-API-KEY' => config('c.X-API-KEY')])
                 ->post('https://db-demo4.future-plus.it/api/messages', $data_am1);
         
             // Controllo della risposta prima di restituirla
