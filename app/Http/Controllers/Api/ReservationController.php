@@ -319,12 +319,22 @@ class ReservationController extends Controller
 
 
 
-        $source = DB::connection('dynamic')
-            ->table('sources')
-            ->updateOrInsert(
-                ['domain' => $data_am1['source']],
-                ['domain' => $data_am1['source']]
+        $source = DB::connection('dynamic')->table('sources')->where('domain', $data_am1['source'])->first();
+
+        if (!$source) {
+            $source = DB::connection('dynamic')
+            ->table('messages')
+            ->insert(
+                [
+                    'doamain' => $data_am1['source']
+                ]
             );
+
+        }
+            // ->updateOrInsert(
+            //     ['domain' => $data_am1['source']],
+            //     ['domain' => $data_am1['source']]
+            // );
 
         // Decodifica wa_id e verifica se è valido
         $mex = json_decode($data_am1['wa_id'], true);
