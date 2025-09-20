@@ -27,11 +27,8 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-       
-        // Validazione della richiesta
         $request->validate($this->validations);
 
-        // Ottieni i dati dalla richiesta
         $data = $request->all();
 
         $adv_s = Setting::where('name', 'advanced')->first();
@@ -291,18 +288,19 @@ class ReservationController extends Controller
         
         $this->send_mail($newRes);
 
-        $data_am1 = [        
+        $this->save_message([        
             'wa_id' => $newRes->whatsapp_message_id,
             'type_1' => $type_m_1,
             'type_2' => $type_m_2,
-            'source' => config('configurazione.APP_URL'),
-        ];
+            'source' => config('configurazione.db'),
+        ]);
 
         
-        // Invio della richiesta POST
-        //$response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
-        // $response_am1 = Http::withHeaders([ 'X-API-KEY' => config('configurazione.X-API-KEY')])
-        //     ->post('https://db-demo4.future-plus.it/api/messages', $data_am1);
+      
+        
+    }
+
+    protected function save_message($data_am1){
         $config = [
             'driver'    => 'mysql',
             'host'      => '127.0.0.1',
@@ -313,40 +311,33 @@ class ReservationController extends Controller
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
         ];
-
+    
         DB::purge('dynamic'); // resetta eventuali connessioni precedenti con lo stesso nome
         config(['database.connections.dynamic' => $config]);
-
-
+    
+    
         $now = Carbon::now(); // data e ora corrente
         $source = DB::connection('dynamic')->table('sources')->where('domain', $data_am1['source'])->first();
-
+    
         if (!$source) {
             $source = DB::connection('dynamic')
             ->table('messages')
             ->insert(
                 [
-                    'doamain' => $data_am1['source'],
+                    'db_name' => $data_am1['source'],
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]
             );
-
         }
-            // ->updateOrInsert(
-            //     ['domain' => $data_am1['source']],
-            //     ['domain' => $data_am1['source']]
-            // );
-
         // Decodifica wa_id e verifica se è valido
         $mex = json_decode($data_am1['wa_id'], true);
         if (!is_array($mex)) {
             return response()->json(['success' => false, 'error' => 'Si è verificato un errore. Riprova più tardi.']);
         }
-        //dd('ciao');
 
         Log::info("wa_id decodificato con successo:", ['wa_id' => $mex]);
-
+    
         $i = 1;
         foreach ($mex as $id) {
             DB::connection('dynamic')
@@ -366,33 +357,8 @@ class ReservationController extends Controller
             'status' => 'success',
             'success' => true,
         ]);
-
-    
-        // // Controllo della risposta prima di restituirla
-        // if ($response_am1->successful()) {
-        //     Log::info('Risposta ricevuta con successo:');
-        //     Log::info($response_am1);
-        //     //   Log::info('Risposta ricevuta con successo:', $response_am1);
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'success' => true,
-        //         'data' => $response_am1->json(),
-        //     ]);
-        // } else {
-        //     Log::error('Errore nella risposta API:', [
-        //         'status' => 'false',
-        //         'body' => $response_am1->body(),
-        //     ]);
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Errore dalla API esterna.',
-        //         'data' => $response_am1->json(),
-        //     ], $response_am1->status());
-        // }
-
-            
+        
     }
-
     protected function send_mail($newRes){
         try{
             // Ottieni le impostazioni di contatto

@@ -42,7 +42,7 @@ class WaController extends Controller
         }else{
             $this->updateLastResponseWa(0);
         }
-        $numebr = $data['wa_id'];
+        
         $messageId = $data['wa_id'];
         $button_r = $data['response'];
 
@@ -469,24 +469,8 @@ class WaController extends Controller
 
         return;   
     }
-    protected function updateLastResponseWa($p){
-        // Trova il record con name = 'wa'
-        $setting = Setting::where('name', 'wa')->first();
 
-        // Decodifica il campo 'property' da JSON ad array
-        $property = json_decode($setting->property, true);
-        if($p == 0){
-            $property['last_response_wa_1'] = Carbon::now()->toDateTimeString();
-        }else if($p == 1){
-            $property['last_response_wa_2'] = Carbon::now()->toDateTimeString();
-        }
-        // Aggiorna 'last_response_wa' con la data attuale
-
-        // Ricodifica 'property' in JSON e aggiorna il record
-        $setting->property = json_encode($property);
-        $setting->update();
-
-    }
+    
     protected function isLastResponseWaWithin24Hours($p)
     {
         $setting = Setting::where('name', 'wa')->first();
