@@ -9,6 +9,7 @@ return [
     'us'                  => env('MAIL_USERNAME'),
     'pw'                  => env('MAIL_PASSWORD'),
     'hs'                  => env('MAIL_HOST'),
+    'mf'                  => env('MAIL_FROM_ADDRESS'),
 
     'db'                    => env('DB_DATABASE'),
     
