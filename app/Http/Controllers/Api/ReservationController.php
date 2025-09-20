@@ -288,11 +288,16 @@ class ReservationController extends Controller
         
         $this->send_mail($newRes);
 
-        $this->save_message([        
+        $mx = $this->save_message([        
             'wa_id' => $newRes->whatsapp_message_id,
             'type_1' => $type_m_1,
             'type_2' => $type_m_2,
             'source' => config('configurazione.db'),
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+            'data' => $mx
         ]);
     }
 
@@ -349,10 +354,7 @@ class ReservationController extends Controller
             );
             $i++;
         }
-        return response()->json([
-            'status' => 'success',
-            'success' => true,
-        ]);
+        return $source;
         
     }
     protected function send_mail($newRes){
