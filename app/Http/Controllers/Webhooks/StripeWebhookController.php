@@ -522,7 +522,7 @@ class StripeWebhookController extends Controller
         ];
 
         $mail = new confermaOrdineAdmin($bodymail);
-        Mail::to(config('configurazione.mail'))->send($mail);
+        Mail::to(config('configurazione.mf'))->send($mail);
 
         $bodymail['to'] = 'user';
         $bodymail['whatsapp_message_id'] = $order->whatsapp_message_id;

@@ -601,7 +601,7 @@ class OrderController extends Controller
                     
                 ];
                 $mailAdmin = new confermaOrdineAdmin($bodymail);
-                Mail::to(config('configurazione.mail'))->send($mailAdmin);
+                Mail::to(config('configurazione.mf'))->send($mailAdmin);
                 
                 $bodymail['to'] = 'user';
                 $bodymail['whatsapp_message_id'] = $newOrder->whatsapp_message_id;

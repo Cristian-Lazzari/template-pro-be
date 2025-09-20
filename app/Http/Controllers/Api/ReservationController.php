@@ -401,7 +401,7 @@ class ReservationController extends Controller
 
             // Invia le email
             $mailAdmin = new confermaOrdineAdmin($bodymail);
-            Mail::to(config('configurazione.mail'))->send($mailAdmin);
+            Mail::to(config('configurazione.mf'))->send($mailAdmin);
 
             $bodymail['to'] = 'user';
             $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
