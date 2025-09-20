@@ -318,7 +318,7 @@ class ReservationController extends Controller
         config(['database.connections.dynamic' => $config]);
 
 
-
+        $now = Carbon::now(); // data e ora corrente
         $source = DB::connection('dynamic')->table('sources')->where('domain', $data_am1['source'])->first();
 
         if (!$source) {
@@ -326,7 +326,9 @@ class ReservationController extends Controller
             ->table('messages')
             ->insert(
                 [
-                    'doamain' => $data_am1['source']
+                    'doamain' => $data_am1['source'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ]
             );
 
@@ -354,6 +356,8 @@ class ReservationController extends Controller
                     'wa_id'  =>  $id,
                     'type'   =>  $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'],
                     'source' =>  $source->id,
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ]
             );
             $i++;
