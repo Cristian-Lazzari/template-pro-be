@@ -408,7 +408,7 @@ class ReservationController extends Controller
             $bodymail['subtitle'] = 'La tua prenotazione è nella nostra coda, a breve riceverai l\'esito del processamento';
             
             $mail = new confermaOrdineAdmin($bodymail);
-            Mail::to($newRes['email'])->send($mail);
+            Mail::to($newRes->email)->send($mail);
             return;
         } catch (\Exception $e) {
             // Gestione generale degli errori

@@ -155,6 +155,7 @@ class ReservationController extends Controller
         $mail = new confermaOrdineAdmin($bodymail);
 
         Mail::to($res['email'])->send($mail);
+        
         if($wa){
             return redirect("https://wa.me/39" . $res->phone . "?text=" . $message);
         }
