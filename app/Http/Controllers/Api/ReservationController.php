@@ -287,6 +287,7 @@ class ReservationController extends Controller
         $newRes->update();
         
         $this->send_mail($newRes);
+        $this->send_mail($newRes);
 
         $mx = $this->save_message([        
             'wa_id' => $newRes->whatsapp_message_id,
