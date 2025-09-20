@@ -327,7 +327,7 @@ class ReservationController extends Controller
 
         $source = DB::connection('dynamic')
             ->table('sources')
-            ->firstOrCreate(
+            ->updateOrInsert(
                 ['domain' => $data_am1['source']],
                 ['domain' => $data_am1['source']]
             );
@@ -343,13 +343,20 @@ class ReservationController extends Controller
 
         $i = 1;
         foreach ($mex as $id) {
-            $message = new \App\Models\Message();
-            $message->setConnection('dynamic'); // <--- qui
-            $message->wa_id = $id;
-            $message->type = $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'];
-            $message->source = $source->id;
-            $message->save();
+            DB::connection('dynamic')
+            ->table('messages')
+            ->insert(
+                [
+                    'wa_id'  =>  $id,
+                    'type'   =>  $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'],
+                    'source' =>  $source->id,
+                ]
+            );
             $i++;
+             return response()->json([
+                'status' => 'success',
+                'success' => true,
+            ]);
         }
 
     
