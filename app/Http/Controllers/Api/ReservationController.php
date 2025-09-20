@@ -324,7 +324,7 @@ class ReservationController extends Controller
         config(['database.connections.dynamic' => $config]);
 
         // Query diretta senza Model
-        $results = DB::connection('dynamic')->select('SELECT * FROM users');
+        //$results = DB::connection('dynamic')->select('SELECT * FROM users');
 
         $source = (new \App\Models\Source)
             ->setConnection('dynamic')
