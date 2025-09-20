@@ -296,7 +296,7 @@ class ReservationController extends Controller
         ]);
         return response()->json([
             'success' => true,
-            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+            'message' => 'Successo',
             'source' => config('configurazione.db'),
             'data' => $mx,
         ]);
@@ -329,7 +329,7 @@ class ReservationController extends Controller
                     'db_name' => config('configurazione.db'),
                     'created_at' => $now,
                     'updated_at' => $now,
-                    ]
+                ]
                 );
             $source = DB::connection('dynamic')->table('sources')->where('db_name', config('configurazione.db'))->first();
         }
