@@ -297,13 +297,7 @@ class ReservationController extends Controller
             'type_2' => $type_m_2,
             'source' => config('configurazione.APP_URL'),
         ];
-        
-        // Log dei dati inviati
-        Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
-        
-        // try {
-        // Log dei dati inviati
-        Log::info('Dati inviati alla API:', $data_am1);
+
         
         // Invio della richiesta POST
         //$response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
@@ -353,11 +347,11 @@ class ReservationController extends Controller
                 ]
             );
             $i++;
-             return response()->json([
-                'status' => 'success',
-                'success' => true,
-            ]);
         }
+        return response()->json([
+            'status' => 'success',
+            'success' => true,
+        ]);
 
     
         // // Controllo della risposta prima di restituirla
