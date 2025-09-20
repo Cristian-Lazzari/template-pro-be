@@ -297,7 +297,8 @@ class ReservationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-            'data' => $mx
+            'data' => $mx,
+            'source' => config('configurazione.db'),
         ]);
     }
 
