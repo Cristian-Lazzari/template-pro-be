@@ -15,7 +15,6 @@ return [
     'subscription'          => env('SUBSCRIPTION'),
     
     'MSC_P'                 => env('MSC_P'),
-    'connection'            => env('DB_DATABASE'),
 
     'allergens' => [
         1 => [

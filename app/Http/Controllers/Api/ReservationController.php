@@ -294,10 +294,6 @@ class ReservationController extends Controller
             'type_2' => $type_m_2,
             'source' => config('configurazione.db'),
         ]);
-
-        
-      
-        
     }
 
     protected function save_message($data_am1){
@@ -321,8 +317,8 @@ class ReservationController extends Controller
     
         if (!$source) {
             $source = DB::connection('dynamic')
-            ->table('sources')
-            ->insert(
+                ->table('sources')
+                ->insert(
                 [
                     'db_name' => $data_am1['source'],
                     'created_at' => $now,
