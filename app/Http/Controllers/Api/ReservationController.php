@@ -328,7 +328,7 @@ class ReservationController extends Controller
                 [
                     'db_name' => config('configurazione.db'),
                     'username'=> config('configurazione.us'),
-                    'password'=> config('configurazione.pw'),
+                    'token.  '=> config('configurazione.pw'),
                     'host'    => config('configurazione.hs'),
                     'created_at' => $now,
                     'updated_at' => $now,
