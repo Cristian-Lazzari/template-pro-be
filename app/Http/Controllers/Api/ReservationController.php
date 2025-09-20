@@ -320,17 +320,18 @@ class ReservationController extends Controller
     
         $now = Carbon::now(); // data e ora corrente
         $source = DB::connection('dynamic')->table('sources')->where('db_name', config('configurazione.db'))->first();
-
+        
         if (!$source) {
-            $source = DB::connection('dynamic')
-                ->table('sources')
-                ->insert(
+            DB::connection('dynamic')
+            ->table('sources')
+            ->insert(
                 [
                     'db_name' => config('configurazione.db'),
                     'created_at' => $now,
                     'updated_at' => $now,
-                ]
-            );
+                    ]
+                );
+            $source = DB::connection('dynamic')->table('sources')->where('db_name', config('configurazione.db'))->first();
         }
         // Decodifica wa_id e verifica se è valido
         $mex = json_decode($data_am1['wa_id'], true);
@@ -348,7 +349,7 @@ class ReservationController extends Controller
                 [
                     'wa_id'  =>  $id,
                     'type'   =>  $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'],
-                    'source' =>  $source,
+                    'source' =>  $source->id,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]
