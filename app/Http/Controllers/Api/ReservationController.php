@@ -317,7 +317,7 @@ class ReservationController extends Controller
     
     
         $now = Carbon::now(); // data e ora corrente
-        $source = DB::connection('dynamic')->table('sources')->where('domain', $data_am1['source'])->first();
+        $source = DB::connection('dynamic')->table('sources')->where('db_name', $data_am1['source'])->first();
     
         if (!$source) {
             $source = DB::connection('dynamic')
