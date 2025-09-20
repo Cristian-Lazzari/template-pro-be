@@ -324,7 +324,7 @@ class ReservationController extends Controller
         if (!$source) {
             $source = DB::connection('dynamic')
                 ->table('sources')
-                ->insertGetId(
+                ->insert(
                 [
                     'db_name' => config('configurazione.db'),
                     'created_at' => $now,
