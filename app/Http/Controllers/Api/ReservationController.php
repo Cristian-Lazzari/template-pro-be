@@ -319,14 +319,14 @@ class ReservationController extends Controller
     
     
         $now = Carbon::now(); // data e ora corrente
-        $source = DB::connection('dynamic')->table('sources')->where('db_name', $data_am1['source'])->first();
+        $source = DB::connection('dynamic')->table('sources')->where('db_name', config('configurazione.db'))->first();
     
         if (!$source) {
             $source = DB::connection('dynamic')
                 ->table('sources')
                 ->insert(
                 [
-                    'db_name' => $data_am1['source'],
+                    'db_name' => config('configurazione.db'),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]
