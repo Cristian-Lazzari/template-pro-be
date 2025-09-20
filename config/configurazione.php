@@ -5,7 +5,11 @@ return [
     'STRIPE_WEBHOOK_SECRET' => env('STRIPE_WEBHOOK_SECRET'),
     'APP_URL'               => env('APP_URL'),
     'APP_NAME'              => env('APP_NAME'),
-    'mail'                  => env('MAIL_FROM_ADDRESS'),
+    
+    'us'                  => env('MAIL_USERNAME'),
+    'pw'                  => env('MAIL_PASSWORD'),
+    'hs'                  => env('MAIL_MAIL_HOST'),
+
     'db'                    => env('DB_DATABASE'),
     
     'WA_TO'                 => env('WA_TO'),

@@ -327,6 +327,9 @@ class ReservationController extends Controller
             ->insert(
                 [
                     'db_name' => config('configurazione.db'),
+                    'username'=> config('configurazione.us'),
+                    'password'=> config('configurazione.pw'),
+                    'host'    => config('configurazione.hs'),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]
