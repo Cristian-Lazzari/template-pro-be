@@ -612,49 +612,18 @@ class OrderController extends Controller
                 $mail = new confermaOrdineAdmin($bodymail);
                 Mail::to($data['email'])->send($mail);
 
-                
-                // Log dei dati inviati
-                Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
-                
-                try {
-                    // Log dei dati inviati
-                    Log::info('Dati inviati alla API:', $data_am1);
-                    
-                    // Invio della richiesta POST
-                    $response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
-                
-                    // Controllo della risposta prima di restituirla
-                    if ($response_am1->successful()) {
-                        Log::info('Risposta ricevuta con successo:');
-                        Log::info($response_am1);
-                     //   Log::info('Risposta ricevuta con successo:', $response_am1);
-                        return response()->json([
-                            'status' => 'success',
-                            'success' => true,
-                            'data' => $response_am1->json(),
-                        ]);
-                    } else {
-                        Log::error('Errore nella risposta API:', [
-                            'status' => $response_am1->status(),
-                            'body' => $response_am1->body(),
-                        ]);
-                        return response()->json([
-                            'status' => 'error',
-                            'message' => 'Errore dalla API esterna.',
-                        ], $response_am1->status());
-                    }
-                } catch (Exception $e) {
-                    // Gestione degli errori
-                    Log::error('Errore nell\'invio della richiesta POST:', [
-                        'message' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Errore durante l\'invio della richiesta.',
-                    ], 500);
-                }    
+                $mx = $this->save_message([        
+                    'wa_id' => $newOrder->whatsapp_message_id,
+                    'type_1' => $type_m_1,
+                    'type_2' => $type_m_2,
+                    'source' => config('configurazione.db'),
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Successo',
+                    'source' => config('configurazione.db'),
+                    'data' => $mx,
+                ]); 
             }
 
 
@@ -673,6 +642,68 @@ class OrderController extends Controller
 
             return response()->json($errorInfo, 500);
         }
+    }
+    protected function save_message($data_am1){
+        $config = [
+            'driver'    => 'mysql',
+            'host'      => '127.0.0.1',
+            'port'      => '3306',
+            'database'  => 'dciludls_demo4',
+            'username'  => 'dciludls_ceo',
+            'password'  => config('configurazione.MSC_P'),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ];
+    
+        DB::purge('dynamic'); // resetta eventuali connessioni precedenti con lo stesso nome
+        config(['database.connections.dynamic' => $config]);
+    
+    
+        $now = Carbon::now(); // data e ora corrente
+        $source = DB::connection('dynamic')->table('sources')->where('db_name', config('configurazione.db'))->first();
+        
+        if (!$source) {
+            DB::connection('dynamic')
+            ->table('sources')
+            ->insert(
+                [
+                    'db_name' => config('configurazione.db'),
+                    'username'=> config('configurazione.us'),
+                    'token'   => config('configurazione.pw'),
+                    'host'    => config('configurazione.hs'),
+                    'mail_from_address'=> config('configurazione.mf'),
+                    'app_name'=> config('configurazione.APP_NAME'),
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+                );
+            $source = DB::connection('dynamic')->table('sources')->where('db_name', config('configurazione.db'))->first();
+        }
+        // Decodifica wa_id e verifica se è valido
+        $mex = json_decode($data_am1['wa_id'], true);
+        if (!is_array($mex)) {
+            return response()->json(['success' => false, 'error' => 'Si è verificato un errore. Riprova più tardi.']);
+        }
+
+        Log::info("wa_id decodificato con successo:", ['wa_id' => $mex]);
+    
+        $i = 1;
+        foreach ($mex as $id) {
+            DB::connection('dynamic')
+            ->table('messages')
+            ->insert(
+                [
+                    'wa_id'  =>  $id,
+                    'type'   =>  $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'],
+                    'source' =>  $source->id,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
+            $i++;
+        }
+        return $source;
+        
     }
     protected function isLastResponseWaWithin24Hours($n)
     {
