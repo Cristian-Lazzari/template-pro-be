@@ -321,7 +321,7 @@ class ReservationController extends Controller
     
         if (!$source) {
             $source = DB::connection('dynamic')
-            ->table('messages')
+            ->table('sources')
             ->insert(
                 [
                     'db_name' => $data_am1['source'],
