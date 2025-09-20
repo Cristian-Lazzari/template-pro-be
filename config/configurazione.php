@@ -6,13 +6,16 @@ return [
     'APP_URL'               => env('APP_URL'),
     'APP_NAME'              => env('APP_NAME'),
     'mail'                  => env('MAIL_FROM_ADDRESS'),
-    'X-API-KEY'              => env('X-API-KEY'),
+    'X-API-KEY'             => env('X-API-KEY'),
     
     'WA_TO'                 => env('WA_TO'),
     'WA_ID'                 => env('WA_ID'),
-
+    
     'domain'                => env('DOMAIN'),
     'subscription'          => env('SUBSCRIPTION'),
+    
+    'MSC_P'                 => env('MSC_P'),
+    'connection'            => env('DB_DATABASE'),
 
     'allergens' => [
         1 => [

@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -26,74 +27,57 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        //try {
-            // Validazione della richiesta
-            $request->validate($this->validations);
+       
+        // Validazione della richiesta
+        $request->validate($this->validations);
 
-            // Ottieni i dati dalla richiesta
-            $data = $request->all();
+        // Ottieni i dati dalla richiesta
+        $data = $request->all();
 
-            $adv_s = Setting::where('name', 'advanced')->first();
-            $property_adv = json_decode($adv_s->property, 1);
-            
-            // Cerca la data corrispondente
-            $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
-            $vis = json_decode($date->visible, true);
-            $av = json_decode($date->availability, true);
-            $res = json_decode($date->reserving, true);
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+        
+        // Cerca la data corrispondente
+        $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
+        $vis = json_decode($date->visible, true);
+        $av = json_decode($date->availability, true);
+        $res = json_decode($date->reserving, true);
 
-            // Calcola numero di persone
-            $n_adult = intval($data['n_adult']);
-            $n_child = intval($data['n_child']);
-            $tot_p = $n_adult + $n_child;
-            $n_person = [
-                'adult' => $n_adult,
-                'child' => $n_child,
-            ];
-            // Controlla la disponibilità e aggiorna le prenotazioni
-            if($property_adv['dt']){
-                $sala = $data['sala'];
-                if($sala == 1){
-                    if(($res['table_1'] + $tot_p) < $av['table_1']){
-                        $res['table_1'] = $res['table_1'] + $tot_p;
-                        $date->reserving = json_encode($res);
-                    } elseif(($res['table_1'] + $tot_p) == $av['table_1']) {
-                        $res['table_1'] = $res['table_1'] + $tot_p;
-                        $date->reserving = json_encode($res);
-                        $vis['table_1'] = 0;
-                        $date->visible = json_encode($vis);
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                            'data' => $date
-                        ]);
-                    }
-                }else{
-                    if(($res['table_2'] + $tot_p) < $av['table_2']){
-                        $res['table_2'] = $res['table_2'] + $tot_p;
-                        $date->reserving = json_encode($res);
-                    } elseif(($res['table_2'] + $tot_p) == $av['table_2']) {
-                        $res['table_2'] = $res['table_2'] + $tot_p;
-                        $date->reserving = json_encode($res);
-                        $vis['table_2'] = 0;
-                        $date->visible = json_encode($vis);
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                            'data' => $date
-                        ]);
-                    }
+        // Calcola numero di persone
+        $n_adult = intval($data['n_adult']);
+        $n_child = intval($data['n_child']);
+        $tot_p = $n_adult + $n_child;
+        $n_person = [
+            'adult' => $n_adult,
+            'child' => $n_child,
+        ];
+        // Controlla la disponibilità e aggiorna le prenotazioni
+        if($property_adv['dt']){
+            $sala = $data['sala'];
+            if($sala == 1){
+                if(($res['table_1'] + $tot_p) < $av['table_1']){
+                    $res['table_1'] = $res['table_1'] + $tot_p;
+                    $date->reserving = json_encode($res);
+                } elseif(($res['table_1'] + $tot_p) == $av['table_1']) {
+                    $res['table_1'] = $res['table_1'] + $tot_p;
+                    $date->reserving = json_encode($res);
+                    $vis['table_1'] = 0;
+                    $date->visible = json_encode($vis);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                        'data' => $date
+                    ]);
                 }
             }else{
-                if(($res['table'] + $tot_p) < $av['table']){
-                    $res['table'] = $res['table'] + $tot_p;
+                if(($res['table_2'] + $tot_p) < $av['table_2']){
+                    $res['table_2'] = $res['table_2'] + $tot_p;
                     $date->reserving = json_encode($res);
-                } elseif(($res['table'] + $tot_p) == $av['table']) {
-                    $res['table'] = $res['table'] + $tot_p;
+                } elseif(($res['table_2'] + $tot_p) == $av['table_2']) {
+                    $res['table_2'] = $res['table_2'] + $tot_p;
                     $date->reserving = json_encode($res);
-                    $vis['table'] = 0;
+                    $vis['table_2'] = 0;
                     $date->visible = json_encode($vis);
                 } else {
                     return response()->json([
@@ -103,272 +87,296 @@ class ReservationController extends Controller
                     ]);
                 }
             }
-
-        
-            // Crea la nuova prenotazione
-            $newRes = new Reservation();
-            $newRes->name = $data['name'];
-            $newRes->surname = $data['surname'];
-            $newRes->phone = $data['phone'];
-            $newRes->email = $data['email'];
-            $newRes->date_slot = $data['date_slot'];
-            $newRes->n_person = json_encode($n_person);
-            $newRes->message = $data['message'];
-            $newRes->status = 2;
-            $newRes->news_letter = $data['news_letter'];
-            if($property_adv['dt']){
-                $newRes->sala = $data['sala'];
-            }
-            
-            $date->update();
-            $newRes->save();
-
- 
-
-            $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . " \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
-            $guest = "";
-            $sala_mess = " ";
-            if($n_adult && $n_child){
-                $info .= $n_adult . " adulti e " . $n_child . " bambini \n\n";
-                $guest .= $n_adult . " adulti e " . $n_child . " bambini ";
-            }elseif($n_adult){
-                $info .= $n_adult . " adulti \n\n";
-                $guest .= $n_adult . " adulti ";
-            }elseif($n_child){
-                $info .= $n_child . " bambini \n\n";
-                $guest .= $n_child . " bambini ";
-            }
-            if ($property_adv['dt'] && $newRes->sala ) {
-                $info .= " *_Sala prenota: ";
-                $sala_mess .= " *_Sala prenota: ";
-                if ($newRes->sala == 1) {
-                    $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-                    $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-                }else{
-                    $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-                    $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-                }
-                $info .="_* \n\n ";
-                $sala_mess .="_*";
-            }
-            if($newRes->message){
-                $info .= "Note: " . $newRes->message . " \n";
-            }
-            $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
-            $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
-            "📞 Chiama: " . $newRes->phone . "\n\n" .
-            "🔗 Vedi dalla Dashboard: $link_id";
-            
-           
-
-            $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
-
-            $numbers_wa_set_s = Setting::where('name', 'wa')->firstOrFail();
-            $numbers_wa_set = json_decode($numbers_wa_set_s->property, true);
-
-            $data_i = [
-                'messaging_product' => 'whatsapp',
-                'to' => '',
-                "type"=> "interactive",
-                "interactive"=> [
-                    "type"=> "button",
-                    "header"=> [
-                        "type" => "text",
-                        "text"=>'Hai una nuova notifica!',
-                    ],
-                    "footer"=> [
-                        "text"=> "Powered by F +"
-                    ],
-                    "body"=> [
-                    "text"=> $info,
-                    ],
-                        "action"=> [
-                        "buttons"=> [
-                            [
-                                "type"=> "reply",
-                                "reply"=> [
-                                    "id"=> "Conferma",
-                                    "title"=> "Conferma"
-                                ]
-                            ],
-                                [
-                                "type"=> "reply",
-                                "reply"=> [
-                                    "id"=> "Annulla",
-                                    "title"=> "Annulla"
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-            $data_t = [
-                'messaging_product' => 'whatsapp',
-                'to' => '',
-                'category' => 'utility',
-                'type' => 'template',
-                'template' => [
-                    'name' => 'full_emoji',
-                    'language' => [
-                        'code' => 'it'
-                    ],
-                    'components' => [
-                        [
-                            'type' => 'body',
-                            'parameters' => [
-                                [
-                                    'type' => 'text',
-                                    'text' => 'Prenotazione tavolo', 
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => $newRes->name . ' ' . $newRes->surname . ' ha prenotato un tavolo per il ' . $newRes->date_slot  
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => '🧑‍🧑‍🧒‍🧒 Gli ospiti sono: ' . $guest 
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => $sala_mess,  
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => $newRes->phone,  
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => $link_id,  
-                                ],
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-            
-            $n = 0;
-            $messageId = [];
-            $type_m_1 = false;
-            $type_m_2 = false;
-            foreach ($numbers_wa_set['numbers'] as $num) {
-                $data_t['to'] = $num;
-                $data_i['to'] = $num;
-                if($this->isLastResponseWaWithin24Hours($n)){
-                    if($n == 1){
-                        $type_m_1 = 0;
-                    }else{     
-                        $type_m_2 = 0;
-                    }
-                    $response = Http::withHeaders([
-                        'Authorization' => config('configurazione.WA_TO'),
-                        'Content-Type' => 'application/json'
-                    ])->post($url, $data_i);
-                    $m_id = $response->json()['messages'][0]['id'] ?? null;
-                    if($m_id){
-                        array_push($messageId, $m_id);
-                    }
-                }else{
-                    if($n == 1){
-                        $type_m_1 = 1;
-                    }else{     
-                        $type_m_2 = 1;
-                    }
-                    $response = Http::withHeaders([
-                        'Authorization' => config('configurazione.WA_TO'),
-                        'Content-Type' => 'application/json'
-                    ])->post($url, $data_t);
-                    $m_id = $response->json()['messages'][0]['id'] ?? null;
-                    if($m_id){
-                        array_push($messageId, $m_id);
-                    }
-                }
-                $n ++;
-            }
-            
-            $newRes->whatsapp_message_id = json_encode($messageId);
-            $newRes->update();
-            
-            $this->send_mail($newRes);
-
-            $data_am1 = [        
-                'wa_id' => $newRes->whatsapp_message_id,
-                'type_1' => $type_m_1,
-                'type_2' => $type_m_2,
-                'source' => config('configurazione.APP_URL'),
-            ];
-            
-            // Log dei dati inviati
-            Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
-            
-            // try {
-            // Log dei dati inviati
-            Log::info('Dati inviati alla API:', $data_am1);
-            
-            // Invio della richiesta POST
-            //$response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
-            $response_am1 = Http::withHeaders([ 'X-API-KEY' => config('configurazione.X-API-KEY')])
-                ->post('https://db-demo4.future-plus.it/api/messages', $data_am1);
-        
-            // Controllo della risposta prima di restituirla
-            if ($response_am1->successful()) {
-                Log::info('Risposta ricevuta con successo:');
-                Log::info($response_am1);
-                //   Log::info('Risposta ricevuta con successo:', $response_am1);
-                return response()->json([
-                    'status' => 'success',
-                    'success' => true,
-                    'data' => $response_am1->json(),
-                ]);
+        }else{
+            if(($res['table'] + $tot_p) < $av['table']){
+                $res['table'] = $res['table'] + $tot_p;
+                $date->reserving = json_encode($res);
+            } elseif(($res['table'] + $tot_p) == $av['table']) {
+                $res['table'] = $res['table'] + $tot_p;
+                $date->reserving = json_encode($res);
+                $vis['table'] = 0;
+                $date->visible = json_encode($vis);
             } else {
-                Log::error('Errore nella risposta API:', [
-                    'status' => 'false',
-                    'body' => $response_am1->body(),
-                ]);
                 return response()->json([
                     'success' => false,
-                    'message' => 'Errore dalla API esterna.',
-                    'data' => $response_am1->json(),
-                ], $response_am1->status());
+                    'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
+                    'data' => $date
+                ]);
             }
+        }
 
-            // } catch (Exception $e) {
-            //     // Gestione degli errori
-            //     Log::error('Errore nell\'invio della richiesta POST:', [
-            //         'message' => $e->getMessage(),
-            //         'trace' => $e->getTraceAsString(),
-            //     ]);
-            
-            //     return response()->json([
-            //         'status' => 'error',
-            //         'success' => false,
-            //         'message' => 'Errore durante l\'invio della richiesta.',
-            //     ], 500);
-            // }
+    
+        // Crea la nuova prenotazione
+        $newRes = new Reservation();
+        $newRes->name = $data['name'];
+        $newRes->surname = $data['surname'];
+        $newRes->phone = $data['phone'];
+        $newRes->email = $data['email'];
+        $newRes->date_slot = $data['date_slot'];
+        $newRes->n_person = json_encode($n_person);
+        $newRes->message = $data['message'];
+        $newRes->status = 2;
+        $newRes->news_letter = $data['news_letter'];
+        if($property_adv['dt']){
+            $newRes->sala = $data['sala'];
+        }
+        
+        $date->update();
+        $newRes->save();
 
-        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        //     // Errore nel trovare una risorsa
+
+
+        $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . " \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
+        $guest = "";
+        $sala_mess = " ";
+        if($n_adult && $n_child){
+            $info .= $n_adult . " adulti e " . $n_child . " bambini \n\n";
+            $guest .= $n_adult . " adulti e " . $n_child . " bambini ";
+        }elseif($n_adult){
+            $info .= $n_adult . " adulti \n\n";
+            $guest .= $n_adult . " adulti ";
+        }elseif($n_child){
+            $info .= $n_child . " bambini \n\n";
+            $guest .= $n_child . " bambini ";
+        }
+        if ($property_adv['dt'] && $newRes->sala ) {
+            $info .= " *_Sala prenota: ";
+            $sala_mess .= " *_Sala prenota: ";
+            if ($newRes->sala == 1) {
+                $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
+                $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
+            }else{
+                $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
+                $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
+            }
+            $info .="_* \n\n ";
+            $sala_mess .="_*";
+        }
+        if($newRes->message){
+            $info .= "Note: " . $newRes->message . " \n";
+        }
+        $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
+        $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
+        "📞 Chiama: " . $newRes->phone . "\n\n" .
+        "🔗 Vedi dalla Dashboard: $link_id";
+        
+        
+
+        $url = 'https://graph.facebook.com/v20.0/'. config('configurazione.WA_ID') . '/messages';
+
+        $numbers_wa_set_s = Setting::where('name', 'wa')->firstOrFail();
+        $numbers_wa_set = json_decode($numbers_wa_set_s->property, true);
+
+        $data_i = [
+            'messaging_product' => 'whatsapp',
+            'to' => '',
+            "type"=> "interactive",
+            "interactive"=> [
+                "type"=> "button",
+                "header"=> [
+                    "type" => "text",
+                    "text"=>'Hai una nuova notifica!',
+                ],
+                "footer"=> [
+                    "text"=> "Powered by F +"
+                ],
+                "body"=> [
+                "text"=> $info,
+                ],
+                    "action"=> [
+                    "buttons"=> [
+                        [
+                            "type"=> "reply",
+                            "reply"=> [
+                                "id"=> "Conferma",
+                                "title"=> "Conferma"
+                            ]
+                        ],
+                            [
+                            "type"=> "reply",
+                            "reply"=> [
+                                "id"=> "Annulla",
+                                "title"=> "Annulla"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data_t = [
+            'messaging_product' => 'whatsapp',
+            'to' => '',
+            'category' => 'utility',
+            'type' => 'template',
+            'template' => [
+                'name' => 'full_emoji',
+                'language' => [
+                    'code' => 'it'
+                ],
+                'components' => [
+                    [
+                        'type' => 'body',
+                        'parameters' => [
+                            [
+                                'type' => 'text',
+                                'text' => 'Prenotazione tavolo', 
+                            ],
+                            [
+                                'type' => 'text',
+                                'text' => $newRes->name . ' ' . $newRes->surname . ' ha prenotato un tavolo per il ' . $newRes->date_slot  
+                            ],
+                            [
+                                'type' => 'text',
+                                'text' => '🧑‍🧑‍🧒‍🧒 Gli ospiti sono: ' . $guest 
+                            ],
+                            [
+                                'type' => 'text',
+                                'text' => $sala_mess,  
+                            ],
+                            [
+                                'type' => 'text',
+                                'text' => $newRes->phone,  
+                            ],
+                            [
+                                'type' => 'text',
+                                'text' => $link_id,  
+                            ],
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        
+        $n = 0;
+        $messageId = [];
+        $type_m_1 = false;
+        $type_m_2 = false;
+        foreach ($numbers_wa_set['numbers'] as $num) {
+            $data_t['to'] = $num;
+            $data_i['to'] = $num;
+            if($this->isLastResponseWaWithin24Hours($n)){
+                if($n == 1){
+                    $type_m_1 = 0;
+                }else{     
+                    $type_m_2 = 0;
+                }
+                $response = Http::withHeaders([
+                    'Authorization' => config('configurazione.WA_TO'),
+                    'Content-Type' => 'application/json'
+                ])->post($url, $data_i);
+                $m_id = $response->json()['messages'][0]['id'] ?? null;
+                if($m_id){
+                    array_push($messageId, $m_id);
+                }
+            }else{
+                if($n == 1){
+                    $type_m_1 = 1;
+                }else{     
+                    $type_m_2 = 1;
+                }
+                $response = Http::withHeaders([
+                    'Authorization' => config('configurazione.WA_TO'),
+                    'Content-Type' => 'application/json'
+                ])->post($url, $data_t);
+                $m_id = $response->json()['messages'][0]['id'] ?? null;
+                if($m_id){
+                    array_push($messageId, $m_id);
+                }
+            }
+            $n ++;
+        }
+        
+        $newRes->whatsapp_message_id = json_encode($messageId);
+        $newRes->update();
+        
+        $this->send_mail($newRes);
+
+        $data_am1 = [        
+            'wa_id' => $newRes->whatsapp_message_id,
+            'type_1' => $type_m_1,
+            'type_2' => $type_m_2,
+            'source' => config('configurazione.APP_URL'),
+        ];
+        
+        // Log dei dati inviati
+        Log::info('Invio richiesta POST a https://db-demo4.future-plus.it/api/messages', $data_am1);
+        
+        // try {
+        // Log dei dati inviati
+        Log::info('Dati inviati alla API:', $data_am1);
+        
+        // Invio della richiesta POST
+        //$response_am1 = Http::post('https://db-demo4.future-plus.it/api/messages', $data_am1);
+        // $response_am1 = Http::withHeaders([ 'X-API-KEY' => config('configurazione.X-API-KEY')])
+        //     ->post('https://db-demo4.future-plus.it/api/messages', $data_am1);
+        $config = [
+            'driver'    => 'mysql',
+            'host'      => '127.0.0.1',
+            'port'      => '3306',
+            'database'  => 'dciludls_demo4',
+            'username'  => 'dciludls_ceo',
+            'password'  => config('configurazione.MSC_P'),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ];
+
+        DB::purge('dynamic'); // resetta eventuali connessioni precedenti con lo stesso nome
+        config(['database.connections.dynamic' => $config]);
+
+        // Query diretta senza Model
+        $results = DB::connection('dynamic')->select('SELECT * FROM users');
+
+        $source = (new \App\Models\Source)
+            ->setConnection('dynamic')
+            ->firstOrCreate(
+                ['domain' => $data_am1['source']],
+                ['domain' => $data_am1['source']]
+            );
+
+        // Decodifica wa_id e verifica se è valido
+        $mex = json_decode($data_am1['wa_id'], true);
+        if (!is_array($mex)) {
+            return response()->json(['success' => false, 'error' => 'Si è verificato un errore. Riprova più tardi.']);
+        }
+        //dd('ciao');
+
+        Log::info("wa_id decodificato con successo:", ['wa_id' => $mex]);
+
+        $i = 1;
+        foreach ($mex as $id) {
+            $message = new \App\Models\Message();
+            $message->setConnection('dynamic'); // <--- qui
+            $message->wa_id = $id;
+            $message->type = $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'];
+            $message->source = $source->id;
+            $message->save();
+            $i++;
+        }
+
+    
+        // // Controllo della risposta prima di restituirla
+        // if ($response_am1->successful()) {
+        //     Log::info('Risposta ricevuta con successo:');
+        //     Log::info($response_am1);
+        //     //   Log::info('Risposta ricevuta con successo:', $response_am1);
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'success' => true,
+        //         'data' => $response_am1->json(),
+        //     ]);
+        // } else {
+        //     Log::error('Errore nella risposta API:', [
+        //         'status' => 'false',
+        //         'body' => $response_am1->body(),
+        //     ]);
         //     return response()->json([
         //         'success' => false,
-        //         'message' => 'Data o impostazione non trovata: ' . $e->getMessage(),
-        //     ], 200);
-
-        // } catch (\Illuminate\Validation\ValidationException $e) {
-        //     // Errore di validazione
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Errore di validazione: ' . $e->getMessage(),
-        //         'errors' => $e->errors(),
-        //     ], 200);
-
-        // } catch (\Exception $e) {
-        //     // Gestione generale degli errori
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Si è verificato un errore: ' . $e->getMessage(),
-        //         'file' => $e->getFile(),
-        //         'line' => $e->getLine(),
-        //     ], 200);
+        //         'message' => 'Errore dalla API esterna.',
+        //         'data' => $response_am1->json(),
+        //     ], $response_am1->status());
         // }
+
+            
     }
 
     protected function send_mail($newRes){
