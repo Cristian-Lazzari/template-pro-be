@@ -323,11 +323,10 @@ class ReservationController extends Controller
         DB::purge('dynamic'); // resetta eventuali connessioni precedenti con lo stesso nome
         config(['database.connections.dynamic' => $config]);
 
-        // Query diretta senza Model
-        //$results = DB::connection('dynamic')->select('SELECT * FROM users');
 
-        $source = (new \App\Models\Source)
-            ->setConnection('dynamic')
+
+        $source = DB::connection('dynamic')
+            ->table('sources')
             ->firstOrCreate(
                 ['domain' => $data_am1['source']],
                 ['domain' => $data_am1['source']]
