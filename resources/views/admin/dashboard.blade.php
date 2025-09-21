@@ -305,7 +305,11 @@ $adv = json_decode($adv_s->property, 1);
                                     <div class="calendar">
 
                                         @foreach ($m['days'] as $d)
-                                            <form action="{{ route('admin.dates.showDay') }}" class="day {{ 'd' . $d['day_w']}} @if(!isset($d['time'])) day-off @endif @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) day-active @endif " style="grid-column-start:{{$d['day_w'] }}" method="get">
+                                            <form action="{{ route('admin.dates.showDay') }}" 
+                                            class="day {{ 'd' . $d['day_w']}} @if(!isset($d['time'])) day-off @endif 
+                                            @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) day-active @endif " 
+                                            style="grid-column-start:{{$d['day_w'] }}"
+                                             method="get">
                                                 @csrf
                                                 <input type="hidden" name="date" value="{{$d['date']}}">
                                                 @if(isset($d['asporto']) && $d['asporto'] !== 0 )
