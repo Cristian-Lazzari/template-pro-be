@@ -331,8 +331,8 @@ class ReservationController extends Controller
                     'username'=> config('configurazione.us'),
                     'token'   => config('configurazione.pw'),
                     'host'    => config('configurazione.hs'),
-                    'mail_from_address'=> config('configurazione.mf'),
                     'app_name'=> config('configurazione.APP_NAME'),
+                    'app_url'=> config('configurazione.APP_URL'),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]
