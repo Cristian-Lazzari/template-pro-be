@@ -281,6 +281,8 @@ $adv = json_decode($adv_s->property, 1);
                         <div class="carousel-inner">
                         @php $i = 0; @endphp
                         @foreach ($year as $m)
+                            @dump('current'.$currentMonth . " " . $currentYear)
+                            @dump('passed'.$m['month'] . " " . $m['year'])
                             <div class="carousel-item
                             @if ($currentMonth == $m['month'] && $currentYear == $m['year'])
                                 active 
