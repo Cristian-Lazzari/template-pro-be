@@ -144,10 +144,11 @@ class PageController extends Controller
             ->select(
                 'name',
                 'surname',
+                'n_person',
                 'id',
                 'status',
                 DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
-                DB::raw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS t")
+                DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%H:%i') AS time")
             )
             ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
             ->where('status', '!=', 4) // 👈 controllo aggiunto
@@ -161,7 +162,7 @@ class PageController extends Controller
                 'id',
                 'status',
                 DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
-                DB::raw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS t")
+                DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%H:%i') AS time")
             )
             ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
             ->where('status', '!=', 4) // 👈 controllo aggiunto
@@ -199,13 +200,112 @@ class PageController extends Controller
     }
     private function get_date(){
    
-        $oldestDate = Reservation::orderBy('date_slot', 'asc')->value('date_slot');
+        $oldestDate_r = Reservation::orderBy('date_slot', 'asc')->value('date_slot');
+        $oldestDate_o = Order::orderBy('date_slot', 'asc')->value('date_slot');
+       
+        $oldestCarbon_o = Carbon::createFromFormat('%Y-%m-%d %H:%i', $oldestDate_o);
+        $oldestCarbon_r = Carbon::createFromFormat('%Y-%m-%d %H:%i', $oldestDate_r);
         
-        $oldestCarbon = Carbon::createFromFormat('d/m/Y H:i', $oldestDate);
+        $oldestCarbon =  $oldestCarbon_o->min($oldestCarbon_r);
         $reserved = $this->get_res($oldestCarbon);
 
+        $first_day = $oldestCarbon;
 
-        //return array_values($result);
+        $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
+        $week = $adv['week_set'];
+
+        $now = Carbon::now(); 
+        $day_in_calendar = $oldestCarbon->diffInDays($now) + 60; // giorni da mostrare
+        $days = [];
+        for ($i = 0 ; $i < $day_in_calendar; $i++) { 
+            $day = [
+                'year' => $first_day->year,
+                'month' => $first_day->month, // 1 - 12
+                'date' => $first_day->copy()->format('Y-m-d'),
+                'day' => $first_day->copy()->format('j'), // 1 - 31
+                'day_w' => $first_day->copy()->format('N'), // 1 = lunedì, 7 = domenica
+                'times' => [],
+                'status' => 1, // 0 non disponibile,1 disponobile,2 oggi 
+                'guests' => 0,
+                'n_order' => 0,
+            ];
+
+
+            if (count($week[$first_day->format('N')]) == 0 || in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
+                $day['status'] = 0;
+            }
+            if($day['day'] == $now->copy()->format('Y-m-d')){
+                $day['status'] = 2;
+            }
+
+            
+            foreach ($week[$first_day->format('N')] as $time => $property) {
+                $day['times'][$time] = [
+                    'res' => [],
+                    'or' => [],
+                    'property' => $property,
+                ];
+                
+            }
+            if(isset($day['day'], $reserved)){
+                foreach ($reserved[$day['day']['res']] as $r) {
+                    if(isset($r['time'], $reserved)){
+                        $day['times'][$r['time']]['res'][] = $r;
+                    }else{
+                        $day['times'][$r['time']] = [
+                            'res' => [$r],
+                            'or' => [],
+                            'property' => $property,
+                        ];
+                    }
+                    $_p = json_decode($r->n_person);
+                    $day['guests'] += ($_p->child + $_p->adult);
+                }
+                foreach ($reserved[$day['day']['or']] as $r) {
+                    if(isset($r['time'], $reserved)){
+                        $day['times'][$r['time']]['or'][] = $r;
+                    }else{
+                        $day['times'][$r['time']] = [
+                            'res' => [],
+                            'or' => [$r],
+                            'property' => $property,
+                        ];
+                    }
+                    $day['n_order'] ++ ;
+                }
+            }
+            uksort($day['times'], function($a, $b) {
+                // confronto come orari
+                return strtotime($a) <=> strtotime($b);
+            });
+ 
+            
+            
+            $days[] = $day;
+            
+            $first_day->addDay();
+        }
+        $result = [];
+        foreach ($days as $day) {
+            $monthNumber = $day['month'];
+            $year = $day['year'];
+
+            // se il mese non esiste ancora, inizializzalo
+            if (!isset($result[$monthNumber])) {
+                $result[$monthNumber] = [
+                    'year' => $year,
+                    'month' => $monthNumber,
+                    'days' => []
+                ];
+            }
+
+            // aggiungi il giorno dentro il mese corrispondente
+            $result[$monthNumber]['days'][] = $day;
+        }
+        dd($result);
+
+
+        return $result;
     }
 
 
