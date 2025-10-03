@@ -522,6 +522,8 @@ class DateController extends Controller
     public function generate(Request $request)
     {    
         $data = $request->all();
+        $times_slot_ = $data['times_slot_'];
+
         dd($data);
         
         // Configurazione delle validazioni e disponibilità
