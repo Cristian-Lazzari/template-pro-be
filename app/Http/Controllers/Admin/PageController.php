@@ -186,9 +186,9 @@ class PageController extends Controller
             }
         }
 
-        dump($orders);
-        dump($reservations);
-        dd($reserved);
+        // dump($orders);
+        // dump($reservations);
+        // dd($reserved);
         
 
 
