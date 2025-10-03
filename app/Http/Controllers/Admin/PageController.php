@@ -170,13 +170,25 @@ class PageController extends Controller
             //->with(['products', 'menus']) // 👈 carico anche i prodotti e i menu
         ->get();
 
-        dump($orders);
-        dd($reservations);
         
         $reserved = [];
         foreach ($reservations as $r) {
-            # code...
+            $day = $r;
+            $reserved[$r->day]['res'][] = $day;
         }
+        foreach ($orders as $r) {
+            $day = $r;
+            if(isset($r->day, $reserved)){
+                $reserved[$r->day]['or'][] = $day;
+            }else{
+                $reserved[$r->day]['or'][] = $day;
+            }
+        }
+
+        dump($orders);
+        dump($reservations);
+        dd($reserved);
+        
 
 
         return $reserved;
