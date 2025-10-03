@@ -523,15 +523,19 @@ class DateController extends Controller
     {    
         $data = $request->all();
         $times_slot = $data['times_slot_'];
-        $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
+        $set = Setting::where('name', 'advanced')->first();
+        $adv = json_decode($set->property, 1);
+
         for ($i=1; $i < 8; $i++) { 
             if(!isset($i, $times_slot)){
                 $times_slot[$i] = [];
             }
         }
-        $adv['week_set'] = 
-        dd($data);
-        
+        dd($times_slot);
+        $adv['week_set'] = $times_slot;
+        $set->property = json_encode($adv);
+        $set->update();
+
         // Configurazione delle validazioni e disponibilità
         $configs = [
             // double_t = false
