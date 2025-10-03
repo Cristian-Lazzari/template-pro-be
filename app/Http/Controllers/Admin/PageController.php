@@ -146,13 +146,13 @@ class PageController extends Controller
                 'surname',
                 'id',
                 'status',
-                DB::raw("DATE(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i'))  AS day"),
-                DB::raw("TIME(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i'))  AS t")
+                DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
+                DB::raw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS t")
             )
-            ->whereRaw("STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i') >= ?", [$now])
+            ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
             ->where('status', '!=', 4) // 👈 controllo aggiunto
-            ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i')) ASC")
-            ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i')) ASC")
+            ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
+            ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
         ->get();
         $orders = DB::table('orders')
             ->select(
@@ -160,14 +160,14 @@ class PageController extends Controller
                 'surname',
                 'id',
                 'status',
-                DB::raw("DATE(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i'))  AS day"),
-                DB::raw("TIME(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i'))  AS t")
+                DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
+                DB::raw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS t")
             )
-            ->whereRaw("STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i') >= ?", [$now])
+            ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
             ->where('status', '!=', 4) // 👈 controllo aggiunto
-            ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i')) ASC")
-            ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%Y-%m-%d %H:%i')) ASC")
-            ->with(['products', 'menus']) // 👈 carico anche i prodotti e i menu
+            ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
+            ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
+            //->with(['products', 'menus']) // 👈 carico anche i prodotti e i menu
         ->get();
 
         dump($orders);
