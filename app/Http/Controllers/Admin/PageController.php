@@ -203,8 +203,8 @@ class PageController extends Controller
         $oldestDate_r = Reservation::orderBy('date_slot', 'asc')->value('date_slot');
         $oldestDate_o = Order::orderBy('date_slot', 'asc')->value('date_slot');
        
-        $oldestCarbon_o = Carbon::createFromFormat('%Y-%m-%d %H:%i', $oldestDate_o);
-        $oldestCarbon_r = Carbon::createFromFormat('%Y-%m-%d %H:%i', $oldestDate_r);
+        $oldestCarbon_o = Carbon::createFromFormat('%d/%m/%Y %H:%i', $oldestDate_o);
+        $oldestCarbon_r = Carbon::createFromFormat('%d/%m/%Y %H:%i', $oldestDate_r);
         
         $oldestCarbon =  $oldestCarbon_o->min($oldestCarbon_r);
         $reserved = $this->get_res($oldestCarbon);
