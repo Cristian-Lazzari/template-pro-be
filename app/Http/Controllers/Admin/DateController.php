@@ -522,8 +522,14 @@ class DateController extends Controller
     public function generate(Request $request)
     {    
         $data = $request->all();
-        $times_slot_ = $data['times_slot_'];
-
+        $times_slot = $data['times_slot_'];
+        $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
+        for ($i=1; $i < 8; $i++) { 
+            if(!isset($i, $times_slot)){
+                $times_slot[$i] = [];
+            }
+        }
+        $adv['week_set'] = 
         dd($data);
         
         // Configurazione delle validazioni e disponibilità
