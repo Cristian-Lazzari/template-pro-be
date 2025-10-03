@@ -522,7 +522,7 @@ class DateController extends Controller
     public function generate(Request $request)
     {    
         $data = $request->all();
-        //dd($data);
+        dd($data);
         
         // Configurazione delle validazioni e disponibilità
         $configs = [
@@ -818,3 +818,189 @@ class DateController extends Controller
 
 
 }
+
+    // public function generate(Request $request)
+    // {    
+    //     $data = $request->all();
+    //     dd($data);
+        
+    //     // Configurazione delle validazioni e disponibilità
+    //     $configs = [
+    //         // double_t = false
+    //         false => [
+    //             2 => [
+    //                 'validation' => 'validations2',
+    //                 'availability' => fn($data) => ['table' => $data['max_table']],
+    //             ],
+    //             3 => [
+    //                 true => [
+    //                     'validation' => 'validations3t',
+    //                     'availability' => fn($data) => [
+    //                         'cucina_1' => $data['max_cucina_1'],
+    //                         'cucina_2' => $data['max_cucina_2'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //                 false => [
+    //                     'validation' => 'validations3f',
+    //                     'availability' => fn($data) => [
+    //                         'asporto' => $data['max_asporto'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //             ],
+    //             4 => [
+    //                 true => [
+    //                     'validation' => 'validations4t',
+    //                     'availability' => fn($data) => [
+    //                         'table' => $data['max_table'],
+    //                         'cucina_1' => $data['max_cucina_1'],
+    //                         'cucina_2' => $data['max_cucina_2'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //                 false => [
+    //                     'validation' => 'validations4f',
+    //                     'availability' => fn($data) => [
+    //                         'table' => $data['max_table'],
+    //                         'asporto' => $data['max_asporto'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //             ],
+    //         ],
+    //         // double_t = true
+    //         true => [
+    //             2 => [
+    //                 'validation' => 'validations2dt',
+    //                 'availability' => fn($data) => [
+    //                     'table_1' => $data['max_table_1'],
+    //                     'table_2' => $data['max_table_2'],
+    //                 ],
+    //             ],
+    //             3 => [
+    //                 true => [
+    //                     'validation' => 'validations3t',
+    //                     'availability' => fn($data) => [
+    //                         'cucina_1' => $data['max_cucina_1'],
+    //                         'cucina_2' => $data['max_cucina_2'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //                 false => [
+    //                     'validation' => 'validations3f',
+    //                     'availability' => fn($data) => [
+    //                         'asporto' => $data['max_asporto'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //             ],
+    //             4 => [
+    //                 true => [
+    //                     'validation' => 'validations4tdt',
+    //                     'availability' => fn($data) => [
+    //                         'table_1' => $data['max_table_1'],
+    //                         'table_2' => $data['max_table_2'],
+    //                         'cucina_1' => $data['max_cucina_1'],
+    //                         'cucina_2' => $data['max_cucina_2'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //                 false => [
+    //                     'validation' => 'validations4fdt',
+    //                     'availability' => fn($data) => [
+    //                         'table_1' => $data['max_table_1'],
+    //                         'table_2' => $data['max_table_2'],
+    //                         'asporto' => $data['max_asporto'],
+    //                         'domicilio' => $data['max_domicilio'],
+    //                     ],
+    //                 ],
+    //             ],
+    //         ],
+    //     ];
+    //     // Recupera le configurazioni
+    //     $adv_s = Setting::where('name', 'advanced')->first();
+    //     $property_adv = json_decode($adv_s->property, 1);  
+           
+    //     $double = $property_adv['dt'];
+    //     $pack = $property_adv['services'];
+    //     $type = $property_adv['too'];
+
+    //     // Estraggo config corretta
+    //     $config = $configs[$double][$pack] ?? null;
+    //     if (is_array($config) && array_key_exists($type, $config)) {
+    //         $config = $config[$type];
+    //     }
+
+    //     if ($config) {
+    //         //$request->validate($this->{$config['validation']});
+    //         $availability = $config['availability']($data);
+    //         // Inizializza reserving a 0
+    //         $reserving = array_map(fn() => 0, $availability);
+    //     }
+
+    //     $days_on     = $request->input("days_on");
+
+    //     $timesDay = [];
+
+    //     $day = [];
+    //     $start = new DateTime($property_adv['times_start']);
+    //     $end = new DateTime($property_adv['times_end']);
+    //     $index = 1;
+    //     $interval = $property_adv['times_interval'];
+
+    //     for ($i = 0; $i < 7; $i++) { 
+    //         array_push($timesDay, $day);
+    //     }
+
+    //     if(isset($data["times_slot_1"])){
+    //         foreach ($data["times_slot_1"] as $key => $value) {
+    //             $timesDay[0][$key] = $this->getStatus($value);
+    //         }
+    //     }
+    //     if(isset($data["times_slot_2"])){
+    //         foreach ($data["times_slot_2"] as $key => $value) {
+    //             $timesDay[1][$key] = $this->getStatus($value);
+    //         }
+    //     }
+    //     if(isset($data["times_slot_3"])){
+    //         foreach ($data["times_slot_3"] as $key => $value) {
+    //             $timesDay[2][$key] = $this->getStatus($value);
+    //         }
+    //     }
+    //     if(isset($data["times_slot_4"])){
+    //         foreach ($data["times_slot_4"] as $key => $value) {
+    //             $timesDay[3][$key] = $this->getStatus($value);
+    //         }
+    //     }
+    //     if(isset($data["times_slot_5"])){
+    //         foreach ($data["times_slot_5"] as $key => $value) {
+    //             $timesDay[4][$key] = $this->getStatus($value);
+    //         }
+    //     }
+    //     if(isset($data["times_slot_6"])){
+    //         foreach ($data["times_slot_6"] as $key => $value) {
+    //             $timesDay[5][$key] = $this->getStatus($value);
+    //         }
+    //     }
+    //     if(isset($data["times_slot_7"])){
+    //         foreach ($data["times_slot_7"] as $key => $value) {
+    //             $timesDay[6][$key] = $this->getStatus($value);
+    //         }
+    //     }
+       
+
+
+      
+    //     // Pulisco le tabelle
+    //     DB::table('dates')->truncate();
+    //     // Eseguo il seeder
+    //     $seeder = new DatesTableSeeder();
+    //     $seeder->setVariables($reserving, $availability, $timesDay, $days_on);
+    //     $seeder->run();
+    //     // Ripristino le prenotazioni
+    //     $this->restoreReservationsAndOrders();
+    //     $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
+    //     return back()->with('success', $m);
+ 
+    // }
