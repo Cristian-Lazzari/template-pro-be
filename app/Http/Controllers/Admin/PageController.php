@@ -302,7 +302,7 @@ class PageController extends Controller
             // aggiungi il giorno dentro il mese corrispondente
             $result[$monthNumber]['days'][] = $day;
         }
-        dd($result);
+        //dd($result);
 
 
         return $result;
