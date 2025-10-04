@@ -248,7 +248,7 @@ class PageController extends Controller
                 
             }
             if(isset($day['day'], $reserved)){
-                foreach ($reserved[$day['day']['res']] as $r) {
+                foreach ($reserved[$day['day']]['res'] as $r) {
                     if(isset($r['time'], $reserved)){
                         $day['times'][$r['time']]['res'][] = $r;
                     }else{
@@ -261,7 +261,7 @@ class PageController extends Controller
                     $_p = json_decode($r->n_person);
                     $day['guests'] += ($_p->child + $_p->adult);
                 }
-                foreach ($reserved[$day['day']['or']] as $r) {
+                foreach ($reserved[$day['day']]['or'] as $r) {
                     if(isset($r['time'], $reserved)){
                         $day['times'][$r['time']]['or'][] = $r;
                     }else{
