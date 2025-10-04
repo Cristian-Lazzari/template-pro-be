@@ -179,7 +179,7 @@ class PageController extends Controller
         }
         foreach ($orders as $r) {
             $day = $r;
-            if(isset($r->day, $reserved)){
+            if(array_key_exists($r->day, $reserved)){
                 $reserved[$r->day]['or'][] = $day;
             }else{
                 $reserved[$r->day]['or'][] = $day;
@@ -247,9 +247,9 @@ class PageController extends Controller
                 ];
                 
             }
-            if(isset($day['day'], $reserved)){
+            if(array_key_exists($day['day'], $reserved)){
                 foreach ($reserved[$day['day']]['res'] as $r) {
-                    if(isset($r['time'], $reserved)){
+                    if(array_key_exists($r['time'], $reserved)){
                         $day['times'][$r['time']]['res'][] = $r;
                     }else{
                         $day['times'][$r['time']] = [
@@ -262,7 +262,7 @@ class PageController extends Controller
                     $day['guests'] += ($_p->child + $_p->adult);
                 }
                 foreach ($reserved[$day['day']]['or'] as $r) {
-                    if(isset($r['time'], $reserved)){
+                    if(array_key_exists($r['time'], $reserved)){
                         $day['times'][$r['time']]['or'][] = $r;
                     }else{
                         $day['times'][$r['time']] = [
