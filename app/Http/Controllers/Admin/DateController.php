@@ -527,7 +527,7 @@ class DateController extends Controller
         $adv = json_decode($set->property, 1);
 
         for ($i=1; $i < 8; $i++) { 
-            if(isset($i, $times_slot)){
+            if(array_key_exists($i, $times_slot)){
                 dump($times_slot[$i]);
                 $times_slot[$i] = [];
             }
