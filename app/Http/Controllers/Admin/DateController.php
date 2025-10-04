@@ -532,6 +532,7 @@ class DateController extends Controller
                 $times_slot[$i] = [];
             }
         }
+        ksort($times_slot);
         dd($times_slot);
         $adv['week_set'] = $times_slot;
         $set->property = json_encode($adv);
