@@ -528,7 +528,7 @@ class DateController extends Controller
 
         for ($i=1; $i < 8; $i++) { 
             if(!array_key_exists($i, $times_slot)){
-                dump($times_slot[$i]);
+                //dump($times_slot[$i]);
                 $times_slot[$i] = [];
             }
         }
