@@ -528,15 +528,33 @@ class DateController extends Controller
 
         for ($i=1; $i < 8; $i++) { 
             if(!array_key_exists($i, $times_slot)){
-                //dump($times_slot[$i]);
                 $times_slot[$i] = [];
             }
         }
         ksort($times_slot);
-        dd($times_slot);
+        //dd($times_slot);
         $adv['week_set'] = $times_slot;
+
+        if($adv['dt'] && in_array($adv['services'],[2,4])){
+            $adv['max_table'] = $data['max_table'];
+        }elseif(in_array($adv['services'],[2,4])){
+            $adv['max_table_1'] = $data['max_table_1'];
+            $adv['max_table_2'] = $data['max_table_2'];
+        }
+
+        if(in_array($adv['services'],[3,4])){
+            $adv['max_asporto'] = $data['max_asporto'];
+            $adv['max_domicilio'] = $data['max_domicilio'];
+        }
+
+
+
         $set->property = json_encode($adv);
         $set->update();
+
+        $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
+        return back()->with('success', $m);
+
 
         // Configurazione delle validazioni e disponibilità
         $configs = [
@@ -714,8 +732,7 @@ class DateController extends Controller
         $seeder->run();
         // Ripristino le prenotazioni
         $this->restoreReservationsAndOrders();
-        $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
-        return back()->with('success', $m);
+        
  
     }
 
