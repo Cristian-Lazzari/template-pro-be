@@ -702,13 +702,13 @@ body{
     margin: 17px auto 0;
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: 1.2rem;
     font-size: $fs_sm_1;
     font-weight: 600;
-    background-color: var(--c3);
+    //background-color: var(--c3);
     border-radius: 8px;
     padding: 1rem 1.3rem;
-    color: var(--c1);
+   // color: var(--c1);
     flex-direction: column;
     width: fit-content;
     .line{
@@ -716,10 +716,10 @@ body{
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: .2rem;
+        gap: .6rem;
         flex-wrap: wrap;
         h4{
-            text-align: center;
+            //text-align: center;
             width: 100%;
             margin: 0;
         }
