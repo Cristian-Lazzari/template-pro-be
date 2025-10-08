@@ -257,7 +257,7 @@ class OrderController extends Controller
                 $k->delete();
             }
         }
-        $query = Order::whereRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) >= ?", [now()->toDateString()]);
+        $query = Order::all();
 
         $orders = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
         return view('admin.Orders.index', compact('orders'));

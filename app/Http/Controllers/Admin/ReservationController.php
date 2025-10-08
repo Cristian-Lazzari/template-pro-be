@@ -134,7 +134,7 @@ class ReservationController extends Controller
 
     public function index()
     {
-        $query = Reservation::whereRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) >= ?", [now()->toDateString()]);
+        $query = Reservation::all();
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
