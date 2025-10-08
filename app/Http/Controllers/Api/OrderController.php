@@ -44,6 +44,12 @@ class OrderController extends Controller
             $adv_s = Setting::where('name', 'advanced')->first();
             $property_adv = json_decode($adv_s->property, 1);  
             
+            $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
+            // Convertilo nel formato desiderato
+            $f_date = $carbonDate->copy()->format('Y-m-d');
+            $f_time = $carbonDate->copy()->format('H:i');
+            $f_N = $carbonDate->copy()->format('N'); //giorno della settimana
+
             $check_key = !isset($data['comune']) ? 2 : 3;
             
             $av = 0;
