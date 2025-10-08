@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
 use App\Models\Date;
+use App\Models\Menu;
 use App\Models\Post;
 use App\Models\Order;
 use App\Models\Product;
@@ -138,12 +139,21 @@ class PageController extends Controller
         ]);
     }
 
+    public function dashboard() {
+        $calendar = $this->get_date();
+
+        $property_adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
+
+        $notify = [];
+        return view('admin.dashboard', compact('calendar', 'notify','property_adv'));
+    }
     private function get_res($now){
 
         $reservations = DB::table('reservations')
             ->select(
                 'name',
                 'surname',
+                'status',
                 'n_person',
                 'id',
                 'status',
@@ -155,10 +165,11 @@ class PageController extends Controller
             ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
         ->get();
-        $orders = DB::table('orders')
-            ->select(
+        $orders = Order::select(
                 'name',
                 'surname',
+                'status',
+                'tot_price',
                 'id',
                 'status',
                 DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
@@ -168,7 +179,7 @@ class PageController extends Controller
             ->where('status', '!=', 4) // 👈 controllo aggiunto
             ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
-            //->with(['products', 'menus']) // 👈 carico anche i prodotti e i menu
+            ->with(['products', 'menus']) // 👈 carico anche i prodotti e i menu
         ->get();
 
         
@@ -194,19 +205,30 @@ class PageController extends Controller
 
         return $reserved;
     }
-    public function dashboard() {
-
-        $calendar = $this->get_date();
-    }
     private function get_date(){
    
         $oldestDate_r = Reservation::orderBy('date_slot', 'asc')->value('date_slot');
+
         $oldestDate_o = Order::orderBy('date_slot', 'asc')->value('date_slot');
+
+        $oldestCarbon = '';
+        if($oldestDate_o){
+            $oldestCarbon_o = Carbon::createFromFormat('d/m/Y H:i', $oldestDate_o);
+            $oldestCarbon =  $oldestCarbon_o;
+        }
+        if($oldestDate_r){
+            $oldestCarbon_r = Carbon::createFromFormat('d/m/Y H:i', $oldestDate_r);
+            $oldestCarbon =  $oldestCarbon_r;
+        }
+        if($oldestDate_o && $oldestDate_r){
+            $oldestCarbon =  $oldestCarbon_o->min($oldestCarbon_r);
+        }
+        if(!$oldestDate_o && !$oldestDate_r){
+            $oldestCarbon =  Carbon::now();
+        }
+
        
-        $oldestCarbon_o = Carbon::createFromFormat('d/m/Y H:i', $oldestDate_o);
-        $oldestCarbon_r = Carbon::createFromFormat('d/m/Y H:i', $oldestDate_r);
         
-        $oldestCarbon =  $oldestCarbon_o->min($oldestCarbon_r);
         $reserved = $this->get_res($oldestCarbon);
 
         $first_day = $oldestCarbon;
@@ -225,14 +247,19 @@ class PageController extends Controller
                 'day' => $first_day->copy()->format('j'), // 1 - 31
                 'day_w' => $first_day->copy()->format('N'), // 1 = lunedì, 7 = domenica
                 'times' => [],
-                'status' => 1, // 0 non disponibile,1 disponobile,2 oggi 
+                'status' => 1, // 0 non disponibile,1 disponobile,2 oggi,  3 bloccato
                 'guests' => 0,
                 'n_order' => 0,
+                'n_res' => 0,
+                'cash' => 0,
             ];
 
 
-            if (count($week[$first_day->format('N')]) == 0 || in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
+            if (count($week[$first_day->format('N')]) == 0) {
                 $day['status'] = 0;
+            }
+            if (in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
+                $day['status'] = 3;
             }
             if($day['day'] == $now->copy()->format('Y-m-d')){
                 $day['status'] = 2;
@@ -247,31 +274,35 @@ class PageController extends Controller
                 ];
                 
             }
-            if(array_key_exists($day['day'], $reserved)){
-                foreach ($reserved[$day['day']]['res'] as $r) {
-                    if(array_key_exists($r['time'], $reserved)){
-                        $day['times'][$r['time']]['res'][] = $r;
+
+            if(isset($reserved[$day['date']])){
+                foreach ($reserved[$day['date']]['res'] ?? [] as $r) {
+
+                    if(isset($day['times'][$r->time])){
+                        $day['times'][$r->time]['res'][] = $r;
                     }else{
-                        $day['times'][$r['time']] = [
+                        $day['times'][$r->time] = [
                             'res' => [$r],
                             'or' => [],
-                            'property' => $property,
+                            'property' => [],
                         ];
                     }
                     $_p = json_decode($r->n_person);
                     $day['guests'] += ($_p->child + $_p->adult);
+                    $day['n_res'] ++ ;
                 }
-                foreach ($reserved[$day['day']]['or'] as $r) {
-                    if(array_key_exists($r['time'], $reserved)){
-                        $day['times'][$r['time']]['or'][] = $r;
+                foreach ($reserved[$day['date']]['or'] ?? [] as $r) {
+                    if(isset($day['times'][$r->time])){
+                        $day['times'][$r->time]['or'][] = $r;
                     }else{
-                        $day['times'][$r['time']] = [
+                        $day['times'][$r->time] = [
                             'res' => [],
                             'or' => [$r],
-                            'property' => $property,
+                            'property' => [],
                         ];
                     }
                     $day['n_order'] ++ ;
+                    $day['cash'] += $r->tot_price;
                 }
             }
             uksort($day['times'], function($a, $b) {
@@ -295,17 +326,34 @@ class PageController extends Controller
                 $result[$monthNumber] = [
                     'year' => $year,
                     'month' => $monthNumber,
-                    'days' => []
+                    'days' => [],
+                    'n_order' => 0,
+                    'n_res' => 0,
+                    'guests' => 0,
+                    'cash' => 0,
                 ];
             }
 
             // aggiungi il giorno dentro il mese corrispondente
             $result[$monthNumber]['days'][] = $day;
+            $result[$monthNumber]['n_order'] += $day['n_order'];
+            $result[$monthNumber]['n_res'] += $day['n_res'];
+            $result[$monthNumber]['cash'] += $day['cash'];
+            $result[$monthNumber]['guests'] += $day['guests'];
         }
-        //dd($result);
+       // dd($result);
 
 
         return $result;
+    }
+    public function settings(){
+        $setting = Setting::all()->keyBy('name');
+        return view('admin.settings', compact('setting'));
+    }
+    public function menu(){
+        $menus = Menu::where('promo', 1)->get();
+        $products = Product::where('promotion', 1)->get();
+        return view('admin.menu', compact('menus', 'products'));
     }
 
 

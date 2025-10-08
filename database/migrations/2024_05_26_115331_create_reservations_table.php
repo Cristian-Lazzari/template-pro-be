@@ -29,7 +29,7 @@ return new class extends Migration
             
             $table->string('whatsapp_message_id')->nullable();
 
-            $table->boolean('take_away')->default(false);
+            //$table->boolean('take_away')->default(false);
             $table->boolean('news_letter');
             $table->boolean('notificated')->default(false);
             $table->timestamps();

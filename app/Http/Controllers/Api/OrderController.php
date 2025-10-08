@@ -38,144 +38,51 @@ class OrderController extends Controller
         $request->validate($this->validations);
         $data = $request->all();
         try {       
-            $date = Date::where('date_slot', $data['date_slot'])->firstOrFail();
-            $vis = json_decode($date->visible, true);
-            $av = json_decode($date->availability, true);
-            $res = json_decode($date->reserving, true);
+
             
-            $arrvar = str_replace('\\', '', $data['cart']);
-            $cart = json_decode($arrvar, true);
-           // return response()->json($cart);
+            // return response()->json($cart);
             $adv_s = Setting::where('name', 'advanced')->first();
             $property_adv = json_decode($adv_s->property, 1);  
-           
-            if($property_adv['too']){
-                $res_c1 = $res['cucina_1'];
-                $res_c2 = $res['cucina_2'];
-                $av_c1 = $av['cucina_1'];
-                $av_c2 = $av['cucina_2'];
-
-                $np_c1 = $data['npezzi_c1'];
-                $np_c2 = $data['npezzi_c2'];
-
-                if(isset($data['comune'])){
-                    if( ($res['domicilio'] + 1) < $av['domicilio']){
-                        $res['domicilio'] = $res['domicilio'] + 1;
-    
-                        if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                        }elseif(($res_c1 + $np_c1) == $av_c1){
-                            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                            $vis['cucina_1'] = 0;
-                        }elseif(($res_c2 + $np_c2) == $av_c2){
-                            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                            $vis['cucina_2'] = 0;
-                        }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
-                            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                            $vis['cucina_1'] = 0;
-                            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                            $vis['cucina_2'] = 0;
-                        }else{
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
-                                'data' => $date
-                            ]);
-                        }
-                    } elseif (($res['domicilio'] + 1) == $av['domicilio']){
-                        $res['domicilio'] = $res['domicilio'] + 1;
-                        $vis['domicilio'] = 0;
-                        if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                        }elseif(($res_c1 + $np_c1) == $av_c1){
-                            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                            $vis['cucina_1'] = 0;
-                        }elseif(($res_c2 + $np_c2) == $av_c2){
-                            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                            $vis['cucina_2'] = 0;
-                        }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
-                            $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                            $vis['cucina_1'] = 0;
-                            $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                            $vis['cucina_2'] = 0;
-                        }else{
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
-                                'data' => $date
-                            ]);
-                        }
-                    }else{
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
-                            'data' => $date
-                        ]);
-    
-                    }
+            
+            $check_key = !isset($data['comune']) ? 2 : 3;
+            
+            $av = 0;
+            if($property_adv['week_set'][$f_N] !== [] && isset($property_adv['week_set'][$f_N][$f_time]) && in_array($check_key, $property_adv['week_set'][$f_N][$f_time]) && !isset($property_adv['day_off'][$f_date])){
+                if($check_key == 3){
+                    $av = $property_adv['max_domicilio'];
                 }else{
-                    if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                        $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                        $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                    }elseif(($res_c1 + $np_c1) == $av_c1){
-                        $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                        $vis['cucina_1'] = 0;
-                    }elseif(($res_c2 + $np_c2) == $av_c2){
-                        $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                        $vis['cucina_2'] = 0;
-                    }elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) == $av_c2)){
-                        $res['cucina_1'] = $res['cucina_1'] + $np_c1;
-                        $vis['cucina_1'] = 0;
-                        $res['cucina_2'] = $res['cucina_2'] + $np_c2;
-                        $vis['cucina_2'] = 0;
-                    }else{
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                            'data' => $date
-                        ]);
-                    }
-    
+                    $av = $property_adv['max_asporto'];
                 }
-                $date->visible = json_encode($vis);
-                $date->reserving = json_encode($res);
             }else{
-                if(isset($data['comune'])){
-                    if(($res['domicilio'] + 1) < $av['domicilio']){
-                        $res['domicilio'] = $res['domicilio'] + 1;
-                        $date->reserving = json_encode($res);  
-                    }elseif(($res['domicilio'] + 1) == $av['domicilio']){
-                        $res['domicilio'] = $res['domicilio'] + 1;
-                        $date->reserving = json_encode($res);
-                        $vis['domicilio'] = 0;
-                        $date->visible = json_encode($vis);
-                    }else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                ]);
+            }
+
+            $res_in_time = Order::where('date_slot', $data['date_slot'])->get();
+
+            if(count($res_in_time)){
+                foreach ($res_in_time as $r) {
+                    $av --;
+                    if($av < 0){
                         return response()->json([
                             'success' => false,
-                            'message' => 'Controlla meglio la disponibilità per l\'orario che hai scelto... Prova di nuovo!',
-                            'data' => $date
-                        ]);
-                    }
-                }else{
-                    if(($res['asporto'] + 1) < $av['asporto']){
-                        $res['asporto'] = $res['asporto'] + 1;
-                        $date->reserving = json_encode($res);  
-                    }elseif(($res['asporto'] + 1) == $av['asporto']){
-                        $res['asporto'] = $res['asporto'] + 1;
-                        $date->reserving = json_encode($res);
-                        $vis['asporto'] = 0;
-                        $date->visible = json_encode($vis);
-                    }else{
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Sembra che pochi attimi fa la disponibilita sia cambiata, ci dispiace per l\'inconveniente... provate di nuovo',
-                            'data' => $date
+                            'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
                         ]);
                     }
                 }
             }
+
+            $av --;
+            if($av < 0){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                ]);
+            }
+            $arrvar = str_replace('\\', '', $data['cart']);
+            $cart = json_decode($arrvar, true);
             $total_price = 0;
             for ($i = 0; $i < count($cart['products']); ++$i) {
                 $product = Product::where('id', $cart['products'][$i]['id'])->first();
@@ -208,7 +115,7 @@ class OrderController extends Controller
             
             $newOrder->name = $data['name'];
             $newOrder->surname = $data['surname'];
-            $newOrder->date_slot = $data['date_slot'];
+            $newOrder->date_slot = $carbonDate->copy()->format('d/m/Y H:i');
             $newOrder->phone = $data['phone'];
             $newOrder->email = $data['email'];
             $newOrder->message = $data['message'];

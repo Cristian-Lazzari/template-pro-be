@@ -48,10 +48,10 @@ Route::middleware(['auth', 'verified'])
         Route::get('/mailer/create_model',  [MailerController::class, 'create_model'])->name('mailer.create_model');
         Route::post('/mailer/create_m',     [MailerController::class, 'create_m'])->name('mailer.create_m');
 
-      Route::get('/mailer/edit_model/{id}', [MailerController::class, 'edit_model'])->name('mailer.edit_model');
+        Route::get('/mailer/edit_model/{id}',   [MailerController::class, 'edit_model'])->name('mailer.edit_model');
 
-        Route::post('/mailer/update_model', [MailerController::class, 'update_model'])->name('mailer.update_model');
-        Route::delete('/models/{id}',       [MailerController::class, 'delete'])->name('models.delete');
+        Route::post('/mailer/update_model',     [MailerController::class, 'update_model'])->name('mailer.update_model');
+        Route::delete('/models/{id}',           [MailerController::class, 'delete'])->name('models.delete');
 
         // Rotte setting
 
@@ -100,6 +100,14 @@ Route::middleware(['auth', 'verified'])
         Route::resource('reservations',  ReservationController::class);
         Route::resource('ingredients',   IngredientController::class);
         Route::resource('categories',    CategoryController::class);
+
+        Route::get('/list', [AdminPageController::class, 'list'])->name('list');
+        Route::get('/settings', [AdminPageController::class, 'settings'])->name('settings');
+        Route::get('/menu', [AdminPageController::class, 'menu'])->name('menu');
+
+        Route::post('settings/cancelDates',        [SettingController::class, 'cancelDates'])->name('settings.cancelDates');
+
+
     });
 
 Route::middleware('auth')
