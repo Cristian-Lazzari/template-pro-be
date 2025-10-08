@@ -81,10 +81,6 @@ class OrderController extends Controller
     protected function statusF($wa, $c_a, $id){
 
         $order = Order::where('id', $id)->with('products')->firstOrFail();
-        $date = Date::where('date_slot', $order->date_slot)->first();
-            if($date == null){
-                return 'error data';
-            }
         //dd($order);
         if($c_a){
             if($order->status == 2 || $order->status == 0){
@@ -129,66 +125,7 @@ class OrderController extends Controller
             }else{
                 $m = 'L\'ordine era gia stato annullato!';
                 return redirect()->back()->with('success', $m); 
-            }
-            
-            $vis = json_decode($date->visible, 1); 
-            $reserving = json_decode($date->reserving, 1);
-
-            $adv_s = Setting::where('name', 'advanced')->first();
-            $property_adv = json_decode($adv_s->property, 1);  
-            if($property_adv['too']){
-                $np_cucina_1 = 0;
-                $np_cucina_2 = 0;
-                foreach ($order->products as $p) {
-                    $qt = 0;
-                    $op = OrderProduct::where('product_id', $p->id)->where('order_id', $order->id)->first();
-                    if($op !== null){
-                        $qt = $op->quantity;
-                        if($p->type_plate == 1 && $qt !== 0){
-                            $np_cucina_1 += ($p->slot_plate * $qt);
-                            if($vis['cucina_1'] == 0){
-                                $vis['cucina_1'] = 1;
-                            }
-                        }
-                        if($p->type_plate == 2){
-                            $np_cucina_2 += ($p->slot_plate * $qt);
-                            if($vis['cucina_2'] == 0){
-                                $vis['cucina_2'] = 1;
-                            }
-                        }
-                    }
-                }
-                $reserving['cucina_1'] = $reserving['cucina_1'] - $np_cucina_1;
-                $reserving['cucina_2'] = $reserving['cucina_2'] - $np_cucina_2;
-                if($order->address !== null){
-                    if($vis['domicilio'] == 0){
-                        $vis['domicilio'] = 1;
-                    }
-                    $reserving['domicilio'] --;
-                }
-            }else{
-                if($order->address !== null){
-                    if($vis['domicilio'] == 0){
-                        $vis['domicilio'] = 1;
-                    }
-                    if($vis['asporto'] == 0){
-                        $vis['asporto'] = 1;
-                    }
-                    $reserving['domicilio'] --;
-                }else{
-                    if($vis['asporto'] == 0){
-                        $vis['asporto'] = 1;
-                    }
-                    $reserving['asporto'] --;
-
-                }
-            }
-
-            $date->reserving = json_encode($reserving);
-            $date->visible = json_encode($vis);
-            $date->update();
-
-            
+            }            
             
         }
         $order->update();
@@ -293,9 +230,7 @@ class OrderController extends Controller
         $id = $request->input('id');
         
         $m = $this->statusF($wa, $c_a, $id);
-        if($m == 'error data'){
-            return redirect()->back()->with('error', 'ATTENZIONE! La data relativa alla prenotazione/ordine selezionata/o non è più esistente');
-        }
+
         
         return redirect()->back()->with('success', $m);   
     }
