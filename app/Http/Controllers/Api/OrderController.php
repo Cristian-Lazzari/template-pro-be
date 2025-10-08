@@ -43,7 +43,7 @@ class OrderController extends Controller
             // return response()->json($cart);
             $adv_s = Setting::where('name', 'advanced')->first();
             $property_adv = json_decode($adv_s->property, 1);  
-            
+
             $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
             // Convertilo nel formato desiderato
             $f_date = $carbonDate->copy()->format('Y-m-d');
@@ -189,7 +189,7 @@ class OrderController extends Controller
                 ]);
                 
             }else{
-                $date->update();
+
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
                 $order_mess = "";
