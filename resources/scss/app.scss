@@ -1655,7 +1655,7 @@ svg.to_see{
         color: var(--c1); 
     }
     img{
-        background-color: #FF7658;
+        //background-color: #FF7658;
         flex-shrink: 1;
         width: clamp(28px, 100%, 30px);
         border-radius: 100%;
@@ -1716,7 +1716,6 @@ svg.to_see{
         flex-wrap: wrap;
         gap: .2rem;
         align-items: flex-start !important;
-        text-align: end;
         h3{
             margin: 0 !important;
         }
