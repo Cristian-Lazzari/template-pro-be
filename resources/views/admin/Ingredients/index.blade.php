@@ -40,8 +40,7 @@
 
                 @if (isset($item->icon))
                     <img src="{{ asset('public/storage/' . $item->icon) }}" alt="{{$item->name }}">
-                @else 
- 
+                @endif 
     
                 <h3><a href="{{ route('admin.ingredients.show', $item) }}">{{$item->name}}</a></h3>     
             </section>
