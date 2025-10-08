@@ -219,28 +219,28 @@
                 <div class="inputs iv2">
                     <div class="input_c @if(!(in_array($pack, [2,4]) && $double)) d-none @endif" >
                         <label for="max_table_1">N° di posti per {{$property_adv['sala_1']}}</label>
-                        <input name="max_table_1" id="max_table_1" type="number" placeholder="N° di posti in {{$property_adv['sala_1']}} per fascia oraria" value="{{$property_adv['max_table_1']}}"> 
+                        <input name="max_table_1" id="max_table_1" type="number" placeholder="N° di posti in {{$property_adv['sala_1']}} per fascia oraria" value="{{$property_adv['max_table_1'] ?? ''}}"> 
                         @error('max_table_1') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="input_c @if(!(in_array($pack, [2,4]) && $double)) d-none @endif" >
                         <label for="max_table_2">N° di posti per {{$property_adv['sala_2']}}</label>
-                        <input name="max_table_2" id="max_table_2" type="number" placeholder="N° di posti in {{$property_adv['sala_2']}} per fascia oraria" value="{{$property_adv['max_table_2']}}"> 
+                        <input name="max_table_2" id="max_table_2" type="number" placeholder="N° di posti in {{$property_adv['sala_2']}} per fascia oraria" value="{{$property_adv['max_table_2'] ?? ''}}"> 
                         @error('max_table_2') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="input_c @if(!(in_array($pack, [2,4]) && !$double)) d-none @endif" >
                         <label for="max_table">N° di posti</label>
-                        <input name="max_table" id="max_table" type="number" placeholder="N° di posti per fascia oraria" value="{{$property_adv['max_table']}}"> 
+                        <input name="max_table" id="max_table" type="number" placeholder="N° di posti per fascia oraria" value="{{$property_adv['max_table'] ?? ''}}"> 
                         @error('max_table') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     
                     <div class="input_c @if(!(in_array($pack, [3,4]))) d-none @endif" >
                         <label for="max_asporto">N° di ordini d'asporto</label>
-                        <input name="max_asporto" id="max_asporto" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_asporto']}}"> 
+                        <input name="max_asporto" id="max_asporto" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_asporto'] ?? ''}}"> 
                         @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="input_c @if(!(in_array($pack, [3,4]))) d-none @endif" >
                         <label for="max_domicilio">N° di oridini a domicilio</label>
-                        <input name="max_domicilio" id="max_domicilio" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_domicilio']}}"> 
+                        <input name="max_domicilio" id="max_domicilio" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_domicilio'] ?? ''}}"> 
                         @error('max_domicilio') <p class="error">{{ $message }}</p> @enderror
                     </div>
                 </div>
