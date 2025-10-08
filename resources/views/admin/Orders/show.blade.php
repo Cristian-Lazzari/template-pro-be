@@ -188,10 +188,10 @@
                     <div class="w-100">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_2">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
                     </div>
-                    @endif
                     <div class="w-100">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_5">Posticipa e Conferma</button>                   
                     </div>
+                    @endif
                     
                    
                 </section>
