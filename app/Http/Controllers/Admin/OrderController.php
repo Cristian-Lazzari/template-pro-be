@@ -78,10 +78,10 @@ class OrderController extends Controller
         return redirect()->back()->with('filter', $data);
     }
 
-    protected function statusF($wa, $c_a, $id){
+    protected function statusF( $c_a, $id){
 
         $order = Order::where('id', $id)->with('products')->firstOrFail();
-        //dd($order);
+        $message = '';
         if($c_a){
             if($order->status == 2 || $order->status == 0){
                 $order->status = 1;
@@ -218,10 +218,11 @@ class OrderController extends Controller
         Mail::to($order['email'])->send($mail);
 
        
-        if($wa){
-            return redirect("https://wa.me/39" . $order->phone . "?text=" . $message);
-        }
-        return $m;
+        
+        return [
+            'm' => $m,
+            'message' => $message,
+        ];
     }
 
     public function status(Request $request){
@@ -229,17 +230,19 @@ class OrderController extends Controller
         $c_a = $request->input('c_a');
         $id = $request->input('id');
         
-        $m = $this->statusF($wa, $c_a, $id);
+        $m = $this->statusF( $c_a, $id);
 
+        if($wa){
+            return redirect("https://wa.me/39" . $order->phone . "?text=" . $m['message']);
+        }
         
-        return redirect()->back()->with('success', $m);   
+        return redirect()->back()->with('success', $m['m']);   
     }
     public function status_mail(){
         $id = request()->query('id');
         $c_a = request()->query('c_a');
-        $wa = false;
 
-        $this->statusF($wa, $c_a, $id);
+        $this->statusF( $c_a, $id);
     }
 
     public function index()

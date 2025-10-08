@@ -73,7 +73,7 @@ class ReservationController extends Controller
         $c_a = $request->input('c_a');
         $id = $request->input('id');
         $res = Reservation::where('id', $id)->firstOrFail();
-
+        $message = '';
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
         if($c_a){
@@ -85,39 +85,7 @@ class ReservationController extends Controller
                 $m = 'La prenotazione e\' stata gia annullata correttamente';
                 return redirect()->back()->with('success', $m);
             }
-            $date = Date::where('date_slot', $res->date_slot)->firstOrFail();
-            $vis = json_decode($date->visible, 1); 
-            $reserving = json_decode($date->reserving, 1);
-            $_p = json_decode($res->n_person);
-            $tot_p = $_p->child + $_p->adult;
 
-            if($property_adv['dt']){
-                if($res->sala == 1){
-                    if($vis['table_1'] == 0){
-                        $vis['table_1'] = 1;
-                    }
-                    $reserving['table_1'] = $reserving['table_1'] - $tot_p;
-                    $date->reserving = json_encode($reserving);
-                    $date->visible = json_encode($vis);
-                    $date->update();
-                }else{
-                    if($vis['table_2'] == 0){
-                        $vis['table_2'] = 1;
-                    }
-                    $reserving['table_2'] = $reserving['table_2'] - $tot_p;
-                    $date->reserving = json_encode($reserving);
-                    $date->visible = json_encode($vis);
-                    $date->update();
-                }
-            }else{
-                if($vis['table'] == 0){
-                    $vis['table'] = 1;
-                }
-                $reserving['table'] = $reserving['table'] - $tot_p;
-                $date->reserving = json_encode($reserving);
-                $date->visible = json_encode($vis);
-                $date->update();
-            }
 
             $res->status = 0;
             $m = 'La prenotazione e\' stata annullata correttamente';
