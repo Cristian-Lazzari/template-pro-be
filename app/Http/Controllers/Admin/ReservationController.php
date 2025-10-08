@@ -134,12 +134,10 @@ class ReservationController extends Controller
 
     public function index()
     {
-        $query = Reservation::all();
+        $reservations = Reservation::orderBy('date_slot', 'asc')->get();
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
-
-        $reservations = $query->where('status', '!=', 4)->orderBy('date_slot', 'asc')->get();
         return view('admin.Reservations.index', compact('reservations', 'property_adv'));
     }
     
