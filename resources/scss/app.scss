@@ -82,12 +82,12 @@ $cfilter : var(--c2);
 
 
 $fs_xsm: clamp(10px, 1.4vw, 12px);
-$fs_sm: clamp(14px, 2vw, 16px);
-$fs_sm_1: clamp(15px, 2.1vw, 17px);
-$fs_sm_2: clamp(16px, 2.2vw, 19px);
-$fs_sm_3: clamp(17px, 2.3vw, 21px);
-$fs_md: clamp(18px, 2.5vw, 24px);
-$fs_lg: clamp(20px, 3.2vw, 35px);
+$fs_sm_1: clamp(16.1px, 2.1vw, 18px);
+$fs_sm: $fs_sm_1;
+$fs_sm_2: clamp(17px, 2.3vw, 20px);
+$fs_sm_3: clamp(18px, 2.4vw, 22px);
+$fs_md: clamp(20px, 3vw, 24px);
+$fs_lg: clamp(22px, 3.2vw, 35px);
 $fs_xlg: clamp(28px, 3.8vw, 39px);
  
 .d-back-g{
