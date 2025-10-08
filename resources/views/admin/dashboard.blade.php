@@ -527,6 +527,12 @@ document.addEventListener("DOMContentLoaded", () => {
                                             <div class="price">€${p.price / 100}</div>
                                         </div>`;
                             });
+                            o.menus.forEach(p => {
+                                html += `<div class="item_cart">
+                                            <div class="name">${p.name}</div>
+                                            <div class="price">€${p.price / 100}</div>
+                                        </div>`;
+                            });
                                     html += `</div>`
                         });
                         html += `</a>`;
