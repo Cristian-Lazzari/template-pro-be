@@ -230,7 +230,7 @@ class PageController extends Controller
         $reserved = $this->get_res();
 
         $firstKey = array_key_first($reserved);
-        $first_day = Carbon::createFromFormat('Y-m-d', $reserved[$firstKey]);
+        $first_day = Carbon::createFromFormat('Y-m-d', $firstKey);
 
         $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
         $week = $adv['week_set'];
