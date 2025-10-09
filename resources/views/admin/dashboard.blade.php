@@ -266,7 +266,9 @@
                             </svg>
                         </label>
                     </div>
-                    <div class="collapse multi-collapse show" id="multiCollapseExample{{$day}}">
+                    <div class="collapse multi-collapse 
+                    @if(count($property_adv['week_set'][$day])) show @endif
+                    " id="multiCollapseExample{{$day}}">
                         <div class="modal_body">
                             <div class="scroller">
                                 @foreach ($day_time as $t) @php $time = $t['time']; @endphp
