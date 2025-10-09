@@ -230,6 +230,8 @@ class PageController extends Controller
        
         
         $reserved = $this->get_res($oldestCarbon);
+        dump($reserved);
+        dd($oldestCarbon);
 
         $first_day = $oldestCarbon;
 
