@@ -143,7 +143,7 @@ class PageController extends Controller
 
         
         $property_adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
-        if($property_adv['pack'] == 1){
+        if(config('configurazione.subscription') == 1){
             $menus = Menu::where('promo', 1)->get();
             $products = Product::where('promotion', 1)->get();
             return view('admin.menu', compact('menus', 'products'));
