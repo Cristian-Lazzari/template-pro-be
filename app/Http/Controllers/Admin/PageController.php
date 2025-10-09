@@ -205,32 +205,12 @@ class PageController extends Controller
     }
     private function get_date(){
    
-        $oldestDate_r = Reservation::orderBy('date_slot', 'asc')->value('date_slot');
 
-        $oldestDate_o = Order::orderBy('date_slot', 'asc')->value('date_slot');
-
-        $oldestCarbon = '';
-        if($oldestDate_o){
-            $oldestCarbon_o = Carbon::createFromFormat('d/m/Y H:i', $oldestDate_o);
-            $oldestCarbon =  $oldestCarbon_o;
-        }
-        if($oldestDate_r){
-            $oldestCarbon_r = Carbon::createFromFormat('d/m/Y H:i', $oldestDate_r);
-            $oldestCarbon =  $oldestCarbon_r;
-        }
-        if($oldestDate_o && $oldestDate_r){
-            $oldestCarbon =  $oldestCarbon_o->min($oldestCarbon_r);
-        }
-        if(!$oldestDate_o && !$oldestDate_r){
-            $oldestCarbon =  Carbon::now();
-        }
-
-       
         
         $reserved = $this->get_res();
-
-        $firstKey = array_key_first($reserved);
-        $first_day = Carbon::createFromFormat('Y-m-d', $firstKey);
+        
+        $firstKey = count($reserved) ? array_key_first($reserved) : '';
+        $first_day = $firstKey !== '' ? Carbon::createFromFormat('Y-m-d', $firstKey) : Carbon::now();
 
         $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
         $week = $adv['week_set'];
