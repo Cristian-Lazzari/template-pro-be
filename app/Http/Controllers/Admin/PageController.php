@@ -147,7 +147,7 @@ class PageController extends Controller
         $notify = [];
         return view('admin.dashboard', compact('calendar', 'notify','property_adv'));
     }
-    private function get_res($now){
+    private function get_res(){
 
         $reservations = DB::table('reservations')
             ->select(
@@ -160,7 +160,6 @@ class PageController extends Controller
                 DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
                 DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%H:%i') AS time")
             )
-            ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
             ->where('status', '!=', 4) // 👈 controllo aggiunto
             ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
@@ -175,7 +174,6 @@ class PageController extends Controller
                 DB::raw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'))  AS day"),
                 DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%H:%i') AS time")
             )
-            ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
             ->where('status', '!=', 4) // 👈 controllo aggiunto
             ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
@@ -229,17 +227,16 @@ class PageController extends Controller
 
        
         
-        $reserved = $this->get_res($oldestCarbon);
-        dump($reserved);
-        dd($oldestDate_r);
+        $reserved = $this->get_res();
 
-        $first_day = $oldestCarbon;
+        $firstKey = array_key_first($reserved);
+        $first_day = Carbon::createFromFormat('Y-m-d', $reserved[$firstKey]);
 
         $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
         $week = $adv['week_set'];
 
         $now = Carbon::now(); 
-        $day_in_calendar = $oldestCarbon->diffInDays($now) + 60; // giorni da mostrare
+        $day_in_calendar = $first_day->diffInDays($now) + 60; // giorni da mostrare
         $days = [];
         for ($i = 0 ; $i < $day_in_calendar; $i++) { 
             $day = [
