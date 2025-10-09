@@ -258,7 +258,8 @@ class PageController extends Controller
             if (count($week[$first_day->format('N')]) == 0) {
                 $day['status'] = 0;
             }
-            if (in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
+
+            if(isset($adv['day_off']) && in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
                 $day['status'] = 3;
             }
             if($day['day'] == $now->copy()->format('Y-m-d')){
