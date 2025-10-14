@@ -55,35 +55,29 @@
         </svg>
         Ordini e Prenotazioni
     </h1>
-    <div class="top_action my-4">
+    <div class="top_action my-5">
 
-        <a class="my_btn_3" href="{{ route('admin.reservations.index') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-front-fill" viewBox="0 0 16 16">
-            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm0 3a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-            </svg>
-            Prenotazioni
-            {{-- Vedi tutti --}}
-        </a> 
-        <a class="my_btn_3" href="{{ route('admin.orders.index') }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-front-fill" viewBox="0 0 16 16">
-            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm0 3a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-            </svg>
-            Ordni
-            {{-- Vedi tutti --}}
-        </a> 
-        <button id="editToggle" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropav" >
+        
+        <button id="editToggle" class="my_btn_2 " data-bs-toggle="modal" data-bs-target="#staticBackdropav" >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
                 <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
                 <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
             </svg>
             {{-- Reset disponibilità --}}
         </button>
-        <button  type="button" class=" my_btn_2 btn_delete" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+        <button  type="button" class=" my_btn_1 btn_delete" data-bs-toggle="modal" data-bs-target="#exampleModal1">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
                 <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
                 </svg>
             {{-- Blocca Giorni --}}
         </button>
+        <a class="my_btn_3 ml-auto" href="{{ route('admin.reservations.index') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-front-fill" viewBox="0 0 16 16">
+            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm0 3a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+            </svg>
+
+            Vedi tutti
+        </a> 
     </div>
     <div class="date">
         @if (count($calendar))
@@ -160,7 +154,7 @@
                             <div class="calendar">
                                 <div class="c-name">
                                     @php
-                                    $day_name = ['LU', 'MA', 'ME', 'GI', 'VE', 'SA', 'DO'];
+                                    $day_name = ['Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa', 'Do'];
                                     @endphp
                                     @foreach ($day_name as $item)
                                         <h4>{{$item}}</h4>
@@ -502,8 +496,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                         ${[1, 5].includes(r.status) ? confirm_svg : ''}
                                         <div class="name">${r.name + ' ' + r.surname} </div>
                                         <div class="guest">
-                                            ${adult + adult_svg ?? ''} 
-                                            ${child + child_svg ?? ''}
+                                            ${adult> 0 ? adult + adult_svg : ''} 
+                                            ${child> 0 ? child + child_svg : ''}
                                         </div>
                                     </div>
                                 </a>`;

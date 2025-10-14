@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use DateTime;
 use App\Models\Date;
+use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -134,10 +135,20 @@ class ReservationController extends Controller
 
     public function index()
     {
-        $reservations = Reservation::orderBy('date_slot', 'asc')->get();
+        $res = Reservation::all();
+        $orders = Order::all();
+        // dump($res);
+        // dump($orders);
+
+        $reservations = $res
+            ->concat($orders)   // unisce senza usare le chiavi ID
+            ->sortBy('date_slot')  // ordina
+            ->values();
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
+
+      //  dd($reservations);
         return view('admin.Reservations.index', compact('reservations', 'property_adv'));
     }
     
