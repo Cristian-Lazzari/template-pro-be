@@ -135,6 +135,10 @@ class ReservationController extends Controller
 
     public function index()
     {
+        $order_delete = Order::where('status', 4)->get();
+        foreach($order_delete as $o){
+            $o->delete();
+        }
         $res = Reservation::all();
         $orders = Order::all();
         // dump($res);
