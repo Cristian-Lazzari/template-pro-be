@@ -688,11 +688,12 @@ body{
     z-index: 100;
     .prev_btn, .post_btn {
         border: none;
-        background-color: var(--c3);
-        color: var(--c1);
+        background-color: var(--c1);
+        border: 1px solid var(--c3);
         border-radius: 10px;
         padding: 4px;
         svg{
+            color: var(--c3);
             width: $fs_sm_3;
             height: $fs_sm_3;
         }
@@ -714,26 +715,30 @@ body{
     .line{
         width: 100%;
         display: flex;
-        justify-content: flex-end;
+        //justify-content: space-between;
         align-items: center;
         gap: .4em;
         flex-wrap: wrap;
         h4{
-            flex: 1;
+            //flex: 1;
             font-weight: 900;
             margin: 0;
+            width: clamp(120px, 40vw, 400px);
             font-size: $fs_md;
         }
         .stat{
             flex-direction: row;
-            background-color: var(--c3);
-            color: var(--c1);
+            //background-color: var(--c3);
+            //color: var(--c1);
             align-items: center;
             padding: .3rem 1rem;
             border-radius: 5px;
             gap: .4rem;
             display: flex;
             flex-wrap: nowrap;
+        }
+        .first{
+            flex: 1;
         }
         svg{
             width: $fs_sm_2;
