@@ -896,10 +896,12 @@ body{
     p{
         margin: 0;
     }
+
     .date_time{
         font-size: $fs_md;
         font-weight: 700;
         display: flex;
+        
 
         justify-content: space-between;
         align-items: center;
@@ -907,14 +909,12 @@ body{
         text-transform: capitalize;
         .data{
             margin: 1.7em 0 .3em;
-            
             margin-left: auto;
             font-size: $fs_sm;
             opacity: .5;
             font-family: monospace;
         }
         .line{
-            //background-color: red;
             border-bottom: 1px dashed var(--c3_op);
             flex: 1;
             margin: auto 0 calc($fs_md / 1.4);
@@ -984,8 +984,10 @@ body{
 .filters{
     position: sticky;
     top: 7vh;
+    z-index: 20000;
     right: 0;
     width: 100%;
+    isolation: isolate;
     .bar{
         width: 100%;
         max-width: 800px;
@@ -1019,14 +1021,15 @@ body{
         }
         label{
             position: relative;
-            z-index: 1;
+            z-index: 200;
             user-select: none;
             padding: 8px;
             background-color: var(--c1_op);
             border: 1px solid var(--c3);
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.267);
-            opacity: .6;
+            //opacity: .6;
+            backdrop-filter: blur(100px);
             .bi-funnel{
                 display: block;
             }
@@ -1043,6 +1046,7 @@ body{
         
         .check:checked ~ label{
             opacity: 1;
+            background-color: var(--c1);
             .bi-funnel{
                 display: none;
             }
@@ -1078,7 +1082,7 @@ body{
                 margin-left: auto !important;
             }
             input::placeholder{
-                color: var(--c3);
+                color: var(--c1_op);
             }
             .search{
                 min-width: 20px;
