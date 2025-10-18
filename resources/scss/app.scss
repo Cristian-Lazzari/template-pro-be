@@ -1272,9 +1272,13 @@ svg.to_see{
         .no_img, .image_btn{
             border: none;
             width: 50px;
-            height: 50px;
-            object-fit: cover;
             border-radius: 10px;
+            img{
+                width: 100%;
+                height: 100%;
+                border-radius: 10px;
+                object-fit: cover;  
+            }
         }
         .name_cat{
             align-self: center;
