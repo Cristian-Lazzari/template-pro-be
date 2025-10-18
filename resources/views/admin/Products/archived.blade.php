@@ -34,13 +34,16 @@ $domain = 'https://future-plus.it/allergens/';
         </svg>
         Prodotti</h1>
     
-    <a class="my_btn_5 ml-auto my-3 mb-5" href="{{ route('admin.products.index') }}">Torna ai Prodotti non archiviati</a>
+    <div class="action-page">
+        <a class="my_btn_3 m-1 w-auto" href="{{ route('admin.products.index') }}">Torna ai prodotti</a>
+    </div>
 
-    
     <div class="time-list prod_index">
         @foreach ($products as $item)
 
-            <div class="res-item prod">
+            <div class="res-item
+            @if(!$item->visible) not_v @endif
+             prod">
                 @if (isset($item->image))
                     <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
                 @else
@@ -62,78 +65,92 @@ $domain = 'https://future-plus.it/allergens/';
                         </svg>
                         Info
                     </button>
-                </div>
-                
-            </div>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <button type="button" class="btn_close" data-bs-dismiss="modal">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-                                </svg>
-                                Chiudi
-                            </button>
-                            <a href="{{ route('admin.products.edit', $item) }}" class="edit">
-                                <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                                </svg>
-                                Modifica
-                            </a>
-                            <div class="name_cat">
-                                <div class="name">{{$item->name}}</div>
-                                <div class="cat">{{$item->category->name}}</div>
-                            </div>
-                            @if (count($item->ingredients))
-                                <section>
-                                    <h4>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
-                                            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                                            <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="btn_close" data-bs-dismiss="modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
                                         </svg>
-                                        Ingredienti</h4>
-                                    <p>
-                                        @foreach ($item->ingredients as $ingredient)     
-                                            {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
+                                        Chiudi
+                                    </button>
+                                    <div class="action_top">
+                                        <a href="{{ route('admin.products.edit', $item) }}" class="edit">
+                                            <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                            </svg>
+                                        </a>
+                                        
+                                       
+                                        <form action="{{ route('admin.products.destroy', $item) }}" method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button class="edit btn_delete" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                               
+                                    </div>
+                                    <div class="name_cat">
+                                        <div class="name">{{$item->name}}</div>
+                                        <div class="cat">{{$item->category->name}}</div>
+                                    </div>
+                                    @if (count($item->ingredients))
+                                        <section>
+                                            <h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+                                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                                                </svg>
+                                                Ingredienti</h4>
+                                            <p>
+                                                @foreach ($item->ingredients as $ingredient)     
+                                                    {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
+                                                @endforeach
+                                            </p>
+                                        </section>
+                                    @endif
+                                    @if ($item->description)
+                                        <section>
+                                            <h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                                    <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8m0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+                                                </svg>
+                                                Descrizione</h4>
+                                            <p>{{$item->description}}</p>
+                                        </section>
+                                    @endif
+        
+                                    <div class="price">€{{$item->price / 100}}</div>
+        
+                                    <div class="allergens">
+                                        @php $all = json_decode($item->allergens) @endphp
+                                        @foreach ($all as $i)
+                                        <div class="al">
+                                            <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
+                                            {{config('configurazione.allergens')[$i]['name']}}
+                                        </div>
                                         @endforeach
-                                    </p>
-                                </section>
-                            @endif
-                            @if ($item->description)
-                                <section>
-                                    <h4>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
-                                            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                                            <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8m0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
-                                        </svg>
-                                        Descrizione</h4>
-                                    <p>{{$item->description}}</p>
-                                </section>
-                            @endif
-
-                            <div class="price">€{{$item->price / 100}}</div>
-
-                            <div class="allergens">
-                                @php $all = json_decode($item->allergens) @endphp
-                                @foreach ($all as $i)
-                                <div class="al">
-                                    <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
-                                    {{config('configurazione.allergens')[$i]['name']}}
+                                    </div>   
+        
                                 </div>
-                                @endforeach
-                            </div>   
-
+                            </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
 
         @endforeach
     </div>
 
 </div>
+
 
 @endsection

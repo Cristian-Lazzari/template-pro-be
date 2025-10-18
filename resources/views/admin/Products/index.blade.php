@@ -38,7 +38,7 @@
         <div class="bar">
             <input type="checkbox" class="check" id="f">
             <div class="box">
-                <input type="text" id="searchInput" class="search" placeholder="Cerca cliente..." >
+                <input type="text" id="searchInput" class="search" placeholder="Cerca prodotto..." >
                 <button id="typeToggle" class="type">Tutti</button>
                 <button id="sortToggle" class="order">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down-alt" viewBox="0 0 16 16">
@@ -60,9 +60,23 @@
     <div class="time-list prod_index">
         @foreach ($products as $item)
 
-            <div class="res-item prod">
+            <div class="res-item
+            @if(!$item->visible) not_v @endif
+             prod">
                 @if (isset($item->image))
-                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                    <button type="button" class=" image_btn" data-bs-toggle="modal" data-bs-target="#img{{$item->id}}">
+                        <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="img{{$item->id}}" tabindex="-1" aria-labelledby="img{{$item->id}}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body image_modal">
+                                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <div class="no_img">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image-fill" viewBox="0 0 16 16">
@@ -82,107 +96,107 @@
                         </svg>
                         Info
                     </button>
-                </div>
-                
-            </div>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <button type="button" class="btn_close" data-bs-dismiss="modal">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-                                </svg>
-                                Chiudi
-                            </button>
-                            <div class="action_top">
-                                <a href="{{ route('admin.products.edit', $item) }}" class="edit">
-                                    <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                                    </svg>
-                                </a>
-                                
-                                <form action="{{ route('admin.products.status') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="archive" value="0">
-                                    <input type="hidden" name="v" value="1">
-                                    <input type="hidden" name="a" value="0">
-                                    <input type="hidden" name="id" value="{{$item->id}}">
-                                    <button type="submit" class=" edit
-                                        @if(!$item->visible) not @endif 
-                                        visible">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
-                                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="btn_close" data-bs-dismiss="modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
                                         </svg>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
-                                            <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
-                                            <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
-                                        </svg>
+                                        Chiudi
                                     </button>
-                                </form>
-                                <form action="{{ route('admin.products.status') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="archive" value="0">
-                                    <input type="hidden" name="v" value="0">
-                                    <input type="hidden" name="a" value="1">
-                                    <input type="hidden" name="id" value="{{$item->id}}">
-                                    <button class="edit" type="submit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-                                        </svg>
-                                    </button>
-                                </form>
-                       
-                            </div>
-                            <div class="name_cat">
-                                <div class="name">{{$item->name}}</div>
-                                <div class="cat">{{$item->category->name}}</div>
-                            </div>
-                            @if (count($item->ingredients))
-                                <section>
-                                    <h4>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
-                                            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                                            <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
-                                        </svg>
-                                        Ingredienti</h4>
-                                    <p>
-                                        @foreach ($item->ingredients as $ingredient)     
-                                            {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
+                                    <div class="action_top">
+                                        <a href="{{ route('admin.products.edit', $item) }}" class="edit">
+                                            <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                            </svg>
+                                        </a>
+                                        
+                                        <form action="{{ route('admin.products.status') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="archive" value="0">
+                                            <input type="hidden" name="v" value="1">
+                                            <input type="hidden" name="a" value="0">
+                                            <input type="hidden" name="id" value="{{$item->id}}">
+                                            <button type="submit" class=" edit
+                                                @if(!$item->visible) not @endif 
+                                                visible">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                                                </svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+                                                    <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+                                                    <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.products.status') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="archive" value="0">
+                                            <input type="hidden" name="v" value="0">
+                                            <input type="hidden" name="a" value="1">
+                                            <input type="hidden" name="id" value="{{$item->id}}">
+                                            <button class="edit" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                               
+                                    </div>
+                                    <div class="name_cat">
+                                        <div class="name">{{$item->name}}</div>
+                                        <div class="cat">{{$item->category->name}}</div>
+                                    </div>
+                                    @if (count($item->ingredients))
+                                        <section>
+                                            <h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+                                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                                    <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                                                </svg>
+                                                Ingredienti</h4>
+                                            <p>
+                                                @foreach ($item->ingredients as $ingredient)     
+                                                    {{ $ingredient->name }}{{ !$loop->last ? ', ' : '.' }}
+                                                @endforeach
+                                            </p>
+                                        </section>
+                                    @endif
+                                    @if ($item->description)
+                                        <section>
+                                            <h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                                    <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8m0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+                                                </svg>
+                                                Descrizione</h4>
+                                            <p>{{$item->description}}</p>
+                                        </section>
+                                    @endif
+        
+                                    <div class="price">€{{$item->price / 100}}</div>
+        
+                                    <div class="allergens">
+                                        @php $all = json_decode($item->allergens) @endphp
+                                        @foreach ($all as $i)
+                                        <div class="al">
+                                            <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
+                                            {{config('configurazione.allergens')[$i]['name']}}
+                                        </div>
                                         @endforeach
-                                    </p>
-                                </section>
-                            @endif
-                            @if ($item->description)
-                                <section>
-                                    <h4>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
-                                            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                                            <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8m0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
-                                        </svg>
-                                        Descrizione</h4>
-                                    <p>{{$item->description}}</p>
-                                </section>
-                            @endif
-
-                            <div class="price">€{{$item->price / 100}}</div>
-
-                            <div class="allergens">
-                                @php $all = json_decode($item->allergens) @endphp
-                                @foreach ($all as $i)
-                                <div class="al">
-                                    <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
-                                    {{config('configurazione.allergens')[$i]['name']}}
+                                    </div>   
+        
                                 </div>
-                                @endforeach
-                            </div>   
-
+                            </div>
                         </div>
                     </div>
                 </div>
+                
             </div>
 
         @endforeach
@@ -213,8 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </svg>`;
     const iconAlpha = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down" viewBox="0 0 16 16">
-            <path d="M10.082 12.59h3.718l-.85-2.406h-2.02l-.848 2.406zm-1.007 1.32 2.833-7.5h1.274l2.832 7.5H14.09l-.566-1.5h-3.398l-.566 1.5zM12.5 4.5V13h-1V4.5H8v-1h4.5v1zM3.5 3.5a.5.5 0 0 1 1 0v8.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2-.007.007a.497.497 0 0 1-.7-.006l-2-2a.5.5 0 0 1 .707-.708L3.5 12.293V3.5z"/>
-        </svg>`;
+            <path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371zm1.57-.785L11 2.687h-.047l-.652 2.157z"/>
+            <path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z"/>
+            </svg>`;
 
     // --- FUNZIONI ---
     function filterAndRender() {
