@@ -111,7 +111,22 @@ class SettingsTableSeeder extends Seeder
                         'tavoli',
                         'asporto',
                         'domicilio',
-                    ]
+                    ],
+                    'week_set' => [
+                        1 => [],
+                        2 => [],
+                        3 => [],
+                        4 => [],
+                        5 => [],
+                        6 => [],
+                        7 => [],
+                    ],
+                    'day_off' => [],
+                    'max_asporto' => 0,
+                    'max_domicilio' => 0,
+                    'max_table' => 0,
+                    'max_table_1' => 0,
+                    'max_table_2' => 0,
                 ]
             ],
         ];
