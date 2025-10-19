@@ -428,7 +428,7 @@ $adv = json_decode($setting['advanced']->property, 1);
             </div>
         </div>
         <div class="actions">
-            <button type="button" class=" my_btn_4 w-100 " data-bs-toggle="modal" data-bs-target="#staticBackdropav">Impostazioni avanzate</button>
+            <button type="button" class=" my_btn_3 w-100 " data-bs-toggle="modal" data-bs-target="#staticBackdropav">Impostazioni avanzate</button>
         </div>   
 
     </form>

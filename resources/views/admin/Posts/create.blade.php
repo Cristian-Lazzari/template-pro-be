@@ -33,7 +33,7 @@
                     </svg>
                     Immagine</label>
                 <p><input type="file" id="file-input" name="image" ></p>
-                @error('image') <p class="error">{{ $message }}</p> @enderror
+             
             </div>
             <div>
                 <label class="label_c" for="path">
@@ -50,6 +50,7 @@
                 @error('path') <p class="error">{{ $message }}</p> @enderror
             </div>        
         </div>
+           @error('image') <p class="error">{{ $message }}</p> @enderror
         <p class="desc"> 
             <label class="label_c" for="description">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">

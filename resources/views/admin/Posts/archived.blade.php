@@ -23,126 +23,171 @@
 </div>
 @endif
  
-<h1>Post - archivio</h1>
- 
-<form class="top-bar-product archived" action="{{ route('admin.posts.filter') }}" method="post">
-    @csrf   
-    <input type="hidden" name="archive" value="1">
-    
-    <div class="bar">
-        {{-- NOME --}}
-        <div class="s-name">
-            <label for="name" class="fw-semibold">Nome post</label>
-            <div>
-                <input type="text" class="" id="title" name="title"
-                    @if (isset($filters))
-                        value="{{  $filters['title'] }}"  
-                    @endif > 
-                
+<div class="dash_page">
+    <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
+            <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+            <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"/>
+        </svg>
+        Contenuti multimediali archiviati
+    </h1>
+
+    <div class="action-page">
+        <a class="my_btn_1 create  w-auto" href="{{ route('admin.posts.index') }}">
+            Torna ai Post</a>
+    </div>
+    <div class="filters">
+        <div class="bar">
+            <input type="checkbox" class="check" id="f">
+            <div class="box">
+                <input type="text" id="searchInput" class="search" placeholder="Cerca prodotto..." >
+                <button id="typeToggle" class="type">Tutti</button>
+                <button id="sortToggle" class="order">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down-alt" viewBox="0 0 16 16">
+                        <path d="M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 12.293zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5"/>
+                    </svg>
+                </button>
             </div>
-        </div>    
-        {{-- VISIBILITà  --}}
-        <div>
-            <label for="visible" class="form-label fw-semibold">Visibilità</label>
-            <select class="" id="visible" name="visible" >
-                <option @if (isset($filters) && $filters['visible'] == '0') selected @endif value="0">Tutti</option>
-                <option @if (isset($filters) && $filters['visible'] == '1') selected @endif value="1">Visibili</option>
-                <option @if (isset($filters) && $filters['visible'] == '2') selected @endif value="2">Non visibili</option>
-            </select>
-        </div>
-        <div>
-            <label for="path" class="form-label fw-semibold">Path</label>
-            <select class="" id="path" name="path" >
-                <option @if (isset($filters) && $filters['path'] == '0') selected @endif value="0">Tutti</option>
-                <option @if (isset($filters) && $filters['path'] == '1') selected @endif value="1">News</option>
-                <option @if (isset($filters) && $filters['path'] == '2') selected @endif value="2">Storia</option>
-            </select>
-        </div>
-        <div>
-            <label for="order" class="form-label fw-semibold">Ordina per</label>
-            <select class="" id="order" name="order" >
-                <option @if (isset($filters) && $filters['order'] == '0') selected @endif value="0">Ultima modifica</option>
-                <option @if (isset($filters) && $filters['order'] == '1') selected @endif value="1">Nome A-Z</option>
-            </select>
-        </div>
-       
-        <div class="buttons">
-         <button type="submit" class=" my_btn_3">
-             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
-                 <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
-             </svg>  Applica
-         </button>
-         <a class="my_btn_1 search" href="{{ route('admin.posts.index')}}">
-             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
-                 <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
-             </svg> Rimuovi
-         </a>   
+            <label for="f">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
+                </svg>
+            </label>
         </div>
     </div>
     
-</form> 
+    <div class="time-list prod_index">
+        @foreach ($posts as $item)
 
-
-<div class="object-container post-container">
-    @foreach ($posts as $item)
-
-        <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
-            <div class="card_">
-                <h3>
-                    @if ($item->promo)
-                        <svg height="24px" class="promotion_on" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
-                    @endif
-                    <a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a>
-                </h3>     
+            <div class="res-item
+            @if(!$item->visible) not_v @endif
+             prod">
                 @if (isset($item->image))
-                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
+                    <button type="button" class=" image_btn" data-bs-toggle="modal" data-bs-target="#img{{$item->id}}">
+                        <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="img{{$item->id}}" tabindex="-1" aria-labelledby="img{{$item->id}}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body image_modal">
+                                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
-                    <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
+                    <div class="no_img">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image-fill" viewBox="0 0 16 16">
+                        <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+                        </svg>
+                    </div>
                 @endif 
-
-                @if (isset($item->hashtag))
-                    <p class="hash">{{$item->hashtag}}</p>
-                @endif 
-                <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
-                <div class="info">
-                    <section>
-                        <h4>Precedenza: <strong>{{$item->order}}</strong></h4>      
-                        @if (isset($item->link)) 
-                            <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
-                        @endif  
-                    </section>
+                <div class="name_cat">
+                    <div class="name">{{$item->title}}</div>
+                    <div class="cat">{{$item->path}}</div>
                 </div>
-            </div>
-            <div class="actions">
-                <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
-                <form action="{{ route('admin.posts.status') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="archive" value="0">
-                    <input type="hidden" name="v" value="0">
-                    <input type="hidden" name="a" value="1">
-                    <input type="hidden" name="id" value="{{$item->id}}">
-                    <button class="my_btn_1 d" type="submit">Ripristina</button>
-                </form>
-                <form action="{{ route('admin.posts.status') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="archive" value="0">
-                    <input type="hidden" name="v" value="1">
-                    <input type="hidden" name="a" value="0">
-                    <input type="hidden" name="id" value="{{$item->id}}">
-                    @if (!$item->visible)
-                        <button class="my_btn_5" type="submit">
-                            PUBBLICA
-                        </button>
-                    @else
-                        <button class="my_btn_5" type="submit">
-                            Nascondi   
-                        </button>
+                <div class="price_btn"> 
+                    @if ($item->link)
+                        <a class="link" href="{{$item->link}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                        </svg>
+                        Link
+                    </a>
                     @endif
-                    
-                </form>
+                    <button type="button" class="action_menu action_menu_info" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                        </svg>
+                        Info
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="btn_close" data-bs-dismiss="modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                        </svg>
+                                        Chiudi
+                                    </button>
+                                    <div class="action_top">
+                                        <form action="{{ route('admin.posts.status') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="archive" value="1">
+                                            <input type="hidden" name="v" value="0">
+                                            <input type="hidden" name="a" value="1">
+                                            <input type="hidden" name="id" value="{{$item->id}}">
+                                            <button class="edit" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-plus-fill" viewBox="0 0 16 16">
+                                                <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m.5 4v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
+                                                </svg>
+                                                Ripristina
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.posts.destroy', $item) }}" method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button class="edit btn_delete" type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                               
+                                    </div>
+                                    <div class="name_cat">
+                                        <div class="name">{{$item->title}}</div>
+                                        <div class="cat">{{$item->path}}</div>
+                                    </div>
+                                    @if ($item->description)
+                                        <section>
+                                            <h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                                    <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8m0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+                                                </svg>
+                                                Descrizione</h4>
+                                            <p>{{$item->description}}</p>
+                                        </section>
+                                    @endif
+                                    @if ($item->hashtag)
+                                        <section>
+                                            <h4>
+                                                <strong>#</strong>
+                                                Hashtags</h4>
+                                            <p>{{$item->hashtag}}</p>
+                                        </section>
+                                    @endif
+                                    @if ($item->link)
+                                        <section>
+                                            <h4>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                                                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                                                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                                                </svg>
+                                                Link</h4>
+                                            <a href="{{$item->link}}">{{$item->link}}</a>
+                                        </section>
+                                    @endif
+        
+        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
 
-        </div>
-    @endforeach
+        @endforeach
+    </div>
 </div>
+
 @endsection

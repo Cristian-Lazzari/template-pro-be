@@ -41,11 +41,18 @@
     </h1>
 
     <div class="action-page">
-        <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.posts.create') }}">Crea un nuovo post</a>
-        <a class="my_btn_1 trash m-1 w-auto" href="{{ route('admin.posts.archived') }}">Archivio</a>
+        <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.posts.create') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-plus-fill" viewBox="0 0 16 16">
+                <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m.5 4v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
+                </svg>
+            Crea nuovo</a>
+        <a class="my_btn_2 btn_delete trash m-1 w-auto" href="{{ route('admin.posts.archived') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                </svg>
+            Archivio</a>
     </div>
-
-        <div class="filters">
+    <div class="filters">
         <div class="bar">
             <input type="checkbox" class="check" id="f">
             <div class="box">
@@ -127,14 +134,14 @@
                                         Chiudi
                                     </button>
                                     <div class="action_top">
-                                        <a href="{{ route('admin.products.edit', $item) }}" class="edit">
+                                        <a href="{{ route('admin.posts.edit', $item) }}" class="edit">
                                             <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                                             </svg>
                                         </a>
                                         
-                                        <form action="{{ route('admin.products.status') }}" method="POST">
+                                        <form action="{{ route('admin.posts.status') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="archive" value="0">
                                             <input type="hidden" name="v" value="1">
@@ -153,7 +160,7 @@
                                                 </svg>
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.products.status') }}" method="POST">
+                                        <form action="{{ route('admin.posts.status') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="archive" value="0">
                                             <input type="hidden" name="v" value="0">
@@ -182,12 +189,12 @@
                                             <p>{{$item->description}}</p>
                                         </section>
                                     @endif
-                                    @if ($item->hashtags)
+                                    @if ($item->hashtag)
                                         <section>
                                             <h4>
                                                 <strong>#</strong>
-                                                hashtags</h4>
-                                            <p>{{$item->hashtags}}</p>
+                                                Hashtags</h4>
+                                            <p>{{$item->hashtag}}</p>
                                         </section>
                                     @endif
                                     @if ($item->link)
@@ -215,74 +222,20 @@
     </div>
 
 
-    <div class="object-container post-container">
-        @foreach ($posts as $item)
-
-            <div class="post  @if (!$item->visible) not_v @endif" onclick="window.location.href='{{ route('admin.posts.show', $item->id) }}">
-                <div class="card_">
-                    <h3>
-                        @if ($item->promo)
-                            <svg height="24px" class="promotion_on" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
-                        @endif
-                        <a href="{{ route('admin.posts.show', $item) }}">{{$item->title}}</a>
-                    </h3>     
-                    @if (isset($item->image))
-                        <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->title}}">
-                    @else
-                        <img src="https://db.kojo-sushi.it/public/images/or.png" alt="{{$item->title }}">
-                    @endif 
-
-                    @if (isset($item->hashtag))
-                        <p class="hash">{{$item->hashtag}}</p>
-                    @endif 
-                    <h4 class="ell-c">Pagina: <span class="">{{$item->path == '1' ? 'News' : 'Story'}}</span></h4>
-                    <div class="info">
-                        <section>
-                            {{-- <h4>Precedenza: <strong>{{$item->order}}</strong></h4>       --}}
-                            @if (isset($item->link)) 
-                                <h4 class="ell-c">Link: <a href="{{$item->link}}" class="ellips">{{$item->link}}</a></h4>
-                            @endif  
-                        </section>
-                    </div>
-                </div>
-                <div class="actions">
-                    <a class="my_btn_1 m" href="{{ route('admin.posts.edit', $item) }}">Modifica</a>
-                    <form action="{{ route('admin.posts.status') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="archive" value="0">
-                        <input type="hidden" name="v" value="0">
-                        <input type="hidden" name="a" value="1">
-                        <input type="hidden" name="id" value="{{$item->id}}">
-                        <button class="my_btn_1 d" type="submit">Archivia</button>
-                    </form>
-                    <form action="{{ route('admin.posts.status') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="archive" value="0">
-                        <input type="hidden" name="v" value="1">
-                        <input type="hidden" name="a" value="0">
-                        <input type="hidden" name="id" value="{{$item->id}}">
-                        @if (!$item->visible)
-                            <button class="my_btn_5" type="submit">
-                                PUBBLICA
-                            </button>
-                        @else
-                            <button class="my_btn_5" type="submit">
-                                Nascondi   
-                            </button>
-                        @endif
-                        
-                    </form>
-                </div>
-
-            </div>
-        @endforeach
-    </div>
     <div class="action-page mt-5">
         <button type="button" class="my_btn_3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialStory">
-            Modifica ordine Post in Storia
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+                <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+            </svg>
+            Ordina Post in Storia
         </button>
         <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialNews">
-            Modifica ordine Post in News
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+                <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+            </svg>
+            Ordina Post in News
         </button>
     </div>
 </div>
@@ -419,6 +372,85 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
+
+    const searchInput = document.getElementById('searchInput');
+    const typeToggle = document.getElementById('typeToggle');
+    const sortToggle = document.getElementById('sortToggle');
+    const postContainer = document.querySelector('.time-list');
+    const posts = Array.from(postContainer.querySelectorAll('.res-item'));
+
+    let currentType = 'Tutti'; // Stato iniziale
+    let sortAsc = true; // Ordinamento normale
+
+    // 🔍 Filtro per nome
+    searchInput.addEventListener('input', () => {
+        applyFilters();
+    });
+
+    // 📰 Filtro tipo (Tutti → Story → News → Tutti)
+    typeToggle.addEventListener('click', () => {
+        if (currentType === 'Tutti') {
+            currentType = 'Story';
+        } else if (currentType === 'Story') {
+            currentType = 'News';
+        } else {
+            currentType = 'Tutti';
+        }
+        typeToggle.textContent = currentType;
+        applyFilters();
+    });
+
+    // ↕️ Inversione ordinamento con cambio icona
+    sortToggle.addEventListener('click', () => {
+        sortAsc = !sortAsc;
+
+        // Cambia l'icona
+        sortToggle.innerHTML = sortAsc
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
+                class="bi bi-sort-down-alt" viewBox="0 0 16 16">
+                <path d="M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 
+                0-.708.708l2 1.999.007.007a.497.497 0 0 0 
+                .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 
+                12.293zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 
+                1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 
+                1zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 
+                1zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 
+                0-1h-7a.5.5 0 0 0-.5.5"/>
+            </svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-up" viewBox="0 0 16 16">
+            <path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.5.5 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+        </svg>`;
+
+        // Inverte l'ordine dei post nel DOM
+        const reversed = [...posts].reverse();
+        reversed.forEach(p => postContainer.appendChild(p));
+        posts.reverse();
+    });
+
+    // 🔧 Funzione principale di filtro combinato (ricerca + tipo)
+    function applyFilters() {
+        const search = searchInput.value.toLowerCase().trim();
+
+        posts.forEach(post => {
+            const name = post.querySelector('.name')?.textContent.toLowerCase() || '';
+            const cat = post.querySelector('.cat')?.textContent.toLowerCase() || '';
+
+            // Filtro per testo
+            const matchesSearch = name.includes(search) || cat.includes(search);
+
+            // Filtro per tipo
+            let matchesType = true;
+            if (currentType == 'Story') {
+                matchesType = cat == 1 ? true : false;
+            }
+            if (currentType == 'News') {
+                matchesType = cat == 2 ? true : false;
+            }
+
+            post.style.display = (matchesSearch && matchesType) ? '' : 'none';
+        });
+    }
+    
 });
 </script>
 @endsection

@@ -19,7 +19,7 @@ class PostController extends Controller
         'description'   => 'required',
         'path'          => 'required',
 
-        'image'         => 'nullable|image|max:1024',
+        'image'         => 'required|image|max:1024',
     ];
     private $validation1 = [
         'title'         => 'required|string|min:1|max:150',
@@ -29,7 +29,7 @@ class PostController extends Controller
         'description'   => 'required',
         'path'          => 'required',
         
-        'image'         => 'nullable|image|max:1024',
+        'image'         => 'required|image|max:1024',
     ];
 
 
@@ -86,64 +86,6 @@ class PostController extends Controller
         return view('admin.Posts.archived', compact('posts'));
     }
 
-    public function filter(Request $request){
-        
-        // FUNZIONE DI FILTRAGGIO INDEX
-        
-        $archive = $request->input('archive');
-        $visible = $request->input('visible');
-        $title = $request->input('title');
-        $path = $request->input('path');
-        $order = $request->input('order');
-        $style = $request->input('style');
-        $type = $request->input('type');
-        $filters = [
-            'title'         => $title,
-            'path'          => $path,
-            'visible'       => $visible,
-            'type'          => $type,
-            'order'         => $order,      
-            'style'         => $style,    
-        ];
-        
-        $query = Post::query();
-        
-        if ($archive == 1) {
-            $query->where('archived', true);
-        }else{
-            $query->where('archived', false);
-        }
-        if ($title) {
-            $query->where('title', 'like', '%' . $title . '%');
-        } 
-        if ($visible == 1) {
-            $query->where('visible', '=', 1);
-        } else if ($visible == 2) {
-            $query->where('visible', '=', 0);
-        }
-        if ($path == 1) {
-            $query->where('path', '=', 1);
-        } else if ($path == 2) {
-            $query->where('path', '=', 2);
-        }
-        if($type){
-            $query->where('type', $type);
-        }
-        if($order){
-            $posts = $query->orderBy('title',)->get();    
-        }else{
-            $posts = $query->orderBy('order', 'desc')->get();
-        }        
-        if ($archive == 1) {
-
-            return view('admin.Posts.archived', compact('posts', 'filters'));
-        }
-        $news = Post::where('archived', false)->where('path', 1)->orderBy('order', 'desc')->get(); 
-        $story = Post::where('archived', false)->where('path', 2)->orderBy('order', 'desc')->get(); 
-
-        return view('admin.Posts.index', compact('posts', 'filters', 'story', 'news'));
-        
-    }
 
     public function index()
     {
@@ -196,7 +138,7 @@ class PostController extends Controller
         
         $post->save();
       
-        return view('admin.Posts.show', compact( 'post'));    
+        return to_route('admin.posts.index');
     }
     
     
@@ -233,7 +175,7 @@ class PostController extends Controller
         
         $post->update();
       
-        return view('admin.Posts.show', compact('post'));
+        return to_route('admin.posts.index');;
     }
 
     public function destroy(Post $post)
