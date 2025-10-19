@@ -283,9 +283,9 @@ class ProductController extends Controller
             }
             $product->ingredients()->sync($ingredients ?? []);  
         }
-        
-        return view('admin.Products.index', compact('products'));  
-        
+        $products = Product::all();
+
+        return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $product->name . '" creato correttamente');
     }
     
     
@@ -465,8 +465,9 @@ class ProductController extends Controller
             $product->ingredients()->sync([]);
         }
 
-        
-        return view('admin.Products.index', compact('products'));     
+        $products = Product::all();        
+        return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $product->name . '" modificato correttamente');
+
     }
 
     public function destroy(Product $product)
