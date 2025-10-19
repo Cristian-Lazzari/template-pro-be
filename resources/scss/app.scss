@@ -626,33 +626,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     
 }
 
-@media (max-width: 1000px) {
-    .dash-c{
-        .top-c, .bottom-c{
-            flex-wrap: wrap;       
-        }
-        .setting{
-            width: 100%;
-            
-        }
-        .stat{
-            flex-direction: column;
-        }
-        .top-set{
-            gap: 2rem !important;
-        }
-        .set{
-            flex-direction: column;
-            
-            .radio-inputs, .sets, .set-cont{
-                h5{
-                    margin-top: 10px;
-                }
-                width: 100% !important;
-            }
-        }
-    }
-}
+
 
 
 .error{
@@ -3490,7 +3464,7 @@ svg.to_see{
     border: none !important;
 }
 
-.stat{
+.statistic_page{
     display: flex;
     flex-direction: column;
     gap: .2rem;

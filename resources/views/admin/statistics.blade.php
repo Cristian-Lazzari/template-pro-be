@@ -4,69 +4,72 @@
 @section('contents')
 @vite(['resources/js/app.js'])
 
-    <div class="stat">
+    <div class="dash_page statistic_page">
         <h1>Statistiche</h1>
 
-        <h2>Prodotti più ordinati</h2>
-        <div class="chart">
-            <canvas class="graph" id="topProductsChart"></canvas>
-            <div class="list">
-                <table class=" table table mytable"> 
-                    <thead>
+        @if($order_count)
+            <h2>Prodotti più ordinati</h2>
+            <div class="chart">
+                <canvas class="graph" id="topProductsChart"></canvas>
+                <div class="list">
+                    <table class=" table table mytable"> 
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Prodotto</th>
+                                <th scope="col">Quantità</th>
+                            </tr>
+                        </thead>
+                        @php $index = 1 @endphp
+                        @foreach ($topProducts as $key => $value)
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Prodotto</th>
-                            <th scope="col">Quantità</th>
+                            <td>{{$index}}</td>
+                            <td>{{$key}}</td>
+                            <td><strong>{{$value}}</strong></td>
                         </tr>
-                    </thead>
-                    @php $index = 1 @endphp
-                    @foreach ($topProducts as $key => $value)
-                    <tr>
-                        <td>{{$index}}</td>
-                        <td>{{$key}}</td>
-                        <td><strong>{{$value}}</strong></td>
-                    </tr>
-                    @php $index ++ @endphp
-                    @endforeach
-                </table>
+                        @php $index ++ @endphp
+                        @endforeach
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <h2>Come vengono ordinati i prodotti nel tempo</h2>
-        <div class="chart">
-            <canvas class="graph" id="ordersOverTimeChart"></canvas>
-        </div>
+            <h2>Come vengono ordinati i prodotti nel tempo</h2>
+            <div class="chart">
+                <canvas class="graph" id="ordersOverTimeChart"></canvas>
+            </div>
 
-        <h2>Ricavi nel tempo da ordini</h2>
-        <div class="chart">
-            <canvas class="graph" id="revenueOverTimeChart"></canvas>
-        </div>
+            <h2>Ricavi nel tempo da ordini</h2>
+            <div class="chart">
+                <canvas class="graph" id="revenueOverTimeChart"></canvas>
+            </div>
+        @endif
+        @if($res_count)
+            <h2>Prenotazioni ai tavoli nel tempo</h2>
+            <div class="chart">
+                <canvas class="graph" id="reservationChart"></canvas>
 
-        <h2>Prenotazioni ai tavoli nel tempo</h2>
-        <div class="chart">
-            <canvas class="graph" id="reservationChart"></canvas>
-
-            <div class="list">
-                <table class="mytable table table-striped "> 
-                    <thead>
+                <div class="list">
+                    <table class="mytable table table-striped "> 
+                        <thead>
+                            <tr>
+                                
+                                <th scope="col">Data</th>
+                                <th scope="col">Adulti</th>
+                                <th scope="col">Bambini</th>
+                            </tr>
+                        </thead>
+                        @foreach ($reservations as $key => $value)
                         <tr>
                             
-                            <th scope="col">Data</th>
-                            <th scope="col">Adulti</th>
-                            <th scope="col">Bambini</th>
+                            <td>{{$value->date}}</td>
+                            <td>{{$value->adults}}</td>
+                            <td>{{$value->children}}</td>
                         </tr>
-                    </thead>
-                    @foreach ($reservations as $key => $value)
-                    <tr>
-                        
-                        <td>{{$value->date}}</td>
-                        <td>{{$value->adults}}</td>
-                        <td>{{$value->children}}</td>
-                    </tr>
-                    @endforeach
-                </table>
+                        @endforeach
+                    </table>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 @endsection
 

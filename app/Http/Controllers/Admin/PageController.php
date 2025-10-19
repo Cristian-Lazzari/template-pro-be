@@ -130,18 +130,21 @@ class PageController extends Controller
         ->orderBy('date', 'ASC')
         ->get();
 
+        $order_count = Order::where('status', '!=', 4)->count();
+        $res_count = Reservation::where('status', '!=', 4)->count();
+
         return view('admin.statistics', [
             'topProducts' => $topProducts,
             'labels' => $labels,
             'datasets' => $datasets,
             'revenueOverTime' => $revenueOverTime,
             'reservations' => $reservations,
+            'order_count' => $order_count,
+            'res_count' => $res_count,
         ]);
     }
 
-    public function dashboard() {
-
-        
+    public function dashboard() {   
         $property_adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
         if(config('configurazione.subscription') == 1){
             $menus = Menu::where('promo', 1)->get();
@@ -199,19 +202,9 @@ class PageController extends Controller
                 $reserved[$r->day]['or'][] = $day;
             }
         }
-
-        // dump($orders);
-        // dump($reservations);
-        // dd($reserved);
-        
-
-
         return $reserved;
     }
     private function get_date(){
-   
-
-        
         $reserved = $this->get_res();
         
         $firstKey = count($reserved) ? array_key_first($reserved) : '';

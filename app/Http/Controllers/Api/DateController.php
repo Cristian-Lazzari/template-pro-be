@@ -131,7 +131,7 @@ class DateController extends Controller
                 ];
             }
             $max_or = $source == 2 ? $adv['max_asporto'] : $adv['max_domicilio'];
-            if(!in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])){
+            if(isset($adv['day_off']) && !in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])){
                 foreach ($week[$first_day->format('N')] as $time => $property) {
                     if(in_array($source, $property)){
                         if($source == 1){
