@@ -85,143 +85,148 @@
             '#FFCC66', '#3366FF', '#33CC99', '#FF6666', '#66FFCC'
         ];
 
+        if(@json($order_count)){
+            // Grafico a torta per i prodotti più ordinati
+            const topProductsData = @json($topProducts);
+            new Chart(document.getElementById('topProductsChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(topProductsData),
+                    datasets: [{
+                        data: Object.values(topProductsData),
+                        backgroundColor: colors,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                }
+            });
+            // grafico colonne prodotti nel tempo
+            const labels = @json($labels);  // Assicurati che anche $labels venga passato correttamente
+            const datasets = @json($datasets);  // Dati del grafico
 
-        // Grafico a torta per i prodotti più ordinati
-        const topProductsData = @json($topProducts);
-        new Chart(document.getElementById('topProductsChart').getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(topProductsData),
-                datasets: [{
-                    data: Object.values(topProductsData),
-                    backgroundColor: colors,
-                }]
-            },
-            options: {
-                responsive: true,
-            }
-        });
-        // grafico colonne prodotti nel tempo
-        const labels = @json($labels);  // Assicurati che anche $labels venga passato correttamente
-        const datasets = @json($datasets);  // Dati del grafico
-
-        // Funzione per generare un array di colori ripetuto se necessario
-        const getColors = (numberOfColorsNeeded, colors) => {
-            const repeatedColors = [];
-            for (let i = 0; i < numberOfColorsNeeded; i++) {
-                repeatedColors.push(colors[i % colors.length]);  // Usa l'operatore modulo per ripetere i colori
-            }
-            return repeatedColors;
-        };
-
-        // Ottieni un array di colori sufficienti per tutti i dataset
-        const colorsForDatasets = getColors(datasets.length, colors);
-
-        // Crea un nuovo array di datasets con i colori associati
-        const datasetsWithColors = datasets.map((dataset, index) => {
-            return {
-                label: dataset.label,  // Etichetta del dataset
-                data: dataset.data,    // I dati numerici
-                backgroundColor: colorsForDatasets[index]  // Colore corrispondente dal nuovo array di colori
+            // Funzione per generare un array di colori ripetuto se necessario
+            const getColors = (numberOfColorsNeeded, colors) => {
+                const repeatedColors = [];
+                for (let i = 0; i < numberOfColorsNeeded; i++) {
+                    repeatedColors.push(colors[i % colors.length]);  // Usa l'operatore modulo per ripetere i colori
+                }
+                return repeatedColors;
             };
-        });
 
-        // Ora, puoi usare datasetsWithColors nel grafico
-        const ctx_o_t = document.getElementById('ordersOverTimeChart').getContext('2d');
+            // Ottieni un array di colori sufficienti per tutti i dataset
+            const colorsForDatasets = getColors(datasets.length, colors);
 
-        const chart_o_t = new Chart(ctx_o_t, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: datasetsWithColors  // Usa il nuovo array con i colori associati
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            filter: (legendItem, chartData) => {
-                                const totals = chartData.datasets.map(dataset => ({
-                                    label: dataset.label,
-                                    total: dataset.data.reduce((sum, value) => sum + value, 0),
-                                }));
-                                totals.sort((a, b) => b.total - a.total);
-                                const top10 = totals.slice(0, 20).map(item => item.label);  // Cambiato 10 a 20 per visualizzare i primi 20
-                                return top10.includes(legendItem.text);
+            // Crea un nuovo array di datasets con i colori associati
+            const datasetsWithColors = datasets.map((dataset, index) => {
+                return {
+                    label: dataset.label,  // Etichetta del dataset
+                    data: dataset.data,    // I dati numerici
+                    backgroundColor: colorsForDatasets[index]  // Colore corrispondente dal nuovo array di colori
+                };
+            });
+
+            // Ora, puoi usare datasetsWithColors nel grafico
+            const ctx_o_t = document.getElementById('ordersOverTimeChart').getContext('2d');
+
+            const chart_o_t = new Chart(ctx_o_t, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: datasetsWithColors  // Usa il nuovo array con i colori associati
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                filter: (legendItem, chartData) => {
+                                    const totals = chartData.datasets.map(dataset => ({
+                                        label: dataset.label,
+                                        total: dataset.data.reduce((sum, value) => sum + value, 0),
+                                    }));
+                                    totals.sort((a, b) => b.total - a.total);
+                                    const top10 = totals.slice(0, 20).map(item => item.label);  // Cambiato 10 a 20 per visualizzare i primi 20
+                                    return top10.includes(legendItem.text);
+                                }
                             }
                         }
+                    },
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true
+                        }
                     }
+                }
+            });
+
+
+            // Grafico a linee per i ricavi nel tempo
+            const revenueOverTime = @json($revenueOverTime);
+            const chart_order = document.getElementById('revenueOverTimeChart').getContext('2d');
+            const chart_or = new Chart(chart_order, {
+                type: 'line',
+                data: {
+                datasets: [
+                    {
+                    label: 'Totale',
+                    data: revenueOverTime.tot, // Dati per ordini pagati
+                    borderColor: 'rgba(145, 220, 224, 1)',
+                    backgroundColor: 'rgba(145, 220, 224, .2)',
+                    fill: true,
+                    },
+                    {
+                    label: 'Pagati',
+                    data: revenueOverTime.paid, // Dati per ordini pagati
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    },
+                    {
+                    label: 'Pagati alla consegna',
+                    data: revenueOverTime.cod, // Dati per ordini pagati alla consegna
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    fill: true,
+                    },
+                    {
+                    label: 'Annullati',
+                    data: revenueOverTime.canceled, // Dati per ordini annullati
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true,
+                    },
+                ],
                 },
+                options: {
                 responsive: true,
                 scales: {
                     x: {
-                        stacked: true
+                        type: 'time', // Asse temporale
+                        time: {
+                            unit: 'day', // Mostra i dati per giorno
+                        },
                     },
                     y: {
-                        stacked: true
-                    }
-                }
-            }
-        });
-
-
-        // Grafico a linee per i ricavi nel tempo
-        const revenueOverTime = @json($revenueOverTime);
-        const chart_order = document.getElementById('revenueOverTimeChart').getContext('2d');
-        const chart_or = new Chart(chart_order, {
-            type: 'line',
-            data: {
-            datasets: [
-                {
-                label: 'Totale',
-                data: revenueOverTime.tot, // Dati per ordini pagati
-                borderColor: 'rgba(145, 220, 224, 1)',
-                backgroundColor: 'rgba(145, 220, 224, .2)',
-                fill: true,
-                },
-                {
-                label: 'Pagati',
-                data: revenueOverTime.paid, // Dati per ordini pagati
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                fill: true,
-                },
-                {
-                label: 'Pagati alla consegna',
-                data: revenueOverTime.cod, // Dati per ordini pagati alla consegna
-                borderColor: 'rgba(255, 206, 86, 1)',
-                backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                fill: true,
-                },
-                {
-                label: 'Annullati',
-                data: revenueOverTime.canceled, // Dati per ordini annullati
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                fill: true,
-                },
-            ],
-            },
-            options: {
-            responsive: true,
-            scales: {
-                x: {
-                    type: 'time', // Asse temporale
-                    time: {
-                        unit: 'day', // Mostra i dati per giorno
+                    title: {
+                        display: true,
+                        text: 'Totale (€)',
+                    },
                     },
                 },
-                y: {
-                title: {
-                    display: true,
-                    text: 'Totale (€)',
                 },
-                },
-            },
-            },
-        });
+            });
+
+        }
         //ultimo grafico
-        const data = @json($reservations);
+        if(@json($res_count))
+        {
+        
+            const data = @json($reservations);
 
             // Estrai le date, adulti e bambini
             const label = data.map(item => item.date); // Array di date (formato ISO)
@@ -287,6 +292,7 @@
                     }
                 }
             });
+}
     });
 </script>
 
