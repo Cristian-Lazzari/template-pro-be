@@ -40,7 +40,9 @@
                 @foreach ($reservation_users as $i)
                     <div class="contact">
                         <span class="name">{{$i->name}}</span>
-                        <span class="mail">{{$i->email}}</span>
+                        <div class="mail">
+                            <span>{{$i->email}}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -56,7 +58,9 @@
                 @foreach ($order_users as $i)
                     <div class="contact">
                         <span class="name">{{$i->name}}</span>
-                        <span class="mail">{{$i->email}}</span>
+                        <div class="mail">
+                            <span>{{$i->email}}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -72,7 +76,9 @@
                 @foreach ($extra_mail_list as $i)
                     <div class="contact">
                         <span class="name">{{$i->name}}</span>
-                        <span class="mail">{{$i->email}}</span>
+                        <div class="mail">
+                            <span>{{$i->email}}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -91,7 +97,9 @@
                 @foreach ($last_mail_list as $i)
                     <div class="contact">
                         <span class="name">{{$i->name}}</span>
-                        <span class="mail">{{$i->email}}</span>
+                        <div class="mail">
+                            <span>{{$i->email}}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>

@@ -3613,13 +3613,21 @@ svg.to_see{
                     align-items: center;
                     justify-content: space-between;
                     max-width: 100%;
-                    overflow-x: hidden;
                     padding: .4rem .7rem;
                     border: 1px solid var(--c3);
                     background-color: var(--c1_op);
+                    gap: 1rem;
                     .mail{
-                        text-overflow: ellipsis;
-                        max-width: 100%;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        width: 100%;
+                        margin: 0 !important;
+                        span{
+                            text-overflow: ellipsis;
+                            width: 100%;
+                            max-width: 100%;
+                            display: block;
+                        }
                     }
                     .name{
                         flex: 1 0 auto;
