@@ -45,7 +45,19 @@ $domain = 'https://future-plus.it/allergens/';
             @if(!$item->visible) not_v @endif
              prod">
                 @if (isset($item->image))
-                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                    <button type="button" class=" image_btn" data-bs-toggle="modal" data-bs-target="#img{{$item->id}}">
+                        <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="img{{$item->id}}" tabindex="-1" aria-labelledby="img{{$item->id}}Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body image_modal">
+                                    <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->name}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <div class="no_img">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image-fill" viewBox="0 0 16 16">
