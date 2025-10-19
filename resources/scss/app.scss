@@ -3480,7 +3480,7 @@ svg.to_see{
     }
     .chart{
         // /max-width: 600px ;
-        padding: .8rem;
+        padding: .6rem;
         color: var(--c1)!important;
         margin-bottom: 2rem;
         background-color: var(--c3);
@@ -3497,7 +3497,7 @@ svg.to_see{
             max-height: 30vh;
             overflow: auto;
             border-radius: 13px !important;
-            padding: 2rem;
+            padding: .5rem;
             text-align: left;
 
             display: flex;
@@ -3618,9 +3618,11 @@ svg.to_see{
                     background-color: var(--c1_op);
                     gap: 1rem;
                     .mail{
+                        
                         overflow: hidden;
                         white-space: nowrap;
                         width: 100%;
+                        text-align: end;
                         margin: 0 !important;
                         span{
                             text-overflow: ellipsis;

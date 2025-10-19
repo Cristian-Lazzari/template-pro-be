@@ -260,6 +260,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,  // utile per adattarsi meglio al mobile
                     scales: {
                         x: {
                             type: 'time', // Configura l'asse X come asse temporale
@@ -273,23 +274,9 @@
                         },
                         y: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Numero di persone'
-                            },
                             stacked: true // Abilita lo stacking
                         }
                     },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Prenotazioni giornaliere'
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
-                    }
                 }
             });
 }
