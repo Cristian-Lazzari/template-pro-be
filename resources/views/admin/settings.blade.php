@@ -471,7 +471,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                             <input type="hidden" id="attivo-originale1" value="{{$adv['services']}}">
                         </div>
                     </div>
-                    <div class="set_a name_c">
+                    {{-- <div class="set_a name_c">
                         <h4>Gestione asporto</h4>
                         <div class="radio-inputs">
                             <label class="radio">
@@ -493,8 +493,8 @@ $adv = json_decode($setting['advanced']->property, 1);
                                 <label class="" id="basic-addon2">Cucina 2</label>
                                 <input type="text" class="" name="too_2" value="{{$adv['too_2']}}">
                             </div>
-                        </div>
-                    </div>
+                        </div> 
+                §</div> --}}
                     <div class="set_a name_c">
                         <h4>Doppia sala</h4>
                         <div class="radio-inputs">
@@ -732,7 +732,7 @@ $adv = json_decode($setting['advanced']->property, 1);
     @endif
 </div>
 
-<script>  
+{{-- <script>  
     document.addEventListener('DOMContentLoaded', async function() {
         const originalValue1 = document.getElementById('attivo-originale1').value;
         const originalValue2 = document.getElementById('attivo-originale2').value;
@@ -771,7 +771,7 @@ $adv = json_decode($setting['advanced']->property, 1);
         });
         
     });
-</script>
+</script> --}}
 
 @endsection
 
