@@ -52,7 +52,8 @@ class ReservationController extends Controller
         }else{
             return response()->json([
                 'success' => false,
-                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
+                'r' => '56'
             ]);
         }
 
@@ -68,7 +69,8 @@ class ReservationController extends Controller
                 if($av < 0){
                     return response()->json([
                 'success' => false,
-                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
+                'r' => '73'
             ]);
                 }
             }
@@ -80,15 +82,10 @@ class ReservationController extends Controller
         if($av < 0){
             return response()->json([
                 'success' => false,
-                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
+                'r' => '86'
             ]);
         }
-
-
-        // Calcola numero di persone
-
-//        if
-        // Controlla la disponibilità e aggiorna le prenotazioni
 
     
         // Crea la nuova prenotazione
