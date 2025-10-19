@@ -17,25 +17,25 @@ class ProductController extends Controller
     
     private $validationsTrue = [
         'name'          => 'required|string|min:1|max:100|unique:products,name',
-        'image'         => 'nullable|image',
+        'image'         => 'nullable|image|max:1024',
         'slot_plate'    => 'required',
     ];
 
     private $validationsFalse = [
         'name'          => 'required|string|min:1|max:100|unique:products,name',
-        'image'         => 'nullable|image',
+        'image'         => 'nullable|image|max:1024',
     ];
 
 
     private $validationsTrue1 = [
         'name'          => 'required|string|min:1|max:100',
-        'image'         => 'nullable|image',
+        'image'         => 'nullable|image|max:1024',
         'slot_plate'    => 'required',
     ];
 
     private $validationsFalse1 = [
         'name'          => 'required|string|min:1|max:100',
-        'image'         => 'nullable|image',
+        'image'         => 'nullable|image|max:1024',
     ];
     
     
@@ -99,62 +99,11 @@ class ProductController extends Controller
         return view('admin.Products.archived', compact('products', 'categories'));
     }
 
-    public function filter(Request $request){
-        
-        // FUNZIONE DI FILTRAGGIO INDEX
-        $categories = Category::all();
-        $archive = $request->input('archive');
-        $visible = $request->input('visible');
-        $name = $request->input('name');
-        $order = $request->input('order');
-        $style = $request->input('style');
-        $category_id = $request->input('category_id');
-        $filters = [
-            'name'          => $name ,
-            'visible'       => $visible ,
-            'category_id'   => $category_id ,
-            'order'         => $order,      
-            'style'         => $style      
-        ];
-        
-        $query = Product::query();
-        
-        if ($archive == 1) {
-            $query->where('archived', true);
-        }else{
-            $query->where('archived', false);
-        }
-        if ($name) {
-            $query->where('name', 'like', '%' . $name . '%');
-        } 
-        if ($visible == 1) {
-            $query->where('visible', '=', 1);
-        } else if ($visible == 2) {
-            $query->where('visible', '=', 0);
-        }
-        if($category_id){
-            $query->where('category_id', $category_id);
-        }
-        if($order){
-            $products = $query->orderBy('name')->get();
-        }else{
-            $products = $query->orderBy('updated_at', 'desc')->get();    
-        }        
-        if ($archive == 1) {
-
-            return view('admin.Products.archived', compact('products', 'categories', 'filters'));
-        }
-
-        return view('admin.Products.index', compact('products', 'categories', 'filters'));
-
-    }
 
     public function index()
     {
-        
         $products    = Product::where('archived', false)->orderBy('updated_at', 'desc')->get();
-        $categories  = Category::all();
-        return view('admin.Products.index', compact('products', 'categories'));
+        return view('admin.Products.index', compact('products'));
     }
 
     public function create()
@@ -318,10 +267,10 @@ class ProductController extends Controller
         
         if($pack > 2){
             $product->tag_set       = $data['tag_set'];
-            if( $too ){
-                $product->type_plate    = $data['type_plate'];     
-                $product->slot_plate    = $data['slot_plate'];     
-            }
+            // if( $too ){
+            //     $product->type_plate    = $data['type_plate'];     
+            //     $product->slot_plate    = $data['slot_plate'];     
+            // }
         }
     
         
@@ -335,7 +284,7 @@ class ProductController extends Controller
             $product->ingredients()->sync($ingredients ?? []);  
         }
         
-        return view('admin.Products.show', compact( 'product', 'property_adv'));
+        return view('admin.Products.index', compact('products'));  
         
     }
     
@@ -517,7 +466,7 @@ class ProductController extends Controller
         }
 
         
-        return view('admin.Products.show', compact( 'product', 'property_adv'));     
+        return view('admin.Products.index', compact('products'));     
     }
 
     public function destroy(Product $product)

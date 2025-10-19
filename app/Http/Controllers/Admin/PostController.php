@@ -19,7 +19,7 @@ class PostController extends Controller
         'description'   => 'required',
         'path'          => 'required',
 
-        'image'         => 'required',
+        'image'         => 'nullable|image|max:1024',
     ];
     private $validation1 = [
         'title'         => 'required|string|min:1|max:150',
@@ -28,6 +28,8 @@ class PostController extends Controller
 
         'description'   => 'required',
         'path'          => 'required',
+        
+        'image'         => 'nullable|image|max:1024',
     ];
 
 
