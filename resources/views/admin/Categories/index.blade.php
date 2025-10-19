@@ -25,156 +25,166 @@
 @endif
  
 
-<h1>Categorie prodotti</h1>
 
-<div class="action-page">
-    <a class="my_btn_2 m-1 w-auto" href="{{ route('admin.categories.create') }}">Crea una nuova categoria</a>
-</div>
+<div class="dash_page">
+    <h1>Categorie prodotti</h1>
+    <div class="action-page">
+        <a class="my_btn_1 create w-auto" href="{{ route('admin.categories.create') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-plus-fill" viewBox="0 0 16 16">
+                <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m.5 4v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
+                </svg>
+            Crea nuova</a>
+    </div>
 
-<div class="slim_cont list-group">
-    @foreach ($categories as $item)
+    <div class="slim_cont list-group">
+        @foreach ($categories as $item)
 
-    @if ($item->id !== 1)
-        <div class="category list-group-item ">
-    @else
-        <div class="category d-none ">
-    @endif
-            <h3><a>{{$item->name}}</a></h3>     
-        
-            @if ($item->id !== 1)
-            <div class="actions">
-                <a class="my_btn_1" href="{{ route('admin.categories.edit', $item) }}">
-                    <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                    </svg>
-                </a> 
-                <button type="button" class="my_btn_4" data-bs-toggle="modal" data-bs-target="#staticBackdropUp{{$item->id}}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
-                        <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
-                    </svg>
-                </button>
-                <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{$item->id}}">
-                    <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                    </svg>
-                </button>
-                
-            </div>
-            @endif
+        @if ($item->id !== 1)
+            <div class="category list-group-item ">
+        @else
+            <div class="category d-none ">
+        @endif
+                <h3><a>{{$item->name}}</a></h3>     
             
-
-        </div>
-       <!-- Button trigger modal -->
-       
-        
-        <!-- Modal ELINIMAZIONE -->
-        <div class="modal fade" id="staticBackdrop{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel{{$item->id}}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered my_modal_dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h1 class=" fs-5" id="staticBackdropLabel{{$item->id}}">Confermi di voler eliminare "<strong>{{$item->name}}</strong>"?</h1>
-                <button data-bs-target="#staticBackdrop{{$item->id}}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                @if ($item->id !== 1)
+                <div class="actions">
+                    <a class="my_btn_1" href="{{ route('admin.categories.edit', $item) }}">
+                        <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                    </a> 
+                    <button type="button" class="my_btn_4" data-bs-toggle="modal" data-bs-target="#staticBackdropUp{{$item->id}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+                            <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{$item->id}}">
+                        <svg style="vertical-align: sub" xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                        </svg>
+                    </button>
+                    
                 </div>
-                <div class="modal-body body">
-                    <p>Eiminando questa categoria, se ci sono prodotti ad essa abbinati, verrano abbinati alla categoria "Non categorizzati"</p>
-                    <form action="{{ route('admin.categories.destroy', ['category'=>$item]) }}" method="post" >
-                        @method('delete')
-                        @csrf
-                        <button class="my_btn_5 w-100"  type="submit">
-                            Elimina
-                        </button>
-                    </form>
-                </div>
+                @endif
                 
+
             </div>
-            </div>
-        </div>
-        <!-- Modal ORDINA I PRODOTTI -->
-        <div class="modal fade" id="staticBackdropUp{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropUpLabel{{$item->id}}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+        <!-- Button trigger modal -->
+        
+            
+            <!-- Modal ELINIMAZIONE -->
+            <div class="modal fade" id="staticBackdrop{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel{{$item->id}}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered my_modal_dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class=" fs-5" id="staticBackdropUpLabel{{$item->id}}">Riordina i prodotti di: "{{$item->name}}"</h1>
-                        <button type="button" class="btn-close" data-bs-target="#staticBackdropUp{{$item->id}}" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h1 class=" fs-5" id="staticBackdropLabel{{$item->id}}">Confermi di voler eliminare "<strong>{{$item->name}}</strong>"?</h1>
+                    <button data-bs-target="#staticBackdrop{{$item->id}}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body body cat_{{$item->id}}">
-                        <form action="{{ route('admin.categories.new_order_products') }}" method="post" >
+                    <div class="modal-body body">
+                        <p>Eiminando questa categoria, se ci sono prodotti ad essa abbinati, verrano abbinati alla categoria "Non categorizzati"</p>
+                        <form action="{{ route('admin.categories.destroy', ['category'=>$item]) }}" method="post" >
+                            @method('delete')
                             @csrf
-                            <div class="row ">
-                                <div class="col-md-6 ">
-                                    <h4 class="text-center">Prodotti da ordinare</h4>
-                                    <ul id="lista_A{{$item->id}}" class="list-group mylist">
-                                        @foreach($item->product as $oggetto)
-                                            <li class="list-group-item list_p" cat_id="cat_{{$item->id}}" data-id="{{ $oggetto['id'] }}">
-                                                <input value="{{$oggetto->id}}" type="hidden" name="new_order_p[]"> {{ $oggetto->name }}
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            
-                            
-                                <div class="col-md-6">
-                                    <h4 class="text-center">Ordine corretto</h4>
-                                    <ul id="lista_B{{$item->id}}" class="list-group mylist">
-                                        <!-- Lista vuota inizialmente -->
-                                    </ul>
-                                </div>
-                            </div>
-                            <button  id="btnConferma_cat_{{$item->id}}" class="d-none my_btn_5 w-100" type="submit">
-                                Modifica
+                            <button class="my_btn_5 w-100"  type="submit">
+                                Elimina
                             </button>
                         </form>
                     </div>
                     
                 </div>
+                </div>
             </div>
-        </div>
-    @endforeach
-</div>
-
-<button type="button" class="my_btn_3 m-auto mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecial">
-    Modifica ordine
-</button>
-    <!-- Modal ORDINA LE CATEGORIE -->
-<div class="modal fade" id="staticBackdropspecial" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="#staticBackdropspecial" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h1 class=" fs-5" id="staticBackdropspecial">Riordina le tue categorie</h1>
-            <button type="button" class="btn-close" data-bs-target="#staticBackdropspecial" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body body">
-                <form action="{{ route('admin.categories.neworder') }}" method="post" >
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="text-center">Categeorie da ordinare</h4>
-                            <ul id="listaA" class="list-group mylist">
-                                @foreach($categories as $oggetto)
-                                    <li class="list-group-item list_c" data-id="{{ $oggetto['id'] }}">
-                                        <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->name }}
-                                    </li>
-                                @endforeach
-                            </ul>
+            <!-- Modal ORDINA I PRODOTTI -->
+            <div class="modal fade" id="staticBackdropUp{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropUpLabel{{$item->id}}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class=" fs-5" id="staticBackdropUpLabel{{$item->id}}">Riordina i prodotti di: "{{$item->name}}"</h1>
+                            <button type="button" class="btn-close" data-bs-target="#staticBackdropUp{{$item->id}}" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                    
-                    
-                        <div class="col-md-6">
-                            <h4 class="text-center">Ordine corretto</h4>
-                            <ul id="listaB" class="list-group mylist list_c">
-                                <!-- Lista vuota inizialmente -->
-                            </ul>
+                        <div class="modal-body body cat_{{$item->id}}">
+                            <form action="{{ route('admin.categories.new_order_products') }}" method="post" >
+                                @csrf
+                                <div class="row ">
+                                    <div class="col-md-6 ">
+                                        <h4 class="text-center">Prodotti da ordinare</h4>
+                                        <ul id="lista_A{{$item->id}}" class="list-group mylist">
+                                            @foreach($item->product as $oggetto)
+                                                <li class="list-group-item list_p" cat_id="cat_{{$item->id}}" data-id="{{ $oggetto['id'] }}">
+                                                    <input value="{{$oggetto->id}}" type="hidden" name="new_order_p[]"> {{ $oggetto->name }}
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                
+                                
+                                    <div class="col-md-6">
+                                        <h4 class="text-center">Ordine corretto</h4>
+                                        <ul id="lista_B{{$item->id}}" class="list-group mylist">
+                                            <!-- Lista vuota inizialmente -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button  id="btnConferma_cat_{{$item->id}}" class="d-none my_btn_5 w-100" type="submit">
+                                    Modifica
+                                </button>
+                            </form>
                         </div>
+                        
                     </div>
-                    <button  id="btnConferma" class="d-none my_btn_5 w-100" type="submit">
-                        Modifica
-                    </button>
-                </form>
+                </div>
             </div>
-            
+        @endforeach
+    </div>
+
+    <button type="button" class="my_btn_3 m-auto mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecial">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+                            <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+                        </svg>
+        Modifica ordine
+    </button>
+        <!-- Modal ORDINA LE CATEGORIE -->
+    <div class="modal fade" id="staticBackdropspecial" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="#staticBackdropspecial" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class=" fs-5" id="staticBackdropspecial">Riordina le tue categorie</h1>
+                <button type="button" class="btn-close" data-bs-target="#staticBackdropspecial" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body body">
+                    <form action="{{ route('admin.categories.neworder') }}" method="post" >
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="text-center">Categeorie da ordinare</h4>
+                                <ul id="listaA" class="list-group mylist">
+                                    @foreach($categories as $oggetto)
+                                        <li class="list-group-item list_c" data-id="{{ $oggetto['id'] }}">
+                                            <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->name }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        
+                        
+                            <div class="col-md-6">
+                                <h4 class="text-center">Ordine corretto</h4>
+                                <ul id="listaB" class="list-group mylist list_c">
+                                    <!-- Lista vuota inizialmente -->
+                                </ul>
+                            </div>
+                        </div>
+                        <button  id="btnConferma" class="d-none my_btn_5 w-100" type="submit">
+                            Modifica
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
         </div>
     </div>
 </div>

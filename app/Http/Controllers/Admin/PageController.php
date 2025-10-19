@@ -336,348 +336,51 @@ class PageController extends Controller
         return view('admin.settings', compact('setting'));
     }
     public function menu(){
-        $menus = Menu::where('promo', 1)->get();
+
+        $menus = Menu::where('fixed_menu', '!=', '0')->where('promo', 1)->with('products', 'category')->orderBy('updated_at', 'desc')->get();
+        foreach ($menus as $c) {
+            if($c->fixed_menu == '2'){
+                $choices = [];
+                foreach ($c->products as $item) {
+                    $label = $item->pivot->label;
+                    if (!isset($choices[$label])) {
+                        $choices[$label] = [];
+                    }
+                    $choices[$label][] = $item;
+                }
+                $c->fixed_menu = $choices;
+            }
+        }
+
         $products = Product::where('promotion', 1)->get();
-        return view('admin.menu', compact('menus', 'products'));
+
+        $totalProducts = Product::count();
+        $nonArchivedProducts = Product::where('archived', false)->count();
+        $archivedProducts = Product::where('archived', true)->count();
+        $nonArchivedVisibleProducts = Product::where('archived', false)
+        ->where('visible', true)
+            ->count();
+
+        $stat = [
+            'products' => [
+                'tot' => $totalProducts,
+                'not_archived' => $nonArchivedProducts,
+                'archived' => $archivedProducts,
+                'not_archived_visible' => $nonArchivedVisibleProducts,
+            ],
+            'categories' => [
+                'tot' => Category::count(),
+            ],
+            'ingredients' => [
+                'tot' => Ingredient::count(),
+            ],
+            'menus' => [
+                'tot' => Menu::count(),
+            ], 
+        ];
+        
+            
+
+        return view('admin.menu', compact('menus', 'products', 'stat'));
     }
-
-
-
 }
-
-// public function dashboard() {
-
-//         $setting = Setting::all()->keyBy('name');
-//         $product_ = [
-//             1 => Product::where('visible', 1)->where('archived', 0)->count(),
-//             2 => Product::where('archived', 1)->count(),
-//         ];
-//         $stat = [
-//             1 => Category::count(),
-//             2 => Ingredient::count(),
-//         ];
-//         $meseCorrenteInizio = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-//         $meseCorrenteFine = Carbon::now()->endOfMonth()->format('Y-m-d H:i:s');
-//         $traguard = [
-//             1 =>  Order::whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [$meseCorrenteInizio, $meseCorrenteFine])->sum('tot_price'),
-//             2 =>  Order::sum('tot_price'),
-//             3 =>  Reservation::selectRaw('SUM(JSON_EXTRACT(n_person, "$.adult") + JSON_EXTRACT(n_person, "$.child")) AS total_persons')
-//                 ->whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [
-//                     Carbon::now()->startOfMonth()->format('Y-m-d H:i:s'),
-//                     Carbon::now()->endOfMonth()->format('Y-m-d H:i:s')
-//                 ])
-//                 ->value('total_persons'),
-//             4 =>  Reservation::selectRaw('SUM(JSON_EXTRACT(n_person, "$.adult") + JSON_EXTRACT(n_person, "$.child")) AS total_persons')
-//                 ->whereBetween(DB::raw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')"), [
-//                     Carbon::now()->startOfYear()->format('Y-m-d H:i:s'),
-//                     Carbon::now()->endOfYear()->format('Y-m-d H:i:s')
-//                 ])
-//                 ->value('total_persons')
-//         ];
-//         $post = [ 
-//             1 => Post::count(),
-//             2 => Post::where('visible', 0)->count(),
-//             3 => Post::where('visible', 1)->where('archived', 0)->count(),
-//             4 => Post::where('archived', 1)->count(),
-//         ];
-//         $order = [ 
-//             1 => Order::where('status', 1)->count() + Order::where('status', 5)->count(),
-//             2 => Order::where('status', 2)->count(),
-//             3 => Order::where('status', 0)->count() + Order::where('status', 6)->count(),
-//             4 => Order::where('status', 3)->count(),
-//         ];
-//         $reservation = [
-//             1 => Reservation::where('status', 1)->count() + Reservation::where('status', 5)->count(),
-//             2 => Reservation::where('status', 2)->count(),
-//             3 => Reservation::where('status', 0)->count(),
-//             4 => Reservation::where('status', 3)->count(),
-//         ];
-//         // Fetch and group Reservations by date
-//         $reservations = Reservation::selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, COUNT(*) as count")
-//             ->groupBy('date')
-//             ->orderByRaw("STR_TO_DATE(date, '%Y-%m-%d')")
-//             ->get()
-//             ->keyBy('date');
-
-//         // Fetch and group Orders by date for delivery and asporto
-//         $ordersDelivery = Order::whereNotNull('comune')
-//             ->selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, COUNT(*) as count")
-//             ->groupBy('date')
-//             ->orderByRaw("STR_TO_DATE(date, '%Y-%m-%d')")
-//             ->get()
-//             ->keyBy('date');
-
-//         $ordersAsporto = Order::whereNull('comune')
-//             ->selectRaw("DATE_FORMAT(STR_TO_DATE(`date_slot`, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as date, COUNT(*) as count")
-//             ->groupBy('date')
-//             ->orderByRaw("STR_TO_DATE(date, '%Y-%m-%d')")
-//             ->get()
-//             ->keyBy('date');
-
-//         // Combine all dates for consistency in the chart
-//         $allDates = collect(array_merge(
-//             $reservations->keys()->toArray(),
-//             $ordersDelivery->keys()->toArray(),
-//             $ordersAsporto->keys()->toArray()
-//         ))->unique()->sort();
-
-//         // Prepare the data for the chart
-//        // Prepare the data for the chart
-
-//         $chartData = [
-//             'labels' => $allDates->map(fn($date) => Carbon::parse($date))->values()->toArray(),
-//             'datasets' => [
-//                 [
-//                     'label' => 'Prenotazioni',
-//                     'data' => $allDates->map(fn($date) => isset($reservations[$date]) ? (int)$reservations[$date]['count'] : 0)->values()->toArray(),
-                    
-//                     'borderColor' => '#090333',
-//                     'backgroundColor' => '#090333',
-//                 ],
-//                 [
-//                     'label' => ' Delivery',
-//                     'data' => $allDates->map(fn($date) => isset($ordersDelivery[$date]) ? (int)$ordersDelivery[$date]['count'] : 0)->values()->toArray(),
-//                     'borderColor' => '#10b793',
-//                     'backgroundColor' => '#10b793',
-//                 ],
-//                 [
-//                     'label' => 'Asporto',
-//                     'data' => $allDates->map(fn($date) => isset($ordersAsporto[$date]) ? (int)$ordersAsporto[$date]['count'] : 0)->values()->toArray(),
-//                     'borderColor' => '#10b7937b',
-//                     'backgroundColor' => '#10b7937b',
-//                 ],
-//             ],
-//         ];
-//         $adv_s = Setting::where('name', 'advanced')->first();
-//         if($adv_s){
-//             $property_adv = json_decode($adv_s->property, 1);  
-//         }else{
-//             dump('Non sono state trovate le impostazioni avanzate');
-//             dump('Per favore, imposta le opzioni avanzate nella pagina delle impostazioni o contatta l assistenza tecnica.');
-//             dd('Error: Impostazioni avanzate non trovate');  
-//         }
-//         $notify = [];
-//         $dates = Date::select('*') // o specifica i campi che ti servono
-//         ->selectRaw("
-//             STR_TO_DATE(
-//                 CASE
-//                     WHEN date_slot LIKE '%null%' THEN REPLACE(date_slot, ' null', ' 00:00')
-//                     ELSE date_slot
-//                 END,
-//                 '%d/%m/%Y %H:%i'
-//             ) AS order_slot
-//         ")
-//         ->orderBy('order_slot')
-//         ->get();
-//         if(count($dates) == 0){
-//             return view('admin.dashboard', compact('setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify','adv_s'));
-//         };
-//         // creo calendario - meglio inizializzare con chiave 0 per semplicità
-//         $year = [];
-//         $year[] = [
-//             'year' => $dates[0]['year'],
-//             'month'=> $dates[0]['month'],
-//             'days'=> [],
-//         ];
-
-//         // Recupera configurazioni
-//         $double = $property_adv['dt'];
-//         $pack = $property_adv['services'];
-//         $type = $property_adv['too'];
-
-//         $firstDay = [
-//             'year' => $dates[0]['year'],
-//             'month' => $dates[0]['month'],
-//             'day' => $dates[0]['day'],
-//         ];
-
-//         foreach ($dates as $d) {
-//             list($date, $time) = explode(" ", $d['date_slot']);
-
-//             // assicuriamoci di avere l'indice corrente corretto
-//             $cy = array_key_last($year);
-
-//             // crea Carbon per calcolare giorni mancanti
-//             $d1 = Carbon::create($firstDay['year'], $firstDay['month'], $firstDay['day']);
-//             $d2 = Carbon::create($d['year'], $d['month'], $d['day']);
-//             if ($d1->gt($d2)) {
-//                 [$d1, $d2] = [$d2, $d1];
-//             }
-
-//             $diffInDays = $d1->diffInDays($d2);
-
-//             if ($diffInDays >= 1) {
-//                 // inserisco i giorni mancanti (dal giorno successivo di d1 fino a d2-1)
-//                 $current = $d1->copy()->addDay();
-//                 for ($i = 1; $i < $diffInDays; $i++) {
-//                     // aggiorna indice corrente (potrebbe essere cambiato nei loop precedenti)
-//                     $cy = array_key_last($year);
-
-//                     // se il mese del giorno corrente non corrisponde al mese dell'array corrente, crea nuovo mese
-//                     if ($current->month !== $year[$cy]['month'] || $current->year !== $year[$cy]['year']) {
-//                         $year[] = [
-//                             'year' => $current->year,
-//                             'month' => $current->month,
-//                             'days' => [],
-//                         ];
-//                         $cy = array_key_last($year);
-//                     }
-
-//                     // push del giorno mancante
-//                     $year[$cy]['days'][] = [
-//                         'day'   => $current->day,
-//                         'day_w' => $current->dayOfWeekIso,
-//                         'date'  => $current->format('d/m/Y'),
-//                     ];
-
-//                     $current->addDay();
-//                 }
-
-//                 // imposto firstDay all'ultimo giorno aggiunto (cioè d2-1)
-//                 $lastAdded = $d2->copy()->subDay();
-//                 $firstDay = [
-//                     'year'  => $lastAdded->year,
-//                     'month' => $lastAdded->month,
-//                     'day'   => $lastAdded->day,
-//                 ];
-//             }
-
-//             // costruisco la struttura del day (coerente anche se reserving == '0')
-//             $day = [
-//                 'day'   => $d['day'],
-//                 'day_w' => $d['day_w'],
-//                 'date'  => $date,
-//                 'time'  => [],
-//             ];
-
-//             if ($d['reserving'] !== '0') {
-//                 $res = json_decode($d['reserving'], true);
-//                 if ($pack == 2) {
-//                     $table = $double ? ($res['table_1'] + $res['table_2']) : ($res['table'] ?? 0);
-//                     $day['table'] = $table;
-//                     $time = ['time' => $d['time'], 'table' => $table];
-//                 } elseif ($pack == 3) {
-//                     $asporto = $type ? ($res['cucina_1'] + $res['cucina_2']) : ($res['asporto'] ?? 0);
-//                     $domicilio = $res['domicilio'] ?? 0;
-//                     $day['asporto'] = $asporto;
-//                     $day['domicilio'] = $domicilio;
-//                     $time = ['time' => $d['time'], 'asporto' => $asporto, 'domicilio' => $domicilio];
-//                 } elseif ($pack == 4) {
-//                     $asporto = $type ? ($res['cucina_1'] + $res['cucina_2']) : ($res['asporto'] ?? 0);
-//                     $domicilio = $res['domicilio'] ?? 0;
-//                     $table = $double ? ($res['table_1'] + $res['table_2']) : ($res['table'] ?? 0);
-//                     $day['asporto'] = $asporto;
-//                     $day['domicilio'] = $domicilio;
-//                     $day['table'] = $table;
-//                     $time = ['time' => $d['time'], 'asporto' => $asporto, 'domicilio' => $domicilio, 'table' => $table];
-//                 } else {
-//                     $time = ['time' => $d['time']];
-//                 }
-//             } else {
-//                 // no reserving
-//                 $time = ['time' => $d['time']];
-//             }
-
-//             // aggiorno cy (ultima chiave)
-//             $cy = array_key_last($year);
-
-//             // se il giorno appartiene al mese corrente (pari a firstDay)
-//             if ($d['year'] == $firstDay['year'] && $d['month'] == $firstDay['month']) {
-//                 // caso time == 0 -> giorno off
-//                 if ($d['time'] == 0) {
-//                     $year[$cy]['days'][] = [
-//                         'day' => $d['day'],
-//                         'day_w' => $d['day_w'],
-//                         'date' => $date
-//                     ];
-//                 } else {
-//                     // verifica se devo aggregare sul giorno esistente (stesso giorno) o creare nuova entry
-//                     $lastDayIndex = count($year[$cy]['days']) - 1;
-//                     $needNewDay = true;
-//                     if ($lastDayIndex >= 0) {
-//                         $lastDay = $year[$cy]['days'][$lastDayIndex];
-//                         if ($lastDay['day'] == $d['day']) {
-//                             // aggrego i valori sullo stesso giorno
-//                             $needNewDay = false;
-//                             // sommo i campi in base al pack
-//                             if ($pack == 2 && isset($day['table'])) {
-//                                 $year[$cy]['days'][$lastDayIndex]['table'] = ($year[$cy]['days'][$lastDayIndex]['table'] ?? 0) + $day['table'];
-//                             } elseif ($pack == 3) {
-//                                 $year[$cy]['days'][$lastDayIndex]['asporto'] = ($year[$cy]['days'][$lastDayIndex]['asporto'] ?? 0) + ($day['asporto'] ?? 0);
-//                                 $year[$cy]['days'][$lastDayIndex]['domicilio'] = ($year[$cy]['days'][$lastDayIndex]['domicilio'] ?? 0) + ($day['domicilio'] ?? 0);
-//                             } elseif ($pack == 4) {
-//                                 $year[$cy]['days'][$lastDayIndex]['table'] = ($year[$cy]['days'][$lastDayIndex]['table'] ?? 0) + ($day['table'] ?? 0);
-//                                 $year[$cy]['days'][$lastDayIndex]['domicilio'] = ($year[$cy]['days'][$lastDayIndex]['domicilio'] ?? 0) + ($day['domicilio'] ?? 0);
-//                                 $year[$cy]['days'][$lastDayIndex]['asporto'] = ($year[$cy]['days'][$lastDayIndex]['asporto'] ?? 0) + ($day['asporto'] ?? 0);
-//                             }
-//                             // aggiungo l'orario al tempo
-//                             $year[$cy]['days'][$lastDayIndex]['time'][] = $time;
-//                         }
-//                     }
-
-//                     if ($needNewDay) {
-//                         // creo nuova entry giorno completa
-//                         $dayToPush = $day;
-//                         $dayToPush['time'] = [$time];
-//                         $year[$cy]['days'][] = $dayToPush;
-//                     }
-//                 }
-//             } else {
-//                 // mese differente -> creo nuovo mese e aggiungo il giorno
-//                 $month = [
-//                     'year' => $d['year'],
-//                     'month' => $d['month'],
-//                     'days' => []
-//                 ];
-//                 if ($d['time'] == 0) {
-//                     $month['days'][] = [
-//                         'day' => $d['day'],
-//                         'day_w' => $d['day_w'],
-//                         'date' => $date
-//                     ];
-//                 } else {
-//                     $day['time'] = [$time];
-//                     $month['days'][] = $day;
-//                 }
-//                 $year[] = $month;
-//             }
-
-//             // imposto firstDay al record corrente (per iterazione successiva)
-//             $firstDay = [
-//                 'year'  => $d['year'],
-//                 'month' => $d['month'],
-//                 'day'   => $d['day'],
-//             ];
-//         }
-
-//         // Ottieni ordini non notificati
-//         $not_or = Order::where('notificated', 0)->where('status', '!=', 4)->get();
-//         $not_res = Reservation::where('notificated', 0)->where('status', '!=', 4)->get();
-//         //fine date
-//         //cerco notifiche
-//         if (count($not_or) || count($not_res)) {
-//             if (count($not_or)){
-//                 foreach ($not_or as $o) {
-//                     $n = [
-//                         'm' => 'È stato appena concluso un ordine: da ' . $o->name . ' per il ' . $o->date_slot . ' di €' . $o->tot_price / 100,
-//                         'type' => 'or',
-//                         'id' => $o->id
-//                     ]; 
-//                     array_push($notify, $n); $o->notificated = 1; $o->update();
-//                 }
-//             }
-//             if (count($not_res)){
-//                 foreach ($not_res as $o) {
-//                     $person = json_decode($o->n_person, 1);
-//                     $n = [
-//                         'm' => 'È stata appena conclusa una prenotazione: da ' . $o->name . ' per il ' . $o->date_slot . ' , gli ospiti sono ' . $person['adult'].' adulti e '.$person['child'].' bambini.',
-//                         'type' => 'res',
-//                         'id' => $o->id
-//                     ];
-//                     array_push($notify, $n); $o->notificated = 1; $o->update();
-//                 }
-//             }
-//         }
-//         return view ('admin.dashboard', compact('year', 'setting', 'stat', 'product_', 'traguard', 'order', 'reservation', 'post', 'chartData', 'notify','adv_s'));
-//        // dd($year);
-//     }
