@@ -22,13 +22,10 @@ $c3: #d8dde8;
 
 #dark{
     display: none;
-    height: 0 !important;
-    width: 0 !important;
+    height: 0 ;
+    width: 0 ;
 }
-#light{
-    height: 16px !important;
-    width: 16px !important;
-}
+
 
 [data-theme="dark"] {
     --c3_op:#1e2d6485;
@@ -43,13 +40,11 @@ $c3: #d8dde8;
     --c1: #d8dde8;
     #light{
         display: none;
-        height: 0 !important;
-        width: 0 !important;
+        height: 0 ;
+        width: 0 ;
     }
     #dark{
         display: block !important;
-        height: 16px !important;
-        width: 16px !important;
     }
     .myitem{
         filter:invert(1);
@@ -212,12 +207,13 @@ body{
     }
     
 }
+$svg_n: clamp(25px, 5vw, 30px);
 .nav{
     background-color: var(--c3_op_8)!important;
     //border: 2px solid var(--c1)!important;
     backdrop-filter: blur(10px);
     position: fixed;
-    padding: .7rem;
+    padding: .3rem;
     bottom: 20px;
     left: 0;
     right: 0;
@@ -226,34 +222,36 @@ body{
     max-width: 850px;
     margin: 0 auto;
     border-radius: 20px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 1);
     display: flex;
     align-items: stretch;
-    justify-content: space-between;
-    gap: .5rem;
+    //justify-content: space-around;
+    justify-content: flex-start;
+
+    gap: .3rem;
     .link_nav{
         background-color: var(--c1);
         border: 2px solid var(--c1);
         text-decoration: none;
         border-radius: 14px;
-        padding: .4rem;
+        padding: .5rem;
         color: var(--c3) !important;
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
         font-size: $fs_sm_1;
         font-weight: 600;
-        $svg_n: clamp(28px, 5vw, 35px);
+        
         svg{
-            filter: drop-shadow(0 0 3px var(--c2_op));
-            height: $svg_n;
-            width: $svg_n;
-            padding: 3px;
+            //filter: drop-shadow(0 0 3px var(--c2_op));
+            height: $svg_n !important;
+            width: $svg_n !important;
+
         }
     }
     @media (max-width: 860px) {
         .link_nav{
-           span{
-            display: none;
-           }
+            span{
+                display: none;
+            }
         }
     }
     .profile{
@@ -267,11 +265,15 @@ body{
         font-weight: 900;
         svg{
             color: var(--c1);
-
+            
         }
     }
-
     
+    
+}
+#dark , #light{
+    height: calc($svg_n * 0.6) !important;
+    width: calc($svg_n * 0.6) !important;
 }
 .scale-none{
     h5{
