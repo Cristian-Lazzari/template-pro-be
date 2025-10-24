@@ -147,9 +147,11 @@ class PageController extends Controller
     public function dashboard() {   
         $property_adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
         if(config('configurazione.subscription') == 1){
-            $menus = Menu::where('promo', 1)->get();
-            $products = Product::where('promotion', 1)->get();
-            return view('admin.menu', compact('menus', 'products'));
+            $menuInt = $this->menu_int();
+            $products = $menuInt['products'];
+            $menus = $menuInt['menus'];
+            $stat = $menuInt['stat'];
+            return view('admin.menu', compact('menus', 'products', 'stat'));
         }
         $calendar = $this->get_date();
         $notify = [];
@@ -329,7 +331,16 @@ class PageController extends Controller
         return view('admin.settings', compact('setting'));
     }
     public function menu(){
+        
+        $menuInt = $this->menu_int();
 
+        $products = $menuInt['products'];
+        $menus = $menuInt['menus'];
+        $stat = $menuInt['stat'];
+
+        return view('admin.menu', compact('menus', 'products', 'stat'));
+    }
+    protected function menu_int(){
         $menus = Menu::where('fixed_menu', '!=', '0')->where('promo', 1)->with('products', 'category')->orderBy('updated_at', 'desc')->get();
         foreach ($menus as $c) {
             if($c->fixed_menu == '2'){
@@ -344,9 +355,7 @@ class PageController extends Controller
                 $c->fixed_menu = $choices;
             }
         }
-
         $products = Product::where('promotion', 1)->get();
-
         $totalProducts = Product::count();
         $nonArchivedProducts = Product::where('archived', false)->count();
         $archivedProducts = Product::where('archived', true)->count();
@@ -371,9 +380,11 @@ class PageController extends Controller
                 'tot' => Menu::count(),
             ], 
         ];
-        
-            
-
-        return view('admin.menu', compact('menus', 'products', 'stat'));
+        $menu_int = [
+            'stat' => $stat,
+            'products' => $products,
+            'menus' => $menus,
+        ];
+        return $menu_int;
     }
 }
