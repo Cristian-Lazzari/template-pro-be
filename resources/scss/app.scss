@@ -422,7 +422,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     .top-set{
         display: flex;
         flex-direction: column;
-        gap: 1.2rem;
+        gap: 3rem;
     }
     input.form-control::placeholder, input::placeholder{
         color: var(--c1_op_3);
@@ -435,14 +435,15 @@ $svg_n: clamp(25px, 5vw, 30px);
         .promo_b{
             display: flex;
             flex-direction: column !important;
-            align-items: flex-end;
+            align-items: flex-start;
             .input-group-text{
                 border-radius: 8px 8px 0 0 !important;
                 width: fit-content;
+                margin-top: .8rem;
             }
             .form-control{
                 text-align: left !important;
-                border-radius: 8px 0 8px 8px !important;
+                border-radius: 0 8px  8px 8px !important;
                 width: 100%;
                 text-align: center;
                 color: var(--c1) !important;
@@ -486,8 +487,13 @@ $svg_n: clamp(25px, 5vw, 30px);
             .accordion-body{
                 background-color: var(--c3) !important;
                 padding: .5rem;
-                .my_btn_1{
-                    margin: 0 auto;
+                button{
+                    margin: 10px auto 0;
+                }
+                section{
+                    display: flex;
+                    flex-direction: column;
+                    gap: .5rem;
                 }
             }
         }
@@ -499,6 +505,9 @@ $svg_n: clamp(25px, 5vw, 30px);
             }
         }
         .activity-day{
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
             label{
                 min-width: 80px;
                 text-transform: capitalize;
@@ -563,46 +572,51 @@ $svg_n: clamp(25px, 5vw, 30px);
     .set{
         $brr-set-m : 12px;
         $brr-set : 10px;
-        padding: .7rem;
-        border-radius: 20px;
-        background-color: var(--c3); 
+        color: var(--c3);
         display: flex;
-        gap: 8px;
-        justify-content: space-between;
+        gap: 1rem;
+        flex-direction: column;
         align-items: center;
         width: 100%;
         .set-cont{
-            width: 72%;
+            width: 100%;
+            //background-color: red;
             display: flex;
             flex-direction: column;
-            h5{
-                text-align: end;
-                margin: 1rem 0 .3rem;
+            gap: .8rem;
+            .g_set{
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                gap: 1.3rem;
+                align-items: center;
             }
-            //gap: 1rem;
-            .radio-inputs{
-                width: 100% !important;
+            h5{
+                white-space: nowrap;
+                text-align: start;
+                margin: 0;
             }
         }
         .input-group-text{
-            background-color: var(--c1) !important;
-            color: var(--c3) !important;
-            border: var(--c1) solid 2px;
+            background-color: var(--c3) !important;
+            color: var(--c1) !important;
+            border: var(--c3) solid 1px;
             border-top-left-radius: $brr-set;
             border-bottom-left-radius: $brr-set;
         }
         .form-control{
-            background-color: var(--c3);
+            background-color: var(--c1);
             border-radius: $brr-set;
-            border: var(--c1) solid 2px;
+            color: var(--c3) !important;
+            border: var(--c3) solid 1px;
         }
         .radio-inputs{
             //border-radius: $brr-set;
-            width: 72%;
+            width: 50%;
         }
 
         .sets{
-            width: 72%;
+            width: 100%;
             
             .radio-inputs{
                 margin-bottom: 4px;
@@ -3855,7 +3869,7 @@ svg.to_see{
                 .radio-inputs{
                     width: 100%;
                     margin-left: auto !important;
-                    max-width: 340px;
+                    max-width: 200px;
                     //padding: .4rem;
                 }
             }
