@@ -23,14 +23,24 @@
 @endif
 
  
-<h1>Menu</h1>
- 
+<div class="dash_page">
+    <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-fork-knife" viewBox="0 0 16 16">
+            <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
+        </svg>
+        Menu
+    </h1>
+    
+    <div class="action-page">
+        <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.menus.create') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-plus-fill" viewBox="0 0 16 16">
+                <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m.5 4v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
+                </svg>
 
-<div class="action-page">
-    <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.menus.create') }}">Crea un nuovo Menu</a>
-</div>
-<div class="menu-containers">
-    <div class="object-container menu-container">
+            Crea nuovo
+        </a>
+    </div>
+    <div class="menu-container">
         @if ($fix->count() == 0)
             <div class="alert alert-warning">
                 Non sono presenti menu fissi, creane uno per iniziare
@@ -94,7 +104,7 @@
             </div>
         @endforeach
     </div>
-    <div class="object-container menu-container">
+    <div class="menu-container">
         @if ($combo->count() == 0)
             <div class="alert alert-warning">
                 Non sono presenti menu combo o combo custom, creane uno per iniziare

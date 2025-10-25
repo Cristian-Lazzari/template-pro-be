@@ -1828,8 +1828,8 @@ svg.to_see{
 
 .menu-containers{
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+
     gap: 1rem;
     .menu-container{
         display: flex;
@@ -1954,11 +1954,12 @@ svg.to_see{
         .old_price{
             text-decoration: line-through;
         }
-        .menus-actions{
-            gap: .3rem !important;
-        }
-        
-        
+    }
+    .menus-actions{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: .3rem;
     }
 }
 @media (min-width:1090px) {
