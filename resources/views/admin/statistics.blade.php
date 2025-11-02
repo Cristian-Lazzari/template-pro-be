@@ -50,7 +50,7 @@
                 <div class="int_stat">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">Tolale Ordini</span>
+                            <span class="label">Ordini:</span>
                             <span class="count">
                                 {{$order_count}}
                             </span>
@@ -90,7 +90,7 @@
                 <div class="int_stat">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">Tolale prenotazioni</span>
+                            <span class="label">Prenotazioni:</span>
                             <span class="count">
                                 {{$res_count}}
                             </span>

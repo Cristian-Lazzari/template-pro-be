@@ -3591,21 +3591,18 @@ svg.to_see{
             flex-direction: column;
             // background-color: var(--c1);
             // color: var(--c3);
-            padding: .7rem !important;
+            //padding: .7rem !important;
             border-radius: 12px;
             flex-wrap: wrap;
             gap: .4rem;
             .line{
                 display: flex;
-                gap: 1.5rem;
+                gap: 1rem;
+                flex-wrap: wrap;
             }
             .top_s{
                 flex: 1 0 !important;
-                //max-width: 200px;
-                // background-color: var(--c3);
-                // border-radius: 8px;
-                // color: var(--c1);
-                // padding-left: .5rem;
+                gap: .4rem !important;
             }
             .ok{
                 svg{
@@ -3629,7 +3626,7 @@ svg.to_see{
                 display: flex;
                 align-items: center;
                 //justify-content: space-between;
-                gap: 1rem;
+                gap: .1rem;
                 font-size: $fs_sm_1;
                 
                 .count{
