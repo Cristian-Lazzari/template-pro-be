@@ -18,8 +18,8 @@ $adv = json_decode($setting['advanced']->property, 1);
 
 <div class="dash_page">
     <h1>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-wide-connected" viewBox="0 0 16 16">
+            <path d="M7.068.727c.243-.97 1.62-.97 1.864 0l.071.286a.96.96 0 0 0 1.622.434l.205-.211c.695-.719 1.888-.03 1.613.931l-.08.284a.96.96 0 0 0 1.187 1.187l.283-.081c.96-.275 1.65.918.931 1.613l-.211.205a.96.96 0 0 0 .434 1.622l.286.071c.97.243.97 1.62 0 1.864l-.286.071a.96.96 0 0 0-.434 1.622l.211.205c.719.695.03 1.888-.931 1.613l-.284-.08a.96.96 0 0 0-1.187 1.187l.081.283c.275.96-.918 1.65-1.613.931l-.205-.211a.96.96 0 0 0-1.622.434l-.071.286c-.243.97-1.62.97-1.864 0l-.071-.286a.96.96 0 0 0-1.622-.434l-.205.211c-.695.719-1.888.03-1.613-.931l.08-.284a.96.96 0 0 0-1.186-1.187l-.284.081c-.96.275-1.65-.918-.931-1.613l.211-.205a.96.96 0 0 0-.434-1.622l-.286-.071c-.97-.243-.97-1.62 0-1.864l.286-.071a.96.96 0 0 0 .434-1.622l-.211-.205c-.719-.695-.03-1.888.931-1.613l.284.08a.96.96 0 0 0 1.187-1.186l-.081-.284c-.275-.96.918-1.65 1.613-.931l.205.211a.96.96 0 0 0 1.622-.434zM12.973 8.5H8.25l-2.834 3.779A4.998 4.998 0 0 0 12.973 8.5m0-1a4.998 4.998 0 0 0-7.557-3.779l2.834 3.78zM5.048 3.967l-.087.065zm-.431.355A4.98 4.98 0 0 0 3.002 8c0 1.455.622 2.765 1.615 3.678L7.375 8zm.344 7.646.087.065z"/>
         </svg>
         Impostazioni
     </h1>
@@ -37,7 +37,11 @@ $adv = json_decode($setting['advanced']->property, 1);
 
        
     </div>
-    <div class="top_action my-4"> 
+    <div class="theme my-4"> 
+         <p>Tema: 
+            <strong id="light_s">Scuro</strong>
+            <strong id="dark_s">Chiaro</strong>
+        </p>
         <button id="theme-toggle" class="my_btn_3">
             <svg id="dark" xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
                 <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
@@ -47,6 +51,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                 <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
             </svg>
         </button>
+       
 
     </div>
 
@@ -94,6 +99,10 @@ $adv = json_decode($setting['advanced']->property, 1);
                             @endif
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="set">
+                <div class="set-cont">
                     <div class="g_set">
                         <h5>Asporto</h5>
                         <div class="radio-inputs">
@@ -128,7 +137,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                     @if (config('configurazione.subscription') > 2)
                     <div class="g_set">
-                        <h5>Asporto online</h5>
+                        <h5>Pagamento</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 0) checked  @endif value="0" >
@@ -203,7 +212,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                     @if (config('configurazione.subscription') > 2)
                     <div class="g_set">
-                        <h5>Domicilio online</h5>
+                        <h5>Pagamento</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="domicilio_pay" @if($domicilio_p['pay'] == 0) checked  @endif value="0" >
@@ -298,17 +307,15 @@ $adv = json_decode($setting['advanced']->property, 1);
                                 <span class="name">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-                                        </svg>
+                                    </svg>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="table_promo"  @if($setting['Promozione Tavoli']['status']== 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <span class="name">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                        </svg>
-                                    </span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                    </svg>
                                 </span>
                             </label>
                         </div>
@@ -516,7 +523,11 @@ $adv = json_decode($setting['advanced']->property, 1);
             </div>
         </div>
         <div class="actions">
-            <button type="button" class=" my_btn_3 w-100 " data-bs-toggle="modal" data-bs-target="#staticBackdropav">Impostazioni avanzate</button>
+            <button type="button" class=" my_btn_3 m-auto" data-bs-toggle="modal" data-bs-target="#staticBackdropav">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+                    </svg>
+                Impostazioni avanzate</button>
         </div>   
 
     </form>
@@ -526,6 +537,12 @@ $adv = json_decode($setting['advanced']->property, 1);
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable large_m">
             <form action="{{ route('admin.settings.advanced')}}" method="POST" class="modal-content s_advanced">
                 @csrf
+                <button type="button" class="btn_close" data-bs-dismiss="modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                    </svg>
+                    Chiudi
+                </button>
                 <h2>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
@@ -567,31 +584,8 @@ $adv = json_decode($setting['advanced']->property, 1);
                             <input type="hidden" id="attivo-originale1" value="{{$adv['services']}}">
                         </div>
                     </div>
-                    {{-- <div class="set_a name_c">
-                        <h4>Gestione asporto</h4>
-                        <div class="radio-inputs">
-                            <label class="radio">
-                                <input class="critical-radio2" @checked($adv['too']== 1) type="radio" name="too" value="1" >
-                                <span class="name">Pezzi</span>
-                            </label>
-                            <label class="radio">
-                                <input class="critical-radio2" @checked($adv['too']== 0)  type="radio" name="too" value="0" >
-                                <span class="name">Ordini</span>
-                            </label>
-                            <input type="hidden" id="attivo-originale2" value="{{$adv['too']}}">
-                        </div>
-                        <div class="split">
-                            <div class="input_label">
-                                <label class="" id="basic-addon2">Cucina 1</label>
-                                <input type="text" class="" name="too_1" value="{{$adv['too_1']}}">
-                            </div>
-                            <div class="input_label">
-                                <label class="" id="basic-addon2">Cucina 2</label>
-                                <input type="text" class="" name="too_2" value="{{$adv['too_2']}}">
-                            </div>
-                        </div> 
-                §</div> --}}
-                    <div class="set_a name_c">
+
+                    <div class="set_a last">
                         <h4>Doppia sala</h4>
                         <div class="radio-inputs">
                             <label class="radio">
@@ -655,7 +649,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                 </div>
                 <div class="more_info">
-                    <h4>Altre informazioni</h4>
+                    <h4>Informazioni legali</h4>
                     <div class="split">
                         <div class="input_label">
                             <label class="" id="basic-addon1">Ragione sociale</label>

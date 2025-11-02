@@ -25,6 +25,11 @@ $c3: #d8dde8;
     height: 0 ;
     width: 0 ;
 }
+#dark_s{
+    display: none;
+    height: 0 ;
+    width: 0 ;
+}
 
 
 [data-theme="dark"] {
@@ -45,6 +50,16 @@ $c3: #d8dde8;
     }
     #dark{
         display: block !important;
+    }
+    #light_s{
+        display: none;
+        height: 0 ;
+        width: 0 ;
+    }
+    #dark_s{
+        display: block !important;
+        height: auto !important;
+        width: auto !important;
     }
     .myitem{
         filter:invert(1);
@@ -199,11 +214,11 @@ body{
 }
 @media (max-width: 500px) {
     .main-container-page{
-        padding: 8px 8px 20vh;
+        padding: 10px 10px 20vh;
     }
     .nav{
-        margin: 10px auto !important;
-        width: calc(100% - 20px) !important;
+        //margin: 10px auto !important;
+        width: calc(100% - 5px) !important;
     }
     
 }
@@ -214,7 +229,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     backdrop-filter: blur(10px);
     position: fixed;
     padding: .4rem;
-    bottom: 13px;
+    bottom: 10px;
     left: 0;
     right: 0;
     z-index: 200;
@@ -408,6 +423,18 @@ $svg_n: clamp(25px, 5vw, 30px);
         }
     }
 }
+.theme{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: $fs_sm_2;
+    p{
+        margin: 0;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+}
 
 .setting{    
     border-radius: 20px;
@@ -467,16 +494,16 @@ $svg_n: clamp(25px, 5vw, 30px);
             border: none !important;
             box-shadow: 0 0 0 #111111 !important;
             background-color: var(--c3) !important;
-            margin: 1rem 0;
+            //margin: 1rem 0;
             h4.accordion-header{
                 border: none !important;
                 button.accordion-button{
-                    padding: .5rem;
+                    padding: .8rem;
                     box-shadow: 0 0 0 #111111 !important;
-                    background-color: rgba(255, 0, 0, 0) !important;
+                    background-color: var(--c3) !important;
                 }
                 .accordion-button::after {
-                    background-color: var(--c2_op);
+                    background-color: var(--c3_op);
                     padding: .3rem !important;
                     height: 25px !important;
                     width: 25px !important;
@@ -612,30 +639,16 @@ $svg_n: clamp(25px, 5vw, 30px);
         }
         .radio-inputs{
             //border-radius: $brr-set;
+            background-color: var(--c3) !important;
             width: 50%;
-        }
-
-        .sets{
-            width: 100%;
-            
-            .radio-inputs{
-                margin-bottom: 4px;
-                width: 100%;
-
-            }
-            .input-group{
-                // width: 80%;
-                label{
-                    background-color: var(--c1) !important;
-                    color: var(--c3);
-                    border:  2px solid var(--c1);
-                }
-                input{
-                    color: var(--c1); 
-                    border:  2px solid var(--c1);
-                }
+            color: var(--c1);
+            svg{
+                fill: var(--c1);
+                filter: drop-shadow(2px 2px 1px var(--c3));
             }
         }
+
+
     }
     
 }
@@ -678,15 +691,14 @@ $svg_n: clamp(25px, 5vw, 30px);
     top: 0;
     z-index: 100;
     .prev_btn, .post_btn {
-        border: none;
         background-color: var(--c1);
-        border: 1px solid var(--c3);
-        border-radius: 10px;
+        border: 2px solid var(--c3);
+        border-radius: 8px;
         padding: 4px;
         svg{
             color: var(--c3);
-            width: $fs_sm_3;
-            height: $fs_sm_3;
+            width: 20px;
+            height: 20px;
         }
     }
 }
@@ -699,7 +711,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     font-weight: 600;
     //background-color: var(--c3);
     border-radius: 8px;
-    padding: 1rem 1.3rem;
+    padding: 1rem 0rem;
    // color: var(--c1);
     flex-direction: column;
     width: 100%;
@@ -712,10 +724,11 @@ $svg_n: clamp(25px, 5vw, 30px);
         flex-wrap: wrap;
         h4{
             //flex: 1;
-            font-weight: 900;
+            font-weight: 300;
             margin: 0;
             width: clamp(120px, 40vw, 400px);
-            font-size: $fs_md;
+            font-size: $fs_sm_3;
+
         }
         .stat{
             flex-direction: row;
@@ -781,7 +794,7 @@ $svg_n: clamp(25px, 5vw, 30px);
         display: grid;
         justify-content: center;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        gap: .4rem;
+        gap: .2rem;
         width: 100%;
         
         .day{
@@ -1004,18 +1017,23 @@ $svg_n: clamp(25px, 5vw, 30px);
             justify-content: flex-end;
             align-items: center;
             transition: all .2s ease-in-out;
-            .type, .order, .search{
+            select, .order, .search{
                 position: relative;
                 z-index: -1;
                 opacity: 0;
                 width: 0;
-                padding: .2rem .8rem;
+                padding: .4rem .8rem !important;
                 transition: all .2s ease-in-out;
                 white-space: nowrap;
                 border-radius: 8px;
                 box-shadow: inset 0 0 10px $c1;
                 border: 1px solid var(--c3_op_3) !important;
+                svg{
+                    height:20px !important;
+                    width:20px !important;
+                }
             }
+            
         }
         label{
             position: relative;
@@ -2560,6 +2578,7 @@ svg.to_see{
             display: flex;
             flex-wrap: wrap;
             gap: .4rem;
+            margin-bottom: 0 !important;
             label{
                 border-color: var(--c3);
                 color: var(--c3);
@@ -2771,9 +2790,9 @@ svg.to_see{
         }
         .body {
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
             section {
-                width: 30%;
                 padding: 10px;
                 display: flex;
                 flex-direction: column;
@@ -2782,8 +2801,11 @@ svg.to_see{
                 gap: 10px;
             }
             .myres-left {
+                display: flex;
+                flex-direction: row;
                 margin-top: 20px;
-                text-align: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
                 font-size: clamp(17px, 1.7vw, 23px);
                 .myres-left-c {
                     display: flex;
@@ -2798,12 +2820,12 @@ svg.to_see{
                     }
                 }
                 .c_a {
+                    width: 100%;
                     font-style: italic;
                     font-size: 17px;
                 }
             }
             .myres-center {
-                width: 40%;
                 .product {
                     display: flex;
                     justify-content: space-between;
@@ -3359,17 +3381,24 @@ svg.to_see{
  .radio-inputs {
   position: relative;
   display: flex;
+  justify-content: space-between;
+  gap: .2rem;
   flex-wrap: wrap;
-  border-radius: 100px;
+  border-radius: 10px;
   background-color: var(--c1);
   box-sizing: border-box;
-  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
-  padding: 4px;
+  //box-shadow: 0 0 2px 1px var(--c3_op);
+  padding: 1px;
   font-size: 14px;
+  svg{
+    filter: drop-shadow(2px 2px 1px var(--c1));
+    height: 22px;
+    width: 22px;
+  }
 }
 
 .radio-inputs .radio {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   text-align: center;
 }
 
@@ -3382,19 +3411,21 @@ svg.to_see{
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  border-radius:100px;
+  border-radius:9px;
   border: none;
-  padding: 4px 0;
   color: var(--c3);
   transition: all .15s ease-in-out;
+  padding: 4px 14px;
 }
 
 .radio-inputs .radio input:checked + .name {
-  background-color: var(--c2);
-  color:var(--c3);
-  text-shadow: 1px 1px 1px var(--c1);
-  font-weight: 600;
-  //box-shadow: inset 0 0 8px $c1;
+    background-color: var(--c2);
+    color:var(--c3);
+    text-shadow: 1px 1px 1px var(--c1);
+    font-weight: 600;
+}
+.radio-inputs .radio input:checked + .radio {
+    flex: 1;
 }
 //// uivers select end
 
@@ -3503,10 +3534,11 @@ svg.to_see{
 
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: .3rem;
         justify-content: space-between;
         .graph{
             max-height: 700px;
+            margin-bottom: 2rem;
         }
         .list{
             max-height: 30vh;
@@ -3552,6 +3584,79 @@ svg.to_see{
             bottom: 0;
             top: 0;
             background: linear-gradient(180deg, var(--c1_op) 2% , rgba(255, 255, 255, 0));
+        }
+        .int_stat{
+            display: flex;
+            flex-direction: column;
+            // background-color: var(--c1);
+            // color: var(--c3);
+            padding: .7rem !important;
+            border-radius: 12px;
+            flex-wrap: wrap;
+            gap: .4rem;
+            .line{
+                display: flex;
+                gap: 1.5rem;
+            }
+            .top_s{
+                flex: 1 0 !important;
+                //max-width: 200px;
+                // background-color: var(--c3);
+                // border-radius: 8px;
+                // color: var(--c1);
+                // padding-left: .5rem;
+            }
+            .ok{
+                svg{
+                    fill: var(--c2);
+                }
+            }
+            .st_null{
+                //background-color: var(--c1) !important;
+                svg{
+                    fill: red;
+                }
+                .donut-wrapper{
+                      --percent: 75; /* sovrascritto da Blade */
+                    background: conic-gradient(
+                        red calc(var(--percent) * 1%),
+                        var(--c3_op) 0
+                    );
+                }
+            }
+            .st{
+                display: flex;
+                align-items: center;
+                //justify-content: space-between;
+                gap: 1rem;
+                font-size: $fs_sm_1;
+                
+                .count{
+                    font-family: monospace;
+                    font-weight: 900;
+                    font-size: $fs_sm_3;
+                    margin: 0;
+                }
+                .label{
+                    //font-weight: 800;
+                    white-space: nowrap;
+                    svg{
+                        height: 22px;
+                        width: 22px;
+                    }
+                }
+                .donut-wrapper{
+                    flex-shrink: 0;
+                    p{
+                        color: var(--c1) !important;
+                    }
+                    &::after {
+                        background-color: var(--c3);
+                        color: var(--c1) !important;
+                    }
+                }
+            }
+
         }
     }
 }
@@ -3832,24 +3937,48 @@ svg.to_see{
 }
 
 //setting avanzate
+.large_m::-webkit-scrollbar {
+  display: none !important;  /* Chrome, Safari, Opera */
+}
 .large_m{
+    scrollbar-width: none !important;       /* Firefox */
+    -ms-overflow-style: none !important;    /* Internet Explorer e vecchi Edge */
 
     max-width: 900px !important;
     width: 97% !important;
+    .btn_close{
+        margin-left: auto;
+        border: none;
+        background-color: var(--c1_op_8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .4rem;
+        padding: 3px 8px 3px 3px;
+        color: var(--c3);
+        border-radius: 50px;
+
+        backdrop-filter: blur(10px);
+        font-size: $fs_xsm_1;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+        svg{
+            fill: var(--c3);
+        }
+    }
     .s_advanced{
         margin: 0 auto;
         background-color: var(--c3);
         border-radius: 20px;
         display: flex;
         flex-direction: column;
-        gap: 4rem;
         color: var(--c1);
-        padding: 1.2rem;
+        padding: .7rem;
         overflow-y: auto;
         font-size: $fs_sm;
         h2{
             font-size: $fs_lg;
             text-align: center;
+            margin-bottom: 2rem;
         }
         h4{
             //width: 100%;
@@ -3859,37 +3988,24 @@ svg.to_see{
         .top-set_a{
             display: flex;
             flex-direction: column;
-            gap: 3rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
             .set_a{
                 display: flex;
-                gap: 2rem;
+                gap: 1rem;
                 flex-wrap: wrap;
-                justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
                 .radio-inputs{
                     width: 100%;
+                    max-width: 350px;
                     margin-left: auto !important;
-                    max-width: 200px;
                     //padding: .4rem;
                 }
             }
-            .name_c{
-                flex-wrap: wrap !important;
-                width: 100% !important;
-                h4{
-                    min-width: 50%;
-                    flex: 1 0 auto;
-                }
-                .radio-inputs{
-                   width: 200px !important;
-                   margin: auto !important;
-                   flex: 1 0 auto;
-                }
+            .last{
+                flex-direction: column;
                 .split{
-                    flex-wrap: nowrap;
-                    display: flex;
                     width: 100% !important;
-                    //background-color: red;
                 }
             }
         }
@@ -3898,7 +4014,7 @@ svg.to_see{
             width: 100%;
             flex-wrap: wrap;
             display: flex;
-            gap: 2rem;
+            gap: 1rem;
             justify-content: space-between;
         }
         .input_label{
@@ -3944,7 +4060,7 @@ svg.to_see{
         .more_info{
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: .8rem;
             .method_cont{
                 display: flex;
                 gap: .3rem;

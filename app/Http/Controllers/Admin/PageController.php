@@ -133,6 +133,45 @@ class PageController extends Controller
         $order_count = Order::where('status', '!=', 4)->count();
         $res_count = Reservation::where('status', '!=', 4)->count();
 
+
+        $res = [
+            'confirm' => Reservation::whereIn('status', [1, 5, 2, 3])->count(),
+            'cancelled' => Reservation::whereIn('status', [0, 6])->count(),
+        ];
+        $or = [
+            'confirm' => Order::whereIn('status', [1, 5, 2, 3])->count(),
+            'cancelled' => Order::whereIn('status', [0, 6])->count(),
+        ];
+        $confirmed = DB::table('reservations')
+            ->selectRaw('
+                SUM(JSON_EXTRACT(`n_person`, "$.adult")) as total_adults_confirmed,
+                SUM(JSON_EXTRACT(`n_person`, "$.child")) as total_children_confirmed
+            ')
+            ->whereIn('status', [1, 5, 2, 3])
+            ->first();
+
+        // Prenotazioni annullate: status 2
+        $cancelled = DB::table('reservations')
+            ->selectRaw('
+                SUM(JSON_EXTRACT(`n_person`, "$.adult")) as total_adults_cancelled,
+                SUM(JSON_EXTRACT(`n_person`, "$.child")) as total_children_cancelled
+            ')
+             ->whereIn('status', [0, 6])
+            ->first();
+
+        // In caso ci siano null o nessun record, mettiamo valori 0
+        $res_people = [
+            'adults' => 0 ,
+            'children' => 0,
+            'adults_confirmed' => (int) $confirmed->total_adults_confirmed,
+            'children_confirmed' => (int) $confirmed->total_children_confirmed,
+            'adults_cancelled' => (int) $cancelled->total_adults_cancelled,
+            'children_cancelled' => (int) $cancelled->total_children_cancelled,
+        ];
+        $res_people['adults'] = $res_people['adults_confirmed'] + $res_people['adults_cancelled'];
+        $res_people['children'] = $res_people['children_confirmed'] + $res_people['children_cancelled'];
+
+
         return view('admin.statistics', [
             'topProducts' => $topProducts,
             'labels' => $labels,
@@ -141,6 +180,9 @@ class PageController extends Controller
             'reservations' => $reservations,
             'order_count' => $order_count,
             'res_count' => $res_count,
+            'res' => $res,
+            'or' => $or,
+            'res_people' => $res_people,
         ]);
     }
 

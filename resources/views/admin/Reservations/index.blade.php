@@ -75,7 +75,7 @@
             @endphp 
             @if (($time !== $old_time) || ($date !== $old_date) )
             <p class="date_time">
-                @if ($time !== $old_time)
+                @if (!($time == $old_time && $date == $old_date))
                 <span class="time
                 @if ($date == $old_date) op @endif
                 "> 

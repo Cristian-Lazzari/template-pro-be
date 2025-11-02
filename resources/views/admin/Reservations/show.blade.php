@@ -33,8 +33,7 @@
             <div class="body">
                 <section class="myres-left">
                     <h5><strong>#r-{{$reservation->id}}</strong></h5>
-                    <div class="name">{{$reservation->name}}</div>
-                    <div class="name">{{$reservation->surname}}</div>
+                    <div class="name">{{$reservation->name}} {{$reservation->surname}}</div>
                     <div  class="myres-left-c">
                         <div class="time">{{$ora_formatata}}</div>
 

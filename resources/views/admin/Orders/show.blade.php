@@ -21,7 +21,7 @@
 
 
 
-<a href="{{ route('admin.reservations.index') }}" class="btn btn-outline-light my-3">
+<a onclick="history.back()" class="btn btn-outline-light my-5">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"/></svg>
 </a>
 
@@ -61,16 +61,18 @@
             </div>
             <div class="body">
                 <section class="myres-left">
-                    <h5><strong>#o-{{$order->id}}</strong></h5>
-                    <div class="name">{{$order->name}}</div>
                     <div class="myres-left-c">
+                        <h5><strong>#o-{{$order->id}}</strong></h5>
                         <div class="time">{{$ora_formatata}}</div>
 
                         <div class="day_w">{{[' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$giorno_settimana]}}</div>
                         <div class="date">{{$data_formatata}}</div>
                     </div>
-                    <div class="c_a">inviato alle: {{$order->created_at}}</div>
-                    <div class="c_a">Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}</div>
+                    <div class="name">{{$order->name}} {{$order->surname}}</div>
+                    @php \Carbon\Carbon::setLocale('it');@endphp
+                    <div class="c_a">inviato alle: {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y') }} 
+                        Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}
+                    </div>
                 </section>
                 <section class="myres-center">
                     <h3>Prodotti</h3>
