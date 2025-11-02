@@ -219,6 +219,7 @@ body{
     .nav{
         //margin: 10px auto !important;
         width: calc(100% - 5px) !important;
+        bottom: 16px !important;
     }
     
 }
@@ -1017,7 +1018,7 @@ $svg_n: clamp(25px, 5vw, 30px);
             justify-content: flex-end;
             align-items: center;
             transition: all .2s ease-in-out;
-            select, .order, .search{
+            select, .order, .search, .type{
                 position: relative;
                 z-index: -1;
                 opacity: 0;
