@@ -181,15 +181,9 @@ class PageController extends Controller
             ->count();
         $mesi_r =  DB::table('reservations')
             ->selectRaw("
-                COUNT(
-                    DISTINCT DATE_FORMAT(
-                        STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'),
-                        '%Y-%m'
-                    )
-                ) as months_count
+                COUNT(DISTINCT DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m')) as months_count
             ")
             ->value('months_count');
-
 
 
         return view('admin.statistics', [
