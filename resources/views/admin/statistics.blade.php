@@ -128,7 +128,7 @@
                                 Mesi di attività
                             </span>
                             <span class="count">
-                                {{ $res_people['adults_confirmed'] + $res_people['adults_cancelled'] }}
+                                {{ $mesi_r }}
                             </span>
                         </div>
                         <div class="st top_s">
