@@ -121,6 +121,42 @@
                         </div>
                     </div>
                 </div>
+                <div class="int_stat media">
+                    <div class="line">
+                        <div class="st top_s">
+                            <span class="label">
+                                Mesi di                                                                                                                                                                                                                                                                                                                                          
+                            </span>
+                            <span class="count">
+                                {{ $res_people['adults_confirmed'] + $res_people['adults_cancelled'] }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Media prenotazioni
+                            </span>
+                            <span class="count">
+                                {{ $res_count / $mesi_r }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Media persone
+                            </span>
+                            <span class="count">
+                                {{ ($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Media persone confermate
+                            </span>
+                            <span class="count">
+                                {{ ($res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="int_stat">
                     <div class="line">
                         <div class="st top_s">
@@ -157,7 +193,7 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                     <div class="line">
                         <div class="st top_s">
                             <span class="label">

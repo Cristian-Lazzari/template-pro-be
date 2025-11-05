@@ -171,6 +171,24 @@ class PageController extends Controller
         $res_people['adults'] = $res_people['adults_confirmed'] + $res_people['adults_cancelled'];
         $res_people['children'] = $res_people['children_confirmed'] + $res_people['children_cancelled'];
 
+        $mesi_o = DB::table('orders')
+            ->selectRaw("
+                DISTINCT DATE_FORMAT(
+                    STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'),
+                    '%Y-%m'
+                ) as year_month
+            ")
+            ->count();
+        $mesi_r = DB::table('reservations')
+            ->selectRaw("
+                DISTINCT DATE_FORMAT(
+                    STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'),
+                    '%Y-%m'
+                ) as year_month
+            ")
+            ->count();
+
+
 
         return view('admin.statistics', [
             'topProducts' => $topProducts,
@@ -183,6 +201,8 @@ class PageController extends Controller
             'res' => $res,
             'or' => $or,
             'res_people' => $res_people,
+            'mesi_o' => $mesi_o,
+            'mesi_r' => $mesi_r,
         ]);
     }
 
@@ -339,6 +359,7 @@ class PageController extends Controller
             $first_day->addDay();
         }
         $result = [];
+
         foreach ($days as $day) {
             $monthNumber = $day['month'];
             $year = $day['year'];

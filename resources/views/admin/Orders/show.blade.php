@@ -24,8 +24,6 @@
 <a onclick="history.back()" class="btn btn-outline-light my-5">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4z"/></svg>
 </a>
-
-    {{-- <img src="{{ Vite::asset('resources/img/picsum30.jpg') }}" alt=""> --}}
     <div class="myres-c">
 
         <?php
@@ -56,37 +54,78 @@
         >
 
             <div class="mail-tel">
-                <a href="{{'mailto:' . $order->email}}" class="mail">{{$order->email}}</a>
-                <a href="{{'tel:' . $order->phone}}" class="tel">{{$order->phone}}</a>
+                <a href="{{'mailto:' . $order->email}}" class="mail">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-arrow-up-fill" viewBox="0 0 16 16">
+                        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zm.192 8.159 6.57-4.027L8 9.586l1.239-.757.367.225A4.49 4.49 0 0 0 8 12.5c0 .526.09 1.03.256 1.5H2a2 2 0 0 1-1.808-1.144M16 4.697v4.974A4.5 4.5 0 0 0 12.5 8a4.5 4.5 0 0 0-1.965.45l-.338-.207z"/>
+                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.354-5.354 1.25 1.25a.5.5 0 0 1-.708.708L13 12.207V14a.5.5 0 0 1-1 0v-1.717l-.28.305a.5.5 0 0 1-.737-.676l1.149-1.25a.5.5 0 0 1 .722-.016"/>
+                    </svg>
+                    {{$order->email}}
+                </a>
+                <a href="{{'tel:' . $order->phone}}" class="tel">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone-outbound-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                    {{$order->phone}}
+                </a>
+            </div>
+            <div class="status">
+                @if(in_array($order->status, [0, 6])) 
+                    <div class="int null">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi null bi-x-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                        </svg>
+                        {{$order->status == 6 ? 'Rimborsata' : 'Annullata'}}
+                    </div>
+                
+                    @elseif(in_array($order->status, [2, 3])) 
+                    <div class="int to_see">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi to_see bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                        </svg>
+                        {{$order->status == 2 ? 'In attesa...' : 'GIÀ PAGATA In attesa...'}}
+                    
+                    </div>
+                    @elseif(in_array($order->status, [1, 5])) 
+                    <div class="int okk">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi okk bi-check-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                        </svg>
+                        {{$order->status == 5 ? 'Confermata' : 'Confermatra e Incassata'}}
+                    </div>
+                @endif
             </div>
             <div class="body">
                 <section class="myres-left">
-                    <div class="myres-left-c">
-                        <h5><strong>#o-{{$order->id}}</strong></h5>
+                    <div class="data_cont">
+                        <h5><strong>#O{{$order->id}}</strong></h5>
                         <div class="time">{{$ora_formatata}}</div>
 
-                        <div class="day_w">{{[' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$giorno_settimana]}}</div>
-                        <div class="date">{{$data_formatata}}</div>
+                        <div class="day_w">
+                            {{[' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$giorno_settimana]}}
+                            {{$data_formatata}}
+                        </div>
                     </div>
-                    <div class="name">{{$order->name}} {{$order->surname}}</div>
-                    @php \Carbon\Carbon::setLocale('it');@endphp
-                    <div class="c_a">inviato alle: {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y') }} 
-                        Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}
+                    <div class="name">
+                        <p>{{$order->name}}</p>
+                        <p>{{$order->surname}}</p>
                     </div>
                 </section>
-                <section class="myres-center">
-                    <h3>Prodotti</h3>
+                <section class="products">
+                    <h3>Prodotti ordinati</h3>
 
                     @foreach ($order->menus as $o)                
                         <div class="product">
-                            <div class="counter">* {{$o->pivot->quantity}}</div>              
-                            <div class="name">{{$o->name}}</div>
+                            <div class="top_p">
+                                <div class="counter">* {{$o->pivot->quantity}}</div>              
+                                <div class="name">{{$o->name}}</div>
+                            </div>
                             <div class="variations">
                                 @if($o->fixed_menu == '2')
                                     <div class="choices">
                                         <h5>Prodotti:</h5>
                                         @php
-                                           // 
                                             $right_c = [];
                                             $scelti = json_decode($o->pivot->choices);
                                             foreach ($scelti as $id) {
@@ -117,7 +156,6 @@
                                 @endif
  
                             </div>
-                            
                         </div>
                     @endforeach
                     @foreach ($order->products as $o)                
@@ -127,8 +165,10 @@
                             $arrD= json_decode($o->pivot->remove); 
                         ?>
                         <div class="product">
-                            <div class="counter">* {{$o->pivot->quantity}}</div>              
-                            <div class="name">{{$o->name}}</div>
+                            <div class="top_p">
+                                <div class="counter">* {{$o->pivot->quantity}}</div>              
+                                <div class="name">{{$o->name}}</div>
+                            </div>
                             <div class="variations">
                                 @if ($arrO !== [])
                                 <div class="options">
@@ -166,9 +206,6 @@
                     <div class="price">Costo di consegna €{{$delivery_cost / 100}}</div>
                     @endif
                     <div class="t_price">€{{$order->tot_price / 100}}</div>
-                    {{-- <div class="t_price">{{$order->total_pz_q}} pezzi taglio</div>
-                    <div class="t_price">{{$order->total_pz_t}} pizze piatte</div>
-                     --}}
                 </section>
                 <section class="myres-right">
                     @if (isset($order->comune))
@@ -181,32 +218,23 @@
                             Ritiro d'asporto
                         </h3>
                     @endif
+                </section>
+                <div class="c_a">
+                    @php \Carbon\Carbon::setLocale('it');@endphp
+                    Inviato alle: {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y') }} <br>
+                    Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}
+                </div>
+                <div class="actions">
                     @if (in_array($order->status, [2, 3]))
-                    <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_1">Conferma</button>
-                    </div>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">Conferma</button>
                     @endif
                     @if(in_array($order->status, [2, 3, 5]))
-                    <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_2">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
-                    </div>
-                    <div class="w-100">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_5">Posticipa e Conferma</button>                   
-                    </div>
-                    @endif
-                    
-                   
-                </section>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_1">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_1">Posticipa e Conferma</button>                   
+                    @endif         
+                </div>
+                
             </div>
-            {{-- <div class="visible">
-                @if ($order->status == 2)
-                <span>in elaborazione</span>
-                @elseif ($order->status == 1)
-                <span>confermato</span>
-                @elseif ($order->status == 0)
-                <span>annullato</span>
-                @endif
-            </div> --}}
         </div>
 
         
