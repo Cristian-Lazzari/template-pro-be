@@ -115,6 +115,15 @@
                                € {{round(($or_cash['confirmed'] / $mesi_o), 2)}}
                             </span>
                         </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Ordine medio 
+                            </span>
+                            <span class="count">
+                               € {{ round((($or_cash['confirmed'] + $or_cash['cancelled']) / $order_count), 2) }}
+                            </span>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
