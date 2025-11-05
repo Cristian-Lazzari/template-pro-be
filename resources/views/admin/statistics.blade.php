@@ -172,7 +172,7 @@
                                 Media prenotazioni
                             </span>
                             <span class="count">
-                                {{ $res_count / $mesi_r }}
+                                {{  round(($res_count / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
@@ -180,7 +180,7 @@
                                 Media persone
                             </span>
                             <span class="count">
-                                {{ ($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r }}
+                                {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
@@ -188,7 +188,7 @@
                                 Media persone confermate
                             </span>
                             <span class="count">
-                                {{ ($res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r }}
+                                {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                     </div>
