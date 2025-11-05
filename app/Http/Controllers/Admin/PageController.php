@@ -173,17 +173,18 @@ class PageController extends Controller
 
         $mesi_o = DB::table('orders')
             ->selectRaw("
-                DISTINCT DATE_FORMAT(
-                    STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'),
-                    '%Y-%m'
-                ) as year_month
+                COUNT(DISTINCT DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m')) as months_count
             ")
-            ->count();
+            ->value('months_count');
         $mesi_r =  DB::table('reservations')
             ->selectRaw("
                 COUNT(DISTINCT DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%Y-%m')) as months_count
             ")
             ->value('months_count');
+        $or_cash = [
+            'confirmed' => Order::whereIn('status', [1, 2, 3, 5])->sum('tot_price') / 100,
+            'cancelled' => Order::whereIn('status', [0, 6])->sum('tot_price') / 100
+        ];
 
 
         return view('admin.statistics', [
@@ -199,6 +200,7 @@ class PageController extends Controller
             'res_people' => $res_people,
             'mesi_o' => $mesi_o,
             'mesi_r' => $mesi_r,
+            'or_cash' => $or_cash,
         ]);
     }
 

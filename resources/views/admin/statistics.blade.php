@@ -81,6 +81,42 @@
                         </div>
                     </div>
                 </div>
+                <div class="int_stat media">
+                    <div class="line">
+                        <div class="st top_s">
+                            <span class="label">
+                                Mesi di attività
+                            </span>
+                            <span class="count">
+                                {{ $mesi_o }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Media ordini
+                            </span>
+                            <span class="count">
+                                {{ $order_count / $mesi_o }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Media incassi 
+                            </span>
+                            <span class="count">
+                               € {{ round((($or_cash['confirmed'] + $or_cash['cancelled']) / $mesi_o), 2) }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Media incassi confermati
+                            </span>
+                            <span class="count">
+                               € {{round(($or_cash['confirmed'] / $mesi_o), 2)}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
         @if($res_count)
