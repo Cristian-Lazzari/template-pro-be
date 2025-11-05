@@ -218,8 +218,8 @@ body{
     }
     .nav{
         //margin: 10px auto !important;
-        width: calc(100% - 12px) !important;
-        bottom: 28px !important;
+        width: calc(100% - 14px) !important;
+        bottom: 22px !important;
     }
     
 }
@@ -1379,7 +1379,7 @@ svg.to_see{
     .btn_close, .edit{
         margin-left: auto;
         border: none;
-        background-color: var(--c3_op_8);
+        background-color: var(--c3);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -1405,6 +1405,7 @@ svg.to_see{
     }
     .action_top{
         left: 0px;
+        padding-inline: .4rem;
         .visible{
             .bi-eye-fill{
                 display: block;
@@ -1423,8 +1424,8 @@ svg.to_see{
         }
     }
     .btn_close{
-        right: 0px;
-        top: -45px;
+        right: .4rem;
+        top: -42px;
     }
     .edit{
         padding: 6px;
@@ -1433,6 +1434,10 @@ svg.to_see{
         font-weight: 700;
         text-decoration: none;
         border-radius: 8px !important;
+        svg{
+            height: 25px;
+            width: 25px;
+        }
     }
     .modal-content{
         background-color: var(--c3_op_3);
