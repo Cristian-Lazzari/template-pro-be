@@ -96,7 +96,7 @@
                                 Media ordini
                             </span>
                             <span class="count">
-                                {{ $order_count / $mesi_o }}
+                                {{ round(($order_count / $mesi_o), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
@@ -189,7 +189,7 @@
                                 Media persone
                             </span>
                             <span class="count">
-                                {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r), 1) }}
+                                {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['children_confirmed'] + $res_people['children_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
@@ -197,7 +197,15 @@
                                 Media persone confermate
                             </span>
                             <span class="count">
-                                {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled']) / $mesi_r), 1) }}
+                                {{  round((($res_people['adults_confirmed'] + $res_people['children_cancelled']) / $mesi_r), 1) }}
+                            </span>
+                        </div>
+                        <div class="st top_s">
+                            <span class="label">
+                                Prenotazione media
+                            </span>
+                            <span class="count">
+                                {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['children_confirmed'] + $res_people['children_cancelled']) / $res_count), 1) }}
                             </span>
                         </div>
                     </div>
