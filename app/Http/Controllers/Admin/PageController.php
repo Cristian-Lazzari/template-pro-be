@@ -179,14 +179,16 @@ class PageController extends Controller
                 ) as year_month
             ")
             ->count();
-        $mesi_r = DB::table('reservations')
+        $mesi_r =  DB::table('reservations')
             ->selectRaw("
-                DISTINCT DATE_FORMAT(
-                    STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'),
-                    '%Y-%m'
-                ) as year_month
+                COUNT(
+                    DISTINCT DATE_FORMAT(
+                        STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'),
+                        '%Y-%m'
+                    )
+                ) as months_count
             ")
-            ->count();
+            ->value('months_count');
 
 
 
