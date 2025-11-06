@@ -2710,23 +2710,27 @@ svg.to_see{
             svg{
                 height: $fs_sm_3;
                 width: $fs_sm_3;
-                margin-right: 7px;
             }
             a {
-                border: 2px solid var(--c3);
+                //border: 2px solid var(--c3);
                 border-radius: 8px;
-                color: var(--c3);
+                color: var(--c1);
+                background-color: var(--c3);
                 text-decoration: none;
                 padding: 4px 10px;
-                white-space: nowrap;
                 cursor: pointer;
-                overflow: hidden;
                 
-                text-overflow: ellipsis;
-                // display: flex;
-                // justify-content: center;
-                // align-items: center;
-                // gap: 13px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 13px;
+                overflow: hidden;
+                span{
+                    width: 100%;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
             }
         }
         .status{

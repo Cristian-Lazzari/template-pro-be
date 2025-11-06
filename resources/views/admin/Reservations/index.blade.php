@@ -142,78 +142,14 @@
                             <li>
                                 <a href="{{ $res->n_person ? route('admin.reservations.show', $res->id) : route('admin.orders.show', $res->id)}}">Vedi</a>
                             </li>
-                            <li>Chiama</li>
-                            <li>Conferma</li>
-                            <li>Annulla</li>
+                            <li>
+                                <a href="{{ 'tel:' . $res->phone}}">Chiama</a>
+                            </li>
+                            {{-- <li>Conferma</li>
+                            <li>Annulla</li> --}}
                         </ul>
                     </div>
 
-                </div>
-            </div>
-        
-            {{-- Modale per conferma --}}
-            <div class="modal fade" id="confirmModal{{$res->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel{{$res->id}}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header c-1">
-                            <h1 class="modal-title fs-5" id="confirmModalLabel{{$res->id}}">Gestione notifica conferma</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body c-1">
-                            Ordine di: {{$res->name}} 
-                            per il: {{$res->date_slot}}
-                            <p>Vuoi inviare un messaggio whatsapp?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <form action="{{ route('admin.reservations.status') }}" method="POST">
-                                @csrf
-                                <input value="1" type="hidden" name="wa">
-                                <input value="1" type="hidden" name="c_a">
-                                <input value="{{$res->id}}" type="hidden" name="id">
-                                <button type="submit" class="w-100 my_btn_6">Si</button>
-                            </form>
-                            <form action="{{ route('admin.reservations.status') }}" method="POST">
-                                @csrf
-                                <input value="0" type="hidden" name="wa">
-                                <input value="1" type="hidden" name="c_a">
-                                <input value="{{$res->id}}" type="hidden" name="id">
-                                <button type="submit" class="w-100 my_btn_6">NO</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-            {{-- Modale per annullamento --}}
-            <div class="modal fade" id="cancelModal{{$res->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cancelModalLabel{{$res->id}}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header c-1">
-                            <h1 class="modal-title fs-5" id="cancelModalLabel{{$res->id}}">Gestione notifica annullamento</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body c-1">
-                            Ordine di: {{$res->name}} 
-                            per il: {{$res->date_slot}}
-                            <p>Vuoi inviare un messaggio whatsapp?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <form action="{{ route('admin.reservations.status') }}" method="POST">
-                                @csrf
-                                <input value="1" type="hidden" name="wa">
-                                <input value="0" type="hidden" name="c_a">
-                                <input value="{{$res->id}}" type="hidden" name="id">
-                                <button type="submit" class="w-100 my_btn_6">Si</button>
-                            </form>
-                            <form action="{{ route('admin.reservations.status') }}" method="POST">
-                                @csrf
-                                <input value="0" type="hidden" name="wa">
-                                <input value="0" type="hidden" name="c_a">
-                                <input value="{{$res->id}}" type="hidden" name="id">
-                                <button type="submit" class="w-100 my_btn_6">NO</button>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
         @endforeach
