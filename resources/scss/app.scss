@@ -1679,6 +1679,10 @@ svg.to_see{
         font-size: $fs_md;
         font-weight: 600;
         position: relative;
+        background-color: var(--c3);
+        color: var(--c1);
+        padding: 7px;
+        border-radius: 8px;
         .count{
             font-weight: 900;
             font-family: monospace;
@@ -1692,8 +1696,9 @@ svg.to_see{
     .body_stat{
         font-size: $fs_sm;
         //font-family: monospace;
+        padding: 9px;
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
@@ -1701,11 +1706,12 @@ svg.to_see{
             opacity: .8;
             font-weight: 800;
             flex: 1 0;
+            white-space: nowrap;
         }
         .item{
             display: flex;
-            align-items: center;;
-            gap: .5rem;
+            align-items: center;
+            gap: 1rem;
             flex: 1 0;
             .donut-wrapper{
                 flex-shrink: 0;

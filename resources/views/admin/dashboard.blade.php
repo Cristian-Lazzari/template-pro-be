@@ -113,8 +113,6 @@
                 </div>
                 <div class="carousel-inner">
                     @foreach ($calendar as $m)
-                        {{-- @dump('current'.$currentMonth . " " . $currentYear)
-                        @dump('passed'.$m['month'] . " " . $m['year']) --}}
                         <div class="carousel-item @if ($currentMonth == $m['month'] && $currentYear == $m['year']) active @endif">
                             <h2>{{['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'][$m['month']]}} - {{$m['year']}}</h2>
                             <div class="top_stat">
