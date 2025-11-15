@@ -19,8 +19,8 @@ class ProductController extends Controller
         $from = $request->query('from');
 
         if($from !== 'menu'){
-            $query = $query->where('visible', 1);
-            $combo_query = $combo_query->where('visible', 1);
+            $query = $query->where('visible', true);
+            $combo_query = $combo_query->where('visible', true);
         }
 
         if ($categoryId !== null && $categoryId !== 0 && $categoryId !== '0') {
