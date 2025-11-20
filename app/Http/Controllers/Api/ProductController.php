@@ -12,7 +12,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
-        $categoryId = $request->query('category');
+
         $query = Product::with('category', 'ingredients');
         $combo_query = Menu::where('fixed_menu', '!=', '0');
 
@@ -23,10 +23,7 @@ class ProductController extends Controller
             $combo_query = $combo_query->where('visible', true);
         }
 
-        if ($categoryId !== null && $categoryId !== 0 && $categoryId !== '0') {
-            $query = $query->where('category_id', $categoryId);
-            $combo_query = $combo_query->where('category_id', $categoryId);
-        } 
+
         $combo = $combo_query->with('products.ingredients', 'category', 'products.category')->orderBy('updated_at', 'desc')->get();
         foreach ($combo as $c) {
             if($c->fixed_menu == '2'){
@@ -68,7 +65,6 @@ class ProductController extends Controller
             }
            
         }
-        
         
         $products = $query->where('archived', 0)->orderBy('created_at', 'asc')->get();
         

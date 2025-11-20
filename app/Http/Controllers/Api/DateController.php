@@ -37,8 +37,7 @@ class DateController extends Controller
             'startDateTime' => $startDateTime->format('d/m/Y'),
             'success'   => true,
             'results'   => $year,    
-            'filter'   => $filter,    
-            'typeOfOrdering'   => $property_adv['too'],    
+            'filter'   => $filter,      
             'count'   => count($year),    
         ]);
         
@@ -212,6 +211,14 @@ class DateController extends Controller
             // aggiungi il giorno dentro il mese corrispondente
             $result[$monthNumber]['days'][] = $day;
         }
+        usort($result, function ($a, $b) {
+            // Confronta prima l'anno
+            if ($a['year'] == $b['year']) {
+                // Se l'year è uguale, confronta il mese
+                return $a['month'] <=> $b['month'];
+            }
+            return $a['year'] <=> $b['year'];
+        });
        // dd($result);
 
 
