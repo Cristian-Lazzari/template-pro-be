@@ -230,12 +230,12 @@
                     Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}
                 </div>
                 <div class="actions">
-                    @if (in_array($order->status, [2, 3]))
+                    @if (in_array($order->status, [0, 2, 3]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">Conferma</button>
                     @endif
-                    @if(in_array($order->status, [2, 3, 5]))
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_1">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_1">Posticipa e Conferma</button>                   
+                    @if(in_array($order->status, [1, 2, 3, 5]))
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_5">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_5">Posticipa e Conferma</button>                   
                     @endif         
                 </div>
                 
@@ -247,22 +247,22 @@
 
 <!-- Modale per la posticipazione -->
 <div class="modal fade" id="changeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="changeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form action="{{ route('admin.orders.changetime') }}" method="POST" class="modal-content">
+    <div class="modal-dialog ">
+        <form action="{{ route('admin.orders.changetime') }}" method="POST" class="modal-content mymodal_make_res">
             @csrf
             <input value="{{$order->id}}" type="hidden" name="id">
-            <div class="modal-header c-1">
+            <div class="modal-header">
                 <h1 class="modal-title fs-2" id="changeModalLabel">Conferma e posticipa questo ordine</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body c-1 fs-4">
+            <div class="modal-body fs-4">
                 Ordine di: {{$order->name}} 
                 per il: {{$order->date_slot}}
                 <p>Seleziona l'orario corretto:</p>
                 <input required class="form-control" type="time" name="new_time">
                 <h3 class="mt-4 mb-3">Vuoi bloccare altri ordini per questa fascia oraria?</h3>
-                <button type="submit" name="cancel" value="1" class="w-100 m-2 my_btn_1">Lascia attivo</button>
-                <button type="submit" name="cancel" value="0" class="w-100 m-2 my_btn_2">Blocca questo orario</button>
+                <button type="submit" name="cancel" value="1" class="w-100 my_btn_1">Lascia attivo</button>
+                <button type="submit" name="cancel" value="0" class="w-100 my_btn_2">Blocca questo orario</button>
             </div>
 
 
@@ -273,31 +273,31 @@
 <!-- Modale per la conferma -->
 <div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header c-1">
+        <div class="modal-content mymodal_make_res">
+            <div class="modal-header">
                 <h1 class="modal-title fs-3" id="confirmModalLabel">Gestione notifica per conferma</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body c-1 fs-4">
+            <div class="modal-body fs-4">
                 Ordine di: {{$order->name}} 
                 per il: {{$order->date_slot}}
-                <p>Vuoi inviare un messaggio whatsapp?</p>
+                <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
             </div>
             <div class="modal-footer">
-                <form action="{{ route('admin.orders.status') }}" method="POST">
-                    @csrf
-                    <input value="1" type="hidden" name="wa">
-                    <input value="1" type="hidden" name="c_a">
-                    <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_1">Si</button>
-                </form>
                 <form action="{{ route('admin.orders.status') }}" method="POST">
                     @csrf
                     <input value="0" type="hidden" name="wa">
                     <input value="1" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
                     <button type="submit" class="w-100 my_btn_2">No</button>
-                </form>
+            </form>
+            <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @csrf
+                    <input value="1" type="hidden" name="wa">
+                    <input value="1" type="hidden" name="c_a">
+                    <input value="{{$order->id}}" type="hidden" name="id">
+                    <button type="submit" class="w-100 my_btn_3">Si</button>
+            </form>
             </div>
         </div>
     </div>
@@ -306,31 +306,31 @@
 <!-- Modale per l'annullamento -->
 <div class="modal fade" id="cancelModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header c-1">
+        <div class="modal-content mymodal_make_res">
+            <div class="modal-header">
                 <h1 class="modal-title fs-3" id="cancelModalLabel">Gestione notifica per annullamento</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body c-1 fs-4">
+            <div class="modal-body fs-4">
                 Ordine di: {{$order->name}} 
                 per il: {{$order->date_slot}}
-                <p>Vuoi inviare un messaggio whatsapp?</p>
+                <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
             </div>
             <div class="modal-footer">
-                <form action="{{ route('admin.orders.status') }}" method="POST">
-                    @csrf
-                    <input value="1" type="hidden" name="wa">
-                    <input value="0" type="hidden" name="c_a">
-                    <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_1">Si</button>
-                </form>
                 <form action="{{ route('admin.orders.status') }}" method="POST">
                     @csrf
                     <input value="0" type="hidden" name="wa">
                     <input value="0" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
                     <button type="submit" class="w-100 my_btn_2">No</button>
-                </form>
+            </form>
+            <form action="{{ route('admin.orders.status') }}" method="POST">
+                    @csrf
+                    <input value="1" type="hidden" name="wa">
+                    <input value="0" type="hidden" name="c_a">
+                    <input value="{{$order->id}}" type="hidden" name="id">
+                    <button type="submit" class="w-100 my_btn_3">Si</button>
+            </form>
             </div>
         </div>
     </div>

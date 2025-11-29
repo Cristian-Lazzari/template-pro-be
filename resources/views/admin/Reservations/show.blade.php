@@ -137,30 +137,30 @@
     <div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content mymodal_make_res">
-                <div class="modal-header c-1">
+                <div class="modal-header ">
                     <h1 class="modal-title fs-5" id="confirmModalLabel">Gestione notifica conferma</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body c-1">
-                    Ordine di: {{$reservation->name}} 
+                <div class="modal-body ">
+                    Prenotazione di: {{$reservation->name}} 
                     per il: {{$reservation->date_slot}}
-                    <p>Vuoi inviare un messaggio whatsapp?</p>
-                </div>
-                <div class="modal-footer">
-                    <form action="{{ route('admin.reservations.status') }}" method="POST">
-                        @csrf
-                        <input value="1" type="hidden" name="wa">
-                        <input value="1" type="hidden" name="c_a">
-                        <input value="{{$reservation->id}}" type="hidden" name="id">
-                        <button type="submit" class="w-100 my_btn_6">Si</button>
-                    </form>
-                    <form action="{{ route('admin.reservations.status') }}" method="POST">
-                        @csrf
-                        <input value="0" type="hidden" name="wa">
-                        <input value="1" type="hidden" name="c_a">
-                        <input value="{{$reservation->id}}" type="hidden" name="id">
-                        <button type="submit" class="w-100 my_btn_6">NO</button>
-                    </form>
+                    <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
+                    <div class="actions">
+                        <form action="{{ route('admin.reservations.status') }}" method="POST">
+                            @csrf
+                            <input value="0" type="hidden" name="wa">
+                            <input value="1" type="hidden" name="c_a">
+                            <input value="{{$reservation->id}}" type="hidden" name="id">
+                            <button type="submit" class="w-100 my_btn_2">No</button>
+                        </form>
+                        <form action="{{ route('admin.reservations.status') }}" method="POST">
+                            @csrf
+                            <input value="1" type="hidden" name="wa">
+                            <input value="1" type="hidden" name="c_a">
+                            <input value="{{$reservation->id}}" type="hidden" name="id">
+                            <button type="submit" class="w-100 my_btn_3">Si</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,23 +175,23 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Ordine di: {{$reservation->name}} 
+                    Prenotazione di: {{$reservation->name}} 
                     per il: {{$reservation->date_slot}}
-                    <p>Vuoi inviare un messaggio whatsapp?</p>
+                    <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
                     <div class="actions">
                         <form action="{{ route('admin.reservations.status') }}" method="POST">
                             @csrf
                             <input value="0" type="hidden" name="wa">
                             <input value="0" type="hidden" name="c_a">
                             <input value="{{$reservation->id}}" type="hidden" name="id">
-                            <button type="submit" class="w-100 my_btn_2">NO</button>
+                            <button type="submit" class="w-100 my_btn_2">No</button>
                         </form>
                         <form action="{{ route('admin.reservations.status') }}" method="POST">
                             @csrf
                             <input value="1" type="hidden" name="wa">
                             <input value="0" type="hidden" name="c_a">
                             <input value="{{$reservation->id}}" type="hidden" name="id">
-                            <button type="submit" class="w-100 my_btn_3">SI</button>
+                            <button type="submit" class="w-100 my_btn_3">Si</button>
                         </form>
                     </div>
                 </div>
