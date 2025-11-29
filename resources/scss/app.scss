@@ -1553,6 +1553,7 @@ svg.to_see{
         flex-direction:column;
         gap: 2rem;
         .actions{
+            flex-wrap: wrap;
             margin-top: 2rem;
             display: flex;
             justify-content: flex-end;
