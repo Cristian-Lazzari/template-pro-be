@@ -253,6 +253,13 @@ class ReservationController extends Controller
                 if($m_id){
                     array_push($messageId, $m_id);
                 }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'no',
+                    'data' => $response->json(),
+                ]);
+
             }else{
                 if($n == 1){
                     $type_m_1 = 1;
@@ -267,6 +274,12 @@ class ReservationController extends Controller
                 if($m_id){
                     array_push($messageId, $m_id);
                 }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'no',
+                    'data' => $response->json(),
+                ]);
             }
             $n ++;
         }
