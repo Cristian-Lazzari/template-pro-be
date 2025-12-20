@@ -181,7 +181,7 @@ class WaController extends Controller
                 ];
             }
     
-            $url = 'https://graph.facebook.com/v20.0/' . config('configurazione.WA_ID') . '/messages';
+            $url = 'https://graph.facebook.com/v24.0/' . config('configurazione.WA_ID') . '/messages';
             
             $response = Http::withHeaders([
                 'Authorization' => config('configurazione.WA_TO'),
