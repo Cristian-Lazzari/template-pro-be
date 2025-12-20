@@ -126,7 +126,7 @@ class ReservationController extends Controller
         }
         if ($property_adv['dt'] && $newRes->sala ) {
             $info .= " *_Sala prenota: ";
-            $sala_mess .= " *_Sala prenota: ";
+            $sala_mess .= "Sala prenota: *_";
             if ($newRes->sala == 1) {
                 $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
                 $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
@@ -154,6 +154,7 @@ class ReservationController extends Controller
 
         $data_i = [
             'messaging_product' => 'whatsapp',
+            "recipient_type" => "individual",
             'to' => '',
             "type"=> "interactive",
             "interactive"=> [
@@ -190,8 +191,8 @@ class ReservationController extends Controller
         ];
         $data_t = [
             'messaging_product' => 'whatsapp',
+            "recipient_type" => "individual",
             'to' => '',
-            'category' => 'utility',
             'type' => 'template',
             'template' => [
                 'name' => 'full_emoji',

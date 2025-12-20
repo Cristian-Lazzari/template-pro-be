@@ -123,6 +123,7 @@ class WaController extends Controller
             if ($this->isLastResponseWaWithin24Hours($p)) {    
                 $data = [
                     'messaging_product' => 'whatsapp',
+                    "recipient_type" => "individual",
                     'to' => $number,
                     "type" => "text",
                     "context" => [
@@ -135,8 +136,9 @@ class WaController extends Controller
             } else {
                 $data = [
                     'messaging_product' => 'whatsapp',
+                    "recipient_type" => "individual",
                     'to' => $number,
-                    'category' => 'utility',
+                    
                     'type' => 'template',
                     'template' => [
                         'name' => 'response_link',

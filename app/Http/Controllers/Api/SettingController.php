@@ -130,6 +130,7 @@ class SettingController extends Controller
     
                 $data = [
                     'messaging_product' => 'whatsapp',
+                    "recipient_type" => "individual",
                     'to' => $number,
                     "type" => "text",
                     "text" => [
@@ -142,8 +143,9 @@ class SettingController extends Controller
             } else {
                 $data = [
                     'messaging_product' => 'whatsapp',
+                    "recipient_type" => "individual",
                     'to' => $number,
-                    'category' => 'utility',
+                    
                     'type' => 'template',
                     'template' => [
                         'name' => 'response_link',

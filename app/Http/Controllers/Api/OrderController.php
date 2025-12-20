@@ -295,6 +295,7 @@ class OrderController extends Controller
 
                 $data_i = [
                     'messaging_product' => 'whatsapp',
+                    "recipient_type" => "individual",
                     'to' => '',
                     "type"=> "interactive",
                     "interactive"=> [
@@ -332,8 +333,8 @@ class OrderController extends Controller
 
                 $data_t = [
                     'messaging_product' => 'whatsapp',
+                    "recipient_type" => "individual",
                     'to' => '',
-                    'category' => 'utility',
                     'type' => 'template',
                     'template' => [
                         'name' => 'full_emoji',
