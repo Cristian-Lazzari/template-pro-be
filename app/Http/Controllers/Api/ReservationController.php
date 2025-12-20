@@ -253,14 +253,7 @@ class ReservationController extends Controller
                 $m_id = $response->json()['messages'][0]['id'] ?? null;
                 if($m_id){
                     array_push($messageId, $m_id);
-                }
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'no',
-                    'data' => $response->json(),
-                ]);
-
+                }     
             }else{
                 if($n == 1){
                     $type_m_1 = 1;
@@ -275,12 +268,6 @@ class ReservationController extends Controller
                 if($m_id){
                     array_push($messageId, $m_id);
                 }
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'no',
-                    'data' => $response->json(),
-                ]);
             }
             $n ++;
         }
@@ -288,7 +275,6 @@ class ReservationController extends Controller
         $newRes->whatsapp_message_id = json_encode($messageId);
         $newRes->update();
         
-
         $this->send_mail($newRes);
 
         $mx = $this->save_message([        
@@ -300,8 +286,7 @@ class ReservationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Successo',
-            'source' => config('configurazione.db'),
-            'data' => $mx,
+            //'data' => $mx,
         ]);
     }
 
