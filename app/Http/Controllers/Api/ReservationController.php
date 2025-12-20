@@ -351,7 +351,7 @@ class ReservationController extends Controller
             );
             $i++;
         }
-        return $source;
+        return [$source, $mex];
         
     }
     protected function send_mail($newRes){
