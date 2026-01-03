@@ -359,14 +359,17 @@ class PageController extends Controller
         $result = [];
 
         foreach ($days as $day) {
-            $monthNumber = $day['month'];
-            $year = $day['year'];
+            $month = (int) $day['month'];
+            $year  = (int) $day['year'];
+
+            // chiave tecnica unica (non cambia la struttura finale)
+            $key = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT);
 
             // se il mese non esiste ancora, inizializzalo
-            if (!isset($result[$monthNumber])) {
-                $result[$monthNumber] = [
+            if (!isset($result[$key])) {
+                $result[$key] = [
                     'year' => $year,
-                    'month' => $monthNumber,
+                    'month' => $month,
                     'days' => [],
                     'n_order' => 0,
                     'n_res' => 0,
@@ -376,11 +379,11 @@ class PageController extends Controller
             }
 
             // aggiungi il giorno dentro il mese corrispondente
-            $result[$monthNumber]['days'][] = $day;
-            $result[$monthNumber]['n_order'] += $day['n_order'];
-            $result[$monthNumber]['n_res'] += $day['n_res'];
-            $result[$monthNumber]['cash'] += $day['cash'];
-            $result[$monthNumber]['guests'] += $day['guests'];
+            $result[$key]['days'][] = $day;
+            $result[$key]['n_order'] += $day['n_order'];
+            $result[$key]['n_res'] += $day['n_res'];
+            $result[$key]['cash'] += $day['cash'];
+            $result[$key]['guests'] += $day['guests'];
         }
        // dd($result);
 
