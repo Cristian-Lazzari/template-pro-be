@@ -155,7 +155,7 @@ class MenuController extends Controller
         $menu->price         = intval(round($prezzo_float * 100));  
         $menu->category_id   = $data['category_id'];
         $menu->name          = $data['name'];
-        $menu->promo         = $data['promo'] ? 1 : 0;
+        $menu->promo         = $data['promo'] ??  0;
         $menu->description   = $data['description'];
         
         $menu->update();
