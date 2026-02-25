@@ -80,7 +80,7 @@ class MenuController extends Controller
         $menu->category_id   = $data['category_id'];
         $menu->name          = $data['name'];
         $menu->description   = $data['description'];
-        $menu->promo         = $data['promo'] ? 1 : 0;
+        $menu->promo         = $data['promo'] ?? 0;
         
         if($data['radio_choice'] == 2){
             $menu->fixed_menu = 2;
