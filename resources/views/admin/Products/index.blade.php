@@ -192,11 +192,11 @@
                                     <div class="price">€{{$item->price / 100}}</div>
         
                                     <div class="allergens">
-                                        @php $all = json_decode($item->allergens) @endphp
-                                        @foreach ($all as $i)
+                                     
+                                        @foreach ($item->allergens as $i)
                                         <div class="al">
-                                            <img src="{{config('configurazione.allergens')[$i]['img']}}" alt="" title="{{config('configurazione.allergens')[$i]['name']}}">
-                                            {{config('configurazione.allergens')[$i]['name']}}
+                                            <img src="{{$i->img}}" alt="" title="{{$i->name}}">
+                                            {{$i->name}}
                                         </div>
                                         @endforeach
                                     </div>   

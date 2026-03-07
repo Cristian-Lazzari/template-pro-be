@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Product;
-use App\Models\Setting;
+use App\Http\Controllers\Controller;
+use App\Models\Allergen;
 use App\Models\Category;
 use App\Models\Ingredient;
+use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
   //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
@@ -15,29 +16,16 @@ class ProductController extends Controller
 {
 
     
-    private $validationsTrue = [
-        'name'          => 'required|string|min:1|max:100|unique:products,name',
-        'image'         => 'nullable|image|max:1024',
-        'slot_plate'    => 'required',
-    ];
 
     private $validationsFalse = [
         'name'          => 'required|string|min:1|max:100|unique:products,name',
         'image'         => 'nullable|image|max:1024',
     ];
 
-
-    private $validationsTrue1 = [
-        'name'          => 'required|string|min:1|max:100',
-        'image'         => 'nullable|image|max:1024',
-        'slot_plate'    => 'required',
-    ];
-
     private $validationsFalse1 = [
         'name'          => 'required|string|min:1|max:100',
         'image'         => 'nullable|image|max:1024',
     ];
-    
     
     
     private $validations_ingredient = [
@@ -184,26 +172,24 @@ class ProductController extends Controller
             $new_ing->type = json_encode($type_ing);
 
             if($ingredient_allergens !== '[]'){
-                $rightall = array_map('intval', array_values($ingredient_allergens));
-                $new_ing->allergens = json_encode($rightall);
+                $new_ing->allergens()->sync($ingredient_allergens);
             }else{
-                $new_ing->allergens = '[]';
+                $new_ing->allergens()->sync([]);
             }
+            
             $new_ing->save();
             if(isset($data['ingredients'])){
                 array_push($data['ingredients'], $new_ing->id);
             }else{
                 $data['ingredients'] = [$new_ing->id];
             }
-           unset( $data['image_ing']);
+            unset( $data['image_ing']);
             return to_route('admin.products.create')->with('ingredient_success', $data);     
         }
 
-        if ($too && $pack > 2) {        
-            $request->validate($this->validationsTrue);
-        }else{
-            $request->validate($this->validationsFalse);
-        }
+       
+        $request->validate($this->validationsFalse);
+        
         
         $product = new Product();
         // controllo se l utente ha inserito gli allergens 
@@ -301,11 +287,12 @@ class ProductController extends Controller
     {
         $product = Product::where('id', $id)->firstOrFail();
         $categories     = Category::all();
+        $allergens      = Allergen::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
 
-        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients', 'property_adv'));        
+        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients', 'property_adv', 'allergens'));        
     }
     
     public function update(Request $request, $id){
@@ -345,10 +332,9 @@ class ProductController extends Controller
             $new_ing->type = json_encode($type_ing);
 
             if($ingredient_allergens !== '[]'){
-                $rightall = array_map('intval', array_values($ingredient_allergens));
-                $new_ing->allergens = json_encode($rightall);
+                $new_ing->allergens()->sync($ingredient_allergens);
             }else{
-                $new_ing->allergens = '[]';
+                $new_ing->allergens()->sync([]);
             }
             $new_ing->save();
             if(isset($data['ingredients'])){

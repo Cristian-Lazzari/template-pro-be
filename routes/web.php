@@ -1,22 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\DateController;
-use App\Http\Controllers\Admin\MenuController;
-use App\Http\Controllers\Admin\PostController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Webhooks\WaController;
-use App\Http\Controllers\Admin\MailerController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DateController;
 use App\Http\Controllers\Admin\IngredientController;
-use App\Http\Controllers\Admin\ReservationController;
-use App\Http\Controllers\Webhooks\StripeWebhookController;
-use App\Http\Controllers\Api\OrderController as ApiOrderController;
+use App\Http\Controllers\Admin\MailerController;
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReservationController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Guests\PageController as GuestsPageController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Webhooks\StripeWebhookController;
+use App\Http\Controllers\Webhooks\WaController;
+use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
@@ -91,6 +92,7 @@ Route::middleware(['auth', 'verified'])
         Route::post('orders/filter',       [OrderController::class, 'filter'])->name('orders.filter');
         Route::post('reservations/filter', [ReservationController::class, 'filter'])->name('reservations.filter');
         //resource
+        Route::resource('allergens',     AllergenController::class);
         Route::resource('menus',         MenuController::class);
         Route::resource('settings',      SettingController::class);
         Route::resource('dates',         DateController::class);

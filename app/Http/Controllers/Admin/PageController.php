@@ -4,19 +4,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Carbon\Carbon;
-use App\Models\Date;
-use App\Models\Menu;
-use App\Models\Post;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\Setting;
+use App\Http\Controllers\Controller;
+use App\Models\Allergen;
 use App\Models\Category;
+use App\Models\Date;
 use App\Models\Ingredient;
+use App\Models\Menu;
+use App\Models\Order;
+use App\Models\Post;
+use App\Models\Product;
 use App\Models\Reservation;
+use App\Models\Setting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 
 class PageController extends Controller
 {
@@ -442,6 +443,9 @@ class PageController extends Controller
             ],
             'menus' => [
                 'tot' => Menu::count(),
+            ], 
+            'allergens' => [
+                'tot' => Allergen::count(),
             ], 
         ];
         $menu_int = [

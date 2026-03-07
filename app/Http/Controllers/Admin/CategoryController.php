@@ -44,7 +44,7 @@ class CategoryController extends Controller
         } 
         $category->save();
         
-        $m = ' "' . $category['name'] . '" è stato creato correttamente';
+        $m = 'La categoria "' . $category->name . '" è stata creata correttamente';
         return to_route('admin.categories.index')->with('category_success', $m);   
     }
     
@@ -111,7 +111,7 @@ class CategoryController extends Controller
         }
         $category->update();
         
-        $m = ' "' . $category['name'] . '" è stato creato correttamente';
+        $m = 'La categoria "' . $category->name . '" è stata modificata correttamente';
         return to_route('admin.categories.index')->with('category_success', $m);
  
     }
@@ -124,7 +124,7 @@ class CategoryController extends Controller
         }
         
         $category->delete();
-        $m = ' "' . $category->name . '" è stata eliminato e rimossa dai prodotti correttamente';
+        $m = ' "' . $category->name . '" è stata eliminata e rimossa dai prodotti correttamente';
         return to_route('admin.categories.index')->with('delete_success', $m);
     }
     public function show($id)
