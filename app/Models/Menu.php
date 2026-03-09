@@ -21,4 +21,8 @@ class Menu extends Model
         return $this->belongsToMany(Product::class)
         ->withPivot('label', 'extra_price')->orderBy('created_at', 'asc'); // <- fondamentale!
     }
+    public function translations()
+    {
+        return $this->hasMany(MenuTranslation::class);
+    }
 }

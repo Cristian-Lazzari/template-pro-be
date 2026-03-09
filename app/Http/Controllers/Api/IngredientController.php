@@ -16,7 +16,7 @@ class IngredientController extends Controller
         
         
         if ($categoryId !== null && $categoryId !== 0) {
-            $query = Ingredient::where('type', 'like', '%' . '"' . $categoryId . '"' . '%');
+            $query = Ingredient::where('type', 'like', '%' . '"' . $categoryId . '"' . '%')->with('allergens');
             if ($option == 'yes') {
                 $query->where('option', true);
             }else {

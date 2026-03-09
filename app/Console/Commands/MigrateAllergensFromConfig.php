@@ -89,7 +89,7 @@ class MigrateAllergensFromConfig extends Command
             if ($nameIt) {
                 if (!$dryRun) {
                     DB::table('allergen_translations')->updateOrInsert(
-                        ['allergen_id' => $id, 'locale' => 'it'],
+                        ['allergen_id' => $id, 'lang' => 'it'],
                         [
                             'name' => $nameIt,
                             'updated_at' => now(),

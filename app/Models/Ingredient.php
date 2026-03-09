@@ -18,5 +18,9 @@ class Ingredient extends Model
     {
         return $this->belongsToMany(Allergen::class, 'ingredient_allergen');
     }
+    public function translations()
+    {
+        return $this->hasMany(IngredientTranslation::class);
+    }
 
 }

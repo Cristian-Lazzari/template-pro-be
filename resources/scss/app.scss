@@ -1990,12 +1990,18 @@ svg.to_see{
     border-radius: 10px;
     h3{
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         font-size: $fs_sm;
+        flex: 1;
         margin-bottom: 0 !important;
     }
+    img{
+        flex: 0;
+        max-height: 30px;
+    }
     .actions{
+        flex: 0;
         display: flex;
         gap: .4rem;
         svg{

@@ -4,12 +4,21 @@
 
 @section('contents')
 
-@if (session('category_success'))
+
+@if (session('created'))
     @php
-        $data = session('category_success')
+        $data = session('created')
     @endphp
-    <div class="alert alert-primary">
-        {{ $data }}
+    <div class="alert alert-success">
+        "{{ $data['name_ing'] }}" è stato correttamente creato!
+    </div>
+@endif
+@if (session('edited'))
+    @php
+        $data = session('edited')
+    @endphp
+    <div class="alert alert-success">
+        "{{ $data['name_ing'] }}" è stato modificato creato!
     </div>
 @endif
 @if (session('delete_success'))
@@ -35,8 +44,17 @@
 
     <div class="slim_cont list-group">
         @foreach ($allergens as $item)
-
+        <p>
+            {{$item->img}}
+            {{str_starts_with($item->img, 'http')}}
+        </p>
             <div class="category list-group-item ">
+                @if (str_starts_with($item->img, 'http'))
+                    <img src="{{$item->img}}" alt="{{$item->name}}">
+                @else
+                    <img src="{{ asset('public/storage/' . $item->img) }}" alt="{{$item->name}}">
+                @endif
+
                 <h3><a>{{$item->name}}</a></h3>     
             
                 <div class="actions">

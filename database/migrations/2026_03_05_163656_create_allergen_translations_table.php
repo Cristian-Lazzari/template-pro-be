@@ -16,11 +16,11 @@ return new class extends Migration
        Schema::create('allergen_translations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('allergen_id')->constrained()->cascadeOnDelete();
-            $table->string('locale',5);
+            $table->string('lang',5);
             $table->string('name');
             $table->timestamps();
 
-            $table->unique(['allergen_id','locale']);
+            $table->unique(['allergen_id','lang']);
         });
     }
 

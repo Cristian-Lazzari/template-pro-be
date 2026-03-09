@@ -7,7 +7,9 @@ use App\Models\Allergen;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Product;
+use App\Models\ProductTranslation;
 use App\Models\Setting;
+use App\Services\GoogleTranslateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -97,31 +99,14 @@ class ProductController extends Controller
     public function create()
     {
         $categories     = Category::all();
+        $allergens      = Allergen::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
         
-        return view('admin.Products.create', compact('categories', 'ingredients', 'property_adv'));
+        return view('admin.Products.create', compact('categories', 'ingredients', 'property_adv', 'allergens'));
     }
-    protected function cleanArray($array) {
-        $hasGluten = false;
-        $hasNoGluten = false;
-        foreach ($array as $item) {     
-            if ($item == 1) {
-                $hasGluten = true;
-            } elseif ($item == 4) {
-                $hasNoGluten = true;
-            }     
-        } 
-        if ($hasGluten && $hasNoGluten) {
-            $filteredArray = array_filter($array, function($value) {
-                return $value !== 1;
-            });
-        }else{
-            $filteredArray = $array;
-        }  
-        return array_values($filteredArray);
-    }
+
     public function store(Request $request){   
         // Recupera le configurazioni
         $adv_s = Setting::where('name', 'advanced')->first();
@@ -129,60 +114,35 @@ class ProductController extends Controller
             
         $double = $property_adv['dt'];
         $pack = $property_adv['services'];
-        $too = $property_adv['too'];
 
-
-        //funzione del cazzo di chat per controllare la questione glutine e senza glutine
-        
-        //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
         $data = $request->all();
      
         if (isset($data['newi'])){
-            $newi = $data['newi'];
             $request->validate($this->validations_ingredient);
-
-            $prezzo_stringa = str_replace(',', '.', $data['price_ing']);
-            $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-            $prezzo_float = floatval($prezzo_stringa);
-
-            if (isset($data['allergens_ing'])){
-                $ingredient_allergens = $data['allergens_ing'];
-            }else{
-                $ingredient_allergens = '[]';
-            }
-            if (isset($data['type_ing'])){
-                $type_ing = $data['type_ing'];
-            }else{
-                $type_ing = '[]';
-            }
             
+            $newi = $data['newi'];
+            $ingredient_allergens = $data['allergens_ing'] ?? [];
+            $type_ing = $data['type_ing'] ?? [];
+
+            $price = (float) str_replace(',', '.', $data['price_ing']);
+
             $new_ing = new Ingredient();
-            if (isset($data['image_ing'])) {
-                $imagePath = Storage::put('public/uploads', $data['image_ing']);
-                
-                $new_ing->icon = $imagePath;
-            }
             $new_ing->name = $data['name_ing'];
-            if (isset($data['option_ing'])) {
-                $new_ing->option = true;
-            }else{
-                $new_ing->option = false;
-            }
-            $new_ing->price = intval(round($prezzo_float * 100));
+            $new_ing->option = 0;
+            $new_ing->price = $price * 100;
             $new_ing->type = json_encode($type_ing);
 
-            if($ingredient_allergens !== '[]'){
-                $new_ing->allergens()->sync($ingredient_allergens);
-            }else{
-                $new_ing->allergens()->sync([]);
+            if (!empty($data['image_ing'])) {
+                $new_ing->icon = Storage::put('public/uploads', $data['image_ing']);
             }
-            
+
             $new_ing->save();
-            if(isset($data['ingredients'])){
-                array_push($data['ingredients'], $new_ing->id);
-            }else{
-                $data['ingredients'] = [$new_ing->id];
-            }
+
+            $new_ing->allergens()->sync($ingredient_allergens);
+
+            $data['ingredients'] = $data['ingredients'] ?? [];
+            $data['ingredients'][] = $new_ing->id;
+
             unset( $data['image_ing']);
             return to_route('admin.products.create')->with('ingredient_success', $data);     
         }
@@ -190,53 +150,9 @@ class ProductController extends Controller
        
         $request->validate($this->validationsFalse);
         
-        
         $product = new Product();
-        // controllo se l utente ha inserito gli allergens 
-        if (isset($data['allergens'])){
-            $allergens = $data['allergens'];
-            $allergens = array_map('intval', array_values($data['allergens']));
-        }else{
-            $allergens = '[]';
-        }
         
-       // controllo se ci sono allergien dagli ingredient
-        
-        $allergens_from_i = [];
-        if(isset($data['ingredients'])){     
-            foreach ($data['ingredients'] as $i) {
-                $all = Ingredient::where('id', $i)->firstOrFail();
-                $isall = json_decode($all['allergens']);
-                if($isall !== "[]" && $isall !== NULL ){
-                    foreach($isall as $ia){
-                        array_push($allergens_from_i, $ia);
-                    }  
-                }
-            }
-            if (count($allergens_from_i) > 0) {
-                $alldclen = array_unique($allergens_from_i);
-                $rightall = array_map('intval', array_values($alldclen));   
-                $allergens_from_i = $this->cleanArray($rightall);
-            }else{
-                $allergens_from_i = '[]';   
-            }
-        }else{
-            $allergens_from_i = '[]';   
-        }
-
-        //mergio
-        if ($allergens_from_i !== '[]' && $allergens !== '[]' ) {
-            //dd($allergens_from_i);
-            $allergens_m = array_unique(array_merge($allergens_from_i, $allergens));
-        }elseif ($allergens_from_i == '[]') {
-            $allergens_m = $allergens;
-        }elseif ($allergens == '[]') {
-            $allergens_m = $allergens_from_i;
-        }
-       
-        $prezzo_stringa = str_replace(',', '.', $data['price']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
+        $price = (float) str_replace(',', '.', $data['price']);
 
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
@@ -244,22 +160,17 @@ class ProductController extends Controller
         } 
         $product->category_id   = $data['category_id'];
 
-        $product->name          = $data['name'];
-        $product->price         = intval(round($prezzo_float * 100));       
+        $product->name          = $data['name'];// da levare
         $product->description   = $data['description'];
 
-        $product->allergens    = is_array($allergens_m) ? json_encode($this->cleanArray($allergens_m)) : $allergens_m;
-        
+        $product->price         = $price * 100;       
+        $product->promotion   = isset($data['promotion']) ? true : false;
+        $product->old_price   = isset($data['old_price']) ? (float) str_replace(',', '.', $data['old_price']) * 100 : null;
         
         if($pack > 2){
             $product->tag_set       = $data['tag_set'];
-            // if( $too ){
-            //     $product->type_plate    = $data['type_plate'];     
-            //     $product->slot_plate    = $data['slot_plate'];     
-            // }
         }
     
-        
         $product->save();
         
         $ingredients = [];
@@ -269,7 +180,35 @@ class ProductController extends Controller
             }
             $product->ingredients()->sync($ingredients ?? []);  
         }
+        // controllo se l utente ha inserito gli allergens 
+        if (isset($data['allergens'])){
+            $allergens = $data['allergens'];
+            $allergens = array_map('intval', array_values($data['allergens']));
+            $product->directAllergens()->sync($allergens);
+        }
         $products = Product::all();
+
+        $translator = app(GoogleTranslateService::class);
+
+        $languages_set = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        $languages = $languages_set['languages'];
+        $default = $languages_set['default'];
+
+        foreach ($languages as $lang) {
+            if ($lang === $default) {
+                $name = $data['name'];
+                $description = $data['description'];
+            } else {
+                $name = $translator->translate($data['name'], $lang);
+                $description = $translator->translate($data['description'], $lang);
+            }
+            ProductTranslation::create([
+                'product_id' => $product->id,
+                'lang' => $lang,
+                'name' => $name,
+                'description' => $description
+            ]);
+        }
 
         return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $product->name . '" creato correttamente');
     }
@@ -285,14 +224,16 @@ class ProductController extends Controller
     
     public function edit($id)
     {
-        $product = Product::where('id', $id)->firstOrFail();
+        $product        = Product::where('id', $id)->firstOrFail()->load('translations');
+        $translations   = $product->translations->keyBy('lang');
         $categories     = Category::all();
         $allergens      = Allergen::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
-        $adv_s = Setting::where('name', 'advanced')->first();
+        $adv_s        = Setting::where('name', 'advanced')->first();
+        $languages    = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
         $property_adv = json_decode($adv_s->property, 1);
 
-        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients', 'property_adv', 'allergens'));        
+        return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients', 'property_adv', 'allergens', 'translations', 'languages'));        
     }
     
     public function update(Request $request, $id){
@@ -300,107 +241,44 @@ class ProductController extends Controller
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);  
             
-        $double = $property_adv['dt'];
         $pack = $property_adv['services'];
-        $too = $property_adv['too'];
 
         $product = Product::where('id', $id)->firstOrFail();
         $data = $request->all();
         if (isset($data['newi'])){
-            $newi = $data['newi'];
-            if (isset($data['allergens_ing'])){
-                $ingredient_allergens = $data['allergens_ing'];
-            }else{
-                $ingredient_allergens = '[]';
-            }
-            if (isset($data['type_ing'])){
-                $type_ing = $data['type_ing'];
-            }else{
-                $type_ing = '[]';
-            }
             $request->validate($this->validations_ingredient);
-            
+
+            $newi = $data['newi'];
+            $ingredient_allergens = $data['allergens_ing'] ?? [];
+            $type_ing = $data['type_ing'] ?? [];
+
+            $price = (float) str_replace(',', '.', $data['price_ing']);
+
             $new_ing = new Ingredient();
             $new_ing->name = $data['name_ing'];
-            if (isset($data['image_ing'])) {
-                $imagePath = Storage::put('public/uploads', $data['image_ing']);
-                
-                $new_ing->icon = $imagePath;
-            }
             $new_ing->option = 0;
-            $new_ing->price = $data['price_ing'];
+            $new_ing->price = $price * 100;
             $new_ing->type = json_encode($type_ing);
 
-            if($ingredient_allergens !== '[]'){
-                $new_ing->allergens()->sync($ingredient_allergens);
-            }else{
-                $new_ing->allergens()->sync([]);
+            if (!empty($data['image_ing'])) {
+                $new_ing->icon = Storage::put('public/uploads', $data['image_ing']);
             }
+
             $new_ing->save();
-            if(isset($data['ingredients'])){
-                array_push($data['ingredients'], $new_ing->id);
-            }else{
-                $data['ingredients'] = [$new_ing->id];
-            }
+
+            $new_ing->allergens()->sync($ingredient_allergens);
+
+            $data['ingredients'] = $data['ingredients'] ?? [];
+            $data['ingredients'][] = $new_ing->id;
+
             unset( $data['image_ing']);
             return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
-        if ($too && $pack > 2) {        
-            $request->validate($this->validationsTrue1);
-        }else{
-            $request->validate($this->validationsFalse1);
-        } 
-        // controllo se l utente ha inserito gli allergens 
-        if (isset($data['allergens'])){
-            $allergens = $data['allergens'];
-            $allergens = array_map('intval', array_values($data['allergens']));
-        }else{
-            $allergens = '[]';
-        }
-        // controllo se ci sono allergien dagli ingredient
-       
-        $allergens_from_i = [];
-        if(isset($data['ingredients'])){     
-            foreach ($data['ingredients'] as $i) {
-                $all = Ingredient::where('id', $i)->firstOrFail();
-                $isall = json_decode($all['allergens']);
-                if($isall !== "[]" && $isall !== NULL ){
-                    foreach($isall as $ia){
-                        array_push($allergens_from_i, $ia);
-                    }  
-                }
-            }
-            //dd(count($allergens_from_i));
-            if (count($allergens_from_i) > 0) {
-                $alldclen = array_unique($allergens_from_i);
-                $rightall = array_map('intval', array_values($alldclen));   
-                $allergens_from_i = $this->cleanArray($rightall);          
-            }else{
-                $allergens_from_i = '[]';   
-            }
-        }else{
-            $allergens_from_i = '[]';   
-        }
 
-        //mergio
-        if ($allergens_from_i !== '[]' && $allergens !== '[]' ) {
-            $allergens_m = array_unique(array_merge($allergens_from_i, $allergens));
-        }elseif ($allergens_from_i == '[]') {
-            $allergens_m = $allergens;
-        }elseif ($allergens == '[]') {
-            $allergens_m = $allergens_from_i;
-        }
-        
+        $request->validate($this->validationsFalse1);
 
-
-
-        $prezzo_stringa = str_replace(',', '.', $data['price']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-
-        $prezzo_stringa1 = str_replace(',', '.', $data['old_price']);
-        $prezzo_stringa1 = preg_replace('/[^0-9.]/', '', $prezzo_stringa1);
-        $prezzo_float1 = floatval($prezzo_stringa1);
+        $price = (float) str_replace(',', '.', $data['price']);
+        $oldprice = (float) str_replace(',', '.', $data['old_price']);
 
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
@@ -416,41 +294,97 @@ class ProductController extends Controller
         } 
         
         $product->category_id   = $data['category_id'];
-
-        $product->name          = $data['name'];
-        $product->price         = intval(round($prezzo_float * 100));       
-        $product->description   = $data['description'];
-        
-        $product->allergens    = is_array($allergens_m) ? json_encode($this->cleanArray($allergens_m)) : $allergens_m;
-        
+        $product->price         = $price * 100;       
         $product->promotion   = isset($data['promotion']) ? true : false;
-        $product->old_price   = intval(round($prezzo_float1 * 100));
+        $product->old_price   = $oldprice * 100;
         
         if($pack > 2){
             $product->tag_set       = $data['tag_set'];
-            if( $too){
-                $product->type_plate    = $data['type_plate'];     
-                $product->slot_plate    = $data['slot_plate'];     
-            }
         }
     
-        
         $product->save();
         
         $ingredients = [];
         if (isset($data['ingredients']) && is_array($data['ingredients'])) {
             $syncData = [];
-
             foreach ($data['ingredients'] as $index => $ingredientId) {
                 $syncData[$ingredientId] = ['sort_order' => $index];
             }
-
             $product->ingredients()->sync($syncData);
         } else {
             // Nessun ingrediente selezionato
             $product->ingredients()->sync([]);
         }
+        // controllo se l utente ha inserito gli allergens 
+        if (isset($data['allergens'])){
+            $allergens = $data['allergens'];
+            $allergens = array_map('intval', array_values($data['allergens']));
+            $product->directAllergens()->sync($allergens);
+        }
 
+
+        /*  | TRADUZIONI PERSONALIZZATE */
+        $lang_s = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        $default_l = $lang_s['default'];
+        $langs = $lang_s['languages'];
+
+
+        
+
+
+        if($product->name !== $data('name')){
+            foreach($data['translations'] as $lang => $values){
+                if($values['name'] != null){
+                    ProductTranslation::updateOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'lang' => $lang
+                        ],
+                        [
+                            'name' => $translator->translate($data['name'], $lang),
+                            'description' =>  $translator->translate($data['description'], $lang)
+                        ]
+                    );
+                }elseif($lang == $default_l){
+                    ProductTranslation::updateOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'lang' => $lang
+                        ],
+                        [
+                            'name' => $data['name'] ?? null,
+                            'description' => $data['description'] ?? null
+                        ]
+                    );
+                }
+            }
+        }elseif(isset($data['translations'])){
+            foreach($data['translations'] as $lang => $values){
+                if($values['name'] != null){
+                    ProductTranslation::updateOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'lang' => $lang
+                        ],
+                        [
+                            'name' => $product->name !== $data('name') ? $values['name'],
+                            'description' => $values['description'] ?? null
+                        ]
+                    );
+                }elseif($lang == $default_l){
+                    ProductTranslation::updateOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'lang' => $lang
+                        ],
+                        [
+                            'name' => $data['name'] ?? null,
+                            'description' => $data['description'] ?? null
+                        ]
+                    );
+                }
+            }
+        }
         $products = Product::all();        
         return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $product->name . '" modificato correttamente');
 

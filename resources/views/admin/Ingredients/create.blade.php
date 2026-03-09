@@ -78,7 +78,7 @@ $domain = 'https://future-plus.it/allergens/';
                 </svg>
                 Allergeni</label>
             <p>
-                @foreach(  config('configurazione.allergens') as $a)
+                @foreach( $allergens as $a)
                     @php $i = $loop->iteration; @endphp
                     <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
                     <label class="btn 

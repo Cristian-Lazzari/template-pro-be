@@ -85,23 +85,15 @@ $domain = 'https://future-plus.it/allergens/';
                 </svg>
                 Allergeni</label>
             <p>
-                @foreach(  config('configurazione.allergens') as $a)
-                    @php 
-                        $i = $loop->iteration;
-                        if ($ingredient->allergens) {
-                            $al = json_decode($ingredient->allergens);
-                        }else{
-                            $al = [];
-                        }
-                    @endphp
-                    <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', $al, []))) checked @endif>
+                @foreach( $allergens as $a)
+                    <input type="checkbox" class="btn-check" id="b{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" @if (in_array($a->id, old('allergens_ing', $ingredient->allergens->pluck('id')->toArray(), []))) checked @endif>
                     <label class="btn 
-                        @if($a['special'])
+                        @if($a->special != 0)
                         btn-outline-dark btn_special
                         @else
                         btn-outline-light
                         @endif
-                        " for="b{{ $i }}">{{ $a['name'] }}</label>
+                        " for="b{{ $a->id }}">{{ $a->name }}</label>
                 @endforeach
             </p>
         </div>

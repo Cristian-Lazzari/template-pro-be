@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category', 'ingredients');
+        $query = Product::with('category', 'ingredients', 'ingredients.allergens');
         $combo_query = Menu::where('fixed_menu', '!=', '0');
 
         $from = $request->query('from');

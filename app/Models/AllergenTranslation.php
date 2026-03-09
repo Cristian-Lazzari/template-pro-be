@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class AllergenTranslation extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'lang', 'allergen_id'];
 }

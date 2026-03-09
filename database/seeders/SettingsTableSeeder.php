@@ -129,6 +129,13 @@ class SettingsTableSeeder extends Seeder
                     'max_table_2' => 0,
                 ]
             ],
+            [
+                'name' => 'Lingua',
+                'property' => [
+                    'default' => 'it',
+                    'languages' => ['it', 'en', 'fr', 'de'],
+                ]
+            ],
         ];
    
 

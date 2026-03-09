@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Product;
+use App\Http\Controllers\Controller;
+use App\Models\Allergen;
 use App\Models\Category;
 use App\Models\Ingredient;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
 class IngredientController extends Controller
@@ -31,7 +32,8 @@ class IngredientController extends Controller
     public function create()
     {
     $categories     = Category::all();
-    return view('admin.Ingredients.create', compact('categories'));
+    $allergens      = Allergen::all();
+    return view('admin.Ingredients.create', compact('categories', 'allergens'));
     }
 
 
@@ -39,45 +41,29 @@ class IngredientController extends Controller
     {
         $data = $request->all();
         $request->validate($this->validations_ingredient);
-        
-        $prezzo_stringa = str_replace(',', '.', $data['price_ing']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-        if (isset($data['allergens_ing'])){
-            $ingredient_allergens = $data['allergens_ing'];
-        }else{
-            $ingredient_allergens = '[]';
-        }
 
-        if (isset($data['type_ing'])){
-            $type_ing = $data['type_ing'];
-        }else{
-            $type_ing = '[]';
-        }
-        
+        // normalizza prezzo
+        $price = str_replace(',', '.', $data['price_ing']);
+        $price = preg_replace('/[^0-9.]/', '', $price);
+        $price = (float) $price;
+
+        // dati opzionali
+        $ingredient_allergens = $data['allergens_ing'] ?? [];
+        $type_ing = $data['type_ing'] ?? [];
+
         $new_ing = new Ingredient();
-        if (isset($data['image_ing'])) {
-            $imagePath = Storage::put('public/uploads', $data['image_ing']);
-            $new_ing->icon = $imagePath;
-        }
         $new_ing->name = $data['name_ing'];
-
-        if (isset($data['option_ing'])) {
-            $new_ing->option = true;
-        }else{
-            $new_ing->option = false;
-        }
-
-        $new_ing->price = intval(round($prezzo_float * 100));
+        $new_ing->option = !empty($data['option_ing']);
+        $new_ing->price = (int) round($price * 100);
         $new_ing->type = json_encode($type_ing);
 
-         if($ingredient_allergens !== '[]'){
-            $rightall = array_map('intval', array_values($ingredient_allergens));
-            $new_ing->allergens = json_encode($rightall);
-        }else{
-            $new_ing->allergens = '[]';
+        // upload immagine
+        if (!empty($data['image_ing'])) {
+            $new_ing->icon = Storage::put('public/uploads', $data['image_ing']);
         }
+
         $new_ing->save();
+        $new_ing->allergens()->sync($ingredient_allergens);
         
         $m = ' "' . $new_ing['name'] . '" è stato creato correttamente';
         return to_route('admin.ingredients.index')->with('ingredient_success', $m);   
@@ -88,7 +74,8 @@ class IngredientController extends Controller
     {
         $ingredient    = Ingredient::where('id', $id)->firstOrFail();
         $categories    = Category::all();
-        return view('admin.Ingredients.edit', compact('categories', 'ingredient'));
+        $allergens     = Allergen::all();
+        return view('admin.Ingredients.edit', compact('categories', 'ingredient', 'allergens'));
     }
     protected function cleanArray($array) {
         $hasGluten = false;
@@ -111,70 +98,38 @@ class IngredientController extends Controller
     }
     public function update(Request $request, $id)
     {
-        //funzione del cazzo di chat per controllare la questione glutine e senza glutine
-        
-        //end---funzione del cazzo di chat per controllare la questione glutine e senza glutine
-        
         $data = $request->all();
         $request->validate($this->validations_ingredient1);
-        
-        $prezzo_stringa = str_replace(',', '.', $data['price_ing']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-        if (isset($data['allergens_ing'])){
-            $ingredient_allergens = $data['allergens_ing'];
-        }else{
-            $ingredient_allergens = '[]';
-        }
-        if (isset($data['type_ing'])){
-            $type_ing = $data['type_ing'];
-        }else{
-            $type_ing = '[]';
-        }
-        
-        $new_ing = Ingredient::where('id', $id)->firstOrFail();
+
+        // normalizza prezzo
+        $price = str_replace(',', '.', $data['price_ing']);
+        $price = preg_replace('/[^0-9.]/', '', $price);
+        $price = (float) $price;
+
+        // dati opzionali
+        $ingredient_allergens = $data['allergens_ing'] ?? [];
+        $type_ing = $data['type_ing'] ?? [];
+
+        $new_ing = Ingredient::findOrFail($id);
+
         $new_ing->name = $data['name_ing'];
-        if (isset($data['image_ing'])) {
+        $new_ing->option = !empty($data['option_ing']);
+        $new_ing->price = (int) round($price * 100);
+        $new_ing->type = json_encode($type_ing);
+
+        // upload immagine
+        if (!empty($data['image_ing'])) {
             $imagePath = Storage::put('public/uploads', $data['image_ing']);
+
             if ($new_ing->icon) {
                 Storage::delete($new_ing->icon);
             }
+
             $new_ing->icon = $imagePath;
         }
-        if (isset($data['option_ing'])) {
-            $new_ing->option = true;
-        }else{
-            $new_ing->option = false;
-        }
-        $new_ing->price = intval(round($prezzo_float * 100));
-        $new_ing->type = json_encode($type_ing);
-    
-        if($ingredient_allergens !== '[]'){
-            $rightall = array_map('intval', array_values($ingredient_allergens));
-            $new_ing->allergens = json_encode($rightall);
-            $id_ing = $new_ing->id;
-            $prodotti = Product::whereHas('ingredients', function($query) use ($id_ing) {
-                $query->where('ingredient_id', $id_ing);
-            })->get();
-            foreach ($prodotti as $p) {
-                $allergens = json_decode($p['allergens'], 1);
-                foreach ($rightall as $a) {
-                    if(in_array($a, $allergens)){
-                        $allergens[] = $a;
-                    }
-                }
-                $cleanallergens = $this->cleanArray($allergens);
-                $p->allergens = json_encode($cleanallergens); 
-                $p->update(); 
-            }
-        }else{
-            $new_ing->allergens = '[]';
-        }
+
         $new_ing->update();
-        
-        //dd($prodotti);
-        
-        
+        $new_ing->allergens()->sync($ingredient_allergens);
         
         $m = ' "' . $new_ing['name'] . '" è stato modificato correttamente';
         return to_route('admin.ingredients.index')->with('ingredient_success', $m);

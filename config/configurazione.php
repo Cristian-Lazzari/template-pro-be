@@ -5,6 +5,7 @@ return [
     'STRIPE_WEBHOOK_SECRET' => env('STRIPE_WEBHOOK_SECRET'),
     'APP_URL'               => env('APP_URL'),
     'APP_NAME'              => env('APP_NAME'),
+    'GOOGLE_TRASLATE_KEY'   => env('GOOGLE_TRASLATE_KEY'),
     
     'us'                  => env('MAIL_USERNAME'),
     'pw'                  => env('MAIL_PASSWORD'),
@@ -100,22 +101,22 @@ return [
         16 => [
             'special' => 0,
             'img' => 'https://future-plus.it/allergens/sulphur.png',
-            'name' => 'Anidride solforosa e solfiti'
+            'name' => 'anidride solforosa e solfiti'
         ],
         17 => [
             'special' => 0,
             'img' => 'https://future-plus.it/allergens/garlic.png',
-            'name' => 'Aglio'
+            'name' => 'aglio'
         ],
         18 => [
             'special' => 0,
             'img' => 'https://future-plus.it/allergens/lupins.png',
-            'name' => 'Lupini'
+            'name' => 'lupini'
         ],
         19 => [
             'special' => 0,
             'img' => 'https://future-plus.it/allergens/origano.png',
-            'name' => 'Origano'
+            'name' => 'origano'
         ],
     ],
     

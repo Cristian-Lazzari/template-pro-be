@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Allergen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class AllergenController extends Controller
 {
@@ -26,21 +27,28 @@ class AllergenController extends Controller
     {
         return view('admin.Allergens.create');
     }
-
     public function store(Request $request)
     {
-        $data = $request->all();
+
         $request->validate([
-            'name' => 'required|string|min:2|unique:allergens,name',
+            'name' => 'required|string|min:2|unique:allergen_translations,name',
+            'special' => 'nullable',
+            'img' => 'nullable|string'
         ]);
-        $allergen = new Allergen();
-        $allergen->name = $data['name'];
-        $allergen->description = $data['description'];
-        if (isset($data['icon'])) {
-            $iconPath = Storage::put('public/uploads', $data['icon']);
-            $allergen->icon = $iconPath;
+        $img = null;
+        if (isset($data['img'])) {
+            $iconPath = Storage::put('public/uploads', $data['img']);
+            $img= $iconPath;
         } 
-        $allergen->save();
+        $allergen = Allergen::create([
+            'special' => $request->special,
+            'img' => $request->img
+        ]);
+
+        $allergen->translations()->create([
+            'lang' => 'it',
+            'name' => $request->name
+        ]);   
         
         $m = ' "' . $allergen['name'] . '" è stato creato correttamente';
         return to_route('admin.allergens.index')->with('success', $m);
@@ -58,23 +66,42 @@ class AllergenController extends Controller
         return view('admin.Allergens.edit', compact('allergen'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Allergen $allergen)
     {
-        $data = $request->all();
+        $translation = $allergen->translations()
+            ->firstOrCreate(['lang' => 'it']);
+
         $request->validate([
-            'name' => 'required|string|min:2',
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('allergen_translations', 'name')
+                    ->where('lang', 'it')
+                    ->ignore($translation->id)
+            ],
+            'special' => 'nullable',
+            'img' => 'nullable|string'
         ]);
 
-        $allergen = Allergen::where('id', $id)->firstOrFail();
-        $allergen->name = $data['name'];
+        /* update tabella allergens */
+        $img = $allergen->img;
         if (isset($data['img'])) {
             $iconPath = Storage::put('public/uploads', $data['img']);
             if ($allergen->img) {
                 Storage::delete($allergen->img);
             }
-            $allergen->img = $iconPath;
+            $img = $img;
         }
-        $allergen->update();
+        $allergen->update([
+            'special' => $request->special,
+            'img' => $img
+        ]);
+
+        /* update traduzione */
+        $translation->update([
+            'name' => $request->name
+        ]);
         
         $m = ' "' . $allergen->name . '" è stato creato correttamente';
         return to_route('admin.allergens.index')->with('success', $m);

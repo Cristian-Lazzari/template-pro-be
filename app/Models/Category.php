@@ -16,4 +16,8 @@ class Category extends Model
     public function menu() {    
         return $this->hasMany(Menu::class);
     }
+    public function translations()
+    {
+        return $this->hasMany(CategoryTranslation::class);
+    }
 }

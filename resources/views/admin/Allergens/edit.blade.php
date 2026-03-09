@@ -2,21 +2,12 @@
 
 @section('contents')
     
-@if (session('ingredient_success'))
-    @php
-        $data = session('ingredient_success')
-    @endphp
-    <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
-    </div>
-@endif
-    
 
 
 <div class="dash_page">
 
 
-    <h1>Modifica la Categoria</h1>
+    <h1>Modifica  {{$allergen->special == 0 ? 'l\'Allergene' : 'lo Special Flag'}} </h1>
 
     <a class="my_btn_5 ml-auto my-3" href="{{ route('admin.allergens.index') }}">Torna agli Allergeni</a>
 
@@ -36,7 +27,25 @@
                     <p><input value="{{ old('name', $allergen->name) }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
                     @error('name') <p class="error">{{ $message }}</p> @enderror
                 </div>
-                
+                <div>
+                    <label class="label_c" for="special">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16">
+                            <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14"/>
+                        </svg>
+                        Tipo</label>
+                    <p>
+                        <select name="special" id="special">
+                            @if ($allergen->id === 1)
+                                <option selected value="4">Special Flag *</option>
+                            @else
+                                <option @if( $allergen->special == 0) selected @endif value="0">Allergene standard</option>
+                                <option @if( $allergen->special > 0) selected @endif value="1">Special Flag</option>
+                            @endif
+                        </select>
+                    </p>
+                </div>
+            </div>
+            <div class="split">
                 <div>
                     <label class="label_c" for="file-input">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-image" viewBox="0 0 16 16">

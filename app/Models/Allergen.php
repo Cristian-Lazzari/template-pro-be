@@ -33,8 +33,8 @@ class Allergen extends Model
 
     public function getNameAttribute()
     {
-        // dashboard in italiano: fisso 'it'
-        $t = $this->translations->firstWhere('locale', 'it');
+        $default_l = json_decode(Setting::where('name', 'Lingua')->first()->property, 1)['default'];
+        $t = $this->translations->firstWhere('lang', $default_l);
         return $t?->name ?? null;
     }
 }
