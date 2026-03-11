@@ -3,7 +3,7 @@
 @section('contents')
 
  
-<a class="my_btn_5 ml-auto" href="{{ route('admin.posts.index') }}">Torna ai Post</a>
+<a class="my_btn_5 ml-auto" href="{{ route('admin.posts.index') }}">{{__('admin.Torna_ai_Post')}}</a>
 
 <h1>Dettagli del Post</h1>
 <div class="show_p">
@@ -23,7 +23,7 @@
         </div>
         <div class="info">
             <section>
-                <h4>Descrizione:</h4> 
+                <h4>{{__('admin.Descrizione')}}:</h4> 
                 <p>{{$post->description}} </p>       
             </section>
             <section> 

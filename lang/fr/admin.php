@@ -1,20 +1,66 @@
 <?php
-
 return [
     'Ordini' => 'Commandes',
     'Prenotazioni' => 'Réservations',
     'Prodotti' => 'Produits',
-    'Menu' => 'Menus',
+    'Menu' => 'Menu',
     'Categorie' => 'Catégories',
     'Ingredienti' => 'Ingrédients',
     'Allergeni' => 'Allergènes',
+    'Asporto' => 'À emporter',
+    'Tavoli' => 'Tables',
+    'Impostazioni' => 'Paramètres',
+    'Impostazioni_a' => 'Paramètres avancés',
     
+    'Tutti' => 'Tous',
+    'Esci' => 'Déconnexion',
+    'Info' => 'Info',
+    'Annulla' => 'Annuler',
+    'Aggiorna' => 'Mettre à jour',
+    'Chiudi' => 'Fermer',
+    'Archivio' => 'Archive',
     'Descrizione' => 'Description',
-
+    'Titolo' => 'Titre',
+    'Corpo' => 'Contenu',
+    'Nome' => 'Nom',
+    'Prezzo' => 'Prix',
+    'Prezzo_barrato' => 'Prix barré',
+    'Immagine' => 'Image',
+    'Immagine_1' => 'Image principale',
+    'Immagine_2' => 'Image secondaire',
+    'Tipo' => 'Type',
+    'Link' => 'Lien',
+    'Categoria' => 'Catégorie',
+    'Multilingua' => 'Multilingue',
+    'Ferie' => 'Fermeture pour congés',
+    'Promozione' => 'Promotion',
+    
+    'Menu_alla_carta' => 'Menu à la carte',
+    'Menu_fisso' => 'Menu fixe',
+    'Cerca_prodotto' => 'Rechercher un produit...',
     'Vedi_tutti' => 'Voir tout',
+    'Crea_nuovo' => 'Créer nouveau',
+    'Crea_nuova' => 'Créer nouvelle',
+    'Crea_nuova_scelta' => 'Créer un nouveau choix',
+    
+    'Crea_nuovo_p' => 'Créer un nouveau produit',
+    'Crea_nuovo_a' => 'Créer une nouvelle catégorie',
+    'Crea_nuovo_i' => 'Créer un nouvel ingrédient',
+    'Crea_nuovo_ps' => 'Créer un nouveau post',
+    'Campi_facoltativi' => 'Champs facultatifs',
+    
+    'Domicilio' => 'Livraison',
+    'Pagamento' => 'Paiement',
+    'post_info' => 'Pour aller à la ligne utilisez les caractères : /**/ . Pour mettre du texte en gras, entourez simplement la portion de texte avec trois astérisques comme ceci : *** texte en gras ***',
 
     't_dashboard' => 'Commandes & Réservations',
     't_menu' => 'Produits & Menu',
+
+    'set_1' => 'Jours et horaires d\'ouverture',
+    'set_2' => 'Position de votre établissement',
+    'set_3' => 'Contacts et réseaux sociaux',
+    'set_4' => 'Gestion des zones de livraison',
+    'set_5' => 'Gestion des notifications WhatsApp',
 
     'stat_1_menu' => 'Disponibles à emporter',
     'stat_2_menu' => 'Présents dans le menu',
@@ -22,9 +68,19 @@ return [
 
     'no_promo_p' => 'Aucun produit en vedette',
     'no_promo_m' => 'Aucun menu en vedette',
+    'no_menuf' => 'Aucun menu fixe disponible, créez-en un pour commencer',
+    'no_menu' => 'Aucun menu combo ou personnalisé disponible, créez-en un pour commencer',
+    'no_ing' => 'Il n’y a pas d’ingrédients pour le moment.',
 
     'promo_p' => 'Produits en vedette',
     'promo_m' => 'Menus en vedette',
 
-    'up_sell' => 'Pour permettre à vos clients de réserver une table ou de commander en livraison ou à emporter, cliquez ici et planifiez un appel avec nos conseillers',
+    'Pagina_di_destinazione' => 'Page de destination',
+
+    'deleted_successfully' => '" :name " a été supprimé avec succès',
+    'edited_successfully' => '" :name " a été modifié avec succès',
+    'deleted_successfully_f' => '" :name " a été supprimée avec succès',
+    'edited_successfully_f' => '" :name " a été modifiée avec succès',
+
+    'up_sell' => 'Pour permettre à vos clients de réserver des tables ou de commander en livraison ou à emporter, cliquez ici et planifiez un appel avec nos conseillers',
 ];

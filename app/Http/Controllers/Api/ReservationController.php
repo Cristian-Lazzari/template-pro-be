@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
-use App\Models\Date;
 use App\Models\Setting;
 use App\Models\Reservation;
 use Illuminate\Http\Request;

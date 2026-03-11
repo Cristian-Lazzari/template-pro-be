@@ -2,17 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use DateTime;
-use Exception;
-use Carbon\Carbon;
-use App\Models\Date;
-use App\Models\Order;
+
 use App\Models\Setting;
-use App\Models\Reservation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Database\Seeders\DatesTableSeeder;
 
 class DateController extends Controller
 {
@@ -53,10 +46,6 @@ class DateController extends Controller
         $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
         return back()->with('success', $m);
     }
-
-
-
-
 }
 
  

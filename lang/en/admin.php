@@ -1,20 +1,66 @@
 <?php
-
 return [
     'Ordini' => 'Orders',
     'Prenotazioni' => 'Reservations',
     'Prodotti' => 'Products',
-    'Menu' => 'Menus',
+    'Menu' => 'Menu',
     'Categorie' => 'Categories',
     'Ingredienti' => 'Ingredients',
     'Allergeni' => 'Allergens',
+    'Asporto' => 'Takeaway',
+    'Tavoli' => 'Tables',
+    'Impostazioni' => 'Settings',
+    'Impostazioni_a' => 'Advanced settings',
     
+    'Tutti' => 'All',
+    'Esci' => 'Logout',
+    'Info' => 'Info',
+    'Annulla' => 'Cancel',
+    'Aggiorna' => 'Update',
+    'Chiudi' => 'Close',
+    'Archivio' => 'Archive',
     'Descrizione' => 'Description',
-
+    'Titolo' => 'Title',
+    'Corpo' => 'Content',
+    'Nome' => 'Name',
+    'Prezzo' => 'Price',
+    'Prezzo_barrato' => 'Strikethrough price',
+    'Immagine' => 'Image',
+    'Immagine_1' => 'Main image',
+    'Immagine_2' => 'Secondary image',
+    'Tipo' => 'Type',
+    'Link' => 'Link',
+    'Categoria' => 'Category',
+    'Multilingua' => 'Multilingual',
+    'Ferie' => 'Holiday closure',
+    'Promozione' => 'Promotion',
+    
+    'Menu_alla_carta' => 'À la carte menu',
+    'Menu_fisso' => 'Fixed menu',
+    'Cerca_prodotto' => 'Search product...',
     'Vedi_tutti' => 'View all',
+    'Crea_nuovo' => 'Create new',
+    'Crea_nuova' => 'Create new',
+    'Crea_nuova_scelta' => 'Create new option',
+    
+    'Crea_nuovo_p' => 'Create new Product',
+    'Crea_nuovo_a' => 'Create new Category',
+    'Crea_nuovo_i' => 'Create new Ingredient',
+    'Crea_nuovo_ps' => 'Create new Post',
+    'Campi_facoltativi' => 'Optional fields',
+    
+    'Domicilio' => 'Delivery',
+    'Pagamento' => 'Payment',
+    'post_info' => 'To start a new line use the characters: /**/ . To make text bold, simply wrap the portion of text with three asterisks like this: *** text to make bold ***',
 
     't_dashboard' => 'Orders & Reservations',
     't_menu' => 'Products & Menu',
+
+    'set_1' => 'Opening days and hours',
+    'set_2' => 'Your venue location',
+    'set_3' => 'Contacts and Social media',
+    'set_4' => 'Delivery areas management',
+    'set_5' => 'WhatsApp notification management',
 
     'stat_1_menu' => 'Available for takeaway',
     'stat_2_menu' => 'Included in the menu',
@@ -22,9 +68,19 @@ return [
 
     'no_promo_p' => 'No featured products',
     'no_promo_m' => 'No featured menus',
+    'no_menuf' => 'No fixed menus available, create one to get started',
+    'no_menu' => 'No combo or custom combo menus available, create one to get started',
+    'no_ing' => 'There are no ingredients at the moment.',
 
     'promo_p' => 'Featured products',
     'promo_m' => 'Featured menus',
+
+    'Pagina_di_destinazione' => 'Landing page',
+
+    'deleted_successfully' => '" :name " has been successfully deleted',
+    'edited_successfully' => '" :name " has been successfully edited',
+    'deleted_successfully_f' => '" :name " has been successfully deleted',
+    'edited_successfully_f' => '" :name " has been successfully edited',
 
     'up_sell' => 'To allow your customers to book tables or order delivery or takeaway, click here and schedule a call with our consultants',
 ];

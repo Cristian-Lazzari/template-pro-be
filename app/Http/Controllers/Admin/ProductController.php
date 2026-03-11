@@ -101,7 +101,16 @@ class ProductController extends Controller
     {
         $categories     = Category::all();
         $allergens      = Allergen::all();
-        $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
+        $lang = config('configurazione.default_lang');
+        $ingredients = Ingredient::query()
+            ->where('option', false)
+            ->join('ingredient_translations as t', function ($join) use ($lang) {
+                $join->on('ingredients.id', '=', 't.ingredient_id')
+                    ->where('t.lang', $lang);
+            })
+            ->orderBy('t.name')
+            ->select('ingredients.*')
+            ->get(); 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
         
@@ -244,7 +253,16 @@ class ProductController extends Controller
         $translations   = $product->translations->keyBy('lang');
         $categories     = Category::all();
         $allergens      = Allergen::all();
-        $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
+        $lang = config('configurazione.default_lang');
+        $ingredients = Ingredient::query()
+            ->where('option', false)
+            ->join('ingredient_translations as t', function ($join) use ($lang) {
+                $join->on('ingredients.id', '=', 't.ingredient_id')
+                    ->where('t.lang', $lang);
+            })
+            ->orderBy('t.name')
+            ->select('ingredients.*')
+            ->get(); 
 
         $languages    = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
         $property_adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);

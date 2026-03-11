@@ -18,7 +18,7 @@
         $data = session('delete_success')
     @endphp
     <div class="alert alert-danger">
-       " {{ $data->title }} " e stato eliminato correttamente
+       {{ __('admin.deleted_successfully', ['name' => $data->title]) }}
     </div>
 @endif
 @if (session('order_success'))
@@ -45,19 +45,19 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-plus-fill" viewBox="0 0 16 16">
                 <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m.5 4v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
                 </svg>
-            Crea nuovo</a>
+            {{__('admin.Crea_nuovo')}}</a>
         <a class="my_btn_2 btn_delete trash m-1 w-auto" href="{{ route('admin.posts.archived') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                 <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
                 </svg>
-            Archivio</a>
+            {{__('admin.Archivio')}}</a>
     </div>
     <div class="filters">
         <div class="bar">
             <input type="checkbox" class="check" id="f">
             <div class="box">
                 <input type="text" id="searchInput" class="search" placeholder="Cerca prodotto..." >
-                <button id="typeToggle" class="type">Tutti</button>
+                <button id="typeToggle" class="type">{{__('admin.Tutti')}}</button>
                 <button id="sortToggle" class="order">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down-alt" viewBox="0 0 16 16">
                         <path d="M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 12.293zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5"/>
@@ -113,14 +113,14 @@
                         <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
                         <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
                         </svg>
-                        Link
+                        {{__('admin.Link')}}
                     </a>
                     @endif
                     <button type="button" class="action_menu action_menu_info" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
                             <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
                         </svg>
-                        Info
+                        {{__('admin.Info')}}
                     </button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
@@ -131,7 +131,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
                                         </svg>
-                                        Chiudi
+                                        {{__('admin.Chiudi')}}
                                     </button>
                                     <div class="action_top">
                                         <a href="{{ route('admin.posts.edit', $item) }}" class="edit">
@@ -185,7 +185,7 @@
                                                     <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
                                                     <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8m0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
                                                 </svg>
-                                                Descrizione</h4>
+                                                {{__('admin.Descrizione')}}</h4>
                                             <p>{{$item->description}}</p>
                                         </section>
                                     @endif
@@ -204,7 +204,7 @@
                                                     <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
                                                     <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
                                                 </svg>
-                                                Link</h4>
+                                                {{__('admin.Link')}}</h4>
                                             <a href="{{$item->link}}">{{$item->link}}</a>
                                         </section>
                                     @endif
@@ -379,7 +379,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const postContainer = document.querySelector('.time-list');
     const posts = Array.from(postContainer.querySelectorAll('.res-item'));
 
-    let currentType = 'Tutti'; // Stato iniziale
+    let currentType = {{__('admin.Tutti')}}; // Stato iniziale
     let sortAsc = true; // Ordinamento normale
 
     // 🔍 Filtro per nome
@@ -389,12 +389,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 📰 Filtro tipo (Tutti → Story → News → Tutti)
     typeToggle.addEventListener('click', () => {
-        if (currentType === 'Tutti') {
+        if (currentType === {{__('admin.Tutti')}}) {
             currentType = 'Story';
         } else if (currentType === 'Story') {
             currentType = 'News';
         } else {
-            currentType = 'Tutti';
+            currentType = {{__('admin.Tutti')}};
         }
         typeToggle.textContent = currentType;
         applyFilters();

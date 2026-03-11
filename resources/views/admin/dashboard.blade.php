@@ -305,7 +305,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="my_btn_1 d " data-bs-dismiss="modal">Annulla</button>
-                    <button type="sumbit" class="my_btn_1 add ">Aggiorna</button>
+                    <button type="sumbit" class="my_btn_1 add ">{{__('admin.Aggiorna')}}</button>
                 </div>
             </form>
         </div>

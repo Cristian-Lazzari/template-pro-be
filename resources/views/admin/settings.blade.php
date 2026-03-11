@@ -21,7 +21,7 @@ $adv = json_decode($setting['advanced']->property, 1);
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-wide-connected" viewBox="0 0 16 16">
             <path d="M7.068.727c.243-.97 1.62-.97 1.864 0l.071.286a.96.96 0 0 0 1.622.434l.205-.211c.695-.719 1.888-.03 1.613.931l-.08.284a.96.96 0 0 0 1.187 1.187l.283-.081c.96-.275 1.65.918.931 1.613l-.211.205a.96.96 0 0 0 .434 1.622l.286.071c.97.243.97 1.62 0 1.864l-.286.071a.96.96 0 0 0-.434 1.622l.211.205c.719.695.03 1.888-.931 1.613l-.284-.08a.96.96 0 0 0-1.187 1.187l.081.283c.275.96-.918 1.65-1.613.931l-.205-.211a.96.96 0 0 0-1.622.434l-.071.286c-.243.97-1.62.97-1.864 0l-.071-.286a.96.96 0 0 0-1.622-.434l-.205.211c-.695.719-1.888.03-1.613-.931l.08-.284a.96.96 0 0 0-1.186-1.187l-.284.081c-.96.275-1.65-.918-.931-1.613l.211-.205a.96.96 0 0 0-.434-1.622l-.286-.071c-.97-.243-.97-1.62 0-1.864l.286-.071a.96.96 0 0 0 .434-1.622l-.211-.205c-.719-.695-.03-1.888.931-1.613l.284.08a.96.96 0 0 0 1.187-1.186l-.081-.284c-.275-.96.918-1.65 1.613-.931l.205.211a.96.96 0 0 0 1.622-.434zM12.973 8.5H8.25l-2.834 3.779A4.998 4.998 0 0 0 12.973 8.5m0-1a4.998 4.998 0 0 0-7.557-3.779l2.834 3.78zM5.048 3.967l-.087.065zm-.431.355A4.98 4.98 0 0 0 3.002 8c0 1.455.622 2.765 1.615 3.678L7.375 8zm.344 7.646.087.065z"/>
         </svg>
-        Impostazioni
+        {{__('admin.Impostazioni')}}
     </h1>
     <div class="targhetta">
 
@@ -89,7 +89,7 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>Tavoli</h5>
+                        <h5>{{__('admin.Tavoli')}}</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 0) checked  @endif value="0" >
@@ -125,7 +125,7 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>Asporto</h5>
+                        <h5>{{__('admin.Asporto')}}</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 0) checked  @endif value="0" >
@@ -158,7 +158,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                     @if (config('configurazione.subscription') > 2)
                     <div class="g_set">
-                        <h5>Pagamento</h5>
+                        <h5>{{ __('admin.Pagamento') }}</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 0) checked  @endif value="0" >
@@ -211,7 +211,7 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>Domicilio</h5>
+                        <h5>{{ __('admin.Domicilio') }}</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="domicilio_status"  @if($setting['Possibilità di consegna a domicilio']['status'] == 0) checked  @endif value="0" >
@@ -233,7 +233,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                     @if (config('configurazione.subscription') > 2)
                     <div class="g_set">
-                        <h5>Pagamento</h5>
+                        <h5>{{ __('admin.Pagamento') }}</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="domicilio_pay" @if($domicilio_p['pay'] == 0) checked  @endif value="0" >
@@ -288,7 +288,7 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>Ferie</h5>
+                        <h5>{{ __('admin.Ferie') }}</h5>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="ferie_status"  @if($setting['Periodo di Ferie']['status'] == 0) checked  @endif value="0" >
@@ -320,7 +320,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
                                 <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A3 3 0 0 1 3 2.506zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43zM9 3h2.932l.023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0zm6 4v7.5a1.5 1.5 0 0 1-1.5 1.5H9V7zM2.5 16A1.5 1.5 0 0 1 1 14.5V7h6v9z"/>
                             </svg>
-                            Promo 
+                            {{ __('admin.Promozione') }} 
                         </h5>
                         <div class="radio-inputs">
                             <label class="radio">
@@ -342,15 +342,15 @@ $adv = json_decode($setting['advanced']->property, 1);
                         </div>
                     </div>
                     <div class=" promo_b">
-                        <label class="input-group-text" >Titolo</label>
+                        <label class="input-group-text" >{{__('admin.Titolo')}}</label>
                         <input type="text" class="form-control"  name="promo_table_title" value="{{$promo_table['title']}}">
 
-                        <label class="input-group-text" >Corpo</label>
+                        <label class="input-group-text" >{{__('admin.Corpo')}}</label>
                         <textarea type="text" class="form-control"  cols="10" rows="10"  name="promo_table_body">{{$promo_table['body']}}</textarea>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="my_btn_1 my_btn_2 w-75 m-auto">Aggiorna</button>
+            <button type="submit" class="my_btn_1 my_btn_2 w-75 m-auto">{{__('admin.Aggiorna')}}</button>
             
         </div>
         <div class="bottom-set">
@@ -359,7 +359,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     
                     <h4 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                        Giorni e orari d'apertura
+                            {{__('admin.set_1')}}
                         </button>
                     </h4>
                     <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -377,14 +377,14 @@ $adv = json_decode($setting['advanced']->property, 1);
                                     </div>
                                 @endforeach
                             </section>
-                            <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
+                            <button type="submit" class="my_btn_1 my_btn_2">{{__('admin.Aggiorna')}}</button>
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <h4 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                        Posizione del tuo locale
+                            {{__('admin.set_2')}}
                         </button>
                     </h4>
                     <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -406,14 +406,14 @@ $adv = json_decode($setting['advanced']->property, 1);
                                     <input type="text" class="form-control"  name="indirizzo" @if($property_posizione) value="{{ $property_posizione['indirizzo'] }}" @endif>
                                 </div>          
                             </section>
-                            <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
+                            <button type="submit" class="my_btn_1 my_btn_2">{{__('admin.Aggiorna')}}</button>
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item"> 
                     <h4 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                            Contatti e Social
+                            {{__('admin.set_3')}}
                         </button>
                     </h4>
                     <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -468,7 +468,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                                     <input type="text" class="form-control" placeholder="+39001110000"  name="whatsapp" @if(isset($property_contatti['whatsapp'])) value="{{ $property_contatti['whatsapp'] }}" @endif>
                                 </div>        
                             </section>
-                            <button type="submit" class="my_btn_1 my_btn_2">Aggiorna</button>
+                            <button type="submit" class="my_btn_1 my_btn_2">{{__('admin.Aggiorna')}}</button>
                         </div>
                     </div>
                 </div>
@@ -478,7 +478,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     @csrf
                     <h4 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-                        Gestione comuni consegna
+                            {{__('admin.set_4')}}
                         </button>
                     </h4>
                     <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -513,7 +513,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     @csrf
                     <h4 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
-                            Gestione notifiche whatsapp
+                            {{__('admin.set_5')}}
                         </button>
                     </h4>
                     <div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -548,7 +548,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
                     </svg>
-                Impostazioni avanzate</button>
+                {{__('admin.Impostazioni_a')}}</button>
         </div>   
 
     </form>
@@ -562,28 +562,28 @@ $adv = json_decode($setting['advanced']->property, 1);
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
                     </svg>
-                    Chiudi
+                    {{__('admin.Chiudi')}}
                 </button>
                 <h2>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
                     </svg>
-                Impostazioni Avanzate</h2>
+                {{__('admin.Impostazioni_a')}}</h2>
                 <div class="top-set_a">
                     <div class="set_a">
                         <h4>Gestione menu</h4>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input @checked($adv['menu_fix_set']== '0') type="radio" name="menu_fix_set" value="0" >
-                                <span class="name">Menu Fisso</span>
+                                <span class="name">{{__('admin.Menu_fisso')}}</span>
                             </label>
                             <label class="radio">
                                 <input @checked($adv['menu_fix_set']== '1') type="radio" name="menu_fix_set" value="1" >
-                                <span class="name">Tutti</span>
+                                <span class="name">{{__('admin.Tutti')}}</span>
                             </label>
                             <label class="radio">
                                 <input @checked($adv['menu_fix_set']== '2') type="radio" name="menu_fix_set" value="2" >
-                                <span class="name">Menu carta</span>
+                                <span class="name">{{__('admin.Menu_alla_carta')}}</span>
                             </label>
                         </div>
                     </div>
@@ -592,15 +592,15 @@ $adv = json_decode($setting['advanced']->property, 1);
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input class="critical-radio1" @checked($adv['services']== '3') type="radio" name="services" value="3" >
-                                <span class="name">Asporto</span>
+                                <span class="name">{{__('admin.Asporto')}}</span>
                             </label>
                             <label class="radio">
                                 <input class="critical-radio1" @checked($adv['services']== '4') type="radio" name="services" value="4" >
-                                <span class="name">Tutti</span>
+                                <span class="name">{{__('admin.Tutti')}}</span>
                             </label>
                             <label class="radio">
                                 <input class="critical-radio1" @checked($adv['services']== '2') type="radio" name="services" value="2" >
-                                <span class="name">Tavoli</span>
+                                <span class="name">{{__('admin.Tavoli')}}</span>
                             </label>
                             <input type="hidden" id="attivo-originale1" value="{{$adv['services']}}">
                         </div>
@@ -742,7 +742,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
-                    <button type="sumbit" class="my_btn_1 add">Aggiorna</button>
+                    <button type="sumbit" class="my_btn_1 add">{{__('admin.Aggiorna')}}</button>
                 </div>
             </form>
         </div>

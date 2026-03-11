@@ -27,8 +27,25 @@ class IngredientController extends Controller
     ];
     public function index()
     {
-        $ingredients    = Ingredient::where('option', false)->orderBy('name')->get(); 
-        $options        = Ingredient::where('option', true)->orderBy('name')->get(); 
+        $lang = config('configurazione.default_lang');
+        $ingredients = Ingredient::query()
+            ->where('option', false)
+            ->join('ingredient_translations as t', function ($join) use ($lang) {
+                $join->on('ingredients.id', '=', 't.ingredient_id')
+                    ->where('t.lang', $lang);
+            })
+            ->orderBy('t.name')
+            ->select('ingredients.*')
+            ->get();         
+        $options = Ingredient::query()
+            ->where('option', true)
+            ->join('ingredient_translations as t', function ($join) use ($lang) {
+                $join->on('ingredients.id', '=', 't.ingredient_id')
+                    ->where('t.lang', $lang);
+            })
+            ->orderBy('t.name')
+            ->select('ingredients.*')
+            ->get();         
         return view('admin.Ingredients.index', compact('ingredients', 'options'));
     }
      
