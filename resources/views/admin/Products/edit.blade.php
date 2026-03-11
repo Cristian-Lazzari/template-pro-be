@@ -20,6 +20,7 @@
     $list = $languages['languages'];
     $dfl = $languages['default'];
     $list =array_diff($list, [$dfl]);
+   
 @endphp
     <form class="creation"  action="{{ route('admin.products.update', ['product' => $product]) }}"  enctype="multipart/form-data"  method="POST">
         @method('PUT')
@@ -34,7 +35,11 @@
                         </svg>
                         Nome
                     </label>
-                    <p><input @if(!isset($data)) value="{{ old('name', $translations[$dfl]->name) }}" @else value="{{ $data['name'] }}" @endif  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                    <p>
+                        <input @if(!isset($data)) value="{{ old('name', $translations[$dfl]->name) }}" 
+                            @else  value="{{ $data['name'] }}" @endif
+                            type="text" name="name" id="name" placeholder=" Inserisci il nome">
+                    </p>
                     @error('name') <p class="error">{{ $message }}</p> @enderror
                 </div>
                 <div class="price_input">

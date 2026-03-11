@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Menu;
-use App\Models\Product;
-use App\Models\Category;
-use App\Models\MenuProduct;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Menu;
+use App\Models\MenuProduct;
+use App\Models\MenuProductTranslation;
+use App\Models\MenuTranslation;
+use App\Models\Setting;
+use App\Services\GoogleTranslateService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
@@ -25,7 +28,7 @@ class MenuController extends Controller
     
     public function index()
     {
-        $fix = Menu::where('fixed_menu', '0')->with('products', 'category')->orderBy('updated_at', 'desc')->get();
+        $fix   = Menu::where('fixed_menu', '0')->with('products', 'category')->orderBy('updated_at', 'desc')->get();
         $combo = Menu::where('fixed_menu', '!=', '0')->with('products', 'category')->orderBy('updated_at', 'desc')->get();
         foreach ($combo as $c) {
             if($c->fixed_menu == '2'){
@@ -78,9 +81,13 @@ class MenuController extends Controller
         $menu->old_price         = intval(round($prezzo_float * 100));  
 
         $menu->category_id   = $data['category_id'];
-        $menu->name          = $data['name'];
-        $menu->description   = $data['description'];
         $menu->promo         = $data['promo'] ?? 0;
+
+        $translator = app(GoogleTranslateService::class);
+
+        $languages_set = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        $languages = $languages_set['languages'];
+        $default = $languages_set['default'];
         
         if($data['radio_choice'] == 2){
             $menu->fixed_menu = 2;
@@ -90,21 +97,30 @@ class MenuController extends Controller
                     if($prod['extra_price'] == null){
                         $prod['extra_price'] = 0;
                     }
-                    $p_stringa = str_replace(',', '.', $prod['extra_price'] ? $prod['extra_price'] : 0);
-                    $p_stringa = preg_replace('/[^0-9.]/', '', $p_stringa);
+                    $p_stringa = preg_replace('/[^0-9.]/', '', str_replace(',', '.', $prod['extra_price'] ? $prod['extra_price'] : 0));
                     $p = intval(round(floatval($p_stringa) * 100));
                     $f_product = [
                         'id' => $prod['id'],
                         'label' => $c['label'],
                         'extra_price' => $p
                     ];     
-
-                    $menu_prod = new MenuProduct();
-                    $menu_prod->menu_id = $menu->id;
-                    $menu_prod->product_id = $f_product['id'];
-                    $menu_prod->extra_price = $f_product['extra_price'];
-                    $menu_prod->label = $f_product['label'];
-                    $menu_prod->save();
+                    $pivot = MenuProduct::create([
+                        'menu_id' => $$menu->id,
+                        'product_id' => $f_product['id'],
+                        'extra_price' => $f_product['extra_price'] ?? null
+                    ]);
+                    foreach ($languages as $lang) {
+                        if ($lang === $default) {
+                            $name = $f_product['label'];
+                        } else {
+                            $name = $translator->translate($f_product['label'], $lang);
+                        }
+                        MenuProductTranslation::create([
+                            'menu_product_id' => $pivot->id,
+                            'lang' => $lang,
+                            'label' => $name
+                        ]);
+                    }
                 } 
             } 
             
@@ -120,21 +136,39 @@ class MenuController extends Controller
             }
             $menu->products()->sync($product ?? []);  
         }
-        
-        
-        //dd('top');
-       
 
-        $m = ' "' . $menu['name'] . '" è stato creato correttamente';
+
+        
+
+        foreach ($languages as $lang) {
+            if ($lang === $default) {
+                $name = $data['name'];
+                $description = $data['description'];
+            } else {
+                $name = $translator->translate($data['name'], $lang);
+                $description = $translator->translate($data['description'], $lang);
+            }
+            MenuTranslation::create([
+                'menu_id' => $menu->id,
+                'lang' => $lang,
+                'name' => $name,
+                'description' => $description
+            ]);
+        }
+
+        $m = ' "' . $data['name'] . '" è stato creato correttamente';
         return to_route('admin.menus.index')->with('success', $m);    
     }
 
     public function edit($id)
     {
-        $menu = Menu::findOrFail($id);
+        $menu = Menu::findOrFail($id)->load('translations');
+        $translations   = $menu->translations->keyBy('lang');
         $categories = Category::all();
         $products = Category::where('id', '!=', 1)->with('product')->get();
-        return view('admin.Menus.edit', compact('categories', 'products', 'menu'));
+        $languages    = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+
+        return view('admin.Menus.edit', compact('categories', 'products', 'menu', 'translations', 'languages'));
     }
 
     public function update(Request $request, $id)
@@ -159,7 +193,37 @@ class MenuController extends Controller
         $menu->description   = $data['description'];
         
         $menu->update();
-        $m = ' "' . $menu['name'] . '" è stato modificato correttamente';
+
+    /*  | TRADUZIONI PERSONALIZZATE */
+        $lang_s = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        $default_l = $lang_s['default'];
+
+
+        $n_trans = $menu->name !== $data['name'];
+        $d_trans = $menu->description !== $data['description'];
+
+        $translator = app(GoogleTranslateService::class);
+
+        MenuTranslation::updateOrCreate(
+            [   'menu_id' => $menu->id, 'lang' => $default_l   ],
+            [
+                'name' => $data['name'] ?? null,
+                'description' => $data['description'] ?? null
+            ]
+        );
+        if(isset($data['translations'])){
+            foreach($data['translations'] as $lang => $v){
+                MenuTranslation::updateOrCreate(
+                    [   'menu_id' => $menu->id, 'lang' => $lang   ],
+                    [
+                        'name' => $n_trans ? $translator->translate($data['name'], $lang) : $v['name'],
+                        'description' => $n_trans ? $translator->translate($data['description'], $lang) : $v['description'],
+                    ]
+                );
+                
+            }
+        }       
+        $m = ' "' . $data['name'] . '" è stato modificato correttamente';
         return to_route('admin.menus.index')->with('success', $m);    
     }
 

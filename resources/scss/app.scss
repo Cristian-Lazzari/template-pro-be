@@ -642,7 +642,12 @@ $svg_n: clamp(25px, 5vw, 30px);
             //border-radius: $brr-set;
             background-color: var(--c3) !important;
             width: 50%;
-            color: var(--c1);
+            .name{
+                color: var(--c1);
+            }
+            .lang{
+                text-transform: uppercase;
+            }
             svg{
                 fill: var(--c1);
                 filter: drop-shadow(2px 2px 1px var(--c3));

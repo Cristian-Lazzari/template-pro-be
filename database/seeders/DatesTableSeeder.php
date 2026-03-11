@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use DateTime;
-use App\Models\Day;
 use App\Models\Date;
-use App\Models\Month;
 use App\Models\Setting;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;

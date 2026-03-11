@@ -194,6 +194,16 @@ class SettingController extends Controller
         $setting['Periodo di Ferie']->property = json_encode($propertyArray);
         $setting['Periodo di Ferie']->save();
 
+        $old_prop = json_decode($setting['Lingua']->property, 1);
+
+        $propertyArray = [
+            'default' => $request->defaultLang,
+            'languages' => isset($request->languages) ? $request->languages : $old_prop['languages'],
+        ];
+        $setting['Lingua']->property = json_encode($propertyArray);
+        $setting['Lingua']->save();
+
+
         $giorni_attivita = [
             'lunedì'    =>  $request->lunedì,
             'martedì'   =>  $request->martedì,

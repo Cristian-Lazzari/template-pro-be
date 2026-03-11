@@ -195,6 +195,10 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
+        
+        // my lang provider setting config
+
+        App\Providers\SettingsServiceProvider::class,
 
     ],
 

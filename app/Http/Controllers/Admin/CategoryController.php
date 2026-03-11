@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Product;
-use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\CategoryTranslation;
+use App\Models\Product;
+use App\Models\Setting;
+use App\Services\GoogleTranslateService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
@@ -36,15 +39,37 @@ class CategoryController extends Controller
         $request->validate($this->validations_category);
         
         $category = new Category();
-        $category->name = $data['name'];
-        $category->description = $data['description'];
+        // $category->name = $data['name'];
+        // $category->description = $data['description'];
         if (isset($data['icon'])) {
             $iconPath = Storage::put('public/uploads', $data['icon']);
             $category->icon = $iconPath;
         } 
         $category->save();
+
+        $translator = app(GoogleTranslateService::class);
+
+        $languages_set = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        $languages = $languages_set['languages'];
+        $default = $languages_set['default'];
+
+        foreach ($languages as $lang) {
+            if ($lang === $default) {
+                $name = $data['name'];
+                $description = $data['description'];
+            } else {
+                $name = $translator->translate($data['name'], $lang);
+                $description = $translator->translate($data['description'], $lang);
+            }
+            CategoryTranslation::create([
+                'category_id' => $category->id,
+                'lang' => $lang,
+                'name' => $name,
+                'description' => $description
+            ]);
+        }
         
-        $m = 'La categoria "' . $category->name . '" è stata creata correttamente';
+        $m = 'La categoria "' . $data['name'] . '" è stata creata correttamente';
         return to_route('admin.categories.index')->with('category_success', $m);   
     }
     
@@ -90,9 +115,10 @@ class CategoryController extends Controller
 
     public function edit($id)
     {
-        $category    = Category::where('id', $id)->firstOrFail();; 
-    
-        return view('admin.Categories.edit', compact( 'category'));
+        $category    = Category::where('id', $id)->firstOrFail()->load('translations');
+        $translations   = $category->translations->keyBy('lang');
+        $languages    = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        return view('admin.Categories.edit', compact( 'category', 'languages', 'translations'));
     }
     public function update(Request $request, $id)
     {
@@ -100,8 +126,35 @@ class CategoryController extends Controller
         $request->validate($this->validations_category1);
         
         $category = Category::where('id', $id)->firstOrFail();
-        $category->name = $data['name'];
-        $category->description = $data['description'];
+
+        /*  | TRADUZIONI PERSONALIZZATE */
+        $lang_s = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+        $default_l = $lang_s['default'];
+
+        $n_trans = $category->name !== $data['name'];
+        $d_trans = $category->description !== $data['description'];
+
+        $translator = app(GoogleTranslateService::class);
+
+        CategoryTranslation::updateOrCreate(
+            [   'category_id' => $category->id, 'lang' => $default_l   ],
+            [
+                'name' => $data['name'] ?? null,
+                'description' => $data['description'] ?? null
+            ]
+        );
+        if(isset($data['translations'])){
+            foreach($data['translations'] as $lang => $v){
+                CategoryTranslation::updateOrCreate(
+                    [   'category_id' => $category->id, 'lang' => $lang   ],
+                    [
+                        'name' => $n_trans ? $translator->translate($data['name'], $lang) : $v['name'],
+                        'description' => $n_trans ? $translator->translate($data['description'], $lang) : $v['description'],
+                    ]
+                );
+                
+            }
+        }
         if (isset($data['icon'])) {
             $iconPath = Storage::put('public/uploads', $data['icon']);
             if ($category->icon) {
@@ -111,7 +164,7 @@ class CategoryController extends Controller
         }
         $category->update();
         
-        $m = 'La categoria "' . $category->name . '" è stata modificata correttamente';
+        $m = 'La categoria "' . $data['name'] . '" è stata modificata correttamente';
         return to_route('admin.categories.index')->with('category_success', $m);
  
     }

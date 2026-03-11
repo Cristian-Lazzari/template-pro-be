@@ -51,15 +51,36 @@ $adv = json_decode($setting['advanced']->property, 1);
                 <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
             </svg>
         </button>
-       
-
     </div>
-
+    
     
     <form class="setting" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
+        @csrf
         
-        <div class="top-set">
-            @csrf
+       <div class="set">
+            <div class="set-cont">
+                <div class="g_set">
+                    <h5>Lingua di default: {{config('configurazione.default_lang')}}</h5>
+                    @php   $languages = json_decode($setting['Lingua']['property'], 1)['languages']; @endphp
+                    <div class="radio-inputs">
+                        @foreach ($languages as $l)
+                            <label class="radio">
+                                <input type="radio" name="defaultLang" @if(config('configurazione.default_lang') == $l) checked @endif  value="{{$l}}" >
+                                <span class="name lang">
+                                    {{$l}}
+                                </span>
+                            </label>
+                        @endforeach
+                    </div>
+                    {{-- <div class="radio-inputs">
+                        <select class="form-select" id="floatingSelectDisabled" name="defaultLang">
+                            @foreach ($languages as $l)
+                                <option  value="{{$l}}">{{$l}}</option>
+                            
+                        </select>
+                    </div> --}}
+                </div>
+            </div>
             @php
                 $asporto_p = json_decode($setting['Prenotazione Asporti']['property'] , 1);
                 $domicilio_p = json_decode($setting['Possibilità di consegna a domicilio']['property'] , 1);

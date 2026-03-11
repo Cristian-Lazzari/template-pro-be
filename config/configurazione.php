@@ -21,6 +21,8 @@ return [
     'subscription'          => env('SUBSCRIPTION'),
     
     'MSC_P'                 => env('MSC_P'),
+    'default_lang'          => env('DEFAULT_LANG'),
+   
 
     'allergens' => [
         1 => [

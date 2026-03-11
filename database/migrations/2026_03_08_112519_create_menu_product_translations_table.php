@@ -12,12 +12,9 @@ return new class extends Migration
 
             $table->id();
 
-            $table->foreignId('menu_id')
-                ->constrained()
-                ->cascadeOnDelete();
 
-            $table->foreignId('product_id')
-                ->constrained()
+            $table->foreignId('menu_product_id')
+                ->constrained('menu_product')
                 ->cascadeOnDelete();
 
             $table->string('lang',5);
@@ -26,7 +23,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['menu_id','product_id','lang']);
+            $table->unique(['menu_product_id','lang']);
 
         });
     }

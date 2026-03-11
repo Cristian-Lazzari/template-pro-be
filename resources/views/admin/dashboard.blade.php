@@ -53,7 +53,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-check-fill" viewBox="0 0 16 16">
             <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5m9.954 3H2.545c-.3 0-.545.224-.545.5v1c0 .276.244.5.545.5h10.91c.3 0 .545-.224.545-.5v-1c0-.276-.244-.5-.546-.5m-2.6 5.854a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
         </svg>
-        Ordini e Prenotazioni
+        {{__('admin.t_dashboard')}}
     </h1>
     <div class="top_action my-5">
 
@@ -75,8 +75,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-front-fill" viewBox="0 0 16 16">
             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm0 3a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
             </svg>
-
-            Vedi tutti
+            {{__('admin.Vedi_tutti')}}
         </a> 
     </div>
     <div class="date">
@@ -114,11 +113,11 @@
                 <div class="carousel-inner">
                     @foreach ($calendar as $m)
                         <div class="carousel-item @if ($currentMonth == $m['month'] && $currentYear == $m['year']) active @endif">
-                            <h2>{{['', 'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'][$m['month']]}} - {{$m['year']}}</h2>
+                            <h2> {{ \Carbon\Carbon::create()->month($m['month'])->translatedFormat('F') }} - {{$m['year']}} </h2>
                             <div class="top_stat">
                                 @if($m['n_res'])
                                     <div class="line">
-                                        <h4>Prenotazioni</h4>
+                                        <h4>{{__('admin.Prenotazioni')}}</h4>
                                         <div class="stat first">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-heading" viewBox="0 0 16 16">
                                                 <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
@@ -137,7 +136,7 @@
                                 @endif
                                 @if($m['n_order'])
                                     <div class="line">
-                                        <h4>Ordini</h4>
+                                        <h4>{{__('admin.Ordini')}}</h4>
                                         <div class="stat first">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-inboxes" viewBox="0 0 16 16">
                                                 <path d="M4.98 1a.5.5 0 0 0-.39.188L1.54 5H6a.5.5 0 0 1 .5.5 1.5 1.5 0 0 0 3 0A.5.5 0 0 1 10 5h4.46l-3.05-3.812A.5.5 0 0 0 11.02 1zm9.954 5H10.45a2.5 2.5 0 0 1-4.9 0H1.066l.32 2.562A.5.5 0 0 0 1.884 9h12.234a.5.5 0 0 0 .496-.438zM3.809.563A1.5 1.5 0 0 1 4.981 0h6.038a1.5 1.5 0 0 1 1.172.563l3.7 4.625a.5.5 0 0 1 .105.374l-.39 3.124A1.5 1.5 0 0 1 14.117 10H1.883A1.5 1.5 0 0 1 .394 8.686l-.39-3.124a.5.5 0 0 1 .106-.374zM.125 11.17A.5.5 0 0 1 .5 11H6a.5.5 0 0 1 .5.5 1.5 1.5 0 0 0 3 0 .5.5 0 0 1 .5-.5h5.5a.5.5 0 0 1 .496.562l-.39 3.124A1.5 1.5 0 0 1 14.117 16H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .121-.393zm.941.83.32 2.562a.5.5 0 0 0 .497.438h12.234a.5.5 0 0 0 .496-.438l.32-2.562H10.45a2.5 2.5 0 0 1-4.9 0z"/>
@@ -155,12 +154,11 @@
                             </div>
                             <div class="calendar">
                                 <div class="c-name">
-                                    @php
-                                    $day_name = ['Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa', 'Do'];
-                                    @endphp
-                                    @foreach ($day_name as $item)
-                                        <h4>{{$item}}</h4>
-                                    @endforeach
+
+                                    @for ($i = 1; $i <= 7; $i++)
+                                        <h4>{{ Str::substr(\Carbon\Carbon::create()->startOfWeek()->addDays($i-1)->translatedFormat('D'),0,2) }}</h4>
+                                    @endfor
+
                                 </div>
                                 <div class="calendar_page">
                                     @foreach ($m['days'] as $d)
@@ -196,13 +194,9 @@
                 
             </div>
         @elseif(config('configurazione.subscription') == 1)
-        <div class="date-off d-back-g">
-            <a href="https://future-plus.it/#pacchetti">Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e <strong>prenota una call con i nostri consulenti</strong></a>
-        </div>
-        @else 
-        <div class="date-off">
-            <a href="{{route('admin.dates.index')}}">Non sono ancora state impostate le disponibilita dei servizi, <strong>clicca QUI</strong> e impostale ora</a>
-        </div>
+            <div class="date-off d-back-g">
+                <a href="https://future-plus.it/#pacchetti">{{__('admin.up_sell')}}</a>
+            </div>
         @endif
        
     </div>
@@ -254,7 +248,8 @@
                     <input class="btn-check" style="visibility: hidden; position: absolute;"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="true" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
                     <div class="day" >
                         <div class="top_day">
-                           {{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }}
+                            {{ \Carbon\Carbon::create()->startOfWeek()->addDays($day-1)->translatedFormat('l') }}
+                           {{-- {{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }} --}}
                         </div>
                         <label for="day_{{ $day }}" class="btn_close">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">

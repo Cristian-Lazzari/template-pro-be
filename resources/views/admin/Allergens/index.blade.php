@@ -44,10 +44,7 @@
 
     <div class="slim_cont list-group">
         @foreach ($allergens as $item)
-        <p>
-            {{$item->img}}
-            {{str_starts_with($item->img, 'http')}}
-        </p>
+
             <div class="category list-group-item ">
                 @if (str_starts_with($item->img, 'http'))
                     <img src="{{$item->img}}" alt="{{$item->name}}">

@@ -4,12 +4,18 @@ namespace App\Models;
 
 use App\Models\Allergen;
 use App\Models\Product;
+use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Ingredient extends Model
 {
     use HasFactory;
+
+    use HasTranslations;
+
+    protected $appends  = ['allergens', 'name'];
+    protected $with     = ['translations'];
     
     public function products() {
         return $this->belongsToMany(Product::class);
@@ -22,5 +28,7 @@ class Ingredient extends Model
     {
         return $this->hasMany(IngredientTranslation::class);
     }
+    public function getNameAttribute()
+    {return $this->getTranslation('name');}
 
 }

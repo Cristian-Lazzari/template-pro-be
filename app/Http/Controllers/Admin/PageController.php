@@ -259,11 +259,7 @@ class PageController extends Controller
         }
         foreach ($orders as $r) {
             $day = $r;
-            if(array_key_exists($r->day, $reserved)){
-                $reserved[$r->day]['or'][] = $day;
-            }else{
-                $reserved[$r->day]['or'][] = $day;
-            }
+            $reserved[$r->day]['or'][] = $day;
         }
         return $reserved;
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Allergen;
 use App\Models\Category;
 use App\Models\Ingredient;
+use App\Models\IngredientTranslation;
 use App\Models\Product;
 use App\Models\ProductTranslation;
 use App\Models\Setting;
@@ -127,7 +128,6 @@ class ProductController extends Controller
             $price = (float) str_replace(',', '.', $data['price_ing']);
 
             $new_ing = new Ingredient();
-            $new_ing->name = $data['name_ing'];
             $new_ing->option = 0;
             $new_ing->price = $price * 100;
             $new_ing->type = json_encode($type_ing);
@@ -142,6 +142,25 @@ class ProductController extends Controller
 
             $data['ingredients'] = $data['ingredients'] ?? [];
             $data['ingredients'][] = $new_ing->id;
+
+            $translator = app(GoogleTranslateService::class);
+
+            $languages_set = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+            $languages = $languages_set['languages'];
+            $default = $languages_set['default'];
+
+            foreach ($languages as $lang) {
+                if ($lang === $default) {
+                    $name = $data['name_ing'];
+                } else {
+                    $name = $translator->translate($data['name_ing'], $lang);
+                }
+                IngredientTranslation::create([
+                    'ingredient_id' => $new_ing->id,
+                    'lang' => $lang,
+                    'name' => $name,
+                ]);
+            }
 
             unset( $data['image_ing']);
             return to_route('admin.products.create')->with('ingredient_success', $data);     
@@ -159,9 +178,6 @@ class ProductController extends Controller
             $product->image = $imagePath;
         } 
         $product->category_id   = $data['category_id'];
-
-        $product->name          = $data['name'];// da levare
-        $product->description   = $data['description'];
 
         $product->price         = $price * 100;       
         $product->promotion   = isset($data['promotion']) ? true : false;
@@ -229,9 +245,9 @@ class ProductController extends Controller
         $categories     = Category::all();
         $allergens      = Allergen::all();
         $ingredients    = Ingredient::where('option', false)->orderBy('name')->get();  
-        $adv_s        = Setting::where('name', 'advanced')->first();
+
         $languages    = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
-        $property_adv = json_decode($adv_s->property, 1);
+        $property_adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
 
         return view('admin.Products.edit', compact( 'product', 'categories', 'ingredients', 'property_adv', 'allergens', 'translations', 'languages'));        
     }
@@ -255,7 +271,6 @@ class ProductController extends Controller
             $price = (float) str_replace(',', '.', $data['price_ing']);
 
             $new_ing = new Ingredient();
-            $new_ing->name = $data['name_ing'];
             $new_ing->option = 0;
             $new_ing->price = $price * 100;
             $new_ing->type = json_encode($type_ing);
@@ -271,6 +286,24 @@ class ProductController extends Controller
             $data['ingredients'] = $data['ingredients'] ?? [];
             $data['ingredients'][] = $new_ing->id;
 
+            $translator = app(GoogleTranslateService::class);
+
+            $languages_set = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
+            $languages = $languages_set['languages'];
+            $default = $languages_set['default'];
+
+            foreach ($languages as $lang) {
+                if ($lang === $default) {
+                    $name = $data['name_ing'];
+                } else {
+                    $name = $translator->translate($data['name_ing'], $lang);
+                }
+                IngredientTranslation::create([
+                    'ingredient_id' => $new_ing->id,
+                    'lang' => $lang,
+                    'name' => $name,
+                ]);
+            }
             unset( $data['image_ing']);
             return to_route('admin.products.edit', ['product' =>$product])->with('ingredient_success', $data);     
         }
@@ -326,67 +359,36 @@ class ProductController extends Controller
         /*  | TRADUZIONI PERSONALIZZATE */
         $lang_s = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
         $default_l = $lang_s['default'];
-        $langs = $lang_s['languages'];
 
 
-        
+        $n_trans = $product->name !== $data['name'];
+        $d_trans = $product->description !== $data['description'];
 
+        $translator = app(GoogleTranslateService::class);
 
-        if($product->name !== $data('name')){
-            foreach($data['translations'] as $lang => $values){
-                if($values['name'] != null){
-                    ProductTranslation::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'lang' => $lang
-                        ],
-                        [
-                            'name' => $translator->translate($data['name'], $lang),
-                            'description' =>  $translator->translate($data['description'], $lang)
-                        ]
-                    );
-                }elseif($lang == $default_l){
-                    ProductTranslation::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'lang' => $lang
-                        ],
-                        [
-                            'name' => $data['name'] ?? null,
-                            'description' => $data['description'] ?? null
-                        ]
-                    );
-                }
-            }
-        }elseif(isset($data['translations'])){
-            foreach($data['translations'] as $lang => $values){
-                if($values['name'] != null){
-                    ProductTranslation::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'lang' => $lang
-                        ],
-                        [
-                            'name' => $product->name !== $data('name') ? $values['name'],
-                            'description' => $values['description'] ?? null
-                        ]
-                    );
-                }elseif($lang == $default_l){
-                    ProductTranslation::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'lang' => $lang
-                        ],
-                        [
-                            'name' => $data['name'] ?? null,
-                            'description' => $data['description'] ?? null
-                        ]
-                    );
-                }
+        ProductTranslation::updateOrCreate(
+            [   'product_id' => $product->id, 'lang' => $default_l   ],
+            [
+                'name' => $data['name'] ?? null,
+                'description' => $data['description'] ?? null
+            ]
+        );
+        if(isset($data['translations'])){
+            foreach($data['translations'] as $lang => $v){
+                //dd($n_trans);
+                ProductTranslation::updateOrCreate(
+                    [   'product_id' => $product->id, 'lang' => $lang   ],
+                    [
+                        'name' => $n_trans ? $translator->translate($data['name'], $lang) : $v['name'],
+                        'description' => $n_trans ? $translator->translate($data['description'], $lang) : $v['description'],
+                    ]
+                );
+                
             }
         }
+
         $products = Product::all();        
-        return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $product->name . '" modificato correttamente');
+        return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $data['name'] . '" modificato correttamente');
 
     }
 

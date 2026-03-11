@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class MenuProductTranslation extends Model
 {
+
     protected $fillable = [
-        'menu_id',
-        'product_id',
+        'menu_product_id',
         'lang',
         'label'
     ];
+
+    public function menuProduct()
+    {
+        return $this->belongsTo(MenuProduct::class);
+    }
 }

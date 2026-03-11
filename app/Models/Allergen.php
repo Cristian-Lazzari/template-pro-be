@@ -7,10 +7,12 @@ use App\Models\Ingredient;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasTranslations;
 
 class Allergen extends Model
 {
     use HasFactory;
+    use HasTranslations;
 
     // Se vuoi che "name" compaia anche quando converti in JSON:
     protected $appends = ['name'];
@@ -32,9 +34,6 @@ class Allergen extends Model
     }
 
     public function getNameAttribute()
-    {
-        $default_l = json_decode(Setting::where('name', 'Lingua')->first()->property, 1)['default'];
-        $t = $this->translations->firstWhere('lang', $default_l);
-        return $t?->name ?? null;
-    }
+    {return $this->getTranslation('name');}
+
 }

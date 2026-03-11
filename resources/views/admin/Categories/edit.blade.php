@@ -35,7 +35,7 @@
                       </svg>
                       Nome
                 </label>
-                <p><input value="{{ old('name', $category->name) }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                <p><input value="{{ old('name', $translations[$dfl]->name ?? '') }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             
@@ -47,7 +47,7 @@
                   </svg>
                   Descrizione 
             </label>
-            <textarea name="description" id="description" cols="30" rows="10" >{{ old('description', $category->description) }}</textarea>
+            <textarea name="description" id="description" cols="30" rows="10" >{{ old('description', $translations[$dfl]->description ?? '') }}</textarea>
             @error('description') <p class="error">{{ $message }}</p> @enderror
         </p>
 
