@@ -46,9 +46,10 @@ class Product extends Model
     public function getAllergensAttribute()
     {
         $productAllergens = $this->directAllergens;
-        $ingredientAllergens = $this->ingredients
-            ->pluck('allergens')
-            ->flatten();
+        $ingredientAllergens = $this->ingredients->flatMap(function ($ingredient) {
+            return $ingredient->allergens;
+        });
+
         $allergens = $productAllergens
             ->merge($ingredientAllergens)
             ->unique('id')
