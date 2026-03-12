@@ -60,7 +60,7 @@ class OrderController extends Controller
             }else{
                 return response()->json([
                     'success' => false,
-                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine'
                 ]);
             }
 
@@ -72,7 +72,7 @@ class OrderController extends Controller
                     if($av < 0){
                         return response()->json([
                             'success' => false,
-                            'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                            'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine'
                         ]);
                     }
                 }
@@ -82,11 +82,11 @@ class OrderController extends Controller
             if($av < 0){
                 return response()->json([
                     'success' => false,
-                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione'
+                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine'
                 ]);
             }
-            $arrvar = str_replace('\\', '', $data['cart']);
-            $cart = json_decode($arrvar, true);
+          
+            $cart = $data['cart'];
             $total_price = 0;
             for ($i = 0; $i < count($cart['products']); ++$i) {
                 $product = Product::where('id', $cart['products'][$i]['id'])->first();
@@ -149,12 +149,7 @@ class OrderController extends Controller
                 $newOrder->tot_price = $total_price;
             }
             $newOrder->save();
-            /// controllo se ci sono menu e in caso li aggiungo
-            // return response()->json([
-            //         'success'   => true,
-            //         'cart_products'   => $cart['products'],
-            //     ]);
-            $dd = [];
+
             foreach ($cart['products'] as $e) {
                 $item_order = new OrderProduct();
                 $item_order->order_id = $newOrder->id;
@@ -166,11 +161,7 @@ class OrderController extends Controller
                 $item_order->save();
                 $dd[] = $item_order;
             }
-             return response()->json([
-                    'success'   => true,
-                    'cart_products'   => $cart['products'],
-                ]);
-            
+ 
             foreach ($cart['menus'] as $m) {
                 $item_order = new MenuOrder();
                 $item_order->order_id = $newOrder->id;
