@@ -19,7 +19,7 @@ class Product extends Model
 
     protected $appends = ['allergens', 'name', 'description'];
 
-    protected $with = ['directAllergens.translations', 'translations'];
+    protected $with = ['directAllergens.translations', 'translations', 'ingredients.allergens'];
 
     public function category()
     { return $this->belongsTo(Category::class); }
