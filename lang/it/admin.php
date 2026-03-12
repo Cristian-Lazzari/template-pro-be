@@ -42,6 +42,7 @@ return [
     'Crea_nuovo' => 'Crea nuovo',
     'Crea_nuova' => 'Crea nuova',
     'Crea_nuova_scelta' => 'Crea nuova scelta',
+    'Lingua_di_default' => 'Lingua di default',
     
     'Crea_nuovo_p' => 'Crea nuovo Prodotto',
     'Crea_nuovo_a' => 'Crea nuova Categoria',
@@ -84,4 +85,7 @@ return [
     'edited_successfully_f' => '" :name " è stata modificata correttamente',
 
     'up_sell' => 'Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e prenota una call con i nostri consulenti',
-];
+
+    
+
+    ];

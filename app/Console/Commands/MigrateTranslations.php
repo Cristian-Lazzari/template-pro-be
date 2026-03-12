@@ -2,18 +2,19 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Category;
-use App\Models\Product;
+use App\Models\CategoryTranslation;
 use App\Models\Ingredient;
+use App\Models\IngredientTranslation;
 use App\Models\Menu;
 use App\Models\MenuProduct;
-use App\Models\CategoryTranslation;
-use App\Models\ProductTranslation;
-use App\Models\IngredientTranslation;
-use App\Models\MenuTranslation;
 use App\Models\MenuProductTranslation;
+use App\Models\MenuTranslation;
+use App\Models\Product;
+use App\Models\ProductTranslation;
+use App\Models\Setting;
 use App\Services\GoogleTranslateService;
+use Illuminate\Console\Command;
 use Throwable;
 
 class MigrateTranslations extends Command
@@ -27,7 +28,21 @@ class MigrateTranslations extends Command
         $defaultLang = 'it';
 
         // Metti qui le lingue che vuoi creare
-        $languages = ['it', 'en', 'de', 'fr', 'es'];
+        $languages = ['it', 'en', 'de', 'ja', 'es'];
+
+        $set_lang = Setting::where('name', 'Lingua')->first();
+
+        if(!$set_lang){
+            $set_lang = new Setting;
+            $set_lang->name = 'Lingua';
+            $set_lang->property = json_encode(
+                [
+                    'default' => 'it',
+                    'languages' => $languages,
+                ]
+            );
+            $set_lang->save();
+        }
 
         /** @var GoogleTranslateService $translator */
         $translator = app(GoogleTranslateService::class);

@@ -60,7 +60,7 @@ $adv = json_decode($setting['advanced']->property, 1);
        <div class="set">
             <div class="set-cont">
                 <div class="g_set">
-                    <h5>Lingua di default: {{config('configurazione.default_lang')}}</h5>
+                    <h5>{{__('admin.Lingua_di_default')}}: {{config('configurazione.default_lang')}}</h5>
                     @php   $languages = json_decode($setting['Lingua']['property'], 1)['languages']; @endphp
                     <div class="radio-inputs">
                         @foreach ($languages as $l)
@@ -370,11 +370,44 @@ $adv = json_decode($setting['advanced']->property, 1);
                                 $property_contatti = json_decode($setting['Contatti']['property'], true);
                             @endphp
                             <section class="activity-day">
-                                @foreach (['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'] as $giorno)
-                                    <div class="input-group ">
-                                        <label for="{{$giorno}}" class="input-group-text">{{ $giorno }}</label>
-                                        <input id="{{$giorno}}" type="text" class="form-control" placeholder="--:-- / --:--" @if($property_orari) name="{{ $giorno }}" value="{{ $property_orari[$giorno] }}" @endif aria-label="{{ $giorno }}" id="{{$giorno}}">
-                                    </div>
+                                @php
+                                $days = [
+                                    'lunedì' => 0,
+                                    'martedì' => 1,
+                                    'mercoledì' => 2,
+                                    'giovedì' => 3,
+                                    'venerdì' => 4,
+                                    'sabato' => 5,
+                                    'domenica' => 6,
+                                ];
+                                @endphp
+
+                                @foreach ($days as $giorno => $index)
+
+                                @php
+                                    $label = \Carbon\Carbon::now()
+                                        ->startOfWeek(\Carbon\Carbon::MONDAY)
+                                        ->addDays($index)
+                                        ->locale(app()->getLocale())
+                                        ->isoFormat('dddd');
+                                @endphp
+
+                                <div class="input-group">
+                                    <label for="{{$giorno}}" class="input-group-text">
+                                        {{ ucfirst($label) }}
+                                    </label>
+
+                                    <input
+                                        id="{{$giorno}}"
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="--:-- / --:--"
+                                        name="{{$giorno}}"
+                                        value="{{ $property_orari[$giorno] ?? '' }}"
+                                        aria-label="{{$label}}"
+                                    >
+                                </div>
+
                                 @endforeach
                             </section>
                             <button type="submit" class="my_btn_1 my_btn_2">{{__('admin.Aggiorna')}}</button>
