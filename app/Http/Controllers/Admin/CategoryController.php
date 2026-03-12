@@ -21,7 +21,7 @@ class CategoryController extends Controller
     ];
     public function index()
     { 
-        $categories = Category::with('product')->orderBy('updated_at', 'desc')->get();
+        $categories = Category::with('products')->orderBy('updated_at', 'desc')->get();
 
         // $categories          = Category::orderBy('updated_at', 'desc')->get();
         return view('admin.Categories.index', compact('categories'));

@@ -15,10 +15,10 @@ class Category extends Model
 
     protected $with = ['translations'];
     
-    public function product() {    
+    public function products() {    
         return $this->hasMany(Product::class)->orderBy('created_at', 'asc');
     }
-    public function menu() {    
+    public function menus() {    
         return $this->hasMany(Menu::class);
     }
     public function translations()

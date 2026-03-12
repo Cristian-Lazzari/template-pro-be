@@ -112,7 +112,7 @@
                                     <div class="col-md-6 ">
                                         <h4 class="text-center">Prodotti da ordinare</h4>
                                         <ul id="lista_A{{$item->id}}" class="list-group mylist">
-                                            @foreach($item->product as $oggetto)
+                                            @foreach($item->products as $oggetto)
                                                 <li class="list-group-item list_p" cat_id="cat_{{$item->id}}" data-id="{{ $oggetto['id'] }}">
                                                     <input value="{{$oggetto->id}}" type="hidden" name="new_order_p[]"> {{ $oggetto->name }}
                                                 </li>
