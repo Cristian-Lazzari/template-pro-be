@@ -16,25 +16,12 @@ public function index(Request $request)
     $lang = $request->query('lang', $defaultLang);
     $from = $request->query('from');
 
-    /*
-    |--------------------------------------------------------------------------
-    | IMPOSTAZIONE LINGUA REQUEST-SCOPED
-    |--------------------------------------------------------------------------
-    |
-    | Se i tuoi accessor leggono app()->getLocale() o config('app.locale'),
-    | così dovrebbe bastare.
-    | Se invece il tuo service usa una chiave custom tipo config('translatable.lang')
-    | o simili, qui devi settare QUELLA chiave.
-    |
-    */
-
     app()->setLocale($lang);
-    \Illuminate\Support\Facades\App::setLocale($lang);
     config(['app.locale' => $lang]);
 
     /*
     |--------------------------------------------------------------------------
-    | SCOPE TRADUZIONI
+    | TRADUZIONI
     |--------------------------------------------------------------------------
     */
 
@@ -45,11 +32,12 @@ public function index(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | FILTRI PRODOTTI E MENU
+    | FILTRI
     |--------------------------------------------------------------------------
     */
 
     $productFilter = function ($q) use ($from) {
+
         if ($from !== 'menu') {
             $q->where('visible', true);
         }
@@ -58,82 +46,94 @@ public function index(Request $request)
     };
 
     $menuFilter = function ($q) use ($from) {
+
         if ($from !== 'menu') {
             $q->where('visible', true);
         }
 
-        $q->where('fixed_menu', '!=', 0);
+        $q->where('fixed_menu','!=',0);
     };
 
     /*
     |--------------------------------------------------------------------------
-    | CATEGORIE NORMALI
+    | CATEGORIE
     |--------------------------------------------------------------------------
-    |
-    | Mostra solo categorie che hanno almeno 1 prodotto valido.
-    |
     */
 
     $categories = Category::query()
-        ->whereHas('product', $productFilter)
+
+        ->whereHas('products', $productFilter)
+
         ->with([
+
             'translations' => $translationScope,
 
-            'product' => function ($q) use ($productFilter, $translationScope) {
+            'products' => function ($q) use ($productFilter,$translationScope){
+
                 $productFilter($q);
 
-                $q->orderBy('updated_at', 'desc')
+                $q->orderBy('updated_at','desc')
                   ->with([
-                      'translations' => $translationScope,
-                      'ingredients.translations' => $translationScope,
-                      'ingredients.allergens.translations' => $translationScope,
-                      'directAllergens.translations' => $translationScope,
+                        'translations' => $translationScope,
+                        'ingredients.translations' => $translationScope,
+                        'ingredients.allergens.translations' => $translationScope,
+                        'directAllergens.translations' => $translationScope
                   ]);
             },
 
-            'menu' => function ($q) use ($menuFilter, $translationScope) {
+            'menus' => function ($q) use ($menuFilter,$translationScope){
+
                 $menuFilter($q);
 
-                $q->orderBy('updated_at', 'desc')
+                $q->orderBy('updated_at','desc')
                   ->with([
-                      'translations' => $translationScope,
-                      'products.translations' => $translationScope,
-                      'products.ingredients.translations' => $translationScope,
-                      'products.ingredients.allergens.translations' => $translationScope,
-                      'products.directAllergens.translations' => $translationScope,
+                        'translations' => $translationScope,
+                        'products.translations' => $translationScope,
+                        'products.ingredients.translations' => $translationScope,
+                        'products.ingredients.allergens.translations' => $translationScope,
+                        'products.directAllergens.translations' => $translationScope
                   ]);
-            },
+            }
+
         ])
-        ->orderBy('updated_at', 'desc')
+
+        ->orderBy('updated_at','desc')
         ->get();
+
 
     /*
     |--------------------------------------------------------------------------
-    | LOGICA FIXED MENU == 2
+    | FIXED MENU LOGIC
     |--------------------------------------------------------------------------
     */
 
     foreach ($categories as $category) {
-        foreach ($category->menu as $menu) {
-            if ((string) $menu->fixed_menu === '2') {
+
+        foreach ($category->menus as $menu) {
+
+            if($menu->fixed_menu == 2){
+
                 $choices = [];
 
                 foreach ($menu->products as $item) {
+
                     $label = $item->pivot->label;
 
-                    if (!isset($choices[$label])) {
+                    if(!isset($choices[$label])){
+
                         $choices[$label] = [
                             'label' => $label,
                             'name' => $label,
                             'open' => false,
-                            'products' => [],
+                            'products' => []
                         ];
+
                     }
 
                     $choices[$label]['products'][] = [
                         'selected' => false,
                         'product' => $item,
-                        'extra_price' => $item->pivot->extra_price,
+                        'extra_price' => $item->pivot->extra_price
                     ];
                 }
 
@@ -144,67 +144,81 @@ public function index(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | CATEGORIA "PRODOTTI IN EVIDENZA"
+    | PRODOTTI IN EVIDENZA
     |--------------------------------------------------------------------------
     */
 
     $featuredProducts = Product::query()
-        ->where('promotion', 1)
-        ->where(function ($q) use ($from) {
-            if ($from !== 'menu') {
-                $q->where('visible', true);
+
+        ->where('promotion',1)
+
+        ->where(function($q) use ($from){
+            if($from !== 'menu'){
+                $q->where('visible',true);
             }
         })
-        ->where('archived', 0)
-        ->orderBy('updated_at', 'desc')
+
+        ->where('archived',0)
+
+        ->orderBy('updated_at','desc')
+
         ->with([
             'translations' => $translationScope,
             'ingredients.translations' => $translationScope,
             'ingredients.allergens.translations' => $translationScope,
-            'directAllergens.translations' => $translationScope,
-            'category.translations' => $translationScope,
+            'directAllergens.translations' => $translationScope
         ])
+
         ->get();
 
+
     $featuredMenus = Menu::query()
-        ->where('promo', 1)
-        ->where('fixed_menu', '!=', 0)
-        ->where(function ($q) use ($from) {
-            if ($from !== 'menu') {
-                $q->where('visible', true);
+
+        ->where('promo',1)
+        ->where('fixed_menu','!=',0)
+
+        ->where(function($q) use ($from){
+            if($from !== 'menu'){
+                $q->where('visible',true);
             }
         })
-        ->orderBy('updated_at', 'desc')
+
+        ->orderBy('updated_at','desc')
+
         ->with([
             'translations' => $translationScope,
             'products.translations' => $translationScope,
             'products.ingredients.translations' => $translationScope,
-            'products.ingredients.allergens.translations' => $translationScope,
-            'products.directAllergens.translations' => $translationScope,
-            'category.translations' => $translationScope,
+            'products.ingredients.allergens.translations' => $translationScope
         ])
+
         ->get();
 
+
     foreach ($featuredMenus as $menu) {
-        if ((string) $menu->fixed_menu === '2') {
+
+        if($menu->fixed_menu == 2){
+
             $choices = [];
 
             foreach ($menu->products as $item) {
+
                 $label = $item->pivot->label;
 
-                if (!isset($choices[$label])) {
+                if(!isset($choices[$label])){
+
                     $choices[$label] = [
                         'label' => $label,
                         'name' => $label,
                         'open' => false,
-                        'products' => [],
+                        'products' => []
                     ];
                 }
 
                 $choices[$label]['products'][] = [
                     'selected' => false,
                     'product' => $item,
-                    'extra_price' => $item->pivot->extra_price,
+                    'extra_price' => $item->pivot->extra_price
                 ];
             }
 
@@ -214,18 +228,18 @@ public function index(Request $request)
 
     $featuredCategory = null;
 
-    if ($featuredProducts->count() || $featuredMenus->count()) {
-        $featuredCategory = (object) [
+    if($featuredProducts->count() || $featuredMenus->count()){
+
+        $featuredCategory = (object)[
             'id' => 'featured',
             'name' => 'Prodotti in evidenza',
-            'slug' => 'prodotti-in-evidenza',
-            'product' => $featuredProducts,
-            'menu' => $featuredMenus,
-            'featured' => true,
+            'products' => $featuredProducts,
+            'menus' => $featuredMenus,
+            'featured' => true
         ];
     }
 
-    if ($featuredCategory) {
+    if($featuredCategory){
         $categories->prepend($featuredCategory);
     }
 
@@ -233,7 +247,7 @@ public function index(Request $request)
         'success' => true,
         'categories' => $categories->values(),
         'allergens' => config('configurazione.allergens'),
-        'lang' => $lang,
+        'lang' => $lang
     ]);
 }
     public function menuFissi(){
