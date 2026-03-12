@@ -76,12 +76,13 @@ class ProductController extends Controller
     // }
 public function index(Request $request)
 {
-    $lang = $request->query('lang', config('app.locale'));
+    $default = config('app.locale');
+    $lang = $request->query('lang', $default);
     $from = $request->query('from');
     app()->setLocale($lang);
     $categories = Category::with([
 
-        'translations' => function ($q) use ($lang,$default) {
+        'translations' => function ($q) use ($lang, $default) {
             $q->whereIn('lang', [$lang,$default]);
         },
         // 'translations' => fn($q) => $q->where('lang',$lang),
