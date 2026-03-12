@@ -38,8 +38,6 @@ class OrderController extends Controller
         $request->validate($this->validations);
         $data = $request->all();
         try {       
-
-            
             // return response()->json($cart);
             $adv_s = Setting::where('name', 'advanced')->first();
             $property_adv = json_decode($adv_s->property, 1);  
@@ -152,6 +150,10 @@ class OrderController extends Controller
             }
             $newOrder->save();
             /// controllo se ci sono menu e in caso li aggiungo
+            return response()->json([
+                    'success'   => true,
+                    'cart_products'   => $cart['products'],
+                ]);
             foreach ($cart['products'] as $e) {
                 $item_order = new OrderProduct();
                 $item_order->order_id = $newOrder->id;
