@@ -81,7 +81,7 @@ public function index(Request $request)
 
     $categories = Category::with([
 
-        'translation' => fn($q) => $q->where('lang',$lang),
+        'translations' => fn($q) => $q->where('lang',$lang),
 
         /*
         |--------------------------------------------------------------------------
@@ -98,10 +98,10 @@ public function index(Request $request)
             $q->where('archived',0)
               ->orderBy('updated_at','desc')
               ->with([
-                    'translation' => fn($q)=>$q->where('lang',$lang),
-                    'ingredients.translation' => fn($q)=>$q->where('lang',$lang),
-                    'ingredients.allergens.translation' => fn($q)=>$q->where('lang',$lang),
-                    'directAllergens.translation' => fn($q)=>$q->where('lang',$lang),
+                    'translations' => fn($q)=>$q->where('lang',$lang),
+                    'ingredients.translations' => fn($q)=>$q->where('lang',$lang),
+                    'ingredients.allergens.translations' => fn($q)=>$q->where('lang',$lang),
+                    'directAllergens.translations' => fn($q)=>$q->where('lang',$lang),
               ]);
         },
 
@@ -120,11 +120,11 @@ public function index(Request $request)
             $q->where('fixed_menu','!=',0)
               ->orderBy('updated_at','desc')
               ->with([
-                    'translation' => fn($q)=>$q->where('lang',$lang),
+                    'translations' => fn($q)=>$q->where('lang',$lang),
                     'products.ingredients.allergens',
-                    'products.translation' => fn($q)=>$q->where('lang',$lang),
-                    'products.ingredients.translation' => fn($q)=>$q->where('lang',$lang),
-                    'products.ingredients.allergens.translation' => fn($q)=>$q->where('lang',$lang),
+                    'products.translations' => fn($q)=>$q->where('lang',$lang),
+                    'products.ingredients.translations' => fn($q)=>$q->where('lang',$lang),
+                    'products.ingredients.allergens.translations' => fn($q)=>$q->where('lang',$lang),
               ]);
         }
 
@@ -169,7 +169,6 @@ public function index(Request $request)
                     }
 
                     $choices[$label]['products'][] = $product;
-
                 }
 
                 $menu->fixed_menu = array_values($choices);
