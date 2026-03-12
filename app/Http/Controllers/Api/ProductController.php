@@ -17,7 +17,7 @@ public function index(Request $request)
     $from = $request->query('from');
 
     app()->setLocale($lang);
-    config(['app.locale' => $lang]);
+    // config(['app.locale' => $lang]);
 
     /*
     |--------------------------------------------------------------------------

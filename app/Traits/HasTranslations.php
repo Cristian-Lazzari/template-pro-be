@@ -4,14 +4,10 @@ namespace App\Traits;
 
 trait HasTranslations
 {
-    protected function getDefaultLocale()
-    {
-        return config('configurazione.default_lang');
-    }
 
     protected function getTranslation($field)
     {
-        $locale = $this->getDefaultLocale();
+        $locale = app()->getLocale();
 
         $translation = $this->translations->firstWhere('lang', $locale);
 
