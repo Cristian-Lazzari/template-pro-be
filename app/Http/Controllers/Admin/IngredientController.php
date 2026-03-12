@@ -7,7 +7,6 @@ use App\Models\Allergen;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\IngredientTranslation;
-use App\Models\Product;
 use App\Models\Setting;
 use App\Services\GoogleTranslateService;
 use Illuminate\Http\Request;
@@ -16,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class IngredientController extends Controller
 {
     private $validations_ingredient = [
-        'name_ing'          => 'required|string|min:2|unique:ingredients,name',
+        'name_ing'          => 'required|string|min:2',
         'price_ing'         => 'required',
         'image_ing'         => 'nullable|image',
     ];

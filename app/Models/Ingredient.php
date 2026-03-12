@@ -14,7 +14,7 @@ class Ingredient extends Model
 
     use HasTranslations;
 
-    protected $appends  = ['allergens', 'name'];
+    protected $appends  = ['name'];
     protected $with     = ['translations'];
     
     public function products() {
