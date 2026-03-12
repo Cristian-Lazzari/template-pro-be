@@ -10,180 +10,230 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // public function index(Request $request)
-    // {
-    //     $query = Product::with('category', 'ingredients', 'ingredients.allergens', 'directAllergens',);
-    //     $combo_query = Menu::where('fixed_menu', '!=', '0');
-
-    //     $from = $request->query('from');
-
-    //     if($from !== 'menu'){
-    //         $query = $query->where('visible', true);
-    //         $combo_query = $combo_query->where('visible', true);
-    //     }
-
-
-    //     $combo = $combo_query->with('products.ingredients', 'category', 'products.category')->orderBy('updated_at', 'desc')->get();
-    //     foreach ($combo as $c) {
-    //         if($c->fixed_menu == '2'){
-    //             $choices = [];
-    //             foreach ($c->products as $item) {
-    //                 $label = $item->pivot->label;
-    //                 $f_choice = [
-    //                     'label' => $label,
-    //                     'name' => $label,
-    //                     'open' => false,
-    //                     'products' => []
-    //                 ];
-    //                 $product = Product::where('id', $item->id)->with('ingredients', 'ingredients.allergens')->first();
-    //                 $f_prod = [
-    //                     'selected' => false,
-    //                     'product' => $product ? $product : null,
-    //                     'extra_price' => $item->pivot->extra_price
-    //                 ];
-    //                 $check = false;
-    //                 if(count($choices)){
-    //                     for ($i=0; $i < count($choices); $i++) { 
-    //                         if ($choices[$i]['label'] == $label) {
-    //                             $check = $i;
-    //                         }
-    //                     }
-    //                     if ($check === false) {
-    //                         array_push($f_choice['products'], $f_prod);
-    //                         array_push($choices, $f_choice);
-    //                     }else{
-    //                         array_push($choices[$check]['products'], $f_prod);
-    //                     }
-    //                 }else{
-    //                     array_push($f_choice['products'], $f_prod);       
-    //                     array_push($choices, $f_choice);
-    //                 }
-                   
-    //             }
-    //             $c->fixed_menu = $choices;
-    //         }
-           
-    //     }
-        
-    //     $products = $query->where('archived', 0)->orderBy('created_at', 'asc')->get();
-        
-    //     return response()->json([
-    //         'success'   => true,
-    //         'results'   => $products,
-    //         'menus'   => $combo,
-    //         'allergens'   => config('configurazione.allergens'),
-    //     ]);
-    // }
 public function index(Request $request)
 {
-    $default = config('app.locale');
-    $lang = $request->query('lang');
+    $defaultLang = config('app.locale');
+    $lang = $request->query('lang', $defaultLang);
     $from = $request->query('from');
-    app()->setLocale($lang);
-    $categories = Category::with([
-
-        'translations' => function ($q) use ($lang, $default) {
-            $q->whereIn('lang', [$lang,$default]);
-        },
-        // 'translations' => fn($q) => $q->where('lang',$lang),
-        /*
-        | PRODUCTS
-        */
-        'products' => function ($q) use ($from,$lang){
-
-            if($from !== 'menu'){
-                $q->where('visible',true);
-            }
-
-            $q->where('archived',0)
-              ->orderBy('updated_at','desc')
-              ->with([
-                    'translations' => function ($q) use ($lang, $default) {
-                            $q->whereIn('lang', [$lang,$default]);
-                        },
-                    'ingredients.translations' => fn($q)=>$q->where('lang',$lang),
-                    'ingredients.allergens.translations' => fn($q)=>$q->where('lang',$lang),
-                    'directAllergens.translations' => fn($q)=>$q->where('lang',$lang),
-              ]);
-        },
-
-        /*
-        | MENUS (fixed_menu != 0)
-        */
-
-        'menus' => function ($q) use ($from,$lang){
-
-            if($from !== 'menu'){
-                $q->where('visible',true);
-            }
-
-            $q->where('fixed_menu','!=',0)
-              ->orderBy('updated_at','desc')
-              ->with([
-                    'translations' => function ($q) use ($lang, $default) {
-                    $q->whereIn('lang', [$lang,$default]);
-                },
-                    'products.ingredients.allergens',
-                    'products.translations' => fn($q)=>$q->where('lang',$lang),
-                    'products.ingredients.translations' => fn($q)=>$q->where('lang',$lang),
-                    'products.ingredients.allergens.translations' => fn($q)=>$q->where('lang',$lang),
-              ]);
-        }
-
-    ])
-    ->orderBy('updated_at','desc')
-    ->get();
-
 
     /*
-    | FIXED MENU LOGIC
+    |--------------------------------------------------------------------------
+    | IMPOSTAZIONE LINGUA REQUEST-SCOPED
+    |--------------------------------------------------------------------------
+    |
+    | Se i tuoi accessor leggono app()->getLocale() o config('app.locale'),
+    | così dovrebbe bastare.
+    | Se invece il tuo service usa una chiave custom tipo config('translatable.lang')
+    | o simili, qui devi settare QUELLA chiave.
+    |
+    */
+
+    app()->setLocale($lang);
+    \Illuminate\Support\Facades\App::setLocale($lang);
+    config(['app.locale' => $lang]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPE TRADUZIONI
+    |--------------------------------------------------------------------------
+    */
+
+    $translationScope = function ($q) use ($lang, $defaultLang) {
+        $q->whereIn('lang', [$lang, $defaultLang])
+          ->orderByRaw("CASE WHEN lang = ? THEN 0 ELSE 1 END", [$lang]);
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTRI PRODOTTI E MENU
+    |--------------------------------------------------------------------------
+    */
+
+    $productFilter = function ($q) use ($from) {
+        if ($from !== 'menu') {
+            $q->where('visible', true);
+        }
+
+        $q->where('archived', 0);
+    };
+
+    $menuFilter = function ($q) use ($from) {
+        if ($from !== 'menu') {
+            $q->where('visible', true);
+        }
+
+        $q->where('fixed_menu', '!=', 0);
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | CATEGORIE NORMALI
+    |--------------------------------------------------------------------------
+    |
+    | Mostra solo categorie che hanno almeno 1 prodotto valido.
+    |
+    */
+
+    $categories = Category::query()
+        ->whereHas('product', $productFilter)
+        ->with([
+            'translations' => $translationScope,
+
+            'product' => function ($q) use ($productFilter, $translationScope) {
+                $productFilter($q);
+
+                $q->orderBy('updated_at', 'desc')
+                  ->with([
+                      'translations' => $translationScope,
+                      'ingredients.translations' => $translationScope,
+                      'ingredients.allergens.translations' => $translationScope,
+                      'directAllergens.translations' => $translationScope,
+                  ]);
+            },
+
+            'menu' => function ($q) use ($menuFilter, $translationScope) {
+                $menuFilter($q);
+
+                $q->orderBy('updated_at', 'desc')
+                  ->with([
+                      'translations' => $translationScope,
+                      'products.translations' => $translationScope,
+                      'products.ingredients.translations' => $translationScope,
+                      'products.ingredients.allergens.translations' => $translationScope,
+                      'products.directAllergens.translations' => $translationScope,
+                  ]);
+            },
+        ])
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOGICA FIXED MENU == 2
+    |--------------------------------------------------------------------------
     */
 
     foreach ($categories as $category) {
-
-        foreach ($category->menus as $menu) {
-
-            if($menu->fixed_menu == 2){
-
+        foreach ($category->menu as $menu) {
+            if ((string) $menu->fixed_menu === '2') {
                 $choices = [];
 
                 foreach ($menu->products as $item) {
-
                     $label = $item->pivot->label;
 
-                    $product = [
-                        'selected' => false,
-                        'product' => $item,
-                        'extra_price' => $item->pivot->extra_price
-                    ];
-
-                    if(!isset($choices[$label])){
-
+                    if (!isset($choices[$label])) {
                         $choices[$label] = [
                             'label' => $label,
                             'name' => $label,
                             'open' => false,
-                            'products' => []
+                            'products' => [],
                         ];
-
                     }
 
-                    $choices[$label]['products'][] = $product;
+                    $choices[$label]['products'][] = [
+                        'selected' => false,
+                        'product' => $item,
+                        'extra_price' => $item->pivot->extra_price,
+                    ];
                 }
 
                 $menu->fixed_menu = array_values($choices);
-
             }
-
         }
-
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | CATEGORIA "PRODOTTI IN EVIDENZA"
+    |--------------------------------------------------------------------------
+    */
+
+    $featuredProducts = Product::query()
+        ->where('promotion', 1)
+        ->where(function ($q) use ($from) {
+            if ($from !== 'menu') {
+                $q->where('visible', true);
+            }
+        })
+        ->where('archived', 0)
+        ->orderBy('updated_at', 'desc')
+        ->with([
+            'translations' => $translationScope,
+            'ingredients.translations' => $translationScope,
+            'ingredients.allergens.translations' => $translationScope,
+            'directAllergens.translations' => $translationScope,
+            'category.translations' => $translationScope,
+        ])
+        ->get();
+
+    $featuredMenus = Menu::query()
+        ->where('promo', 1)
+        ->where('fixed_menu', '!=', 0)
+        ->where(function ($q) use ($from) {
+            if ($from !== 'menu') {
+                $q->where('visible', true);
+            }
+        })
+        ->orderBy('updated_at', 'desc')
+        ->with([
+            'translations' => $translationScope,
+            'products.translations' => $translationScope,
+            'products.ingredients.translations' => $translationScope,
+            'products.ingredients.allergens.translations' => $translationScope,
+            'products.directAllergens.translations' => $translationScope,
+            'category.translations' => $translationScope,
+        ])
+        ->get();
+
+    foreach ($featuredMenus as $menu) {
+        if ((string) $menu->fixed_menu === '2') {
+            $choices = [];
+
+            foreach ($menu->products as $item) {
+                $label = $item->pivot->label;
+
+                if (!isset($choices[$label])) {
+                    $choices[$label] = [
+                        'label' => $label,
+                        'name' => $label,
+                        'open' => false,
+                        'products' => [],
+                    ];
+                }
+
+                $choices[$label]['products'][] = [
+                    'selected' => false,
+                    'product' => $item,
+                    'extra_price' => $item->pivot->extra_price,
+                ];
+            }
+
+            $menu->fixed_menu = array_values($choices);
+        }
+    }
+
+    $featuredCategory = null;
+
+    if ($featuredProducts->count() || $featuredMenus->count()) {
+        $featuredCategory = (object) [
+            'id' => 'featured',
+            'name' => 'Prodotti in evidenza',
+            'slug' => 'prodotti-in-evidenza',
+            'product' => $featuredProducts,
+            'menu' => $featuredMenus,
+            'featured' => true,
+        ];
+    }
+
+    if ($featuredCategory) {
+        $categories->prepend($featuredCategory);
+    }
 
     return response()->json([
         'success' => true,
-        'categories' => $categories,
+        'categories' => $categories->values(),
         'allergens' => config('configurazione.allergens'),
+        'lang' => $lang,
     ]);
 }
     public function menuFissi(){
