@@ -98,7 +98,9 @@ public function index(Request $request)
             $q->where('archived',0)
               ->orderBy('updated_at','desc')
               ->with([
-                    'translations' => fn($q)=>$q->where('lang',$lang),
+                    'translations' => function ($q) use ($lang, $default) {
+                            $q->whereIn('lang', [$lang,$default]);
+                        },
                     'ingredients.translations' => fn($q)=>$q->where('lang',$lang),
                     'ingredients.allergens.translations' => fn($q)=>$q->where('lang',$lang),
                     'directAllergens.translations' => fn($q)=>$q->where('lang',$lang),
@@ -118,7 +120,9 @@ public function index(Request $request)
             $q->where('fixed_menu','!=',0)
               ->orderBy('updated_at','desc')
               ->with([
-                    'translations' => fn($q)=>$q->where('lang',$lang),
+                    'translations' => function ($q) use ($lang, $default) {
+                    $q->whereIn('lang', [$lang,$default]);
+                },
                     'products.ingredients.allergens',
                     'products.translations' => fn($q)=>$q->where('lang',$lang),
                     'products.ingredients.translations' => fn($q)=>$q->where('lang',$lang),
