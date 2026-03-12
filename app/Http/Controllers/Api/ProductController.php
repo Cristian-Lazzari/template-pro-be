@@ -78,17 +78,16 @@ public function index(Request $request)
 {
     $lang = $request->query('lang', config('app.locale'));
     $from = $request->query('from');
-
+    app()->setLocale($lang);
     $categories = Category::with([
 
-        'translations' => fn($q) => $q->where('lang',$lang),
-
+        'translations' => function ($q) use ($lang,$default) {
+            $q->whereIn('lang', [$lang,$default]);
+        },
+        // 'translations' => fn($q) => $q->where('lang',$lang),
         /*
-        |--------------------------------------------------------------------------
         | PRODUCTS
-        |--------------------------------------------------------------------------
         */
-
         'products' => function ($q) use ($from,$lang){
 
             if($from !== 'menu'){
@@ -106,9 +105,7 @@ public function index(Request $request)
         },
 
         /*
-        |--------------------------------------------------------------------------
         | MENUS (fixed_menu != 0)
-        |--------------------------------------------------------------------------
         */
 
         'menus' => function ($q) use ($from,$lang){
@@ -134,9 +131,7 @@ public function index(Request $request)
 
 
     /*
-    |--------------------------------------------------------------------------
     | FIXED MENU LOGIC
-    |--------------------------------------------------------------------------
     */
 
     foreach ($categories as $category) {
