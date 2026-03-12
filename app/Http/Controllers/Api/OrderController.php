@@ -150,10 +150,11 @@ class OrderController extends Controller
             }
             $newOrder->save();
             /// controllo se ci sono menu e in caso li aggiungo
-            return response()->json([
-                    'success'   => true,
-                    'cart_products'   => $cart['products'],
-                ]);
+            // return response()->json([
+            //         'success'   => true,
+            //         'cart_products'   => $cart['products'],
+            //     ]);
+            $dd = [];
             foreach ($cart['products'] as $e) {
                 $item_order = new OrderProduct();
                 $item_order->order_id = $newOrder->id;
@@ -163,7 +164,12 @@ class OrderController extends Controller
                 $item_order->add = json_encode($e['add']);
                 $item_order->option = json_encode($e['option']);
                 $item_order->save();
+                $dd[] = $item_order;
             }
+             return response()->json([
+                    'success'   => true,
+                    'cart_products'   => $cart['products'],
+                ]);
             
             foreach ($cart['menus'] as $m) {
                 $item_order = new MenuOrder();
