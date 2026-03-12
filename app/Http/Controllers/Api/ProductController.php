@@ -77,7 +77,7 @@ class ProductController extends Controller
 public function index(Request $request)
 {
     $default = config('app.locale');
-    $lang = $request->query('lang', $default);
+    $lang = $request->query('lang');
     $from = $request->query('from');
     app()->setLocale($lang);
     $categories = Category::with([
