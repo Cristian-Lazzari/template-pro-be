@@ -25,7 +25,7 @@ class MenuProduct extends Pivot
 
     public function translations()
     {
-        return $this->hasMany(MenuProductTranslation::class);
+        return $this->hasMany(MenuProductTranslation::class, 'menu_product_id');
     }
 
     public function getLabelAttribute()
