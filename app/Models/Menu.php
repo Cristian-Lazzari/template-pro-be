@@ -33,9 +33,9 @@ class Menu extends Model
     
     public function products()
     {
-        return $this->belongsToMany(Product::class)
+        return $this->belongsToMany(Product::class, 'menu_product')
             ->using(MenuProduct::class)
-            ->withPivot('id', 'extra_price')
+            ->withPivot('id', 'extra_price', 'label')
             ->withTimestamps()
             ->orderBy('created_at', 'asc'); // <- fondamentale!
     }
