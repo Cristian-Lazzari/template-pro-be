@@ -28,9 +28,9 @@ class MigrateTranslations extends Command
         $defaultLang = 'it';
 
         // Metti qui le lingue che vuoi creare
-        $languages = ['it', 'en', 'de', 'ja', 'es'];
-
+        $languages = ['it', 'en', 'de', 'es'];
         $set_lang = Setting::where('name', 'Lingua')->first();
+
 
         if(!$set_lang){
             $set_lang = new Setting;
