@@ -197,16 +197,18 @@
                             </svg>
                             {{__('admin.Allergeni')}}</label>
                         <p>
-                            @foreach(  config('configurazione.allergens') as $a)
-                                @php $i = $loop->iteration; @endphp
-                                <input type="checkbox" class="btn-check" id="b{{ $i }}" name="allergens_ing[]" value="{{ $i }}" @if (in_array($i, old('allergens_ing', []))) checked @endif>
+                            @foreach( $allergens as $a)
+                                <input type="checkbox" class="btn-check" id="b{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" 
+                                @if (in_array($a->id, old('allergens_ing', [])))  checked @endif
+                                >
                                 <label class="btn 
-                                @if($a['special'])
-                                btn-outline-dark btn_special
+                                @if($a->special)
+                                    btn-outline-dark btn_special
                                 @else
-                                btn-outline-light
+                                    btn-outline-light
                                 @endif
-                                " for="b{{ $i }}">{{ $a['name'] }}</label>
+                                " 
+                                for="b{{ $a->id }}">{{ $a->name }}</label>
                             @endforeach
                         </p>
                     </div>
@@ -308,22 +310,18 @@
         <h2>
         <div class="check_c">
             <p>
-                @foreach(  config('configurazione.allergens') as $a)
-                    @php 
-                        $i = $loop->iteration;
-                        
-                        $al = [];
-                        
-                    @endphp
-                    <input type="checkbox" class="btn-check" id="ab{{ $i }}" name="allergens[]" value="{{ $i }}" 
-                    @if (in_array($i, old('allergens', $al, []))) checked @endif>
+                @foreach( $allergens as $a)
+                    <input type="checkbox" class="btn-check" id="b{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" 
+                    @if (in_array($a->id, old('allergens_ing', [])))  checked @endif
+                    >
                     <label class="btn 
-                    @if($a['special'])
-                    btn-outline-dark btn_special
+                    @if($a->special)
+                        btn-outline-dark btn_special
                     @else
-                    btn-outline-light
+                        btn-outline-light
                     @endif
-                    " for="ab{{ $i }}">{{ $a['name'] }}</label>
+                    " 
+                    for="b{{ $a->id }}">{{ $a->name }}</label>
                 @endforeach
             </p>
         </div>
