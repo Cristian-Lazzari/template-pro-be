@@ -126,7 +126,7 @@
                 @foreach($products as $c)
                     <div class="prod_cont">
                         <h3>{{$c->name}}</h3>
-                        @foreach ($c->product as $p)
+                        @foreach ($c->products as $p)
                             <input type="checkbox" style="visibility: hidden; position: absolute;" class="btn-check" id="product{{ $p->id }}{{$c->name}}" name="products[]" 
                             value="{{ $p->id }}"
                             @if(in_array($p->id, old('products', [])))
@@ -183,7 +183,7 @@
                 ${categories.map(cat => `
                     <h3>${cat.name}</h3>
                     <p class="prod_cont">
-                    ${cat.product.map(prod => `
+                    ${cat.products.map(prod => `
                             <input type="checkbox" style="visibility: hidden; position: absolute;"  id="${number_field}${prod.id}" class="btn-check" onchange="toggleExtra(this, ${number_field}, ${prod.id})"
                                 name="choice[${number_field}][products][${prod.id}][id]"
                                 value="${prod.id}">
