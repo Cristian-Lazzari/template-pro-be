@@ -165,7 +165,7 @@ class MenuController extends Controller
         $menu = Menu::findOrFail($id)->load('translations');
         $translations   = $menu->translations->keyBy('lang');
         $categories = Category::all();
-        $products = Category::where('id', '!=', 1)->with('product')->get();
+        $products = Category::where('id', '!=', 1)->with('products')->get();
         $languages    = json_decode(Setting::where('name', 'Lingua')->first()->property, 1);
 
         return view('admin.Menus.edit', compact('categories', 'products', 'menu', 'translations', 'languages'));
