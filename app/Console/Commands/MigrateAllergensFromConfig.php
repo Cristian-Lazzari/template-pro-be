@@ -66,14 +66,10 @@ class MigrateAllergensFromConfig extends Command
 
             $special = isset($a['special']) ? (int) $a['special'] : 0;
             $img = $a['img'] ?? null;
-            $nameIt = $a['name'] ?? null;
-
-            if (!$nameIt) {
-                $this->warn("Allergene {$id} senza name nel config: skip translations.");
-            }
+            $names = $a['name'] ?? null;
 
             if (!$dryRun) {
-                // manteniamo gli stessi ID del config (IMPORTANTISSIMO per compatibilità)
+                // manteniamo gli stessi ID del config
                 DB::table('allergens')->updateOrInsert(
                     ['id' => $id],
                     [
@@ -84,25 +80,62 @@ class MigrateAllergensFromConfig extends Command
                     ]
                 );
             }
+
             $countAllergens++;
 
-            if ($nameIt) {
-                if (!$dryRun) {
-                    DB::table('allergen_translations')->updateOrInsert(
-                        ['allergen_id' => $id, 'lang' => 'it'],
-                        [
-                            'name' => $nameIt,
-                            'updated_at' => now(),
-                            'created_at' => DB::raw('COALESCE(created_at, NOW())'),
-                        ]
-                    );
+            // gestione traduzioni
+            if (is_array($names)) {
+
+                foreach ($names as $lang => $name) {
+
+                    if (!$name) {
+                        continue;
+                    }
+
+                    if (!$dryRun) {
+                        DB::table('allergen_translations')->updateOrInsert(
+                            [
+                                'allergen_id' => $id,
+                                'lang' => $lang
+                            ],
+                            [
+                                'name' => $name,
+                                'updated_at' => now(),
+                                'created_at' => DB::raw('COALESCE(created_at, NOW())'),
+                            ]
+                        );
+                    }
+
+                    $countTranslations++;
                 }
-                $countTranslations++;
+
+            } else {
+
+                // fallback compatibilità vecchio config (stringa)
+                if ($names) {
+
+                    if (!$dryRun) {
+                        DB::table('allergen_translations')->updateOrInsert(
+                            [
+                                'allergen_id' => $id,
+                                'lang' => 'it'
+                            ],
+                            [
+                                'name' => $names,
+                                'updated_at' => now(),
+                                'created_at' => DB::raw('COALESCE(created_at, NOW())'),
+                            ]
+                        );
+                    }
+
+                    $countTranslations++;
+                }
+
             }
         }
 
         $this->line(" - Allergens upsert: {$countAllergens}");
-        $this->line(" - Translations it upsert: {$countTranslations}");
+        $this->line(" - Translations upsert: {$countTranslations}");
     }
 
     private function migrateModelAllergensToPivot(
