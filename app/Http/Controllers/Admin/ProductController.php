@@ -85,9 +85,8 @@ class ProductController extends Controller
 
     public function archived(Request $request){
         $products   = Product::where('archived', true)->get();
-        $categories = Category::all();
         
-        return view('admin.Products.archived', compact('products', 'categories'));
+        return view('admin.Products.archived', compact('products'));
     }
 
 
