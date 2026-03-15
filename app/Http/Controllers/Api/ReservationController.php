@@ -278,7 +278,7 @@ class ReservationController extends Controller
         $newRes->whatsapp_message_id = json_encode($messageId);
         $newRes->update();
         
-        $this->send_mail($newRes);
+        $this->send_mail($newRes, $lang, $defaltLang);
 
         $mx = $this->save_message([        
             'wa_id' => $newRes->whatsapp_message_id,
@@ -356,7 +356,7 @@ class ReservationController extends Controller
         return [$source, $mex];
         
     }
-    protected function send_mail($newRes){
+    protected function send_mail($newRes, $lang, $defaltLang){
         try{
             // Ottieni le impostazioni di contatto
             $adv_s = Setting::where('name', 'advanced')->first();
@@ -395,7 +395,7 @@ class ReservationController extends Controller
 
             // Invia le email
             $mailAdmin = new confermaOrdineAdmin($bodymail);
-            Mail::to(config('configurazione.mf'))->send($mailAdmin);
+            Mail::to(config('configurazione.mf'))->locale($defaultLang)->send($mailAdmin);
 
             $bodymail['to'] = 'user';
             $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
@@ -403,7 +403,7 @@ class ReservationController extends Controller
             $bodymail['subtitle'] = Lang::get('admin.sub_client', [], $lang);
             
             $mail = new confermaOrdineAdmin($bodymail);
-            Mail::to($newRes->email)->send($mail);
+            Mail::to($newRes->email)->locale($lang)->send($mail);
             return;
         } catch (\Exception $e) {
             // Gestione generale degli errori
