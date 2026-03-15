@@ -28,11 +28,11 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $request->validate($this->validations);
+        $data = $request->all();
         $defaultLang = config('app.locale');
         $lang = $data['lang'];
         app()->setLocale($lang);
 
-        $data = $request->all();
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
