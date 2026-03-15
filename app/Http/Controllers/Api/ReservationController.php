@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use Carbon\Carbon;
-use App\Models\Setting;
-use App\Models\Reservation;
-use Illuminate\Http\Request;
-use App\Mail\confermaOrdineAdmin;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Mail\confermaOrdineAdmin;
+use App\Models\Reservation;
+use App\Models\Setting;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
@@ -367,6 +368,9 @@ class ReservationController extends Controller
             }else{
                 $telefono = '3332222333';
             }
+
+            $title_admin = Lang::get('admin.title_admin', ['name'=>$newRes->name, 'surname'=>$newRes->surname], $defaultLang);
+            $title_client = Lang::get('admin.title_client', ['name'=>$newRes->name, 'surname'=>$newRes->surname], $lang);
             // Prepara i dati per le email
             $bodymail = [
                 'type' => 'res',
@@ -395,8 +399,8 @@ class ReservationController extends Controller
 
             $bodymail['to'] = 'user';
             $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
-            $bodymail['title'] = 'Ciao ' . $newRes->name . ', grazie per aver prenotato tramite il nostro sito web';
-            $bodymail['subtitle'] = 'La tua prenotazione è nella nostra coda, a breve riceverai l\'esito del processamento';
+            $bodymail['title'] =  Lang::get('admin.title_client', ['name'=>$newRes->name], $lang);
+            $bodymail['subtitle'] = Lang::get('admin.sub_client', [], $lang);
             
             $mail = new confermaOrdineAdmin($bodymail);
             Mail::to($newRes->email)->locale($lang)->send($mail);
