@@ -107,8 +107,7 @@ return [
     'end_copy' => '&copy; 2025 :name . Tutti i diritti riservati.',
 
     'auto_mail' => 'questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email',
-    
-    'title_admin' => ':name :surname a appena prenotato un tavolo',
+    'title_admin' => ':name :surname ha appena prenotato un tavolo',
     'title_client' => 'Ciao :name grazie per aver prenotato tramite il nostro sito web',
     'sub_client' => 'La tua prenotazione è stata ricevuta ed è in fase di elaborazione. Riceverai a breve una conferma. Grazie per aver prenotato tramite il nostro sito web.',
 
