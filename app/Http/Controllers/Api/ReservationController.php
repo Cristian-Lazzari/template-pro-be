@@ -29,7 +29,7 @@ class ReservationController extends Controller
     {
         $request->validate($this->validations);
         $defaultLang = config('app.locale');
-        $lang = $data['lang'] ?? $defaultLang;
+        $lang = $data['lang'];
         app()->setLocale($lang);
 
         $data = $request->all();
