@@ -395,7 +395,7 @@ class ReservationController extends Controller
 
             // Invia le email
             $mailAdmin = new confermaOrdineAdmin($bodymail);
-            Mail::to(config('configurazione.mf'))->locale($defaultLang)->send($mailAdmin);
+            Mail::to(config('configurazione.mf'))->send($mailAdmin);
 
             $bodymail['to'] = 'user';
             $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
@@ -403,7 +403,7 @@ class ReservationController extends Controller
             $bodymail['subtitle'] = Lang::get('admin.sub_client', [], $lang);
             
             $mail = new confermaOrdineAdmin($bodymail);
-            Mail::to($newRes->email)->locale($lang)->send($mail);
+            Mail::to($newRes->email)->send($mail);
             return;
         } catch (\Exception $e) {
             // Gestione generale degli errori
