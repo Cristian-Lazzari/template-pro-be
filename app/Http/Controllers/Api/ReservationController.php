@@ -27,6 +27,9 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $request->validate($this->validations);
+        $defaultLang = config('app.locale');
+        $lang = $data['lang'] ?? $defaultLang;
+        app()->setLocale($lang);
 
         $data = $request->all();
 

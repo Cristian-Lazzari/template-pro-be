@@ -106,4 +106,6 @@ return [
     'contatta_tel_mail' => 'Contatta :name se desideri annullare o modificare la tua prenotazione:',
     'end_copy' => '&copy; 2025 :name . Tutti i diritti riservati.',
 
+    'auto_mail' => 'questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email'
+
     ];

@@ -10,7 +10,7 @@
     <div style="max-width: 600px; margin: 10px auto; width:85%; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
         
         <!-- Informazioni automatizzate -->
-        <p style="font-size: 10px;  margin: 5px; color: #04001d80;">* questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email</p>
+        <p style="font-size: 10px;  margin: 5px; color: #04001d80;">* {{__('admin.auto_mail')}}</p>
         <center>
             @if (config('configurazione.APP_URL') === 'https://db-demo3.future-plus.it')
                 <img style="width: 80px; margin: 25px; background-color: #090333; border-radius: 26px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.272); padding: 2px; border: solid 2px #090333;" src="{{config('configurazione.APP_URL') . '/public/favicon.png'}}" alt="">
@@ -32,12 +32,10 @@
             if (strpos($dateSlot, ' ') !== false) {
                 // Caso: la stringa contiene anche l'orario
                 $formattedDate = Carbon::createFromFormat('d/m/Y H:i', $dateSlot)
-                    ->locale('it')
                     ->translatedFormat('l j F \a\l\l\e H:i');
             } else {
                 // Caso: solo la data, senza orario
                 $formattedDate = Carbon::createFromFormat('d/m/Y', $dateSlot)
-                    ->locale('it')
                     ->translatedFormat('l j F');
             }
         @endphp 

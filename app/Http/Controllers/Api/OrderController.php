@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Events\NewOrderNotification;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -35,6 +34,9 @@ class OrderController extends Controller
     { 
         $request->validate($this->validations);
         $data = $request->all();
+        $defaultLang = config('app.locale');
+        $lang = $data['lang'] ?? $defaultLang;
+        app()->setLocale($lang);
         try {       
             // return response()->json($cart);
             $adv_s = Setting::where('name', 'advanced')->first();
