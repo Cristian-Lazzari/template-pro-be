@@ -104,7 +104,7 @@ return [
     'Messaggio' => 'Messaggio',
     'modalita_consegna_asporto' => 'Modalità consegna: Ritiro asporto presso :name è stata modificata correttamente',
     'contatta_tel_mail' => 'Contatta :name se desideri annullare o modificare la tua prenotazione:',
-    'end_copy' => '&copy; 2025 :name . Tutti i diritti riservati.',
+    'end_copy' => '©️ 2025 :name . Tutti i diritti riservati.',
 
     'auto_mail' => 'questa email viene automaticamente generata dal sistema, si prega di non rispondere a questa email',
     'title_admin' => ':name :surname ha appena prenotato un tavolo',
