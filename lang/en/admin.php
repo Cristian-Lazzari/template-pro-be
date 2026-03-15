@@ -10,7 +10,7 @@ return [
     'Asporto' => 'Takeaway',
     'Tavoli' => 'Tables',
     'Impostazioni' => 'Settings',
-    'Impostazioni_a' => 'Advanced settings',
+    'Impostazioni_a' => 'Settings',
     
     'Tutti' => 'All',
     'Esci' => 'Logout',
@@ -42,6 +42,7 @@ return [
     'Crea_nuovo' => 'Create new',
     'Crea_nuova' => 'Create new',
     'Crea_nuova_scelta' => 'Create new option',
+    'Lingua_di_default' => 'Default language',
     
     'Crea_nuovo_p' => 'Create new Product',
     'Crea_nuovo_a' => 'Create new Category',
@@ -51,14 +52,14 @@ return [
     
     'Domicilio' => 'Delivery',
     'Pagamento' => 'Payment',
-    'post_info' => 'To start a new line use the characters: /**/ . To make text bold, simply wrap the portion of text with three asterisks like this: *** text to make bold ***',
+    'post_info' => 'To go to a new line use: /**/ . To make text bold wrap it with three asterisks: *** bold text ***',
 
     't_dashboard' => 'Orders & Reservations',
     't_menu' => 'Products & Menu',
 
     'set_1' => 'Opening days and hours',
     'set_2' => 'Your venue location',
-    'set_3' => 'Contacts and Social media',
+    'set_3' => 'Contacts and social media',
     'set_4' => 'Delivery areas management',
     'set_5' => 'WhatsApp notification management',
 
@@ -68,8 +69,8 @@ return [
 
     'no_promo_p' => 'No featured products',
     'no_promo_m' => 'No featured menus',
-    'no_menuf' => 'No fixed menus available, create one to get started',
-    'no_menu' => 'No combo or custom combo menus available, create one to get started',
+    'no_menuf' => 'No fixed menus available, create one to start',
+    'no_menu' => 'No combo menus available, create one to start',
     'no_ing' => 'There are no ingredients at the moment.',
 
     'promo_p' => 'Featured products',
@@ -81,6 +82,24 @@ return [
     'edited_successfully' => '" :name " has been successfully edited',
     'deleted_successfully_f' => '" :name " has been successfully deleted',
     'edited_successfully_f' => '" :name " has been successfully edited',
-
-    'up_sell' => 'To allow your customers to book tables or order delivery or takeaway, click here and schedule a call with our consultants',
+    
+    'up_sell' => 'To allow your customers to book tables or order delivery or takeaway click here and schedule a call with our consultants',
+    
+    'Data_prenotata' => 'Reserved date',
+    'Prodotti_scelti' => 'Selected products',
+    'Prodotti_nel_menu' => 'Products in the menu',
+    'Ingredienti_extra' => 'Extra ingredients',
+    'Ingredienti_rimossi' => 'Removed ingredients',
+    'Indirizzo_per_la_consegna' => 'Delivery address',
+    'Opzioni' => 'Options',
+    'Sala_prenota' => 'Room booked',
+    'Totale_carrello' => 'Cart total',
+    'Numero_di_adulti' => 'Number of adults',
+    'Numero_di_bambini' => 'Number of children',
+    'Seguici_sui_social' => 'Follow us on social media',
+    'Costo_della_consegna_a_domicilio' => 'Home delivery cost',
+    'Messaggio' => 'Message',
+    'modalita_consegna_asporto' => 'Delivery method: Takeaway pickup at :name',
+    'contatta_tel_mail' => 'Contact :name if you want to cancel or modify your reservation:',
+    'end_copy' => '&copy; 2025 :name . All rights reserved.',
 ];

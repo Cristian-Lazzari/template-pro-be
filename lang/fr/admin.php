@@ -10,7 +10,7 @@ return [
     'Asporto' => 'À emporter',
     'Tavoli' => 'Tables',
     'Impostazioni' => 'Paramètres',
-    'Impostazioni_a' => 'Paramètres avancés',
+    'Impostazioni_a' => 'Paramètres',
     
     'Tutti' => 'Tous',
     'Esci' => 'Déconnexion',
@@ -32,7 +32,7 @@ return [
     'Link' => 'Lien',
     'Categoria' => 'Catégorie',
     'Multilingua' => 'Multilingue',
-    'Ferie' => 'Fermeture pour congés',
+    'Ferie' => 'Congés',
     'Promozione' => 'Promotion',
     
     'Menu_alla_carta' => 'Menu à la carte',
@@ -42,6 +42,7 @@ return [
     'Crea_nuovo' => 'Créer nouveau',
     'Crea_nuova' => 'Créer nouvelle',
     'Crea_nuova_scelta' => 'Créer un nouveau choix',
+    'Lingua_di_default' => 'Langue par défaut',
     
     'Crea_nuovo_p' => 'Créer un nouveau produit',
     'Crea_nuovo_a' => 'Créer une nouvelle catégorie',
@@ -49,9 +50,9 @@ return [
     'Crea_nuovo_ps' => 'Créer un nouveau post',
     'Campi_facoltativi' => 'Champs facultatifs',
     
-    'Domicilio' => 'Livraison',
+    'Domicilio' => 'Livraison à domicile',
     'Pagamento' => 'Paiement',
-    'post_info' => 'Pour aller à la ligne utilisez les caractères : /**/ . Pour mettre du texte en gras, entourez simplement la portion de texte avec trois astérisques comme ceci : *** texte en gras ***',
+    'post_info' => 'Pour aller à la ligne utilisez : /**/ . Pour mettre du texte en gras, entourez-le de trois astérisques comme ceci : *** texte en gras ***',
 
     't_dashboard' => 'Commandes & Réservations',
     't_menu' => 'Produits & Menu',
@@ -69,7 +70,7 @@ return [
     'no_promo_p' => 'Aucun produit en vedette',
     'no_promo_m' => 'Aucun menu en vedette',
     'no_menuf' => 'Aucun menu fixe disponible, créez-en un pour commencer',
-    'no_menu' => 'Aucun menu combo ou personnalisé disponible, créez-en un pour commencer',
+    'no_menu' => 'Aucun menu combo disponible, créez-en un pour commencer',
     'no_ing' => 'Il n’y a pas d’ingrédients pour le moment.',
 
     'promo_p' => 'Produits en vedette',
@@ -81,6 +82,24 @@ return [
     'edited_successfully' => '" :name " a été modifié avec succès',
     'deleted_successfully_f' => '" :name " a été supprimée avec succès',
     'edited_successfully_f' => '" :name " a été modifiée avec succès',
-
+    
     'up_sell' => 'Pour permettre à vos clients de réserver des tables ou de commander en livraison ou à emporter, cliquez ici et planifiez un appel avec nos conseillers',
+    
+    'Data_prenotata' => 'Date réservée',
+    'Prodotti_scelti' => 'Produits choisis',
+    'Prodotti_nel_menu' => 'Produits dans le menu',
+    'Ingredienti_extra' => 'Ingrédients supplémentaires',
+    'Ingredienti_rimossi' => 'Ingrédients retirés',
+    'Indirizzo_per_la_consegna' => 'Adresse de livraison',
+    'Opzioni' => 'Options',
+    'Sala_prenota' => 'Salle réservée',
+    'Totale_carrello' => 'Total du panier',
+    'Numero_di_adulti' => 'Nombre d’adultes',
+    'Numero_di_bambini' => 'Nombre d’enfants',
+    'Seguici_sui_social' => 'Suivez-nous sur les réseaux sociaux',
+    'Costo_della_consegna_a_domicilio' => 'Coût de la livraison à domicile',
+    'Messaggio' => 'Message',
+    'modalita_consegna_asporto' => 'Mode de livraison : retrait à emporter chez :name',
+    'contatta_tel_mail' => 'Contactez :name si vous souhaitez annuler ou modifier votre réservation :',
+    'end_copy' => '&copy; 2025 :name . Tous droits réservés.',
 ];

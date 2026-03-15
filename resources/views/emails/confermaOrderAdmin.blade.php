@@ -42,7 +42,7 @@
             }
         @endphp 
         <!-- Data prenotata -->
-        <p style="color: #04001d; font-size: 18px; ">Data prenotata: 
+        <p style="color: #04001d; font-size: 18px; ">{{__('admin.Data_prenotata')}}: 
             <strong style="color: #04001d; font-size: 20px; ">{{ ucfirst($formattedDate) }}</strong>
         </p>
         
@@ -70,7 +70,7 @@
                         @if($i->fixed_menu == '2')
                         <br>
                             <div style="margin: 5px;" class="choices">
-                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti scelti:</h5>
+                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">{{__('admin.Prodotti_scelti')}}:</h5>
                                 @php
                                     // 
                                     $right_c = [];
@@ -102,7 +102,7 @@
                             </div>
                         @else
                             <div style="margin: 5px;" class="prod">
-                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Prodotti nel menu:</h5>
+                                <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">{{__('admin.Prodotti_nel_menu')}}:</h5>
                                 @foreach ($i->products as $c)
                                     <div style="margin: 2px 10px;">
                                         <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">{{$c->name}} ({{$c->category->name}})</span>
@@ -138,7 +138,7 @@
                                 <!-- Opzioni prodotto -->
                                 @if (count($i->r_option))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Opzioni:</h5>
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">{{__('admin.Opzioni')}}:</h5>
                                         @foreach ($i->r_option as $a)
                                             <div style="margin: 0 10px; display: flex; justify-content: space-between; flex-wrap:wrap;">
                                                 <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
@@ -154,7 +154,7 @@
                                 <!-- Ingredienti extra -->
                                 @if (count($i->r_add))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti extra:</h5>
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">{{__('admin.Ingredienti_extra')}}:</h5>
                                         @foreach ($i->r_add as $a)
                                         <div style="margin: 0 10px; display: flex; justify-content: space-between; flex-wrap:wrap;">
                                             <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 2px 0;">
@@ -170,7 +170,7 @@
                                 <!-- Ingredienti rimossi -->
                                 @if (count($arrD))
                                     <div style="margin: 5px;">
-                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">Ingredienti rimossi:</h5>
+                                        <h5 style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 5px 5px 3px;">{{__('admin.Ingredienti_rimossi')}}:</h5>
                                         @foreach ($arrD as $a)
                                             <span style="color: #f4f4f4; opacity: .7; font-size: 16px;  margin: 0px 10px;">- {{$a}}</span>
                                         @endforeach       
@@ -187,12 +187,12 @@
             </div>
             <!-- Indirizzo per la consegna -->
             @if (isset($content_mail['comune']))
-                <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">Indirizzo per la consegna:</h3>
+                <h3 style="color: #04001d; font-size: 18px; margin: 15px 0 0px;">{{__('admin.Indirizzo_per_la_consegna')}}:</h3>
                 <p style="color: #04001d; font-size: 16px; margin: 7px 0 0px;">{{$content_mail['address']}}, {{$content_mail['address_n']}}, {{$content_mail['comune']}}</p>
                 @if ($content_mail['delivery_cost'])   
                 <div style="margin: 10px 0; 0 display: flex; justify-content: space-between; flex-wrap:wrap;">
                     <span style="color: #04001d; opacity: .8; font-size: 16px; font-family: monospace">
-                        Costo della consegna a domicilio:
+                        {{__('admin.Costo_della_consegna_a_domicilio')}}:
                     </span>
                         <strong style="color: #04001d; opacity: .8; font-size: 15px;  margin-left: auto; font-family: monospace">+ €{{$content_mail['delivery_cost'] / 100}}</strong>
                     </div>
@@ -201,11 +201,11 @@
             @else
             <!-- Totale carrello -->
             <div style="color: #04001d; font-size: 22px; margin: 15px 0; display:flex;">
-                <h5 style="color: #04001d; font-size: 22px;">Totale carrello: </h5>
+                <h5 style="color: #04001d; font-size: 22px;">{{__('admin.Totale_carrello')}}: </h5>
                 <h5 style="margin-left: auto; color: #04001d; font-size: 20px; font-family: monospace;">€{{$content_mail['total_price'] / 100}}</h5>
             </div>
             
-                <p style="color: #04001d; font-size: 16px; margin: 10px 0;">Modalità consegna: Ritiro asporto presso {{config('configurazione.APP_NAME')}}</p>
+                <p style="color: #04001d; font-size: 16px; margin: 10px 0;"> {{__('admin.modalita_consegna_asporto', ['name'=>config('configurazione.APP_NAME')])}}</p>
             @endif
     
         @elseif($content_mail['type'] == 'res')
@@ -213,7 +213,7 @@
             <!-- Sala prenotata (se applicabile) -->
             @if ($content_mail['property_adv']['dt'] && $content_mail['sala'] !== 0)
 
-                <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Sala prenota: <strong>{{$content_mail['sala'] == 1 ? $content_mail['property_adv']['sala_1'] : $content_mail['property_adv']['sala_2']}}</strong></h3>
+                <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">{{__('admin.Sala_prenota')}}: <strong>{{$content_mail['sala'] == 1 ? $content_mail['property_adv']['sala_1'] : $content_mail['property_adv']['sala_2']}}</strong></h3>
 
             @endif
 
@@ -221,17 +221,17 @@
             @if (is_string($content_mail['n_person']))
                 @php $n_person = json_decode($content_mail['n_person'], true); @endphp
                 @if ($n_person['adult'])
-                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Numero di adulti: {{ $n_person['adult'] }}</h3>
+                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">{{__('admin.Numero_di_adulti')}}: {{ $n_person['adult'] }}</h3>
                 @endif
                 @if ($n_person['child'])
-                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">Numero di bambini: {{ $n_person['child'] }}</h3>
+                    <h3 style="color: #04001d; font-size: 16px;  margin: 10px 0;">{{__('admin.Numero_di_bambini')}}: {{ $n_person['child'] }}</h3>
                 @endif
             @endif
         @endif
 
         <!-- Messaggio opzionale -->
         @if($content_mail['message'] !== NULL)
-            <h4 style="color: #04001d; font-size: 16px;  margin: 5px;">Messaggio:</h4>
+            <h4 style="color: #04001d; font-size: 16px;  margin: 5px;">{{__('admin.Messaggio')}}:</h4>
             <span style="color: #04001d; font-size: 16px;">{{$content_mail['message']}}</span>
         @endif
 
@@ -262,13 +262,13 @@
     <div style="margin: 50px auto 0; background-color: #04001d; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">
-                Contatta {{config('configurazione.APP_NAME')}} se desideri annullare o modificare la tua prenotazione:
+                {{__('contatta_tel_mail', ['name'=>config('configurazione.APP_NAME')])}}
             </p>
             <p style="color: #ffffff; line-height: 1.5; margin: 15px;">
                 <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
             </p>
         @endif
-        <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">&copy; 2025 {{ config('configurazione.APP_NAME') }}. Tutti i diritti riservati.</p>
+        <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">{{__('admin.end_copy', ['name' => config('configurazione.APP_NAME')])}}</p>
         <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
     </div>
     

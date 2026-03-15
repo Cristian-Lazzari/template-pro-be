@@ -83,9 +83,27 @@ return [
     'edited_successfully' => '" :name " è stato modificato correttamente',
     'deleted_successfully_f' => '" :name " è stata eliminata correttamente',
     'edited_successfully_f' => '" :name " è stata modificata correttamente',
-
-    'up_sell' => 'Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e prenota una call con i nostri consulenti',
-
     
+    'up_sell' => 'Per permettere ai tuoi clienti di prenotare tavoli o ordinare a domicilio o asporto clicca qui e prenota una call con i nostri consulenti',
+    
+    //mail conferma
+
+    'Data_prenotata' => 'Data prenotata',
+    'Prodotti_scelti' => 'Prodotti scelti',
+    'Prodotti_nel_menu' => 'Prodotti nel menu',
+    'Ingredienti_extra' => 'Ingredienti extra',
+    'Ingredienti_rimossi' => 'Ingredienti rimossi',
+    'Indirizzo_per_la_consegna' => 'Indirizzo per la consegna',
+    'Opzioni' => 'Opzioni',
+    'Sala_prenota' => 'Sala prenota',
+    'Totale_carrello' => 'Totale carrello',
+    'Numero_di_adulti' => 'Numero di adulti',
+    'Numero_di_bambini' => 'Numero di bambini',
+    'Seguici_sui_social' => 'Seguici sui social',
+    'Costo_della_consegna_a_domicilio' => 'Costo della consegna a domicilio',
+    'Messaggio' => 'Messaggio',
+    'modalita_consegna_asporto' => 'Modalità consegna: Ritiro asporto presso :name è stata modificata correttamente',
+    'contatta_tel_mail' => 'Contatta :name se desideri annullare o modificare la tua prenotazione:',
+    'end_copy' => '&copy; 2025 :name . Tutti i diritti riservati.',
 
     ];
