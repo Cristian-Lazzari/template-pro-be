@@ -372,11 +372,11 @@ class ReservationController extends Controller
             $title_admin = Lang::get('admin.title_admin', ['name'=>$newRes->name, 'surname'=>$newRes->surname], $defaultLang);
             $title_client = Lang::get('admin.title_client', ['name'=>$newRes->name, 'surname'=>$newRes->surname], $lang);
             // Prepara i dati per le email
-            $bodymail = [
+            $bodymail = [ //email per admin
                 'type' => 'res',
                 'to' => 'admin',
 
-                'title' =>  $newRes->name . ' ' . $newRes->surname .' ha appena prenotato un tavolo',
+                'title' =>  $title_admin,
                 'subtitle' => '',
                 
                 'res_id' => $newRes->id,
@@ -397,9 +397,9 @@ class ReservationController extends Controller
             $mailAdmin = new confermaOrdineAdmin($bodymail);
             Mail::to(config('configurazione.mf'))->locale($defaultLang)->send($mailAdmin);
 
-            $bodymail['to'] = 'user';
+            $bodymail['to'] = 'user'; //email per user
             $bodymail['whatsapp_message_id'] = $newRes->whatsapp_message_id;
-            $bodymail['title'] =  Lang::get('admin.title_client', ['name'=>$newRes->name], $lang);
+            $bodymail['title'] =  $title_client;
             $bodymail['subtitle'] = Lang::get('admin.sub_client', [], $lang);
             
             $mail = new confermaOrdineAdmin($bodymail);
