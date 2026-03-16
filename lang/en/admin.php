@@ -168,6 +168,13 @@ return [
     'Codice_ateco' => 'ATECO code',
     'Iscrizione_imprese' => 'Business register office',
     'Metodi_pagamento' => 'Accepted payment methods',
-    'Warning_reset_disponibilita' =>
-        '⚠️ If you update service settings, double room or takeaway management, the currently configured availabilities will be reset and you will need to set them again.',
+    'Warning_reset_disponibilita' => '⚠️ If you update service settings, double room or takeaway management, the currently configured availabilities will be reset and you will need to set them again.',
+
+    'Lista_prenotazioni' => 'Lista prenotazioni',
+    'Filtri_aggiornati' => 'Filtri aggiornati',
+    'Cerca_cliente' => 'Cerca cliente...',
+    'Pagato' => 'Pagato',
+    'Rimborsato' => 'Rimborsato',
+    'Vedi' => 'Vedi',
+    'Chiama' => 'Chiama',
 ];
