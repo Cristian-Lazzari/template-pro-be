@@ -33,14 +33,14 @@ $adv = json_decode($setting['advanced']->property, 1);
         </a>
         <a class="pack" href="https://future-plus.it/#pacchetti">
             <img src="https://future-plus.it/img/favicon.png" alt="">
-            Pacchetto: {{$pack[config('configurazione.subscription')]}}</a>
+            {{__('admin.Pacchetto')}}: {{$pack[config('configurazione.subscription')]}}</a>
 
        
     </div>
     <div class="theme my-4"> 
-         <p>Tema: 
-            <strong id="light_s">Scuro</strong>
-            <strong id="dark_s">Chiaro</strong>
+        <p>{{__('admin.Tema')}}:
+            <strong id="light_s">{{__('admin.Scuro')}}</strong>
+            <strong id="dark_s">{{__('admin.Chiaro')}}</strong>
         </p>
         <button id="theme-toggle" class="my_btn_3">
             <svg id="dark" xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
@@ -199,7 +199,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     @if(config('configurazione.subscription') > 1)  
                     <div class="g_set">  
                         <div class="input-group ">
-                            <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
+                            <label class="input-group-text">{{__('admin.Prezzo_minimo')}}</label>
                             <input type="number" class="form-control"  name="min_price_a" value="{{$asporto_p['min_price'] / 100}}">
                         </div>
                     </div>
@@ -272,11 +272,11 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                     @endif
                     <div class="input-group ">
-                        <label class="input-group-text" id="basic-addon1">Prezzo minimo</label>
+                        <label class="input-group-text" id="basic-addon1">{{__('admin.Prezzo_minimo')}}</label>
                         <input type="number" class="form-control"  name="min_price_d" value="{{$domicilio_p['min_price'] / 100}}">
                     </div>
                     <div class="input-group ">
-                        <label class="input-group-text" id="basic-addon1">Prezzo consegna</label>
+                        <label class="input-group-text" id="basic-addon1">{{__('admin.Prezzo_consegna')}}</label>
                         <input type="number" class="form-control"  name="delivery_cost" value="{{$domicilio_p['delivery_cost'] / 100}}">
                     </div>
                 </div>
@@ -292,19 +292,19 @@ $adv = json_decode($setting['advanced']->property, 1);
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="ferie_status"  @if($setting['Periodo di Ferie']['status'] == 0) checked  @endif value="0" >
-                                <span class="name">A lavoro</span>
+                                <span class="name">{{__('admin.A_lavoro')}}</span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="ferie_status"  @if($setting['Periodo di Ferie']['status'] == 1) checked  @endif value="1" >
-                                <span class="name">In ferie</span>
+                                <span class="name">{{__('admin.In_ferie')}}</span>
                             </label>
                         </div>
                     </div>
                     
                     <div class="input-group flex-nowrap">
-                        <label for="form" class="input-group-text" >Da</label>
+                        <label for="form" class="input-group-text">{{__('admin.Da')}}</label>
                         <input name="from" id="form" type="date" class="form-control" placeholder="da" @if($setting['Periodo di Ferie']['property']['from'] !== '') value="{{$setting['Periodo di Ferie']['property']['from']}}"  @endif>
-                        <label for="to" class="input-group-text" >A</label>
+                        <label for="to" class="input-group-text">{{__('admin.A')}}</label>
                         <input name="to" id="to" type="date" class="form-control" placeholder="da" @if($setting['Periodo di Ferie']['property']['to'] !== '') value="{{$setting['Periodo di Ferie']['property']['to']}}"  @endif>
                     </div>
                 </div>
@@ -431,11 +431,11 @@ $adv = json_decode($setting['advanced']->property, 1);
                                     <input type="file" id="file-input" name="foto_maps">
                                 </div>
                                 <div class="input-group ">
-                                    <label class="input-group-text" id="basic-addon1">Link Google Maps</label>
+                                    <label class="input-group-text" id="basic-addon1">{{__('admin.Link_Google_Maps')}}</label>
                                     <input type="text" class="form-control"  name="link_maps" @if($property_posizione) value="{{ $property_posizione['link_maps'] }}" @endif>
                                 </div>
                                 <div class="input-group ">
-                                    <label class="input-group-text" id="basic-addon1">Indirizzo</label>
+                                    <label class="input-group-text" id="basic-addon1">{{__('admin.Indirizzo')}}</label>
                                     <input type="text" class="form-control"  name="indirizzo" @if($property_posizione) value="{{ $property_posizione['indirizzo'] }}" @endif>
                                 </div>          
                             </section>
@@ -453,11 +453,11 @@ $adv = json_decode($setting['advanced']->property, 1);
                         <div class="accordion-body">
                             <section>
                                 <div class="input-group ">
-                                    <label for="telefono" class="input-group-text">Telefono</label>
+                                    <label for="telefono" class="input-group-text">{{__('admin.Telefono')}}</label>
                                     <input type="text" class="form-control"  name="telefono" @if($property_contatti) value="{{ $property_contatti['telefono'] }}" @endif>
                                 </div>
                                 <div class="input-group ">
-                                    <label for="email" class="input-group-text">Email</label>
+                                    <label for="email" class="input-group-text">{{__('admin.Email')}}</label>
                                     <input type="text" class="form-control"  name="email" @if($property_contatti) value="{{ $property_contatti['email'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
@@ -466,7 +466,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                                             <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
                                         </svg>
                                     </label>
-                                    <input type="text" class="form-control"  placeholder="Link di instagram" name="instagram" @if(isset($property_contatti['instagram'])) value="{{ $property_contatti['instagram'] }}" @endif>
+                                    <input type="text" class="form-control"  placeholder="{{__('admin.Link_instagram')}}" name="instagram" @if(isset($property_contatti['instagram'])) value="{{ $property_contatti['instagram'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="facebook" class="input-group-text">
@@ -474,7 +474,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                                             <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
                                         </svg>
                                     </label>
-                                    <input type="text" class="form-control"  placeholder="Link di facebook" name="facebook" @if(isset($property_contatti['facebook'])) value="{{ $property_contatti['facebook'] }}" @endif>
+                                    <input type="text" class="form-control" placeholder="{{__('admin.Link_facebook')}}" name="facebook" @if(isset($property_contatti['facebook'])) value="{{ $property_contatti['facebook'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="tiktok" class="input-group-text">
@@ -482,7 +482,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                                             <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
                                         </svg>
                                     </label>
-                                    <input type="text" class="form-control"  placeholder="Link di tiktok" name="tiktok" @if(isset($property_contatti['tiktok'])) value="{{ $property_contatti['tiktok'] }}" @endif>
+                                    <input type="text" class="form-control"  placeholder="{{__('admin.Link_tiktok')}}" name="tiktok" @if(isset($property_contatti['tiktok'])) value="{{ $property_contatti['tiktok'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="youtube" class="input-group-text">
@@ -490,7 +490,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                                             <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/>
                                         </svg>
                                     </label>
-                                    <input type="text" class="form-control"  placeholder="Link di youtube" name="youtube" @if(isset($property_contatti['youtube'])) value="{{ $property_contatti['youtube'] }}" @endif>
+                                    <input type="text" class="form-control"  placeholder="{{__('admin.Link_youtube')}}" name="youtube" @if(isset($property_contatti['youtube'])) value="{{ $property_contatti['youtube'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="whatsapp" class="input-group-text">
@@ -533,8 +533,8 @@ $adv = json_decode($setting['advanced']->property, 1);
                                 @endforeach
                             </div>   
                             <div class="actions">
-                                <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">Aggiungi </button>
-                                <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> Rimuovi </button>
+                                <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop">{{__('admin.Aggiungi')}}</button>
+                                <button type="button" class="my_btn_1 trash" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">{{__('admin.Rimuovi')}}</button>
                             </div>                       
                         </div>
                     </div>
@@ -568,7 +568,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                                 @endforeach
                             </div>      
                             <div class="actions">
-                                <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Modifica</button>
+                                <button type="button" class=" my_btn_1 " data-bs-toggle="modal" data-bs-target="#staticBackdrop2">{{__('admin.Modifica')}}</button>
                             </div>                    
                         </div>
                     </div>
@@ -604,7 +604,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                 {{__('admin.Impostazioni_a')}}</h2>
                 <div class="top-set_a">
                     <div class="set_a">
-                        <h4>Gestione menu</h4>
+                        <h4>{{__('admin.Gestione_menu')}}</h4>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input @checked($adv['menu_fix_set']== '0') type="radio" name="menu_fix_set" value="0" >
@@ -621,7 +621,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                         </div>
                     </div>
                     <div class="set_a">
-                        <h4>Servizi attivi</h4>
+                        <h4>{{__('admin.Servizi_attivi')}}</h4>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input class="critical-radio1" @checked($adv['services']== '3') type="radio" name="services" value="3" >
@@ -640,7 +640,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
 
                     <div class="set_a last">
-                        <h4>Doppia sala</h4>
+                        <h4>{{__('admin.Doppia_sala')}}</h4>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input class="critical-radio3" @checked($adv['dt']== 0) type="radio" name="dt" value="0" >
@@ -654,11 +654,11 @@ $adv = json_decode($setting['advanced']->property, 1);
                         </div>
                         <div class="split">
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Sala 1</label>
+                                <label class="" id="basic-addon1">{{__('admin.Sala_1')}}</label>
                                 <input type="text" class="" name="sala_1" value="{{$adv['sala_1']}}">
                             </div>
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Sala 2</label>
+                                <label class="" id="basic-addon1">{{__('admin.Sala_2')}}</label>
                                 <input type="text" class="" name="sala_2" value="{{$adv['sala_2']}}">
                             </div>
                         </div>
@@ -666,35 +666,35 @@ $adv = json_decode($setting['advanced']->property, 1);
                     <div class="set_a ">
               
                         <h4 class="w-100">
-                            Gestione date
+                            {{__('admin.Gestione_date')}}
                         </h4>
                         <div class="split">
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Latenza orario - Ordini</label>
+                                <label class="" id="basic-addon1">{{__('admin.Latenza_ordini')}}</label>
                                 <input type="time" class="" name="delay_or" value="{{$adv['delay_or']}}">
                             </div>
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Latenza orario - Prenotazioni</label>
+                                <label class="" id="basic-addon1">{{__('admin.Latenza_prenotazioni')}}</label>
                                 <input type="time" class="" name="delay_res" value="{{$adv['delay_res']}}">
                             </div>
                         </div>
                         <div class="split">
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Latenza prenotazioni (Giorni)</label>
+                                <label class="" id="basic-addon1">{{__('admin.Latenza_prenotazioni_giorni')}}</label>
                                 <input type="number" class="" name="max_day_res" value="{{$adv['max_day_res']}}">
                             </div>
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Intervallo (minuti)</label>
+                                <label class="" id="basic-addon1">{{__('admin.Intervallo_minuti')}}</label>
                                 <input type="number" class="" name="times_interval" value="{{$adv['times_interval']}}">
                             </div>
                         </div>
                         <div class="split">
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Orario di inzio</label>
+                                <label class="" id="basic-addon1">{{__('admin.Orario_inizio')}}o</label>
                                 <input type="time" class="" name="times_start" value="{{$adv['times_start']}}">
                             </div>
                             <div class="input_label">
-                                <label class="" id="basic-addon1">Orario di fine</label>
+                                <label class="" id="basic-addon1">{{__('admin.Orario_fine')}}</label>
                                 <input type="time" class="" name="times_end" value="{{$adv['times_end']}}">
                             </div>
                         </div>
@@ -703,39 +703,39 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
                 </div>
                 <div class="more_info">
-                    <h4>Informazioni legali</h4>
+                    <h4>{{__('admin.Info_legali')}}</h4>
                     <div class="split">
                         <div class="input_label">
-                            <label class="" id="basic-addon1">Ragione sociale</label>
+                            <label class="" id="basic-addon1">{{__('admin.Ragione_sociale')}}</label>
                             <input type="text" name="r_sociale" value="{{$adv['r_sociale']}}">
                         </div>
                         <div class="input_label">
-                            <label class="" id="basic-addon1">P. iva</label>
+                            <label class="" id="basic-addon1">{{__('admin.Piva')}}</label>
                             <input type="text" name="p_iva" value="{{$adv['p_iva']}}">
                         </div>
 
                     </div>
                     <div class="split">
                         <div class="input_label">
-                            <label class="" id="basic-addon1">Codice REA</label>
+                            <label class="" id="basic-addon1">{{__('admin.Codice_rea')}}</label>
                             <input type="text" name="c_rea" value="{{$adv['c_rea']}}">
                         </div>
                         <div class="input_label">
-                            <label class="" id="basic-addon1">Capitale sociale</label>
+                            <label class="" id="basic-addon1">{{__('admin.Capitale_sociale')}}</label>
                             <input type="number" name="c_sociale" value="{{$adv['c_sociale']}}">
                         </div>
                     </div>
 
                     <div class="input_label ">
-                        <label class="" id="basic-addon1">Codice Ateco</label>
+                        <label class="" id="basic-addon1">{{__('admin.Codice_ateco')}}</label>
                         <input type="text" name="c_ateco" value="{{isset($adv['c_ateco']) ? $adv['c_ateco'] : ''}}">
                     </div>
                     <div class="input_label ">
-                        <label class="" id="basic-addon1">Iscrizione Ufficio Imprese</label>
+                        <label class="" id="basic-addon1">{{__('admin.Iscrizione_imprese')}}</label>
                         <input type="text" name="u_imprese" value="{{$adv['u_imprese']}}">
                     </div>
                     <div class="input_label method ">
-                        <label class="" id="basic-addon1">Metodi di pagamento accettati</label>
+                        <label class="" id="basic-addon1">{{__('admin.Metodi_pagamento')}}</label>
                         <div class="method_cont">
                             <input class="btn-check" type="checkbox" name="method[]" id="m_1" value="1" @if (in_array(1, $adv['method'])) checked @endif>
                             <label class="btn btn-outline-dark" for="m_1">
@@ -771,10 +771,10 @@ $adv = json_decode($setting['advanced']->property, 1);
                 </div>
                     <!-- Messaggio di avviso -->
                 <div id="critical-warning" style="display: none; text-align:center;" class="error">
-                    ⚠️  Se aggiorni impostazioni di servizi, doppia sala o gestione asporto,  le disponibilita che hai attualmentente impostato verranno resettate e dovrai reimpostarle.
+                    {{__('admin.Warning_reset_disponibilita')}}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">{{__('admin.Annulla')}}</button>
                     <button type="sumbit" class="my_btn_1 add">{{__('admin.Aggiorna')}}</button>
                 </div>
             </form>
@@ -802,8 +802,8 @@ $adv = json_decode($setting['advanced']->property, 1);
                         @endforeach
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="my_btn_1" data-bs-dismiss="modal">Annulla</button>
-                        <button type="sumbit" class="my_btn_2">Rimuovi comuni selezionati</button>
+                        <button type="button" class="my_btn_1" data-bs-dismiss="modal">{{__('admin.Annulla')}}</button>
+                        <button type="sumbit" class="my_btn_2">{{__('admin.Rimuovi_comuni')}}</button>
                     </div>
                 </form>
             </div>
@@ -815,30 +815,30 @@ $adv = json_decode($setting['advanced']->property, 1);
                     @csrf
                     <input type="hidden" name="ar" value="add">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdropLabel">Aggiungi un comune per le consegne</h1>
+                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdropLabel">{{__('admin.Aggiungi_comune')}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="comune" class="input-group-text" >Comune</label>
+                            <label for="comune" class="input-group-text" >{{__('admin.Comune')}}</label>
                             <input name="comune" id="comune" type="text" class="form-control" placeholder="comune">
                         </div>
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="provincia" class="input-group-text" >Provincia</label>
+                            <label for="provincia" class="input-group-text" >{{__('admin.Provincia')}}</label>
                             <input name="provincia" id="provincia" type="text" class="form-control" placeholder="sigla della provincia es: AN">
                         </div>
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="cap" class="input-group-text" >Cap</label>
+                            <label for="cap" class="input-group-text" >{{__('admin.Cap')}}</label>
                             <input name="cap" id="cap" type="text" class="form-control" placeholder="cap">
                         </div>
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="price" class="input-group-text" >Costo extra consegna</label>
+                            <label for="price" class="input-group-text" >{{__('admin.Costo_extra_consegna')}}</label>
                             <input name="price" id="price" type="number" step="0.01" class="form-control" placeholder="€ extra">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
-                        <button type="sumbit" class="my_btn_1 add">Aggiungi nuovo comune</button>
+                        <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">{{__('admin.Annulla')}}</button>
+                        <button type="sumbit" class="my_btn_1 add">{{__('admin.Aggiungi_comune')}}</button>
                     </div>
                 </form>
             </div>
@@ -849,25 +849,25 @@ $adv = json_decode($setting['advanced']->property, 1);
                 <form action="{{ route('admin.settings.numbers')}}" method="POST" class="modal-content">
                     @csrf
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop2Label">Modifica i numeri che possono ricevere le notifiche wa</h1>
+                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop2Label">{{__('admin.Modifica_wa')}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="numbers[]" class="input-group-text" >1# Numero</label>
+                            <label for="numbers[]" class="input-group-text" >1# {{__('admin.Numero')}}</label>
                             <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
                         </div>
                         @if (config('configurazione.subscription') == 5)
                             
                         <div class="input-group flex-nowrap py-2 w-auto">
-                            <label for="numbers[]" class="input-group-text" >2# Numero</label>
+                            <label for="numbers[]" class="input-group-text" >2# {{__('admin.Numero')}}</label>
                             <input name="numbers[]" id="numbers[]" type="text" class="form-control" placeholder="39000111000">
                         </div>
                         @endif
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">Annulla</button>
-                        <button type="sumbit" class="my_btn_1 add">Modifica</button>
+                        <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">{{__('admin.Annulla')}}</button>
+                        <button type="sumbit" class="my_btn_1 add">{{__('admin.Modifica')}}</button>
                     </div>
                 </form>
             </div>

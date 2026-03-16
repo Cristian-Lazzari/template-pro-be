@@ -112,4 +112,68 @@ return [
     'sub_client' => 'La tua prenotazione è stata ricevuta ed è in fase di elaborazione. Riceverai a breve una conferma. Grazie per aver prenotato tramite il nostro sito web.',
 
 
+
+    'Pacchetto' => 'Pacchetto',
+    'Tema' => 'Tema',
+    'Scuro' => 'Scuro',
+    'Chiaro' => 'Chiaro',
+
+    'Prezzo_minimo' => 'Prezzo minimo',
+    'Prezzo_consegna' => 'Prezzo consegna',
+
+    'A_lavoro' => 'A lavoro',
+    'In_ferie' => 'In ferie',
+
+    'Da' => 'Da',
+    'A' => 'A',
+
+    'Link_Google_Maps' => 'Link Google Maps',
+    'Indirizzo' => 'Indirizzo',
+
+    'Telefono' => 'Telefono',
+    'Email' => 'Email',
+
+    'Link_instagram' => 'Link di Instagram',
+    'Link_facebook' => 'Link di Facebook',
+    'Link_tiktok' => 'Link di TikTok',
+    'Link_youtube' => 'Link di YouTube',
+
+    'Aggiungi' => 'Aggiungi',
+    'Rimuovi' => 'Rimuovi',
+    'Numero' => 'Numero',
+    'Cap' => 'Cap',
+    'Provincia' => 'Provincia',
+    'Rimuovi_comuni' => 'Rimuovi comuni selezionati',
+    'Costo_extra_consegna' => 'Costo extra consegna',
+    'Aggiungi_comune' => 'Aggiungi nuovo comune',
+    'Modifica' => 'Modifica',
+    'Modifica_wa' => 'Modifica i numeri che possono ricevere le notifiche wa',
+    'Modifica_numeri_wa' => 'Modifica i numeri che possono ricevere le notifiche WhatsApp',
+    'Numero_1' => '1° Numero',
+    'Numero_2' => '2° Numero',
+    'Gestione_menu' => 'Gestione menu',
+    'Servizi_attivi' => 'Servizi attivi',
+    'Doppia_sala' => 'Doppia sala',
+    'Sala_1' => 'Sala 1',
+    'Sala_2' => 'Sala 2',
+    'Gestione_date' => 'Gestione date',
+    'Latenza_ordini' => 'Latenza orario - Ordini',
+    'Latenza_prenotazioni' => 'Latenza orario - Prenotazioni',
+    'Latenza_prenotazioni_giorni' => 'Latenza prenotazioni (giorni)',
+    'Intervallo_minuti' => 'Intervallo (minuti)',
+    'Orario_inizio' => 'Orario di inizio',
+    'Orario_fine' => 'Orario di fine',
+    'Info_legali' => 'Informazioni legali',
+    'Ragione_sociale' => 'Ragione sociale',
+    'Piva' => 'P. IVA',
+    'Codice_rea' => 'Codice REA',
+    'Capitale_sociale' => 'Capitale sociale',
+    'Codice_ateco' => 'Codice Ateco',
+    'Iscrizione_imprese' => 'Iscrizione Ufficio Imprese',
+    'Metodi_pagamento' => 'Metodi di pagamento accettati',
+    'Warning_reset_disponibilita' =>
+        '⚠️ Se aggiorni impostazioni di servizi, doppia sala o gestione asporto, le disponibilità attualmente impostate verranno resettate e dovrai reimpostarle.',
+
+
+
 ];
