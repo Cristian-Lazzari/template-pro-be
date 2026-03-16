@@ -171,9 +171,24 @@ return [
     'Codice_ateco' => 'Codice Ateco',
     'Iscrizione_imprese' => 'Iscrizione Ufficio Imprese',
     'Metodi_pagamento' => 'Metodi di pagamento accettati',
-    'Warning_reset_disponibilita' =>
-        '⚠️ Se aggiorni impostazioni di servizi, doppia sala o gestione asporto, le disponibilità attualmente impostate verranno resettate e dovrai reimpostarle.',
+    'Warning_reset_disponibilita' =>  '⚠️ Se aggiorni impostazioni di servizi, doppia sala o gestione asporto, le disponibilità attualmente impostate verranno resettate e dovrai reimpostarle.',
 
-
-
+    'Lista_prenotazioni' => 'Lista prenotazioni',
+    'Filtri_aggiornati' => 'Filtri aggiornati',
+    'Cerca_cliente' => 'Cerca cliente...',
+    'Pagato' => 'Pagato',
+    'Rimborsato' => 'Rimborsato',
+    'Vedi' => 'Vedi',
+    'Chiama' => 'Chiama',
+    'Categorie_prodotti' => 'Categorie prodotti',
+    'Modifica_ordine' => 'Modifica ordine',
+    'Categorie_prodotti' => 'Categorie prodotti',
+    'Conferma_eliminazione' => 'Confermi di voler eliminare',
+    'Delete_categoria_info' => 'Eliminando questa categoria, se ci sono prodotti ad essa abbinati, verranno assegnati alla categoria "Non categorizzati".',
+    'Elimina' => 'Elimina',
+    'Riordina_prodotti_di' => 'Riordina i prodotti di',
+    'Prodotti_da_ordinare' => 'Prodotti da ordinare',
+    'Ordine_corretto' => 'Ordine corretto',
+    'Riordina_categorie' => 'Riordina le tue categorie',
+    'Categorie_da_ordinare' => 'Categorie da ordinare',
 ];

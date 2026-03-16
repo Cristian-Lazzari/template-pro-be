@@ -177,4 +177,5 @@ return [
     'Rimborsato' => 'Rimborsato',
     'Vedi' => 'Vedi',
     'Chiama' => 'Chiama',
+    'Categorie_prodotti' => 'Categorie prodotti',
 ];

@@ -24,7 +24,7 @@
 
 
 <div class="dash_page">
-    <h1>Categorie prodotti</h1>
+    <h1>{{__('admin.Categorie_prodotti')}}</h1>
     <div class="action-page">
         <a class="my_btn_1 create w-auto" href="{{ route('admin.categories.create') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-plus-fill" viewBox="0 0 16 16">
@@ -36,11 +36,7 @@
     <div class="slim_cont list-group">
         @foreach ($categories as $item)
 
-        @if ($item->id !== 1)
-            <div class="category list-group-item ">
-        @else
-            <div class="category d-none ">
-        @endif
+            <div class="category {{ $item->id === 1 ? 'd-none' : 'list-group-item' }}">
                 <h3><a>{{$item->name}}</a></h3>     
             
                 @if ($item->id !== 1)
@@ -77,16 +73,16 @@
                 <div class="modal-dialog modal-dialog-centered my_modal_dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                    <h1 class=" fs-5" id="staticBackdropLabel{{$item->id}}">Confermi di voler eliminare "<strong>{{$item->name}}</strong>"?</h1>
+                    <h1 class=" fs-5" id="staticBackdropLabel{{$item->id}}">{{__('admin.Conferma_eliminazione')}} "<strong>{{$item->name}}</strong>"?</h1>
                     <button data-bs-target="#staticBackdrop{{$item->id}}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body body">
-                        <p>Eiminando questa categoria, se ci sono prodotti ad essa abbinati, verrano abbinati alla categoria "Non categorizzati"</p>
+                        <p>{{__('admin.Delete_categoria_info')}}</p>
                         <form action="{{ route('admin.categories.destroy', ['category'=>$item]) }}" method="post" >
                             @method('delete')
                             @csrf
                             <button class="my_btn_5 w-100"  type="submit">
-                                Elimina
+                                {{__('admin.Elimina')}}
                             </button>
                         </form>
                     </div>
@@ -99,7 +95,7 @@
                 <div class="modal-dialog modal-dialog-centered my_modal_dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class=" fs-5" id="staticBackdropUpLabel{{$item->id}}">Riordina i prodotti di: "{{$item->name}}"</h1>
+                            <h1 class=" fs-5" id="staticBackdropUpLabel{{$item->id}}">{{__('admin.Riordina_prodotti_di')}} "{{$item->name}}"</h1>
                             <button type="button" class="btn-close" data-bs-target="#staticBackdropUp{{$item->id}}" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body body cat_{{$item->id}}">
@@ -107,7 +103,7 @@
                                 @csrf
                                 <div class="row ">
                                     <div class="col-md-6 ">
-                                        <h4 class="text-center">Prodotti da ordinare</h4>
+                                        <h4 class="text-center">{{__('admin.Prodotti_da_ordinare')}}</h4>
                                         <ul id="lista_A{{$item->id}}" class="list-group mylist">
                                             @foreach($item->products as $oggetto)
                                                 <li class="list-group-item list_p" cat_id="cat_{{$item->id}}" data-id="{{ $oggetto['id'] }}">
@@ -119,14 +115,14 @@
                                 
                                 
                                     <div class="col-md-6">
-                                        <h4 class="text-center">Ordine corretto</h4>
+                                        <h4 class="text-center">{{__('admin.Ordine_corretto')}}</h4>
                                         <ul id="lista_B{{$item->id}}" class="list-group mylist">
                                             <!-- Lista vuota inizialmente -->
                                         </ul>
                                     </div>
                                 </div>
                                 <button  id="btnConferma_cat_{{$item->id}}" class="d-none my_btn_5 w-100" type="submit">
-                                    Modifica
+                                    {{__('admin.Modifica')}}
                                 </button>
                             </form>
                         </div>
@@ -149,7 +145,7 @@
         <div class="modal-dialog modal-dialog-centered my_modal_dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h1 class=" fs-5" id="staticBackdropspecial">Riordina le tue categorie</h1>
+                <h1 class=" fs-5" id="staticBackdropspecial">{{__('admin.Riordina_categorie')}}</h1>
                 <button type="button" class="btn-close" data-bs-target="#staticBackdropspecial" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body body">
@@ -157,7 +153,7 @@
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
-                                <h4 class="text-center">Categeorie da ordinare</h4>
+                                <h4 class="text-center">{{__('admin.Categorie_da_ordinare')}}</h4>
                                 <ul id="listaA" class="list-group mylist">
                                     @foreach($categories as $oggetto)
                                         <li class="list-group-item list_c" data-id="{{ $oggetto['id'] }}">
@@ -169,14 +165,14 @@
                         
                         
                             <div class="col-md-6">
-                                <h4 class="text-center">Ordine corretto</h4>
+                                <h4 class="text-center">{{__('admin.Ordine_corretto')}}</h4>
                                 <ul id="listaB" class="list-group mylist list_c">
                                     <!-- Lista vuota inizialmente -->
                                 </ul>
                             </div>
                         </div>
                         <button  id="btnConferma" class="d-none my_btn_5 w-100" type="submit">
-                            Modifica
+                            {{__('admin.Modifica')}}
                         </button>
                     </form>
                 </div>
@@ -243,9 +239,7 @@
                 }
                 controllaBottoneProd(btnConferma, listaA_prod);
             }
-          
         });
-
         // Nasconde il bottone inizialmente
         controllaBottone();
     });
