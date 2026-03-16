@@ -258,13 +258,13 @@ document.addEventListener("DOMContentLoaded", function() {
     typeToggle?.addEventListener("click", () => {
         if (currentType === "all") {
             currentType = "reservations";
-            typeToggle.textContent = {{__('admin.Prenotazioni')}};
+            typeToggle.textContent = "{{__('admin.Prenotazioni')}}";
         } else if (currentType === "reservations") {
             currentType = "orders";
-            typeToggle.textContent = {{__('admin.Ordini')}};
+            typeToggle.textContent = "{{__('admin.Ordini')}}";
         } else {
             currentType = "all";
-            typeToggle.textContent = {{__('admin.Tutti')}};
+            typeToggle.textContent = "{{__('admin.Tutti')}}";
         }
         render();
     });
