@@ -11,7 +11,7 @@ return array (
   'Asporto' => 'Asporto',
   'Tavoli' => 'Tavoli',
   'Impostazioni' => 'Impostazioni',
-  'Impostazioni_a' => 'Impostazioni',
+  'Impostazioni_a' => 'Impostazioni avanzate',
   'Tutti' => 'Tutti',
   'Esci' => 'Esci',
   'Info' => 'Info',
