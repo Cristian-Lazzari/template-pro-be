@@ -8,13 +8,10 @@
         <h1>
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bar-chart-line-fill" viewBox="0 0 16 16">
             <path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1z"/>
-            </svg>
-            
-            Statistiche
-        </h1>
+            </svg> Statistiche </h1>
 
         @if($order_count)
-            <h2>Prodotti più ordinati</h2>
+            <h2>{{ __('admin.Prodotti_pi_ordinati') }}</h2>
             <div class="chart">
                 <canvas class="graph" id="topProductsChart"></canvas>
                 <div class="list">
@@ -22,8 +19,8 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Prodotto</th>
-                                <th scope="col">Quantità</th>
+                                <th scope="col">{{ __('admin.Prodotto') }}</th>
+                                <th scope="col">{{ __('admin.Quantit') }}</th>
                             </tr>
                         </thead>
                         @php $index = 1 @endphp
@@ -39,18 +36,18 @@
                 </div>
             </div>
 
-            <h2>Come vengono ordinati i prodotti nel tempo</h2>
+            <h2>{{ __('admin.Come_vengono_ordinati_i_prodotti_nel_tempo') }}</h2>
             <div class="chart">
                 <canvas class="graph" id="ordersOverTimeChart"></canvas>
             </div>
 
-            <h2>Ricavi nel tempo da ordini</h2>
+            <h2>{{ __('admin.Ricavi_nel_tempo_da_ordini') }}</h2>
             <div class="chart">
                 <canvas class="graph" id="revenueOverTimeChart"></canvas>
                 <div class="int_stat">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">Ordini:</span>
+                            <span class="label">{{ __('admin.Ordini') }}</span>
                             <span class="count">
                                 {{$order_count}}
                             </span>
@@ -84,41 +81,31 @@
                 <div class="int_stat media">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">
-                                Mesi di attività
-                            </span>
+                            <span class="label">{{ __('admin.Mesi_di_attivit') }}</span>
                             <span class="count">
                                 {{ $mesi_o }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Media ordini
-                            </span>
+                            <span class="label">{{ __('admin.Media_ordini') }}</span>
                             <span class="count">
                                 {{ round(($order_count / $mesi_o), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Media incassi 
-                            </span>
+                            <span class="label">Media incassi</span>
                             <span class="count">
                                € {{ round((($or_cash['confirmed'] + $or_cash['cancelled']) / $mesi_o), 2) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Media incassi confermati
-                            </span>
+                            <span class="label">{{ __('admin.Media_incassi_confermati') }}</span>
                             <span class="count">
                                € {{round(($or_cash['confirmed'] / $mesi_o), 2)}}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Ordine medio 
-                            </span>
+                            <span class="label">Ordine medio</span>
                             <span class="count">
                                € {{ round((($or_cash['confirmed'] + $or_cash['cancelled']) / $order_count), 2) }}
                             </span>
@@ -129,13 +116,13 @@
             </div>
         @endif
         @if($res_count)
-            <h2>Prenotazioni ai tavoli nel tempo</h2>
+            <h2>{{ __('admin.Prenotazioni_ai_tavoli_nel_tempo') }}</h2>
             <div class="chart">
                 <canvas class="graph" id="reservationChart"></canvas>
                 <div class="int_stat">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">Prenotazioni:</span>
+                            <span class="label">{{ __('admin.Prenotazioni') }}</span>
                             <span class="count">
                                 {{$res_count}}
                             </span>
@@ -169,41 +156,31 @@
                 <div class="int_stat media">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">
-                                Mesi di attività
-                            </span>
+                            <span class="label">Mesi di attività</span>
                             <span class="count">
                                 {{ $mesi_r }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Media prenotazioni
-                            </span>
+                            <span class="label">Media prenotazioni</span>
                             <span class="count">
                                 {{  round(($res_count / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Media persone
-                            </span>
+                            <span class="label">Media persone</span>
                             <span class="count">
                                 {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['children_confirmed'] + $res_people['children_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Media persone confermate
-                            </span>
+                            <span class="label">Media persone confermate</span>
                             <span class="count">
                                 {{  round((($res_people['adults_confirmed'] + $res_people['children_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">
-                                Prenotazione media
-                            </span>
+                            <span class="label">Prenotazione media</span>
                             <span class="count">
                                 {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['children_confirmed'] + $res_people['children_cancelled']) / $res_count), 1) }}
                             </span>
@@ -216,8 +193,7 @@
                             <span class="label">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-standing" viewBox="0 0 16 16">
                                     <path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M6 6.75v8.5a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2.75a.75.75 0 0 0 1.5 0v-2.5a.25.25 0 0 1 .5 0"/>
-                                </svg>
-                                Adulti</span>
+                                </svg>{{ __('admin.Adulti') }}</span>
                             <span class="count">
                                 {{ $res_people['adults_confirmed'] + $res_people['adults_cancelled'] }}
                             </span>
@@ -253,8 +229,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-arms-up" viewBox="0 0 16 16">
                                     <path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
                                 <path d="m5.93 6.704-.846 8.451a.768.768 0 0 0 1.523.203l.81-4.865a.59.59 0 0 1 1.165 0l.81 4.865a.768.768 0 0 0 1.523-.203l-.845-8.451A1.5 1.5 0 0 1 10.5 5.5L13 2.284a.796.796 0 0 0-1.239-.998L9.634 3.84a.7.7 0 0 1-.33.235c-.23.074-.665.176-1.304.176-.64 0-1.074-.102-1.305-.176a.7.7 0 0 1-.329-.235L4.239 1.286a.796.796 0 0 0-1.24.998l2.5 3.216c.317.316.475.758.43 1.204Z"/>
-                                </svg>
-                                Bambini</span>
+                                </svg>{{ __('admin.Bambini') }}</span>
                             <span class="count">
                                 {{ $res_people['children_confirmed'] + $res_people['children_cancelled'] }}
                             </span>

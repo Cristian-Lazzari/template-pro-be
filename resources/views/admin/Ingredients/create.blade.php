@@ -67,7 +67,7 @@ $domain = 'https://future-plus.it/allergens/';
             </div> 
             <div class="m-auto">
                 <input type="checkbox" class="btn-check" id="option_ing" name="option_ing" value="1" @if (old('option_ing', [])) checked @endif>
-                <label class="btn btn-outline-light" for="option_ing">questo ingrediente è un opzione</label>
+                <label class="btn btn-outline-light" for="option_ing">{{ __('admin.questo_ingrediente__un_opzione') }}</label>
             </div>
         </div>
         
@@ -93,7 +93,7 @@ $domain = 'https://future-plus.it/allergens/';
         </div>
             
     </section>
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Ingrediente</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Crea_Ingrediente') }}</button>
 
 </form>
 

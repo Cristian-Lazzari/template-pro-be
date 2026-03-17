@@ -15,12 +15,12 @@
 
 
 
-<h1 class="my-4">Invia Mail</h1>
+<h1 class="my-4">{{ __('admin.Invia_Mail') }}</h1>
 
 <form class="creation email-m"  action="{{ route('admin.mailer.send_m') }}"  method="POST"  >
     @csrf
         <section class="check_c">
-            <h3 class="mb-4">Scegli la lista di destinatari</h3>        
+            <h3 class="mb-4">{{ __('admin.Scegli_la_lista_di_destinatari') }}</h3>        
             <label class="label_c" for="type">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-checks-grid" viewBox="0 0 16 16">
                 <path d="M2 10h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m9-9h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1m0 9a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zm0-10a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2zm7 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2zM0 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.354.854a.5.5 0 1 0-.708-.708L3 3.793l-.646-.647a.5.5 0 1 0-.708.708l1 1a.5.5 0 0 0 .708 0z"/>
@@ -31,25 +31,25 @@
             <p class="mail-list-check">
                 <input type="checkbox" name="recipients[]" class="btn-check" id="1" value="1">
                 <label class="btn btn-outline-light" for="1">
-                    <span>Contatti dalle Prenotaioni</span>
+                    <span>{{ __('admin.Contatti_dalle_Prenotaioni') }}</span>
                     <span>{{$n_c[0]}}</span>
                 </label>
 
                 <input type="checkbox" name="recipients[]" class="btn-check" id="2" value="2">
                 <label class="btn btn-outline-light" for="2">
-                    <span>Contatti dagl'Ordini</span>
+                    <span>{{ __('admin.Contatti_daglOrdini') }}</span>
                     <span>{{$n_c[1]}}</span>
                 </label>
 
                 <input type="checkbox" name="recipients[]" class="btn-check" id="3" value="3">
                 <label class="btn btn-outline-light" for="3">
-                    <span>Contatti aggiunti manualmente</span>
+                    <span>{{ __('admin.Contatti_aggiunti_manualmente') }}</span>
                     <span>{{$n_c[2]}}</span>
                 </label>
 
                 <input type="checkbox" name="recipients[]" class="btn-check" id="4" value="4">
                 <label class="btn btn-outline-light" for="4">
-                    <span>Ultima lista Contatti</span>
+                    <span>{{ __('admin.Ultima_lista_Contatti') }}</span>
                     <span>{{$n_c[3]}}</span>
                 </label>
             </p>
@@ -59,7 +59,7 @@
         </section>
 
         <section class="check_c">
-            <h3 class="mb-4">Scegli un modello da inviare</h3>        
+            <h3 class="mb-4">{{ __('admin.Scegli_un_modello_da_inviare') }}</h3>        
             <label class="label_c" for="type">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-checks-grid" viewBox="0 0 16 16">
                 <path d="M2 10h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m9-9h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1m0 9a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zm0-10a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2zm7 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2zM0 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.354.854a.5.5 0 1 0-.708-.708L3 3.793l-.646-.647a.5.5 0 1 0-.708.708l1 1a.5.5 0 0 0 .708 0z"/>
@@ -82,7 +82,7 @@
                         <img src="{{ asset('public/storage/' . $m->img_1) }}" alt="">
                         @endif
                         
-                        <span>...</span>     
+                        <span>€</span>     
                     </div>
                 @endforeach
             </div>
@@ -94,7 +94,7 @@
 
 
 
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">invia mail</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.invia_mail') }}</button>
 
 </form>
 

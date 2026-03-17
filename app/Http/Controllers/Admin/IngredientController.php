@@ -164,7 +164,7 @@ class IngredientController extends Controller
         $translator = app(GoogleTranslateService::class);
 
         IngredientTranslation::updateOrCreate(
-            [   'product_id' => $ingredient->id, 'lang' => $default_l   ],
+            [   'ingredient_id' => $ingredient->id, 'lang' => $default_l   ],
             [
                 'name' => $data['name_ing'] ?? null,
             ]
@@ -172,7 +172,7 @@ class IngredientController extends Controller
         if(isset($data['translations'])){
             foreach($data['translations'] as $lang => $v){
                 IngredientTranslation::updateOrCreate(
-                    [   'product_id' => $ingredient->id, 'lang' => $lang   ],
+                    [   'ingredient_id' => $ingredient->id, 'lang' => $lang   ],
                     [
                         'name' => $n_trans ? $translator->translate($data['name_ing'], $lang) : $v['name'],
                     ]

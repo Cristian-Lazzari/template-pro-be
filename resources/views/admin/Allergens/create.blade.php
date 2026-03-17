@@ -34,8 +34,8 @@
                     {{__('admin.Tipo')}}</label>
                 <p>
                     <select name="special" id="special">
-                        <option value="0">Allergene standard</option>
-                        <option value="1">Special Flag</option>
+                        <option value="0">{{ __('admin.Allergene_standard') }}</option>
+                        <option value="1">{{ __('admin.Special_Flag') }}</option>
                     </select>
                 </p>
             </div>
@@ -66,7 +66,7 @@
        
     </section>
 
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Allergene</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Crea_Allergene') }}</button>
 
 </form>
 

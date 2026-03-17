@@ -195,7 +195,7 @@
                         <strong style="color: #04001d; opacity: .8; font-size: 15px;  margin-left: auto; font-family: monospace">+ €{{$content_mail['delivery_cost'] / 100}}</strong>
                     </div>
                 @endif    
-                {{-- <p style="color: #04001d; font-size: 16px; margin: 10px 0;">*L'importo verra pagato al momento della consegna.</p> --}}
+                {{-- <p style="color: #04001d; font-size: 16px; margin: 10px 0;">{{ __('admin.Limporto_verra_pagato_al_momento_della_consegna') }}</p> --}}
             @else
             <!-- Totale carrello -->
             <div style="color: #04001d; font-size: 22px; margin: 15px 0; display:flex;">
@@ -240,16 +240,16 @@
             <a href="tel:{{$content_mail['phone']}}" style="display: block; width: 80%; text-align: center; padding: .8rem 1.6rem; background-color: #159478; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">Chiama {{$content_mail['name']}}</a>
             <!-- Bottone per visualizzare nella dashboard -->
             @if ($content_mail['type'] == 'or')
-                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 80%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/orders/{{$content_mail['order_id']}}" style="display: block; width: 80%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">{{ __('admin.Visualizza_nella_Dashboard') }}</a>
             @elseif($content_mail['type'] == 'res')
-                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">Visualizza nella Dashboard</a>
+                <a href="{{config('configurazione.APP_URL')}}/admin/reservations/{{$content_mail['res_id']}}" style="display: block; width: 80%; text-align: center; padding: .8rem 1.6rem; background-color: #04001d; font-size: 20px; font-weight:700; color: #f4f4f4; text-decoration: none; border-radius: 5px; margin: 5px auto;">{{ __('admin.Visualizza_nella_Dashboard') }}</a>
             @endif
         @endif
 
         @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 2 && $content_mail['to'] == 'user' && !in_array($content_mail['status'], [0,6]))
             <p style="font-size: 13px; color: #04001d; opacity: .7;" >** Per annullare l'ordine o la prenotazione in autonomia premi questo bottone </p>
             <p style="margin: 10px;">
-                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323d8; color: rgb(255, 255, 255); padding: 5px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px;">Annulla</a>
+                <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323d8; color: rgb(255, 255, 255); padding: 5px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px;">{{ __('admin.Annulla') }}</a>
             </p>
         @endif
 
@@ -267,7 +267,7 @@
             </p>
         @endif
         <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">{{__('admin.end_copy', ['name' => config('configurazione.APP_NAME')])}}</p>
-        <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">Future +</a></p>
+        <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">{{ __('admin.Future_') }}</a></p>
     </div>
     
 </body>

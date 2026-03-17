@@ -36,10 +36,10 @@
                     <p>
                         <select name="special" id="special">
                             @if ($allergen->id === 1)
-                                <option selected value="4">Special Flag *</option>
+                                <option selected value="4">{{ __('admin.Special_Flag_') }}</option>
                             @else
-                                <option @if( $allergen->special == 0) selected @endif value="0">Allergene standard</option>
-                                <option @if( $allergen->special > 0) selected @endif value="1">Special Flag</option>
+                                <option @if( $allergen->special == 0) selected @endif value="0">{{ __('admin.Allergene_standard') }}</option>
+                                <option @if( $allergen->special > 0) selected @endif value="1">{{ __('admin.Special_Flag') }}</option>
                             @endif
                         </select>
                     </p>
@@ -72,7 +72,7 @@
         
         </section>
 
-        <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Allergene</button>
+        <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_Allergene') }}</button>
 
     </form>
 

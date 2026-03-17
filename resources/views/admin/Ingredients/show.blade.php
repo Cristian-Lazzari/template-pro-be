@@ -8,7 +8,7 @@ $domain = 'https://future-plus.it/allergens/';
 @endphp
  
 
-<h1>Dettagli Ingrediente</h1>
+<h1>{{ __('admin.Dettagli_Ingrediente') }}</h1>
 <div class="show_p">
     <h2>{{$ingredient->name}}</h2>
     <div class="split_p">
@@ -31,7 +31,7 @@ $domain = 'https://future-plus.it/allergens/';
             <section>
                
                     @if ($ingredient->type !== '"[]"')
-                    <h4>Categorie in cui e' possibile aggiungiere l'ingrediente:</h4>
+                    <h4>{{ __('admin.Categorie_in_cui_e_possibile_aggiungiere_lingrediente') }}</h4>
                     <p>
                         @php $cat = json_decode($ingredient->type) @endphp
                         @foreach ($cat as $c)
@@ -50,11 +50,11 @@ $domain = 'https://future-plus.it/allergens/';
     </div>
     <div class="prod-spec">
         <div class="actions">
-            <a class="my_btn_2" href="{{ route('admin.ingredients.edit', $ingredient) }}">Modifica</a>
+            <a class="my_btn_2" href="{{ route('admin.ingredients.edit', $ingredient) }}">{{ __('admin.Modifica') }}</a>
             {{-- <form action="{{ route('admin.ingredients.status') }}" method="POST">
                 @csrf
                 <input type="hidden" name="f" value="1">
-                <button class="my_btn_1 d" type="submit">Archivia</button>
+                <button class="my_btn_1 d" type="submit">{{ __('admin.Archivia') }}</button>
             </form>
             <form action="{{ route('admin.ingredients.status') }}" method="POST">
                 @csrf

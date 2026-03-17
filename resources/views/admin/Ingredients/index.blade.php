@@ -37,7 +37,7 @@
 
 
     @if (count($options))
-        <h2 class="my-4">Opzioni extra per prodotti:</h2>
+        <h2 class="my-4">{{ __('admin.Opzioni_extra_per_prodotti') }}</h2>
         <div class="slim_cont">
             @foreach ($options as $item)
         

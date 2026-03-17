@@ -74,7 +74,7 @@
             {{__('admin.Corpo')}} *1</label>   
             <textarea name="body" id="body" cols="30" rows="10" > {{ old('body', $model->body) }} </textarea>
             @error('body') <p class="error">{{ $message }}</p> @enderror
-            <p>Per andare a capo e creare più paragafi inserire /*/ tra un paragrafo e l'altro</p>
+            <p>{{ __('admin.Per_andare_a_capo_e_creare_pi_paragafi_inserire__tra_un_paragrafo_e_laltro') }}</p>
         </p>
         
         <div>
@@ -100,7 +100,7 @@
         <p>*1 Per andare a capo inserire \n e creare più paragafi inserire /*/ tra un paragrafo e l'altro </p>
     </section>
 
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica modello</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_modello') }}</button>
 
 </form>
 

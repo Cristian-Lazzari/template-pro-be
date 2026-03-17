@@ -47,7 +47,7 @@
             </div>
             
         @else
-            <h2>Menu fissi</h2>
+            <h2>{{ __('admin.Menu_fissi') }}</h2>
         @endif
         @foreach ($fix as $item)
     
@@ -111,7 +111,7 @@
             </div>
             
         @else
-            <h2 class="my-3">Combo prodotti</h2>
+            <h2 class="my-3">{{ __('admin.Combo_prodotti') }}</h2>
         @endif
         @foreach ($combo as $item)
     

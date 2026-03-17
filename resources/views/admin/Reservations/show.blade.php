@@ -119,7 +119,7 @@
                 </div>
                 <div class="actions">
                     @if (in_array($reservation->status, [0, 2, 3]))
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class=" my_btn_3">Conferma</button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class=" my_btn_3">{{ __('admin.Conferma') }}</button>
                     @endif
                     @if(in_array($reservation->status, [1, 2, 3, 5]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class=" my_btn_5">{{$reservation->status == 5 ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
@@ -138,13 +138,13 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content mymodal_make_res">
                 <div class="modal-header ">
-                    <h1 class="modal-title fs-5" id="confirmModalLabel">Gestione notifica conferma</h1>
+                    <h1 class="modal-title fs-5" id="confirmModalLabel">{{ __('admin.Gestione_notifica_conferma') }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body ">
                     Prenotazione di: {{$reservation->name}} 
                     per il: {{$reservation->date_slot}}
-                    <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
+                    <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
                     <div class="actions">
                         <form action="{{ route('admin.reservations.status') }}" method="POST">
                             @csrf
@@ -171,13 +171,13 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content mymodal_make_res">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="cancelModalLabel">Gestione notifica annullamento</h1>
+                    <h1 class="modal-title fs-5" id="cancelModalLabel">{{ __('admin.Gestione_notifica_annullamento') }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     Prenotazione di: {{$reservation->name}} 
                     per il: {{$reservation->date_slot}}
-                    <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
+                    <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
                     <div class="actions">
                         <form action="{{ route('admin.reservations.status') }}" method="POST">
                             @csrf

@@ -227,16 +227,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
                 <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
-            </svg>
-            Ordina Post in Storia
-        </button>
+            </svg>{{ __('admin.Ordina_Post_in_Storia') }}</button>
         <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialNews">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
                 <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
-            </svg>
-            Ordina Post in News
-        </button>
+            </svg>{{ __('admin.Ordina_Post_in_News') }}</button>
     </div>
 </div>
 
@@ -247,7 +243,7 @@
     <div class="modal-dialog modal-dialog-centered my_modal_dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h1 class=" fs-5" id="staticBackdropspecialNews">Riordina i tuoi Post in News (Novità/eventi)</h1>
+            <h1 class=" fs-5" id="staticBackdropspecialNews">{{ __('admin.Riordina_i_tuoi_Post_in_News_Noviteventi') }}</h1>
             <button type="button" class="btn-close" data-bs-target="#staticBackdropspecialNews" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body body">
@@ -255,7 +251,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="text-center">Post in News</h4>
+                            <h4 class="text-center">{{ __('admin.Post_in_News') }}</h4>
                             <ul id="newsA" class="list-group mylist">
                                 @foreach($news as $oggetto)
                                     <li class="list-group-item list_n" data-id="{{ $oggetto['id'] }}">
@@ -267,15 +263,13 @@
                     
                     
                         <div class="col-md-6">
-                            <h4 class="text-center">Ordine corretto</h4>
+                            <h4 class="text-center">{{ __('admin.Ordine_corretto') }}</h4>
                             <ul id="newsB" class="list-group mylist list_n">
                                 <!-- Lista vuota inizialmente -->
                             </ul>
                         </div>
                     </div>
-                    <button  id="btnConfermaN" class="d-none my_btn_5 w-100" type="submit">
-                        Modifica
-                    </button>
+                    <button  id="btnConfermaN" class="d-none my_btn_5 w-100" type="submit">{{ __('admin.Modifica') }}</button>
                 </form>
             </div>
             
@@ -286,7 +280,7 @@
     <div class="modal-dialog modal-dialog-centered my_modal_dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h1 class=" fs-5" id="staticBackdropspecialStory">Riordina i tuoi Post in Storia (Chi siamo)</h1>
+            <h1 class=" fs-5" id="staticBackdropspecialStory">{{ __('admin.Riordina_i_tuoi_Post_in_Storia_Chi_siamo') }}</h1>
             <button type="button" class="btn-close" data-bs-target="#staticBackdropspecial" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body body">
@@ -294,7 +288,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="text-center">Post in story</h4>
+                            <h4 class="text-center">{{ __('admin.Post_in_story') }}</h4>
                             <ul id="storyA" class="list-group mylist">
                                 @foreach($story as $oggetto)
                                     <li class="list-group-item list_s" data-id="{{ $oggetto['id'] }}">
@@ -306,15 +300,13 @@
                     
                     
                         <div class="col-md-6">
-                            <h4 class="text-center">Ordine corretto</h4>
+                            <h4 class="text-center">{{ __('admin.Ordine_corretto') }}</h4>
                             <ul id="storyB" class="list-group mylist list_s">
                                 <!-- Lista vuota inizialmente -->
                             </ul>
                         </div>
                     </div>
-                    <button  id="btnConfermaS" class="d-none my_btn_5 w-100" type="submit">
-                        Modifica
-                    </button>
+                    <button  id="btnConfermaS" class="d-none my_btn_5 w-100" type="submit">{{ __('admin.Modifica') }}</button>
                 </form>
             </div>
             
@@ -379,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const postContainer = document.querySelector('.time-list');
     const posts = Array.from(postContainer.querySelectorAll('.res-item'));
 
-    let currentType = {{__('admin.Tutti')}}; // Stato iniziale
+    let currentType = "{{__('admin.Tutti')}}"; // Stato iniziale
     let sortAsc = true; // Ordinamento normale
 
     // 🔍 Filtro per nome
@@ -389,12 +381,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 📰 Filtro tipo (Tutti → Story → News → Tutti)
     typeToggle.addEventListener('click', () => {
-        if (currentType === {{__('admin.Tutti')}}) {
+        if (currentType === "{{__('admin.Tutti')}}") {
             currentType = 'Story';
         } else if (currentType === 'Story') {
             currentType = 'News';
         } else {
-            currentType = {{__('admin.Tutti')}};
+            currentType = "{{__('admin.Tutti')}}";
         }
         typeToggle.textContent = currentType;
         applyFilters();

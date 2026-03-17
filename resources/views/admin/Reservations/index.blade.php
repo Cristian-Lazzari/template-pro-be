@@ -145,8 +145,8 @@
                             <li>
                                 <a href="{{ 'tel:' . $res->phone}}">{{__('admin.Chiama')}}</a>
                             </li>
-                            {{-- <li>Conferma</li>
-                            <li>Annulla</li> --}}
+                            {{-- <li>{{ __('admin.Conferma') }}</li>
+                            <li>{{ __('admin.Annulla') }}</li> --}}
                         </ul>
                     </div>
 

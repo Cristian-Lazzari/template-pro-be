@@ -14,7 +14,7 @@
 
  
 
-<h1>Crea nuova Categoria</h1>
+<h1>{{ __('admin.Crea_nuova_Categoria') }}</h1>
 
 <a class="my_btn_5 ml-auto my-3" href="{{ route('admin.categories.index') }}">{{__('admin.Annulla')}}</a>
 
@@ -47,7 +47,7 @@
        
     </section>
 
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Categoria</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Crea_Categoria') }}</button>
 
 </form>
 

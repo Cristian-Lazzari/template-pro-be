@@ -787,7 +787,7 @@ $adv = json_decode($setting['advanced']->property, 1);
                     @csrf
                     <input type="hidden" name="ar" value="remove">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop1Label">Seleziona i comuni che vuoi rimuovere</h1>
+                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop1Label">{{ __('admin.Seleziona_i_comuni_che_vuoi_rimuovere') }}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -875,7 +875,21 @@ $adv = json_decode($setting['advanced']->property, 1);
     
     @endif
 </div>
-
+<script>
+     document.addEventListener('DOMContentLoaded', async function() {
+            const toggleButton = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            localStorage.setItem('theme', currentTheme)
+            document.documentElement.setAttribute("data-theme", currentTheme);
+            
+            toggleButton.addEventListener('click', () => {
+                const theme = localStorage.getItem('theme') == 'light' ? 'dark' : 'light';
+                localStorage.setItem("theme", theme);
+                console.log(theme)
+                document.documentElement.setAttribute("data-theme", theme);
+            });
+        });
+</script>
 {{-- <script>  
     document.addEventListener('DOMContentLoaded', async function() {
         const originalValue1 = document.getElementById('attivo-originale1').value;

@@ -43,8 +43,8 @@
                     {{__('admin.Pagina_di_destinazione')}}</label>
                 <p>
                     <select name="path" id="path">
-                        <option @if( 1 == old('path')) selected @endif value="1">News</option>
-                        <option @if( 2 == old('path')) selected @endif value="2">Storia</option>
+                        <option @if( 1 == old('path')) selected @endif value="1">{{ __('admin.News') }}</option>
+                        <option @if( 2 == old('path')) selected @endif value="2">{{ __('admin.Storia') }}</option>
                     </select>
                 </p>
                 @error('path') <p class="error">{{ $message }}</p> @enderror
@@ -96,7 +96,7 @@
     </section>
     <p>* {{__('admin.Campi_facoltativi')}}</p>
     
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Post</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Crea_Post') }}</button>
     
 </form>
 

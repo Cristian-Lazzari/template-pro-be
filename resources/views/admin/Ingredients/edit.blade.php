@@ -10,7 +10,7 @@ $domain = 'https://future-plus.it/allergens/';
 
  
 
-<h1>Modifica ingrediente</h1>
+<h1>{{ __('admin.Modifica_ingrediente') }}</h1>
 <form class="creation"  action="{{ route('admin.ingredients.update' , $ingredient) }}"  enctype="multipart/form-data"  method="POST">
     @method('PUT')
     @csrf
@@ -79,7 +79,7 @@ $domain = 'https://future-plus.it/allergens/';
             </div> 
             <div class="m-auto">
                 <input type="checkbox" class="btn-check" id="option_ing" name="option_ing" value="1" @if (old('option_ing', $ingredient->option )) checked @endif>
-                <label class="btn btn-outline-light" for="option_ing">questo ingrediente è un opzione</label>
+                <label class="btn btn-outline-light" for="option_ing">{{ __('admin.questo_ingrediente__un_opzione') }}</label>
             </div>
         </div>
     {{-- multilingua --}}
@@ -118,7 +118,7 @@ $domain = 'https://future-plus.it/allergens/';
             
                                             </p>
 
-                                            <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Traduzione</button>
+                                            <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_Traduzione') }}</button>
                                                 
                                     
                                         </section>
@@ -138,7 +138,7 @@ $domain = 'https://future-plus.it/allergens/';
                 {{__('admin.Allergeni')}}</label>
             <p>
                 @foreach( $allergens as $a)
-                    <input type="checkbox" class="btn-check" id="b{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" @if (in_array($a->id, old('allergens_ing', $ingredient->allergens->pluck('id')->toArray(), []))) checked @endif>
+                    <input type="checkbox" class="btn-check" id="b{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" @if (in_array($a->id, old('allergens_ing', $ingredient->allergens ? $ingredient->allergens->pluck('id')->toArray() : [], []))) checked @endif>
                     <label class="btn 
                         @if($a->special != 0)
                         btn-outline-dark btn_special
@@ -151,7 +151,7 @@ $domain = 'https://future-plus.it/allergens/';
         </div>
             
     </section>
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica ingrediente</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_ingrediente') }}</button>
 
 </form>
 

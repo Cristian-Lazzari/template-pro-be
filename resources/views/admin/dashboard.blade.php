@@ -16,10 +16,10 @@
         @foreach ($notify as $r)
             @if ($r['type'] == 'res')  
                 <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
-                <a href="{{ route('admin.reservations.show', $r['id']) }}" class="btn btn-dark-outline">Dettagli</a> 
+                <a href="{{ route('admin.reservations.show', $r['id']) }}" class="btn btn-dark-outline">{{ __('admin.Dettagli') }}</a> 
             @else    
                 <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
-                <a href="{{ route('admin.orders.show', $r['id']) }}" class="btn btn-dark-outline">Dettagli</a> 
+                <a href="{{ route('admin.orders.show', $r['id']) }}" class="btn btn-dark-outline">{{ __('admin.Dettagli') }}</a> 
             @endif 
                 {{ $r['m'] }} 
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -226,18 +226,18 @@
                         @error('max_table_2') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="input_c @if(!(in_array($pack, [2,4]) && !$double)) d-none @endif" >
-                        <label for="max_table">N° di posti</label>
+                        <label for="max_table">{{ __('admin.N_di_posti') }}</label>
                         <input name="max_table" id="max_table" type="number" placeholder="N° di posti per fascia oraria" value="{{$property_adv['max_table'] ?? ''}}"> 
                         @error('max_table') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     
                     <div class="input_c @if(!(in_array($pack, [3,4]))) d-none @endif" >
-                        <label for="max_asporto">N° di ordini d'asporto</label>
+                        <label for="max_asporto">{{ __('admin.N_di_ordini_dasporto') }}</label>
                         <input name="max_asporto" id="max_asporto" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_asporto'] ?? ''}}"> 
                         @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="input_c @if(!(in_array($pack, [3,4]))) d-none @endif" >
-                        <label for="max_domicilio">N° di oridini a domicilio</label>
+                        <label for="max_domicilio">{{ __('admin.N_di_oridini_a_domicilio') }}</label>
                         <input name="max_domicilio" id="max_domicilio" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_domicilio'] ?? ''}}"> 
                         @error('max_domicilio') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -301,10 +301,10 @@
                     </div>
                     @endforeach
                 </div>
-                @error('days_on') <p class="error m-2">seleziona "Attiva" nei giorni i cui sei operativo</p> @enderror
+                @error('days_on') <p class="error m-2">{{ __('admin.seleziona_Attiva_nei_giorni_i_cui_sei_operativo') }}</p> @enderror
                 
                 <div class="modal-footer">
-                    <button type="button" class="my_btn_1 d " data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="my_btn_1 d " data-bs-dismiss="modal">{{ __('admin.Annulla') }}</button>
                     <button type="sumbit" class="my_btn_1 add ">{{__('admin.Aggiorna')}}</button>
                 </div>
             </form>
@@ -394,8 +394,8 @@
                             
                         </div>
                         <div class="actions w-100">
-                            <button class="my_btn_2 btn_delete" type="button" data-bs-dismiss="modal" >Annulla</button>
-                            <button class="my_btn_3" type="submit">Conferma</button>
+                            <button class="my_btn_2 btn_delete" type="button" data-bs-dismiss="modal" >{{ __('admin.Annulla') }}</button>
+                            <button class="my_btn_3" type="submit">{{ __('admin.Conferma') }}</button>
                         </div>
                     </div>
                 </div>
@@ -533,7 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Nessun dato
                 // if (res.length === 0 && or.length === 0) {
-                //     html += `<div class="no-data">Nessuna prenotazione o ordine per questo orario</div>`;
+                //     html += `<div class="no-data">{{ __('admin.Nessuna_prenotazione_o_ordine_per_questo_orario') }}</div>`;
                 // }
 
                 html += `

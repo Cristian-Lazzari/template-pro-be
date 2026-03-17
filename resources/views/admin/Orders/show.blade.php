@@ -118,7 +118,7 @@
                     </div>
                 </section>
                 <section class="products">
-                    <h3>Prodotti ordinati</h3>
+                    <h3>{{ __('admin.Prodotti_ordinati') }}</h3>
 
                     @foreach ($order->menus as $o)                
                         <div class="product">
@@ -129,7 +129,7 @@
                             <div class="variations">
                                 @if($o->fixed_menu == '2')
                                     <div class="choices">
-                                        <h5>Prodotti:</h5>
+                                        <h5>{{ __('admin.Prodotti') }}</h5>
                                         @php
                                             $right_c = [];
                                             $scelti = json_decode($o->pivot->choices);
@@ -152,7 +152,7 @@
                                     </div>
                                 @else
                                     <div class="prod">
-                                        <h5>Prodotti:</h5>
+                                        <h5>{{ __('admin.Prodotti') }}</h5>
                                         @foreach ($o->products as $c)
                                         <span>{{$c->name}}:</span>
                                         <span>({{$c->category->name}})</span>
@@ -177,7 +177,7 @@
                             <div class="variations">
                                 @if ($arrO !== [])
                                 <div class="options">
-                                    <h5>Opzioni:</h5>
+                                    <h5>{{ __('admin.Opzioni') }}</h5>
                                     @foreach ($arrO as $a)
                                     <span>+ {{$a}}</span>
                                     @endforeach
@@ -186,7 +186,7 @@
                                 <div class="bottom-var">
                                     @if ($arrA !== [])
                                     <div class="add">
-                                        <h5>Ingredienti extra:</h5>
+                                        <h5>{{ __('admin.Ingredienti_extra') }}</h5>
                                         @foreach ($arrA as $a)
                                         <span>+ {{$a}}</span>
                                         @endforeach
@@ -194,7 +194,7 @@
                                     @endif
                                     @if ($arrD !== [])
                                     <div class="removed">
-                                        <h5>Ingredienti rimossi:</h5>
+                                        <h5>{{ __('admin.Ingredienti_rimossi') }}</h5>
                                         @foreach ($arrD as $a)
                                         <span>- {{$a}}</span>
                                         @endforeach       
@@ -231,11 +231,11 @@
                 </div>
                 <div class="actions">
                     @if (in_array($order->status, [0, 2, 3]))
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">Conferma</button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">{{ __('admin.Conferma') }}</button>
                     @endif
                     @if(in_array($order->status, [1, 2, 3, 5]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_5">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_5">Posticipa e Conferma</button>                   
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_5">{{ __('admin.Posticipa_e_Conferma') }}</button>                   
                     @endif         
                 </div>
                 
@@ -252,17 +252,17 @@
             @csrf
             <input value="{{$order->id}}" type="hidden" name="id">
             <div class="modal-header">
-                <h1 class="modal-title fs-2" id="changeModalLabel">Conferma e posticipa questo ordine</h1>
+                <h1 class="modal-title fs-2" id="changeModalLabel">{{ __('admin.Conferma_e_posticipa_questo_ordine') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body fs-4">
                 Ordine di: {{$order->name}} 
                 per il: {{$order->date_slot}}
-                <p>Seleziona l'orario corretto:</p>
+                <p>{{ __('admin.Seleziona_lorario_corretto') }}</p>
                 <input required class="form-control" type="time" name="new_time">
-                <h3 class="mt-4 mb-3">Vuoi bloccare altri ordini per questa fascia oraria?</h3>
-                <button type="submit" name="cancel" value="1" class="w-100 my_btn_1">Lascia attivo</button>
-                <button type="submit" name="cancel" value="0" class="w-100 my_btn_2">Blocca questo orario</button>
+                <h3 class="mt-4 mb-3">{{ __('admin.Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria') }}</h3>
+                <button type="submit" name="cancel" value="1" class="w-100 my_btn_1">{{ __('admin.Lascia_attivo') }}</button>
+                <button type="submit" name="cancel" value="0" class="w-100 my_btn_2">{{ __('admin.Blocca_questo_orario') }}</button>
             </div>
 
 
@@ -275,13 +275,13 @@
     <div class="modal-dialog">
         <div class="modal-content mymodal_make_res">
             <div class="modal-header">
-                <h1 class="modal-title fs-3" id="confirmModalLabel">Gestione notifica per conferma</h1>
+                <h1 class="modal-title fs-3" id="confirmModalLabel">{{ __('admin.Gestione_notifica_per_conferma') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body fs-4">
                 Ordine di: {{$order->name}} 
                 per il: {{$order->date_slot}}
-                <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
+                <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
             </div>
             <div class="modal-footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">
@@ -308,13 +308,13 @@
     <div class="modal-dialog">
         <div class="modal-content mymodal_make_res">
             <div class="modal-header">
-                <h1 class="modal-title fs-3" id="cancelModalLabel">Gestione notifica per annullamento</h1>
+                <h1 class="modal-title fs-3" id="cancelModalLabel">{{ __('admin.Gestione_notifica_per_annullamento') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body fs-4">
                 Ordine di: {{$order->name}} 
                 per il: {{$order->date_slot}}
-                <p>Oltre alla mail automatica vuoi anche inviare un messaggio su whatsapp?</p>
+                <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
             </div>
             <div class="modal-footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">

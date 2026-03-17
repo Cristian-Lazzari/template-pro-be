@@ -7,7 +7,7 @@
 <form class="creation"  action="{{ route('admin.menus.store') }}"  enctype="multipart/form-data"  method="POST">
     <a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">{{__('admin.Annulla')}}</a>
     
-    <h1>Crea un nuovo Menu</h1>
+    <h1>{{ __('admin.Crea_un_nuovo_Menu') }}</h1>
     @csrf
     
     <section class="base">
@@ -34,7 +34,7 @@
         </div>
         <div class="split">
             <div class="mr-auto">
-                <label class="label_c" for="promo">Menu in evidenza</label>
+                <label class="label_c" for="promo">{{ __('admin.Menu_in_evidenza') }}</label>
                 <label class="container_star">
                     <input name="promo" value="1" type="checkbox" @if (old('promo'))  checked  @endif>
                     <svg height="24px" id="promo" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
@@ -89,19 +89,19 @@
     </section>
 
     <section>
-        <h2>Che tipo di menu stai per creare?</h2>
+        <h2>{{ __('admin.Che_tipo_di_menu_stai_per_creare') }}</h2>
         <div class="radio-inputs">
             <label class="radio">
                 <input class="radio-choice" type="radio" name="radio_choice" value="0" >
-                <span class="name">Menu fisso</span>
+                <span class="name">{{ __('admin.Menu_fisso') }}</span>
             </label>
             <label class="radio">
                 <input class="radio-choice" type="radio" name="radio_choice" value="1" >
-                <span class="name">Combo statico</span>
+                <span class="name">{{ __('admin.Combo_statico') }}</span>
             </label>
             <label class="radio">
                 <input class="radio-choice" type="radio" name="radio_choice" value="2" >
-                <span class="name">Menu custom</span>
+                <span class="name">{{ __('admin.Menu_custom') }}</span>
             </label>
         </div>
     </section>
@@ -110,14 +110,13 @@
         <h2>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ui-checks-grid" viewBox="0 0 16 16">
                 <path d="M2 10h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m9-9h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1m0 9a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zm0-10a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2zm7 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2zM0 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.354.854a.5.5 0 1 0-.708-.708L3 3.793l-.646-.647a.5.5 0 1 0-.708.708l1 1a.5.5 0 0 0 .708 0z"/>
-            </svg>
-            Abbina Prodotti</h2>
+            </svg>{{ __('admin.Abbina_Prodotti') }}</h2>
         <div class="check_c">
             
                 @foreach($products as $c)
                     <div class="prod_cont">
                         <h3>{{$c->name}}</h3>
-                        @foreach ($c->product as $p)
+                        @foreach ($c->products as $p)
                             <input type="checkbox" style="visibility: hidden; position: absolute;" class="btn-check" id="product{{ $p->id }}{{$c->name}}" name="products[]" 
                             value="{{ $p->id }}"
                             @if(in_array($p->id, old('products', [])))
@@ -138,11 +137,11 @@
         </div>
     </section>
     <section id="section_combo" class="cont_i d-none">
-        <h2>Imposta le scelte che puo fare il cliente</h2>
+        <h2>{{ __('admin.Imposta_le_scelte_che_puo_fare_il_cliente') }}</h2>
         <button class="my_btn_3 m-auto" id="btn-aggiungi" type="button" onclick="aggiungiCampo()">{{__('admin.Crea_nuova_scelta')}}</button>
         <div id="campi-wrapper"></div>
     </section>
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Crea Menu</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Crea_Menu') }}</button>
 
 </form>
 
@@ -161,20 +160,19 @@
 
         const index = Date.now();
         number_field++;
-        console.log(number_field);
-        
+
         const div = document.createElement('div');
         div.classList.add('campo-opzione');
         div.innerHTML = `
             <div class="mb-2 d-flex justify-content-between gap-2">
                 <input type="text" name="choice[${number_field}][label]" placeholder="Nome del campo">
-                <button type="button" class="btn btn-danger" onclick="this.closest('.campo-opzione').remove(); number_field--">Rimuovi</button>
+                <button type="button" class="btn btn-danger" onclick="this.closest('.campo-opzione').remove(); number_field--">{{ __('admin.Rimuovi') }}</button>
             </div>
             <div class="check_c small"> 
                 ${categories.map(cat => `
                     <h3>${cat.name}</h3>
                     <p class="prod_cont">
-                    ${cat.product.map(prod => `
+                    ${cat.products.map(prod => `
                             <input type="checkbox" style="visibility: hidden; position: absolute;"  id="${number_field}${prod.id}" class="btn-check" onchange="toggleExtra(this, ${number_field}, ${prod.id})"
                                 name="choice[${number_field}][products][${prod.id}][id]"
                                 value="${prod.id}">

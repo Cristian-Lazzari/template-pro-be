@@ -15,7 +15,7 @@
  
 <div class="dash_page">
     <a class="my_btn_5 ml-auto" href="{{ route('admin.products.index') }}">{{__('admin.Annulla')}}</a>
-    <h1 class="mb-5">Modifica prodotto</h1>
+    <h1 class="mb-5">{{ __('admin.Modifica_prodotto') }}</h1>
 @php
     $list = $languages['languages'];
     $dfl = $languages['default'];
@@ -143,7 +143,7 @@
                                                         {{__('admin.Descrizione')}}</label>   
                                                     <textarea name="translations[{{$i}}][description]" id="translations[{{$i}}][description]" cols="1" rows="4" >{{$translations[$i]->description ?? '' }}</textarea>
                                                 </p>
-                                                <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Traduzione</button>
+                                                <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_Traduzione') }}</button>
                                                     
                                         
                                             </section>
@@ -157,7 +157,7 @@
             {{-- end multilingua --}}
             <div class="split">
                 <div>
-                    <label class="label_c" for="promotion">Prodotto in evidenza</label>
+                    <label class="label_c" for="promotion">{{ __('admin.Prodotto_in_evidenza') }}</label>
                     <label class="container_star">
                         <input name="promotion" type="checkbox" @if (old('promotion', $product->promotion))  checked  @endif>
                         <svg height="24px" id="promotion" version="1.2" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M9.362,9.158c0,0-3.16,0.35-5.268,0.584c-0.19,0.023-0.358,0.15-0.421,0.343s0,0.394,0.14,0.521    c1.566,1.429,3.919,3.569,3.919,3.569c-0.002,0-0.646,3.113-1.074,5.19c-0.036,0.188,0.032,0.387,0.196,0.506    c0.163,0.119,0.373,0.121,0.538,0.028c1.844-1.048,4.606-2.624,4.606-2.624s2.763,1.576,4.604,2.625    c0.168,0.092,0.378,0.09,0.541-0.029c0.164-0.119,0.232-0.318,0.195-0.505c-0.428-2.078-1.071-5.191-1.071-5.191    s2.353-2.14,3.919-3.566c0.14-0.131,0.202-0.332,0.14-0.524s-0.23-0.319-0.42-0.341c-2.108-0.236-5.269-0.586-5.269-0.586    s-1.31-2.898-2.183-4.83c-0.082-0.173-0.254-0.294-0.456-0.294s-0.375,0.122-0.453,0.294C10.671,6.26,9.362,9.158,9.362,9.158z"></path></g></g></svg>
@@ -195,9 +195,9 @@
                         Tipo di piatto</label>
                     <p>
                         <select name="type_plate" id="type_plate">
-                            <option @if( 0 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 0 == $data['type_plate']) selected @endif value="0">altro</option>
-                            <option @if( 1 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 1 == $data['type_plate']) selected @endif value="1">tipo 1 (al taglio)</option>
-                            <option @if( 2 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 2 == $data['type_plate']) selected @endif value="2">tipo 2 (al piatto)</option>
+                            <option @if( 0 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 0 == $data['type_plate']) selected @endif value="0">{{ __('admin.altro') }}</option>
+                            <option @if( 1 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 1 == $data['type_plate']) selected @endif value="1">{{ __('admin.tipo_1_al_taglio') }}</option>
+                            <option @if( 2 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 2 == $data['type_plate']) selected @endif value="2">{{ __('admin.tipo_2_al_piatto') }}</option>
                         </select>
                     </p>
                     @error('type_plate') <p class="error">{{ $message }}</p> @enderror
@@ -211,10 +211,10 @@
                         Custom Ingredienti</label>
                     <p>
                         <select name="tag_set" id="tag_set">
-                            <option @if( 0 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 0 == $data['tag_set']) selected @endif value="0">NON modificabile</option>
-                            <option @if( 1 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 1 == $data['tag_set']) selected @endif value="1">togliere</option>
-                            <option @if( 2 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 2 == $data['tag_set']) selected @endif value="2">aggiungiere</option>
-                            <option @if( 3 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 3 == $data['tag_set']) selected @endif value="3">togliere e aggiungiere</option>
+                            <option @if( 0 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 0 == $data['tag_set']) selected @endif value="0">{{ __('admin.NON_modificabile') }}</option>
+                            <option @if( 1 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 1 == $data['tag_set']) selected @endif value="1">{{ __('admin.togliere') }}</option>
+                            <option @if( 2 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 2 == $data['tag_set']) selected @endif value="2">{{ __('admin.aggiungiere') }}</option>
+                            <option @if( 3 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 3 == $data['tag_set']) selected @endif value="3">{{ __('admin.togliere_e_aggiungiere') }}</option>
                         </select>
                     </p>
                     @error('tag_set') <p class="error">{{ $message }}</p> @enderror
@@ -228,7 +228,7 @@
             <div class="modal-dialog">
             <div class="modal-content my_bg_6">
                 <div class="modal-header">
-                    <h2>Crea e aggiungi Ingredienti mancanti</h2>
+                    <h2>{{ __('admin.Crea_e_aggiungi_Ingredienti_mancanti') }}</h2>
                     <button type="button" class="btn-close my_btn_2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -304,7 +304,7 @@
                             </p>
                         </div>
                         <input type="submit" class="btn-check" id="newi" name="newi" value="1">
-                        <label class="my_btn_2 w-50 m-auto" for="newi">Crea Ingrediente</label>
+                        <label class="my_btn_2 w-50 m-auto" for="newi">{{ __('admin.Crea_Ingrediente') }}</label>
                     </section>
                 </div>
             </div>
@@ -334,7 +334,7 @@
                             @if($alreadyLinked)
                                 <button type="button" class="available-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
                                     {{ $ingredient->name }}
-                                    <span class="remove-ingredient">−</span>
+                                    <span class="remove-ingredient">€</span>
                                 </button>
                             @endif
                         @endforeach
@@ -343,7 +343,7 @@
                         @foreach ($product->ingredients as $ingredient)
                             <button type="button" class="associated-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
                                 {{ $ingredient->name }}
-                                <span class="remove-ingredient">−</span>
+                                <span class="remove-ingredient">€</span>
                             </button>
                         @endforeach
                     @endif
@@ -414,7 +414,7 @@
                 </p>
             </div>
         </section>
-        <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Prodotto</button>
+        <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_Prodotto') }}</button>
 
     </form>
 </div>
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
         button.className = 'associated-ingredient';
         button.dataset.id = id;
         button.dataset.name = name;
-        button.innerHTML = `${name} <span class="remove-ingredient">−</span>`;
+        button.innerHTML = `${name} <span class="remove-ingredient">€</span>`;
 
         button.querySelector('.remove-ingredient').addEventListener('click', () => {
             button.remove();

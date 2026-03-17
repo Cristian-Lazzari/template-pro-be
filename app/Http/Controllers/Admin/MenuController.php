@@ -50,7 +50,7 @@ class MenuController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $products = Category::where('id', '!=', 1)->with('product')->get();
+        $products = Category::where('id', '!=', 1)->with('products')->get();
         return view('admin.Menus.create', compact('categories', 'products'));
     }
 

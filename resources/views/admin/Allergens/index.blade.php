@@ -75,11 +75,11 @@
                 <div class="modal-dialog modal-dialog-centered my_modal_dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                    <h1 class=" fs-5" id="staticBackdropLabel{{$item->id}}">Confermi di voler eliminare "<strong>{{$item->name}}</strong>"?</h1>
+                    <h1 class=" fs-5" id="staticBackdropLabel{{$item->id}}">{{ __('admin.Confermi_di_voler_eliminare_') }}<strong>{{$item->name}}</strong>"?</h1>
                     <button data-bs-target="#staticBackdrop{{$item->id}}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body body">
-                        <p>Eiminando questo allergene i prodotti ad esso abbianati non lo mostreranno più</p>
+                        <p>{{ __('admin.Eiminando_questo_allergene_i_prodotti_ad_esso_abbianati_non_lo_mostreranno_pi') }}</p>
                         <form action="{{ route('admin.allergens.destroy', ['allergen'=>$item]) }}" method="post" >
                             @method('delete')
                             @csrf

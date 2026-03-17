@@ -14,7 +14,7 @@
 
  
 
-<h1>Modifica la Categoria</h1>
+<h1>{{ __('admin.Modifica_la_Categoria') }}</h1>
 
 <a class="my_btn_5 ml-auto my-3" href="{{ route('admin.categories.index') }}">{{__('admin.Annulla')}}</a>
 
@@ -94,7 +94,7 @@
                                                     {{__('admin.Descrizione')}}</label>   
                                                 <textarea name="translations[{{$i}}][description]" id="translations[{{$i}}][description]" cols="1" rows="4" >{{$translations[$i]->description ?? '' }}</textarea>
                                             </p>
-                                            <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Traduzione</button>
+                                            <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_Traduzione') }}</button>
                                                 
                                     
                                         </section>
@@ -108,7 +108,7 @@
        
     </section>
 
-    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">Modifica Categoria</button>
+    <button class="my_btn_2 mb-5  w-75 m-auto" type="submit">{{ __('admin.Modifica_Categoria') }}</button>
 
 </form>
 

@@ -31,11 +31,11 @@
 <div class="email-m">
     
 
-    <h1>Email Marketing</h1>
+    <h1>{{ __('admin.Email_Marketing') }}</h1>
     <section class="lists">
-        <h2>Le tue liste di contatti</h2>
+        <h2>{{ __('admin.Le_tue_liste_di_contatti') }}</h2>
         <div class="list_wrap">
-            <h3>Contatti dalle prenotazioni</h3>
+            <h3>{{ __('admin.Contatti_dalle_prenotazioni') }}</h3>
             <div class="list">
                 @foreach ($reservation_users as $i)
                     <div class="contact">
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="list_wrap">
-            <h3>Contatti dagl'ordini</h3>
+            <h3>{{ __('admin.Contatti_daglordini') }}</h3>
             <div class="list">
                 @foreach ($order_users as $i)
                     <div class="contact">
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div class="list_wrap">
-            <h3>Contatti extra</h3>
+            <h3>{{ __('admin.Contatti_extra') }}</h3>
             <div class="list">
                 @foreach ($extra_mail_list as $i)
                     <div class="contact">
@@ -92,7 +92,7 @@
             </div>
         </div>
         <div class="list_wrap">
-            <h3>Contattati nell'ultima mail</h3>
+            <h3>{{ __('admin.Contattati_nellultima_mail') }}</h3>
             <div class="list">
                 @foreach ($last_mail_list as $i)
                     <div class="contact">
@@ -112,7 +112,7 @@
     </section>
     
     <section>
-        <h2>Modelli per Email</h2>
+        <h2>{{ __('admin.Modelli_per_Email') }}</h2>
         <a class="my_btn_2 m-2" href="{{route('admin.mailer.create_model')}}"> Crea un nuovo modello </a>
         <div class="models">
             @foreach ($models as $m)  
@@ -141,7 +141,7 @@
         
                     <div class="sender" style="color: #04001d">
                         <p>{{$m['sender']}}</p>
-                        <p class="date">martedi 3 gennaio</p>
+                        <p class="date">{{ __('admin.martedi_3_gennaio') }}</p>
                     </div>
                     <div class="act">
                         <a class="my_btn_1" href="{{route('admin.mailer.edit_model',  $m)}}">
@@ -167,7 +167,7 @@
                             @csrf
                             <section>
                                 <div class="split">
-                                    <h1 class="modal-title fs-2" id="staticBackdrop{{$m->id}}Label">Sicuro di voler eliminare il modello?</h1>
+                                    <h1 class="modal-title fs-2" id="staticBackdrop{{$m->id}}Label">{{ __('admin.Sicuro_di_voler_eliminare_il_modello') }}</h1>
                                     <button type="button" class="btn-close my_btn_2" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <p>Il modello: " {{$m->name}}" non potrà piu essere recuperato una volta eliminato.</p>
@@ -194,7 +194,7 @@
                 <section >
 
                     <div class="split">
-                        <h1 class="modal-title fs-2" id="staticBackdropLabel">Aggiorna manualmente la lista</h1>
+                        <h1 class="modal-title fs-2" id="staticBackdropLabel">{{ __('admin.Aggiorna_manualmente_la_lista') }}</h1>
                         <button type="button" class="btn-close my_btn_2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -211,17 +211,17 @@
                     </div>
                     <div class="split">
                         <div>
-                            <label class="label_c" for="sender">Mail e Nome *</label>   
+                            <label class="label_c" for="sender">{{ __('admin.Mail_e_Nome_') }}</label>   
                             <input value="{{ old('name') }}" type="text"  id="emailInput" class="w-100" placeholder="email@mail.it nome, email1@mail.it nome2, ">
                                 @error('name') <p class="error">{{ $message }}</p> @enderror
             
                         </div>
-                        <div class="my_btn_3" id="addEmailsButton">Aggiungi</div>
+                        <div class="my_btn_3" id="addEmailsButton">{{ __('admin.Aggiungi') }}</div>
                     </div>
     
                 </section>
                 <section>
-                    <button type="sumbit" class="my_btn_5">Aggiorna lista</button>
+                    <button type="sumbit" class="my_btn_5">{{ __('admin.Aggiorna_lista') }}</button>
                 </section>
 
             </form>

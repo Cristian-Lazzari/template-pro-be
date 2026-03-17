@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Conferma Email</title>
+    <title>{{ __('admin.Conferma_Email') }}</title>
     <style>
         span.im{
             color: #04001d !important;
@@ -73,7 +73,7 @@
                     
                             <div class="sender" style="color: #04001d; margin: 50px 0">
                                 <p style="font-weight: 900; font-size: 18px; margin: 1rem 2rem 0">{{$content_mail['sender']}}</p>
-                                <p style="font-size: 18px; margin: 1rem 2rem 1rem" class="date">Tel/Wa:  <a style="font-weight: 800; color: #04001d; text-decoration:none" href="tel:393271622244">+39 3271622244</a></p>
+                                <p style="font-size: 18px; margin: 1rem 2rem 1rem" class="date"> Tel/Wa:  <a style="font-weight: 800; color: #04001d; text-decoration:none" href="tel:393271622244"> 39 3271622244 </a></p>
                                 <p style="font-style: italic; font-size: 15px; margin: 0 2rem 2rem; color: #04001db3;" class="date">{{$formatter->format($dataOdierna)}}</p>
                             </div>
                         </td>
@@ -96,7 +96,7 @@
             </a>
         </div>
         <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 10px 5px;">{{__('admin.end_copy', ['name' => config('configurazione.APP_NAME')])}}</p>
-        <p style="font-size: 15px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none; font-weight:900;" href="https://future-plus.it">Future +</a></p>
+        <p style="font-size: 15px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none; font-weight:900;" href="https://future-plus.it">{{ __('admin.Future_') }}</a></p>
     </footer>
 </body>
 </html>
