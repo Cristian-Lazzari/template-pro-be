@@ -90,7 +90,7 @@
                 </section>
                 <div class="n_person">
                     @php $n_person = json_decode($reservation->n_person); @endphp
-                    <h3>Ospiti: </h3>
+                    <h3>{{ __('admin.Ospiti') }}</h3>
                     @if ($n_person->adult > 0)
                         <h4>
                             {{$n_person->adult }} 
@@ -109,14 +109,10 @@
                         </h4>
                     @endif
                     @if ($reservation->sala !== null && $reservation->sala !== 0)
-                        <h3>Sala prenota: <strong>{{$reservation->sala == 1 ? $property_adv['sala_1'] : $property_adv['sala_2']}}</strong></h3>
+                        <h3>{{ __('admin.Sala_prenota') }}<strong> {{$reservation->sala == 1 ? $property_adv['sala_1'] : $property_adv['sala_2']}}</strong></h3>
                     @endif
                 </div>
-                <div class="c_a">
-                    @php \Carbon\Carbon::setLocale('it');@endphp
-                    Inviato alle: {{ \Carbon\Carbon::parse($reservation->created_at)->translatedFormat('H:i:s l j F Y') }} <br>
-                    Marketing sul contatto: {{$reservation->news_letter ? 'si' : 'no'}}
-                </div>
+                <div class="c_a">{{ __('admin.Inviato_alle') }}<strong> {{ \Carbon\Carbon::parse($reservation->created_at)->translatedFormat('H:i:s l j F Y') }}</strong><br>{{ __('admin.Marketing_sul_contatto') }}<strong> {{$reservation->news_letter ? 'si' : 'no'}}</strong></div>
                 <div class="actions">
                     @if (in_array($reservation->status, [0, 2, 3]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class=" my_btn_3">{{ __('admin.Conferma') }}</button>
@@ -141,9 +137,7 @@
                     <h1 class="modal-title fs-5" id="confirmModalLabel">{{ __('admin.Gestione_notifica_conferma') }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body ">
-                    Prenotazione di: {{$reservation->name}} 
-                    per il: {{$reservation->date_slot}}
+                <div class="modal-body ">{{ __('admin.Prenotazione_di') }}<strong>{{$reservation->name}} </strong>{{ __('admin.per_il') }}<strong>{{$reservation->date_slot}}</strong>
                     <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
                     <div class="actions">
                         <form action="{{ route('admin.reservations.status') }}" method="POST">
@@ -174,9 +168,7 @@
                     <h1 class="modal-title fs-5" id="cancelModalLabel">{{ __('admin.Gestione_notifica_annullamento') }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    Prenotazione di: {{$reservation->name}} 
-                    per il: {{$reservation->date_slot}}
+                <div class="modal-body">{{ __('admin.Prenotazione_di') }}<strong>{{$reservation->name}} </strong>{{ __('admin.per_il') }}<strong>{{$reservation->date_slot}}</strong>
                     <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
                     <div class="actions">
                         <form action="{{ route('admin.reservations.status') }}" method="POST">

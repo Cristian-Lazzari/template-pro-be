@@ -371,28 +371,28 @@
                 data: {
                 datasets: [
                     {
-                    label: 'Totale',
+                    label: "{{ __('admin.Totale')}}",
                     data: revenueOverTime.tot, // Dati per ordini pagati
                     borderColor: 'rgba(145, 220, 224, 1)',
                     backgroundColor: 'rgba(145, 220, 224, .2)',
                     fill: true,
                     },
                     {
-                    label: 'Pagati',
+                    label: "{{ __('admin.Pagati')}}",
                     data: revenueOverTime.paid, // Dati per ordini pagati
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     fill: true,
                     },
                     {
-                    label: 'Pagati alla consegna',
+                    label: "{{ __('admin.Pagati_alla_consegna)}} ",
                     data: revenueOverTime.cod, // Dati per ordini pagati alla consegna
                     borderColor: 'rgba(255, 206, 86, 1)',
                     backgroundColor: 'rgba(255, 206, 86, 0.2)',
                     fill: true,
                     },
                     {
-                    label: 'Annullati',
+                    label: "{{ __('admin.Annullati')}}",
                     data: revenueOverTime.canceled, // Dati per ordini annullati
                     borderColor: 'rgba(255, 99, 132, 1)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -440,7 +440,7 @@
                     labels: label,
                     datasets: [
                         {
-                            label: 'Adulti',
+                            label: "{{ __('admin.Adulti')}}",
                             data: adults,
                             stack: 'stack',
                             backgroundColor: 'rgba(54, 162, 235, 0.6)',
@@ -448,7 +448,7 @@
                             borderWidth: 1
                         },
                         {
-                            label: 'Bambini',
+                            label: "{{ __('admin.Bambini')}}",
                             data: children,
                             stack: 'stack',
                             backgroundColor: 'rgba(255, 99, 132, 0.6)',

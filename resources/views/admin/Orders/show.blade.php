@@ -208,27 +208,19 @@
 
                     @if ($delivery_cost)
                         
-                    <div class="price">Costo di consegna €{{$delivery_cost / 100}}</div>
+                    <div class="price">{{ __('admin.Costo_di_consegna_') }}<strong>{{$delivery_cost / 100}}</strong></div>
                     @endif
                     <div class="t_price">€{{$order->tot_price / 100}}</div>
                 </section>
                 <section class="myres-right">
                     @if (isset($order->comune))
-                        <h3>
-                            Consegnare a domicilio
-                            <p>{{$order->comune}}, {{$order->address}}, {{$order->address_n}}</p>
+                        <h3>{{ __('admin.Consegnare_a_domicilio') }}<p>{{$order->comune}}, {{$order->address}}, {{$order->address_n}}</p>
                         </h3>
                     @else
-                        <h3>
-                            Ritiro d'asporto
-                        </h3>
+                        <h3>{{ __('admin.Ritiro_dasporto') }}</h3>
                     @endif
                 </section>
-                <div class="c_a">
-                    @php \Carbon\Carbon::setLocale('it');@endphp
-                    Inviato alle: {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y') }} <br>
-                    Marketing sul contatto: {{$order->news_letter ? 'si' : 'no'}}
-                </div>
+                <div class="c_a">{{ __('admin.Inviato_alle') }}<strong> {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y') }}</strong><br>{{ __('admin.Marketing_sul_contatto') }}<strong> {{$order->news_letter ? 'si' : 'no'}}</strong></div>
                 <div class="actions">
                     @if (in_array($order->status, [0, 2, 3]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">{{ __('admin.Conferma') }}</button>
@@ -255,9 +247,7 @@
                 <h1 class="modal-title fs-2" id="changeModalLabel">{{ __('admin.Conferma_e_posticipa_questo_ordine') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body fs-4">
-                Ordine di: {{$order->name}} 
-                per il: {{$order->date_slot}}
+            <div class="modal-body fs-4">{{ __('admin.Ordine_di') }}<strong>{{$order->name}} </strong>{{ __('admin.per_il') }}<strong>{{$order->date_slot}}</strong>
                 <p>{{ __('admin.Seleziona_lorario_corretto') }}</p>
                 <input required class="form-control" type="time" name="new_time">
                 <h3 class="mt-4 mb-3">{{ __('admin.Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria') }}</h3>
@@ -278,9 +268,7 @@
                 <h1 class="modal-title fs-3" id="confirmModalLabel">{{ __('admin.Gestione_notifica_per_conferma') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body fs-4">
-                Ordine di: {{$order->name}} 
-                per il: {{$order->date_slot}}
+            <div class="modal-body fs-4">{{ __('admin.Ordine_di') }}<strong>{{$order->name}} </strong>{{ __('admin.per_il') }}<strong>{{$order->date_slot}}</strong>
                 <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
             </div>
             <div class="modal-footer">
@@ -311,9 +299,7 @@
                 <h1 class="modal-title fs-3" id="cancelModalLabel">{{ __('admin.Gestione_notifica_per_annullamento') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body fs-4">
-                Ordine di: {{$order->name}} 
-                per il: {{$order->date_slot}}
+            <div class="modal-body fs-4">{{ __('admin.Ordine_di') }}<strong>{{$order->name}} </strong>{{ __('admin.per_il') }}<strong>{{$order->date_slot}}</strong>
                 <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p>
             </div>
             <div class="modal-footer">
