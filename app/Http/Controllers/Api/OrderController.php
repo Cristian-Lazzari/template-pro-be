@@ -416,12 +416,6 @@ class OrderController extends Controller
                 $newOrder->whatsapp_message_id = json_encode($messageId);
                 $newOrder->update();
 
-                $data_am1 = [        
-                    'wa_id' => $newOrder->whatsapp_message_id,
-                    'type_1' => $type_m_1,
-                    'type_2' => $type_m_2,
-                    'source' => config('configurazione.APP_URL'),
-                ];
                 $set = Setting::where('name', 'Contatti')->firstOrFail();
                 $p_set = json_decode($set->property, true);
                 if(isset($p_set['telefono'])){
@@ -535,7 +529,7 @@ class OrderController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Successo',
-                    'source' => config('configurazione.db'),
+                    //'source' => config('configurazione.db'),
                     'data' => $mx,
                 ]); 
             }

@@ -500,5 +500,22 @@ class WaController extends Controller
         }
     }
 
+    protected function updateLastResponseWa($c)
+    {
+        $setting = Setting::where('name', 'wa')->first();
+        $property = json_decode($setting->property, true);
+        $now = Carbon::now();
+        if($c < 2){
+            $property['last_response_wa_1'] = $now;
+        }else {
+            $property['last_response_wa_2'] = $now;
+
+        }
+        $setting->property= json_encode($property);
+        $setting->update();
+        
+    }
+
+
 
 }
