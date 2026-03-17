@@ -96,7 +96,7 @@
             </a>
         </div>
         <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 10px 5px;">{{__('admin.end_copy', ['name' => config('configurazione.APP_NAME')])}}</p>
-        <p style="font-size: 15px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none; font-weight:900;" href="https://future-plus.it">{{ __('admin.Future_') }}</a></p>
+        <p style="font-size: 15px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none; font-weight:900;" href="https://future-plus.it">Future +</a></p>
     </footer>
 </body>
 </html>

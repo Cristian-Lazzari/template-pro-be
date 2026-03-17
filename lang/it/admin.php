@@ -281,7 +281,6 @@ return array (
   'Name' => 'Name',
   'Register' => 'Register',
   'Conferma_Email' => 'Conferma Email',
-  'Future_' => 'Future +',
   'Limporto_verra_pagato_al_momento_della_consegna' => '*L\'importo verra pagato al momento della consegna.',
   'Visualizza_nella_Dashboard' => 'Visualizza nella Dashboard',
   '_Per_annullare_lordine_o_la_prenotazione_in_autonomia_premi_questo_bottone' => '** Per annullare l\'ordine o la prenotazione in autonomia premi questo bottone',
@@ -316,22 +315,8 @@ return array (
   'Prenotazione_media' => 'Prenotazione media',
   'Adulti' => 'Adulti',
   'Bambini' => 'Bambini',
-
-  '' => '€',
-  'description' => 'description)',
-  'Off' => 'Off',
-  'American_Express' => 'American Express',
-  'Apple_Pay' => 'Apple Pay',
-  'Google_Pay' => 'Google Pay',
-
-
-
-  'Future_plus' => 'Future plus',
-  'Powered_by' => 'Powered by',
-  
   'Benvenuto_nellarea_damministrazione' => 'Benvenuto nell\'area d\'amministrazione',
   'Esegui_laccesso_per_vedere_i_tuoi_contenuti' => 'Esegui l\'accesso per vedere i tuoi contenuti!',
-  'demo1' => 'demo1',
   'Consegnare_a_domicilio' => 'Consegnare a domicilio',
   'Ritiro_dasporto' => 'Ritiro d\'asporto',
   'Inviato_alle' => 'Inviato alle:',

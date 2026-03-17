@@ -247,7 +247,7 @@
         @endif
 
         @if (isset($content_mail['whatsapp_message_id']) && config('configurazione.subscription') > 2 && $content_mail['to'] == 'user' && !in_array($content_mail['status'], [0,6]))
-            <p style="font-size: 13px; color: #04001d; opacity: .7;" >** Per annullare l'ordine o la prenotazione in autonomia premi questo bottone </p>
+            <p style="font-size: 13px; color: #04001d; opacity: .7;" >{{__('admin._Per_annullare_lordine_o_la_prenotazione_in_autonomia_premi_questo_bottone')}}</p>
             <p style="margin: 10px;">
                 <a href="{{config('configurazione.APP_URL')}}/api/client_default/?whatsapp_message_id={{$content_mail['whatsapp_message_id']}}" style="background-color: #9f2323d8; color: rgb(255, 255, 255); padding: 5px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px;">{{ __('admin.Annulla') }}</a>
             </p>
@@ -263,11 +263,11 @@
                 {{__('contatta_tel_mail', ['name'=>config('configurazione.APP_NAME')])}}
             </p>
             <p style="color: #ffffff; line-height: 1.5; margin: 15px;">
-                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px;">Chiama {{config('configurazione.APP_NAME')}}</a>
+                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px;">{{('admin.Chiama')}}{{config('configurazione.APP_NAME')}}</a>
             </p>
         @endif
         <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">{{__('admin.end_copy', ['name' => config('configurazione.APP_NAME')])}}</p>
-        <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it">{{ __('admin.Future_') }}</a></p>
+        <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;" > Powered by <a style="color: white; text-decoration: none" href="https://future-plus.it"> Future + </a></p>
     </div>
     
 </body>
