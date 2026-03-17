@@ -12,10 +12,10 @@
 <body>
     <header>
         <div class="container my-5" >
-            <h1>Benvenuto nell'area d'amministrazione</h1>
-            <p>Esegui l'accesso per vedere i tuoi contenuti!</p>
+            <h1>{{ __('admin.Benvenuto_nellarea_damministrazione') }}</h1>
+            <p>{{ __('admin.Esegui_laccesso_per_vedere_i_tuoi_contenuti') }}</p>
             @if (config('configurazione.APP_URL') == 'https://db-demo3.future-plus.it')
-                <p style="font-style: italic">Le credenziali per accedere alla demo sono email:<strong> demo@demo.it </strong>password:<strong> demo1   </strong></p>
+                <p style="font-style: italic">{{ __('admin.Le_credenziali_per_accedere_alla_demo_sono_email') }}<strong> demo@demo.it </strong>{{ __('admin.password') }}<strong> demo1   </strong></p>
             @endif
         </div>
     </header>

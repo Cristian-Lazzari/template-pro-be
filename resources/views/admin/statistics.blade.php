@@ -93,7 +93,7 @@
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">Media incassi</span>
+                            <span class="label">{{ __('admin.Media_incassi') }}</span>
                             <span class="count">
                                € {{ round((($or_cash['confirmed'] + $or_cash['cancelled']) / $mesi_o), 2) }}
                             </span>
@@ -105,7 +105,7 @@
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">Ordine medio</span>
+                            <span class="label">{{ __('admin.Ordine_medio') }}</span>
                             <span class="count">
                                € {{ round((($or_cash['confirmed'] + $or_cash['cancelled']) / $order_count), 2) }}
                             </span>
@@ -156,31 +156,31 @@
                 <div class="int_stat media">
                     <div class="line">
                         <div class="st top_s">
-                            <span class="label">Mesi di attività</span>
+                            <span class="label">{{ __('admin.Mesi_di_attivit') }}</span>
                             <span class="count">
                                 {{ $mesi_r }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">Media prenotazioni</span>
+                            <span class="label">{{ __('admin.Media_prenotazioni') }}</span>
                             <span class="count">
                                 {{  round(($res_count / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">Media persone</span>
+                            <span class="label">{{ __('admin.Media_persone') }}</span>
                             <span class="count">
                                 {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['children_confirmed'] + $res_people['children_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">Media persone confermate</span>
+                            <span class="label">{{ __('admin.Media_persone_confermate') }}</span>
                             <span class="count">
                                 {{  round((($res_people['adults_confirmed'] + $res_people['children_cancelled']) / $mesi_r), 1) }}
                             </span>
                         </div>
                         <div class="st top_s">
-                            <span class="label">Prenotazione media</span>
+                            <span class="label">{{ __('admin.Prenotazione_media') }}</span>
                             <span class="count">
                                 {{  round((($res_people['adults_confirmed'] + $res_people['adults_cancelled'] + $res_people['children_confirmed'] + $res_people['children_cancelled']) / $res_count), 1) }}
                             </span>
