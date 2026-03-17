@@ -37,18 +37,24 @@ class PageController extends Controller
             });
 
         // Grafico a colonne: Ordinazioni nel tempo
+
+        $locale = app()->getLocale();
+
         $ordersOverTime = DB::table('order_product')
             ->join('orders', 'order_product.order_id', '=', 'orders.id')
             ->join('products', 'order_product.product_id', '=', 'products.id')
+            ->join('product_translations', function ($join) use ($locale) {
+                $join->on('products.id', '=', 'product_translations.product_id')
+                    ->where('product_translations.lang', $locale);
+            })
             ->select(
                 DB::raw("DATE_FORMAT(STR_TO_DATE(orders.date_slot, '%d/%m/%Y %H:%i'), '%Y-%m-%d') as day"), 
-                'products.name as product', 
+                'product_translations.name as product',
                 DB::raw('SUM(order_product.quantity) as quantity')
             )
-            ->groupBy('day', 'products.name')
+            ->groupBy('day', 'product_translations.name')
             ->orderBy('day')
             ->get();
-
         // Ristruttura i dati per il grafico
         $chartData = [];
         foreach ($ordersOverTime as $order) {
@@ -60,7 +66,12 @@ class PageController extends Controller
         $datasets = [];
 
         // Ottieni i prodotti unici
-        $allProducts = DB::table('products')->pluck('name')->toArray();
+
+
+        $allProducts = DB::table('product_translations')
+            ->where('lang', $locale)
+            ->pluck('name')
+            ->toArray();
 
         // Creazione dei dataset per ogni prodotto
         foreach ($allProducts as $product) {

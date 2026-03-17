@@ -385,7 +385,7 @@
                     fill: true,
                     },
                     {
-                    label: "{{ __('admin.Pagati_alla_consegna)}} ",
+                    label: "{{ __('admin.Pagati_alla_consegna')}} ",
                     data: revenueOverTime.cod, // Dati per ordini pagati alla consegna
                     borderColor: 'rgba(255, 206, 86, 1)',
                     backgroundColor: 'rgba(255, 206, 86, 0.2)',
