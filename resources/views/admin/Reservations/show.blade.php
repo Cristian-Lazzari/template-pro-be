@@ -112,6 +112,14 @@
                         <h3>{{ __('admin.Sala_prenota') }}<strong> {{$reservation->sala == 1 ? $property_adv['sala_1'] : $property_adv['sala_2']}}</strong></h3>
                     @endif
                 </div>
+                @if ($reservation->message)
+                    <section class="message">
+                        <h3>{{__('admin.messaggio_del_cliente')}}</h3>
+                        <p>
+                            {{$reservation->message}}
+                        </p>
+                    </section>
+                @endif
                 <div class="c_a">{{ __('admin.Inviato_alle') }}<strong> {{ \Carbon\Carbon::parse($reservation->created_at)->translatedFormat('H:i:s l j F Y') }}</strong><br>{{ __('admin.Marketing_sul_contatto') }}<strong> {{$reservation->news_letter ? 'si' : 'no'}}</strong></div>
                 <div class="actions">
                     @if (in_array($reservation->status, [0, 2, 3]))

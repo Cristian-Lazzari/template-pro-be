@@ -227,7 +227,7 @@ return array (
   'Combo_prodotti' => 'Combo prodotti',
   'Prodotti_ordinati' => 'Prodotti ordinati',
   'Conferma' => 'Conferma',
-  'Posticipa_e_Conferma' => 'Posticipa e Conferma',
+  'Posticipa_e_Conferma' => 'POSTICIPA e Conferma',
   'Conferma_e_posticipa_questo_ordine' => 'Conferma e posticipa questo ordine',
   'Seleziona_lorario_corretto' => 'Seleziona l\'orario corretto:',
   'Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria' => 'Vuoi bloccare altri ordini per questa fascia oraria?',
@@ -329,4 +329,6 @@ return array (
   'per_il' => 'per il:',
   'Costo_di_consegna_' => 'Costo di consegna €',
   'Ordine_di' => 'Ordine di:',
+
+  'messaggio_del_cliente' => 'Messaggio del cliente'
 );

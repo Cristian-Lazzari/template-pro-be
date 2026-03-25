@@ -220,6 +220,14 @@
                         <h3>{{ __('admin.Ritiro_dasporto') }}</h3>
                     @endif
                 </section>
+                @if ($order->message)
+                    <section class="message">
+                        <h3>{{__('admin.messaggio_del_cliente')}}</h3>
+                        <p>
+                            {{$order->message}}
+                        </p>
+                    </section>
+                @endif
                 <div class="c_a">{{ __('admin.Inviato_alle') }}<strong> {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y') }}</strong><br>{{ __('admin.Marketing_sul_contatto') }}<strong> {{$order->news_letter ? 'si' : 'no'}}</strong></div>
                 <div class="actions">
                     @if (in_array($order->status, [0, 2, 3]))
@@ -227,7 +235,7 @@
                     @endif
                     @if(in_array($order->status, [1, 2, 3, 5]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_5">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_5">{{ __('admin.Posticipa_e_Conferma') }}</button>                   
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_3 post_btn">{{ __('admin.Posticipa_e_Conferma') }}</button>                   
                     @endif         
                 </div>
                 
