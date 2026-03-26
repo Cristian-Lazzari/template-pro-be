@@ -329,4 +329,13 @@ return array (
   'per_il' => 'for:',
   'Costo_di_consegna_' => 'Delivery cost €',
   'Ordine_di' => 'Order by:',
+  'messaggio_del_cliente' => 'Customer message',
+  'order_postponed' => 'The order has been successfully postponed to: :time',
+  'order_changed_title' => 'Hi :name, we inform you that your order has been confirmed',
+  'order_changed_message' => 'Hi :name, we inform you that we have accepted your order, in order to offer you the best service and the best quality of products :ship2, we will be able to :ship the order by this time: :time',
+  'order_changed_subtitle' => 'In order to offer you the best service and the best quality of products :ship2, we will be able to :ship the order by this time: :time',
+  'ship_deliver' => 'deliver',
+  'ship_prepare' => 'prepare',
+  'ship2_delivery' => 'to your delivery',
+  'ship2_pickup' => 'to your pickup',
 );

@@ -330,5 +330,13 @@ return array (
   'Costo_di_consegna_' => 'Costo di consegna €',
   'Ordine_di' => 'Ordine di:',
 
-  'messaggio_del_cliente' => 'Messaggio del cliente'
+  'messaggio_del_cliente' => 'Messaggio del cliente',
+  'order_postponed' => 'L\'ordine è stato posticipato correttamente alle: :time',
+  'order_changed_title' => 'Ciao :name ti informiamo che il tuo ordine è stato confermato',
+  'order_changed_message' => 'Ciao :name ti informiamo che abbiamo accettato il tuo ordine, al fine di offrirti il miglior servizio e la miglior qualità dei prodotti :ship2, riusciremo a :ship l\'ordine entro questo quest\'orario: :time',
+  'order_changed_subtitle' => 'Al fine di offrirti il miglior servizio e la miglior qualità dei prodotti :ship2, riusciremo a :ship l\'ordine entro questo quest\'orario: :time',
+  'ship_deliver' => 'consegnare',
+  'ship_prepare' => 'preparare',
+  'ship2_delivery' => 'alla tua consegna',
+  'ship2_pickup' => 'al tuo ritiro',
 );

@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])
         Route::post('dates/editDays',    [DateController::class, 'editDays'])->name('dates.editDays');
         Route::get('dates/showDay',    [DateController::class, 'showDay'])->name('dates.showDay');
         Route::post('dates/status',    [DateController::class, 'status'])->name('dates.status');
+        Route::post('dates/blockTime', [DateController::class, 'blockTime'])->name('dates.blockTime');
         Route::post('/dates/generate', [DateController::class, 'generate'])->name('dates.generate');
         
         Route::post('orders/filter',       [OrderController::class, 'filter'])->name('orders.filter');

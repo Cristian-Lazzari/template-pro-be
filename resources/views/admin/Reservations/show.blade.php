@@ -74,7 +74,7 @@
                 @endif
             </div>
             <div class="body">
-                <section class="myres-left">
+                <section class="first_section">
                     <div class="data_cont">
                         <h5><strong>#R{{$reservation->id}}</strong></h5>
                         <div class="time">{{$ora_formatata}}</div>

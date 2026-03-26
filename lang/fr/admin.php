@@ -329,4 +329,13 @@ return array (
   'per_il' => 'pour le :',
   'Costo_di_consegna_' => 'Frais de livraison €',
   'Ordine_di' => 'Commande de :',
+  'messaggio_del_cliente' => 'Message du client',
+  'order_postponed' => 'La commande a été reportée avec succès à : :time',
+  'order_changed_title' => 'Salut :name, nous vous informons que votre commande a été confirmée',
+  'order_changed_message' => 'Salut :name, nous vous informons que nous avons accepté votre commande, afin de vous offrir le meilleur service et la meilleure qualité de produits :ship2, nous pourrons :ship la commande à cette heure : :time',
+  'order_changed_subtitle' => 'Afin de vous offrir le meilleur service et la meilleure qualité de produits :ship2, nous pourrons :ship la commande à cette heure : :time',
+  'ship_deliver' => 'livrer',
+  'ship_prepare' => 'préparer',
+  'ship2_delivery' => 'à votre livraison',
+  'ship2_pickup' => 'à votre retrait',
 );

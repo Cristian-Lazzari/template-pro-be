@@ -46,6 +46,65 @@ class DateController extends Controller
         $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
         return back()->with('success', $m);
     }
+
+    public function blockTime(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'date' => 'required|date_format:Y-m-d',
+                'time' => 'required|date_format:H:i',
+                'action' => 'required|in:block,unblock',
+            ]);
+
+            $date = $data['date'];
+            $time = $data['time'];
+            $action = $data['action'];
+
+            $setting = Setting::where('name', 'advanced')->first();
+            if (!$setting) {
+                return response()->json(['success' => false, 'message' => 'Impostazioni non trovate']);
+            }
+
+            $adv = json_decode($setting->property, true);
+            if (!is_array($adv)) {
+                $adv = [];
+            }
+
+            if (!isset($adv['time_blocked'])) {
+                $adv['time_blocked'] = [];
+            }
+
+            if (!isset($adv['time_blocked'][$date])) {
+                $adv['time_blocked'][$date] = [];
+            }
+
+            if ($action === 'block') {
+                if (!in_array($time, $adv['time_blocked'][$date])) {
+                    $adv['time_blocked'][$date][] = $time;
+                }
+            } elseif ($action === 'unblock') {
+                $adv['time_blocked'][$date] = array_values(array_filter($adv['time_blocked'][$date], fn($t) => $t !== $time));
+                if (empty($adv['time_blocked'][$date])) {
+                    unset($adv['time_blocked'][$date]);
+                }
+            }
+
+            // pulizia orari bloccati nel passato
+            foreach ($adv['time_blocked'] as $key => $times) {
+                if ($key < now()->format('Y-m-d')) {
+                    unset($adv['time_blocked'][$key]);
+                }
+            }
+
+            $setting->property = json_encode($adv);
+            $setting->save();
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            \Log::error('Error in blockTime: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Errore interno del server']);
+        }
+    }
 }
 
  

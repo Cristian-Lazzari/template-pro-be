@@ -313,14 +313,30 @@ class PageController extends Controller
                 $day['status'] = 2;
             }
 
-            
             foreach ($week[$first_day->format('N')] as $time => $property) {
                 $day['times'][$time] = [
                     'res' => [],
                     'or' => [],
                     'property' => $property,
+                    'blocked' => false,
                 ];
-                
+            }
+
+            $blockedTimes = $adv['time_blocked'] ?? [];
+            if (isset($blockedTimes[$day['date']]) && is_array($blockedTimes[$day['date']])) {
+                foreach ($blockedTimes[$day['date']] as $blockedTime) {
+                    if (isset($day['times'][$blockedTime])) {
+                        $day['times'][$blockedTime]['blocked'] = true;
+                    } else {
+                        // in caso sia un orario bloccato non nella configurazione standard, aggiungilo ugualmente.
+                        $day['times'][$blockedTime] = [
+                            'res' => [],
+                            'or' => [],
+                            'property' => [],
+                            'blocked' => true,
+                        ];
+                    }
+                }
             }
 
             if(isset($reserved[$day['date']])){

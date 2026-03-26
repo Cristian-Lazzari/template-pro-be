@@ -251,7 +251,7 @@
                             {{ \Carbon\Carbon::create()->startOfWeek()->addDays($day-1)->translatedFormat('l') }}
                            {{-- {{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }} --}}
                         </div>
-                        <label for="day_{{ $day }}" class="btn_close">
+                        <label for="day_{{ $day }}"  class="btn_close">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
                             </svg>
@@ -361,7 +361,11 @@
                                                         <input type="checkbox" name="day_off[]" id="{{$d['date']}}" value="{{$d['date']}}"
                                                         @if ($d['status'] == 3) checked @endif>
                                                     @endif
-                                                    <label for="{{$d['date']}}"
+                                                    @if($d['status'] !== 0) <label
+                                                        for="{{$d['date']}}"
+                                                    @else
+                                                        <div
+                                                    @endif
                                                         class="day  
                                                         @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) day-active @endif 
                                                         @if($d['status'] == 0) day_off @endif "
@@ -383,7 +387,9 @@
                                                                 </svg>
                                                             </span>
                                                         @endif
-                                                    </label>
+                                                    @if($d['status'] !== 0)
+                                                    </label> @else </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         </div>
@@ -409,6 +415,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const dayButtons = document.querySelectorAll("#calendar_1 .day");
     const detailsContainer = document.getElementById("day-details");
+    const blockTimeUrl = "{{ route('admin.dates.blockTime') }}";
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 
     dayButtons.forEach(button => {
         button.addEventListener("click", () => {
@@ -430,12 +438,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = data.res;
                 const or = data.or;
                 const properties = data.property.join(", ");
+                const isBlocked = data.blocked === true;
+                const selectedDate = new Date(date + 'T00:00:00');
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const isPastDate = selectedDate < today;
+                const canBlock = !isBlocked && !isPastDate;
 
                 html += `
-                    <div class="time-item">
+                    <div class="time-item ${isBlocked ? 'blocked' : ''}">
                         <div class="time-header">
                             <strong>${time}</strong>
-                             <div class="line"></div>
+                             <div class="line ${isBlocked ? 'blocked-line' : ''}"></div>
                             <p class="prop"> 
                 `;
                 if(properties.includes(1)){
@@ -454,6 +468,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         </svg>`;
                 }
                 html += `</p>
+                            ${isBlocked ? `<button type="button" class="unblock-time-btn" data-date="${date}" data-time="${time}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></svg>
+                                </button>` : (canBlock ? `<button type="button" class="block-time-btn" data-date="${date}" data-time="${time}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg>
+                                    </button>` : '')}
                         </div>
                     <div class="time-content">
                 `;
@@ -530,12 +549,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         });
                         html += `</a>`;
                 }
-
-                // Nessun dato
-                // if (res.length === 0 && or.length === 0) {
-                //     html += `<div class="no-data">{{ __('admin.Nessuna_prenotazione_o_ordine_per_questo_orario') }}</div>`;
-                // }
-
                 html += `
                         </div>
                     </div>
@@ -546,7 +559,105 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Mostra nel contenitore
             detailsContainer.innerHTML = html;
+            attachBlockButtons();
         });
+
+    function attachBlockButtons() {
+        document.querySelectorAll('.block-time-btn, .unblock-time-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                // Evita doppi click disabilitando immediatamente
+                if (button.disabled) return;
+                button.disabled = true;
+
+                const date = button.dataset.date;
+                const time = button.dataset.time;
+                const action = button.classList.contains('block-time-btn') ? 'block' : 'unblock';
+
+                try {
+                    const response = await fetch(blockTimeUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ date, time, action }),
+                    });
+
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        console.error(`Errore nell'${action === 'block' ? 'blocco' : 'sblocco'} orario:`, result.message);
+                        button.disabled = false;
+                        return;
+                    }
+
+                    // Controlli di sicurezza per il DOM
+                    const timeItem = button.closest('.time-item');
+                    if (!timeItem) {
+                        console.warn('timeItem non trovato, possibile DOM modificato');
+                        return;
+                    }
+
+                    const timeHeader = timeItem.querySelector('.time-header');
+                    const line = timeItem.querySelector('.line');
+
+                    if (!timeHeader) {
+                        console.warn('timeHeader non trovato');
+                        return;
+                    }
+
+                    if (action === 'block') {
+                        timeItem.classList.add('blocked');
+                        if (line) line.classList.add('blocked-line');
+                        button.remove();
+
+                        const unblockBtn = document.createElement('button');
+                        unblockBtn.type = 'button';
+                        unblockBtn.className = 'unblock-time-btn';
+                        unblockBtn.dataset.date = date;
+                        unblockBtn.dataset.time = time;
+                        unblockBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></svg>`;
+                        timeHeader.appendChild(unblockBtn);
+                    } else {
+                        timeItem.classList.remove('blocked');
+                        if (line) line.classList.remove('blocked-line');
+                        button.remove();
+
+                        const blockBtn = document.createElement('button');
+                        blockBtn.type = 'button';
+                        blockBtn.className = 'block-time-btn';
+                        blockBtn.dataset.date = date;
+                        blockBtn.dataset.time = time;
+                        blockBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg>`;
+                        timeHeader.appendChild(blockBtn);
+                    }
+
+                    // Riattacca gli event listener ai nuovi bottoni
+                    attachBlockButtons();
+
+                    // Aggiorna il data-day del giorno corrente per riflettere il cambiamento
+                    const dayButtons = document.querySelectorAll("#calendar_1 .day");
+                    dayButtons.forEach(dayBtn => {
+                        const dayData = JSON.parse(dayBtn.dataset.day);
+                        if (dayData.date === date) {
+                            // Aggiorna il blocked status dell'orario modificato
+                            if (dayData.times[time]) {
+                                dayData.times[time].blocked = (action === 'block');
+                            }
+                            // Riscrivi il data-day aggiornato
+                            dayBtn.dataset.day = JSON.stringify(dayData);
+                        }
+                    });
+
+                } catch (error) {
+                    console.error(`Error ${action}ing time:`, error);
+                    button.disabled = false;
+                }
+            });
+        });
+    }
+
     });
 });
 </script>

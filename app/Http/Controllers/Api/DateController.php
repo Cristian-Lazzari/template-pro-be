@@ -120,7 +120,13 @@ class DateController extends Controller
                 'status' => 1, // 0 non disponibile,1 disponobile,2 oggi,  3 bloccato
             ];
 
+            if (isset($adv['day_off']) && in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
+                $day['status'] = 3;
+            }
 
+            if ($first_day->copy()->format('Y-m-d') == Carbon::now()->format('Y-m-d')) {
+                $day['status'] = 2;
+            }
 
             $av_t = ['table' => $adv['max_table']];
             if($adv['dt']){
@@ -130,7 +136,8 @@ class DateController extends Controller
                 ];
             }
             $max_or = $source == 2 ? $adv['max_asporto'] : $adv['max_domicilio'];
-            if(isset($adv['day_off']) && !in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])){
+
+            if (!isset($adv['day_off']) || !in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
                 foreach ($week[$first_day->format('N')] as $time => $property) {
                     if(in_array($source, $property)){
                         if($source == 1){
@@ -182,6 +189,19 @@ class DateController extends Controller
                         }
                     }
                 }
+
+                // Rimuovi orari bloccati in advanced.time_blocked (schema: ["YYYY-MM-DD" => ["HH:ii", ...]])
+                if(!empty($adv['time_blocked']) && is_array($adv['time_blocked'])){
+                    $blockedForDay = $adv['time_blocked'][$day['date']] ?? [];
+                    if(is_array($blockedForDay)){
+                        foreach($blockedForDay as $blockedTime){
+                            if(isset($day['times'][$blockedTime])){
+                                unset($day['times'][$blockedTime]);
+                            }
+                        }
+                    }
+                }
+
                 uksort($day['times'], function($a, $b) {
                     // confronto come orari
                     return strtotime($a) <=> strtotime($b);

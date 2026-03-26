@@ -306,50 +306,55 @@ class OrderController extends Controller
     }
     
     public function changetime(Request $request){
-       // dd($request);
+       // prima parte
 
         $order = Order::where('id', $request['id'])->with('products')->first();
 
-        $new_time = $request['new_time'];
-        $content_notify = 'L\'ordine è stato posticipato correttamente alle: ' . $new_time;
-        
-        //dd($content_notify);
-        $ship = $order->comune ? 'consegnare' : 'preparare';
-        $ship_2 = $order->comune ? 'alla tua consegna' : 'al tuo ritiro';
-        $message_wa = 'Ciao ' . $order->name . ' ti informiamo che abbiamo accettato il tuo ordine, al fine di offrirti il miglior servizio e la miglior qualità dei prodotti '. $ship_2 .', riusciremo a ' . $ship . ' l\'ordine entro questo quest\'orario: ' . $new_time ;
-        $sub = 'Al fine di offrirti il miglior servizio e la miglior qualità dei prodotti '. $ship_2 .', riusciremo a ' . $ship . ' l\'ordine entro questo quest\'orario: ' . $new_time ;
-        
-        $date = Date::where('date_slot', $order->date_slot)->first();
-        if($date == null){
-            return redirect()->back()->with('error', 'La data relativa alla prenotazione/ordine selezionata/o non è più esistente');
+        // Logica per time_blocked: blocca il vecchio slot
+        $date_slot_parts = explode(' ', $order->date_slot);
+        $old_date = $date_slot_parts[0]; // dd/mm/yyyy
+        $old_time = $date_slot_parts[1]; // hh:mm
+
+        $date_formatted = DateTime::createFromFormat('d/m/Y', $old_date)->format('Y-m-d');
+
+        $adv_setting = Setting::where('name', 'advanced')->first();
+        $adv = json_decode($adv_setting->property, true);
+
+        if (!isset($adv['time_blocked'])) {
+            $adv['time_blocked'] = [];
         }
-        $vis = json_decode($date->visible, 1); 
-        $reserving = json_decode($date->reserving, 1);
 
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1);  
+        if ($request['block']) {
+            $adv['time_blocked'][$date_formatted][] = $old_time;
+        }
 
-        if($request['cancel'] == 0){
-            $content_notify .= ' e l\'orario è stato bloccato';
-            if($property_adv['too']
-            ){
-                $vis['cucina_1'] = 0;
-                $vis['cucina_2'] = 0;
-                $vis['domicilio'] = 0;
-            }else{
-                $vis['asporto'] = 0;
-                $vis['domicilio'] = 0;
+        // Rimuovi giorni precedenti alla data odierna
+        $today = Carbon::today()->format('Y-m-d');
+        foreach ($adv['time_blocked'] as $day => $times) {
+            if ($day < $today) {
+                unset($adv['time_blocked'][$day]);
             }
         }
 
+        $adv_setting->property = json_encode($adv);
+        $adv_setting->update();
 
-        $date->reserving = json_encode($reserving);
-        $date->visible = json_encode($vis);
+        $new_time = $request['new_time'];
+        $content_notify = __('admin.order_postponed', ['time' => $new_time]);
+        
+        // Aggiorna il date_slot con il nuovo orario
+        $order->date_slot = $old_date . ' ' . $new_time;
 
-        $order->status = $order->status == 3 ? 5 : 1;
+        $ship = $order->comune ? __('admin.ship_deliver') : __('admin.ship_prepare');
+        $ship_2 = $order->comune ? __('admin.ship2_delivery') : __('admin.ship2_pickup');
+        $message_wa = __('admin.order_changed_message', ['name' => $order->name, 'ship2' => $ship_2, 'ship' => $ship, 'time' => $new_time]);
+        $sub = __('admin.order_changed_subtitle', ['ship2' => $ship_2, 'ship' => $ship, 'time' => $new_time]);
+        
+
+        $order->status = $order->status = 3 ? 5 : 1;
         $order->update();
 
-        //new menu
+        //seconda parte
         $product_r = [];
         foreach ($order->products as $p) {
             $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
@@ -421,7 +426,7 @@ class OrderController extends Controller
             'address_n' => $order->address_n,
             'delivery_cost' => $delivery_cost,
 
-            'title' =>  'Ciao ' . $order->name . ' ti informiamo che il tuo ordine è stato confermato',
+            'title' =>  __('admin.order_changed_title', ['name' => $order->name]),
             'subtitle' => $sub,
             'whatsapp_message_id' => $order->whatsapp_message_id,
 
@@ -434,10 +439,6 @@ class OrderController extends Controller
         $mail = new confermaOrdineAdmin($bodymail);
         Mail::to($order['email'])->send($mail);
 
-       
-        // if($content_notify){
-        //     return redirect("https://wa.me/39" . $order->phone . "?text=" . $message_wa);
-        // }
         return redirect()->back()->with('success', $content_notify);
     }
 }

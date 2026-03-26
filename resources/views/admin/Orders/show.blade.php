@@ -102,7 +102,7 @@
                 @endif
             </div>
             <div class="body">
-                <section class="myres-left">
+                <section class="first_section">
                     <div class="data_cont">
                         <h5><strong>#O{{$order->id}}</strong></h5>
                         <div class="time">{{$ora_formatata}}</div>
@@ -159,7 +159,6 @@
                                         @endforeach
                                     </div>
                                 @endif
- 
                             </div>
                         </div>
                     @endforeach
@@ -174,35 +173,36 @@
                                 <div class="counter">* {{$o->pivot->quantity}}</div>              
                                 <div class="name">{{$o->name}}</div>
                             </div>
-                            <div class="variations">
-                                @if ($arrO !== [])
-                                <div class="options">
-                                    <h5>{{ __('admin.Opzioni') }}</h5>
-                                    @foreach ($arrO as $a)
-                                    <span>+ {{$a}}</span>
-                                    @endforeach
-                                </div>
-                                @endif
-                                <div class="bottom-var">
-                                    @if ($arrA !== [])
-                                    <div class="add">
-                                        <h5>{{ __('admin.Ingredienti_extra') }}</h5>
-                                        @foreach ($arrA as $a)
+                            @if ($arrO !== [] || $arrA !== [] || $arrD !== [])
+                                <div class="variations">
+                                    @if ($arrO !== [])
+                                    <div class="options">
+                                        <h5>{{ __('admin.Opzioni') }}</h5>
+                                        @foreach ($arrO as $a)
                                         <span>+ {{$a}}</span>
                                         @endforeach
                                     </div>
                                     @endif
-                                    @if ($arrD !== [])
-                                    <div class="removed">
-                                        <h5>{{ __('admin.Ingredienti_rimossi') }}</h5>
-                                        @foreach ($arrD as $a)
-                                        <span>- {{$a}}</span>
-                                        @endforeach       
+                                    <div class="bottom-var">
+                                        @if ($arrA !== [])
+                                        <div class="add">
+                                            <h5>{{ __('admin.Ingredienti_extra') }}</h5>
+                                            @foreach ($arrA as $a)
+                                            <span>+ {{$a}}</span>
+                                            @endforeach
+                                        </div>
+                                        @endif
+                                        @if ($arrD !== [])
+                                        <div class="removed">
+                                            <h5>{{ __('admin.Ingredienti_rimossi') }}</h5>
+                                            @foreach ($arrD as $a)
+                                            <span>- {{$a}}</span>
+                                            @endforeach       
+                                        </div>
+                                        @endif
                                     </div>
-                                    @endif
                                 </div>
-                            </div>
-                            
+                            @endif
                         </div>
                     @endforeach
 
@@ -212,17 +212,27 @@
                     @endif
                     <div class="t_price">€{{$order->tot_price / 100}}</div>
                 </section>
-                <section class="myres-right">
+                <section class="delivery">
                     @if (isset($order->comune))
-                        <h3>{{ __('admin.Consegnare_a_domicilio') }}<p>{{$order->comune}}, {{$order->address}}, {{$order->address_n}}</p>
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M64 160C64 124.7 92.7 96 128 96L416 96C451.3 96 480 124.7 480 160L480 192L530.7 192C547.7 192 564 198.7 576 210.7L621.3 256C633.3 268 640 284.3 640 301.3L640 448C640 483.3 611.3 512 576 512L572.7 512C562.3 548.9 528.3 576 488 576C447.7 576 413.8 548.9 403.3 512L300.7 512C290.3 548.9 256.3 576 216 576C175.7 576 141.8 548.9 131.3 512L128 512C92.7 512 64 483.3 64 448L64 400L24 400C10.7 400 0 389.3 0 376C0 362.7 10.7 352 24 352L136 352C149.3 352 160 341.3 160 328C160 314.7 149.3 304 136 304L24 304C10.7 304 0 293.3 0 280C0 266.7 10.7 256 24 256L200 256C213.3 256 224 245.3 224 232C224 218.7 213.3 208 200 208L24 208C10.7 208 0 197.3 0 184C0 170.7 10.7 160 24 160L64 160zM576 352L576 301.3L530.7 256L480 256L480 352L576 352zM256 488C256 465.9 238.1 448 216 448C193.9 448 176 465.9 176 488C176 510.1 193.9 528 216 528C238.1 528 256 510.1 256 488zM488 528C510.1 528 528 510.1 528 488C528 465.9 510.1 448 488 448C465.9 448 448 465.9 448 488C448 510.1 465.9 528 488 528z"/></svg>
+                            {{ __('admin.Consegnare_a_domicilio') }}
                         </h3>
+                            
+                        <p>{{$order->comune}}, {{$order->address}}, {{$order->address_n}}</p>
                     @else
-                        <h3>{{ __('admin.Ritiro_dasporto') }}</h3>
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/></svg>
+                            {{ __('admin.Ritiro_dasporto') }}
+                        </h3>
                     @endif
                 </section>
                 @if ($order->message)
                     <section class="message">
-                        <h3>{{__('admin.messaggio_del_cliente')}}</h3>
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chat-right-text" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/><path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/></svg>
+                            {{__('admin.messaggio_del_cliente')}}
+                        </h3>
                         <p>
                             {{$order->message}}
                         </p>
@@ -259,11 +269,9 @@
                 <p>{{ __('admin.Seleziona_lorario_corretto') }}</p>
                 <input required class="form-control" type="time" name="new_time">
                 <h3 class="mt-4 mb-3">{{ __('admin.Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria') }}</h3>
-                <button type="submit" name="cancel" value="1" class="w-100 my_btn_1">{{ __('admin.Lascia_attivo') }}</button>
-                <button type="submit" name="cancel" value="0" class="w-100 my_btn_2">{{ __('admin.Blocca_questo_orario') }}</button>
+                <button type="submit" name="block" value="1" class="w-100 my_btn_1">{{ __('admin.Lascia_attivo') }}</button>
+                <button type="submit" name="block" value="0" class="w-100 my_btn_2">{{ __('admin.Blocca_questo_orario') }}</button>
             </div>
-
-
         </form>
     </div>
 </div>

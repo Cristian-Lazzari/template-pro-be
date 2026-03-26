@@ -329,4 +329,13 @@ return array (
   'per_il' => 'für den:',
   'Costo_di_consegna_' => 'Lieferkosten €',
   'Ordine_di' => 'Bestellung von:',
+  'messaggio_del_cliente' => 'Kundennachricht',
+  'order_postponed' => 'Die Bestellung wurde erfolgreich verschoben auf: :time',
+  'order_changed_title' => 'Hallo :name, wir informieren Sie, dass Ihre Bestellung bestätigt wurde',
+  'order_changed_message' => 'Hallo :name, wir informieren Sie, dass wir Ihre Bestellung angenommen haben, um Ihnen den besten Service und die beste Produktqualität zu bieten :ship2, wir werden in der Lage sein, die Bestellung bis zu dieser Zeit zu :ship: :time',
+  'order_changed_subtitle' => 'Um Ihnen den besten Service und die beste Produktqualität zu bieten :ship2, wir werden in der Lage sein, die Bestellung bis zu dieser Zeit zu :ship: :time',
+  'ship_deliver' => 'liefern',
+  'ship_prepare' => 'vorbereiten',
+  'ship2_delivery' => 'zu Ihrer Lieferung',
+  'ship2_pickup' => 'zu Ihrer Abholung',
 );
