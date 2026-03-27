@@ -182,9 +182,11 @@ class DateController extends Controller
                         }
                     }else{
                         foreach ($reserved[$day['date']]['or'] ?? [] as $r) { 
-                            $day['times'][$r->time]['or'] --;
-                            if($day['times'][$r->time]['or'] == 0){
-                                unset($day['times'][$r->time]);
+                            if(isset($day['times'][$r->time])){
+                                $day['times'][$r->time]['or'] --;
+                                if($day['times'][$r->time]['or'] == 0){
+                                    unset($day['times'][$r->time]);
+                                }
                             }
                         }
                     }

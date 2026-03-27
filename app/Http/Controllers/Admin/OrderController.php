@@ -295,9 +295,20 @@ class OrderController extends Controller
             }
         }
         $delivery_cost = $order->tot_price - $cart_price;
-        
 
-        return view('admin.Orders.show', compact('order', 'delivery_cost'));
+        $times_start = '01:00';
+        $times_end = '23:59';
+        $times_interval = 30;
+
+        $adv_setting = Setting::where('name', 'advanced')->first();
+        if ($adv_setting) {
+            $adv = json_decode($adv_setting->property, true);
+            $times_start = $adv['times_start'] ?? $times_start;
+            $times_end = $adv['times_end'] ?? $times_end;
+            $times_interval = intval($adv['times_interval'] ?? $times_interval);
+        }
+
+        return view('admin.Orders.show', compact('order', 'delivery_cost', 'times_start', 'times_end', 'times_interval'));
     }
 
     public function destroy($id)
@@ -351,7 +362,7 @@ class OrderController extends Controller
         $sub = __('admin.order_changed_subtitle', ['ship2' => $ship_2, 'ship' => $ship, 'time' => $new_time]);
         
 
-        $order->status = $order->status = 3 ? 5 : 1;
+        $order->status = $order->status == 3 ? 5 : 1;
         $order->update();
 
         //seconda parte

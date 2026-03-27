@@ -260,10 +260,10 @@
     <div style="margin: 50px auto 0; background-color: #04001d; color: white; padding: 10px; text-align: center; font-size: 12px;">
         @if ($content_mail['to'] == 'user' && $content_mail['status'] !== 0)
             <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">
-                {{__('contatta_tel_mail', ['name'=>config('configurazione.APP_NAME')])}}
+                {{__('admin.contatta_tel_mail', ['name'=>config('configurazione.APP_NAME')])}}
             </p>
             <p style="color: #ffffff; line-height: 1.5; margin: 15px;">
-                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px;">{{('admin.Chiama')}}{{config('configurazione.APP_NAME')}}</a>
+                <a href="tel:{{$content_mail['admin_phone']}}" style="background-color: #ffffff; color: rgb(0, 0, 0); padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px;">{{ __('admin.Chiama') }}{{config('configurazione.APP_NAME')}}</a>
             </p>
         @endif
         <p style="color: #ffffff; font-size: 12px; line-height: 1.5; margin: 5px;">{{__('admin.end_copy', ['name' => config('configurazione.APP_NAME')])}}</p>

@@ -1578,13 +1578,27 @@ svg.to_see{
 
 }
 .mymodal_make_res{
-    border: 2px solid var(--c1) !important;
+    //border: 2px solid var(--c3) !important;
     border-radius: 20px;
     overflow: hidden;
     background-color: var(--c1_op_8);
     backdrop-filter: blur(20px);
     max-height: 93dvh;
     overflow-y: auto;
+    .modal-header, .modal-footer{
+        border: 0;
+    }
+    .modal-footer{
+        display: flex;
+        align-items: stretch;
+        flex-direction: row !important;
+        button{
+            flex: 1;
+        }
+    }
+    .btn-close{
+        background-color: var(--c3);
+    }
     .modal-body{
         color: var(--c3);
         display: flex;
@@ -2421,104 +2435,6 @@ svg.to_see{
             }
         }
     }
-    section{
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        color: var(--c3);
-        select{
-            text-align: center;
-        }
-        input, select{
-            border-left: none;
-            border-right: none;
-            border-top: none;
-            border: 2px solid var(--c3_op);
-            border-radius: 10px;
-            color: var(--c3);
-            opacity: .5;
-            flex-grow: 1;
-            height: 40px;
-            background: rgba(255, 0, 0, 0);
-            text-align: center;
-            font-weight: 600;
-            font-size: clamp(16px, 2.5vw, 18px);
-        }
-        input:focus, select:focus, input:hover, select:hover{
-            border: 2px solid var(--c2);
-            box-shadow: 0 0 10px var(--c2_op);
-            outline: none;
-            opacity: 1;
-            transition: all .3s ease-in-out;
-            //background: linear-gradient(-25deg, #09033300 10%, var(--c3_op_3)40%, #09033300 60%, var(--c3_op_3));
-        }
-        
-        .split, .split-3{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            div{
-                width: calc(50% - 1.2rem);
-                p{
-                    display: flex;
-                    width: 100%;
-                    justify-content: center;
-                    align-items: center;
-                    gap: .5rem;
-
-                }
-            }
-         
-        }
-        .split-3{
-            flex-wrap: wrap;
-            gap: .5rem;
-            justify-content: space-between;
-            div{
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                gap: .5rem;
-                width: auto;
-                input, select{
-                    flex-shrink: 1 !important;
-                }
-            }
-        }
-        textarea{
-            border: none;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(255, 0, 0, 0);
-            border: 2px solid var(--c3_op_3);
-            color: var(--c3_op);
-            transition: all .1s ease-in-out;
-            
-        }
-        textarea:focus, textarea:hover{
-            //background: linear-gradient(-25deg, #09033300 10%, var(--c3_op_3)40%, #09033300 60%, var(--c3_op_3));
-            border: 2px solid var(--c2);
-            box-shadow: 0 0 3px var(--c2);
-            outline: none;
-            opacity: 1;
-            transition: all .3s ease-in-out;
-            box-shadow: 0 0 10px var(--c2_op);
-        }
-        label{
-            //text-transform: capitalize;
-            font-size: clamp(16px, 2.7vw, 20px);
-        }
-        .desc{
-            display: flex;
-            flex-direction: column;
-            gap: .5rem;
-
-        }
-
-    }
 
     
     .check_c{
@@ -2656,6 +2572,104 @@ svg.to_see{
             }
         }
     }
+}
+section{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: var(--c3);
+    select{
+        text-align: center;
+    }
+    input, select{
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        border: 2px solid var(--c3_op);
+        border-radius: 10px;
+        color: var(--c3);
+        opacity: .5;
+        flex-grow: 1;
+        height: 40px;
+        background: rgba(255, 0, 0, 0);
+        text-align: center;
+        font-weight: 600;
+        font-size: clamp(16px, 2.5vw, 18px);
+    }
+    input:focus, select:focus, input:hover, select:hover{
+        border: 2px solid var(--c2);
+        box-shadow: 0 0 10px var(--c2_op);
+        outline: none;
+        opacity: 1;
+        transition: all .3s ease-in-out;
+        //background: linear-gradient(-25deg, #09033300 10%, var(--c3_op_3)40%, #09033300 60%, var(--c3_op_3));
+    }
+    
+    .split, .split-3{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        div{
+            width: calc(50% - 1.2rem);
+            p{
+                display: flex;
+                width: 100%;
+                justify-content: center;
+                align-items: center;
+                gap: .5rem;
+
+            }
+        }
+        
+    }
+    .split-3{
+        flex-wrap: wrap;
+        gap: .5rem;
+        justify-content: space-between;
+        div{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: .5rem;
+            width: auto;
+            input, select{
+                flex-shrink: 1 !important;
+            }
+        }
+    }
+    textarea{
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        background: rgba(255, 0, 0, 0);
+        border: 2px solid var(--c3_op_3);
+        color: var(--c3_op);
+        transition: all .1s ease-in-out;
+        
+    }
+    textarea:focus, textarea:hover{
+        //background: linear-gradient(-25deg, #09033300 10%, var(--c3_op_3)40%, #09033300 60%, var(--c3_op_3));
+        border: 2px solid var(--c2);
+        box-shadow: 0 0 3px var(--c2);
+        outline: none;
+        opacity: 1;
+        transition: all .3s ease-in-out;
+        box-shadow: 0 0 10px var(--c2_op);
+    }
+    label{
+        //text-transform: capitalize;
+        font-size: clamp(16px, 2.7vw, 20px);
+    }
+    .desc{
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+
+    }
+
 }
 
 //-index order

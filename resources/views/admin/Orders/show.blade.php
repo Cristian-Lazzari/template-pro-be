@@ -242,10 +242,10 @@
                 <div class="actions">
                     @if (in_array($order->status, [0, 2, 3]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">{{ __('admin.Conferma') }}</button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_3 post_btn">{{ __('admin.Posticipa_e_Conferma') }}</button>                   
                     @endif
                     @if(in_array($order->status, [1, 2, 3, 5]))
                         <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_5">{{in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla'}}</button>                   
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#changeModal" class="w-100 my_btn_3 post_btn">{{ __('admin.Posticipa_e_Conferma') }}</button>                   
                     @endif         
                 </div>
                 
@@ -265,13 +265,43 @@
                 <h1 class="modal-title fs-2" id="changeModalLabel">{{ __('admin.Conferma_e_posticipa_questo_ordine') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body fs-4">{{ __('admin.Ordine_di') }}<strong>{{$order->name}} </strong>{{ __('admin.per_il') }}<strong>{{$order->date_slot}}</strong>
-                <p>{{ __('admin.Seleziona_lorario_corretto') }}</p>
-                <input required class="form-control" type="time" name="new_time">
-                <h3 class="mt-4 mb-3">{{ __('admin.Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria') }}</h3>
-                <button type="submit" name="block" value="1" class="w-100 my_btn_1">{{ __('admin.Lascia_attivo') }}</button>
-                <button type="submit" name="block" value="0" class="w-100 my_btn_2">{{ __('admin.Blocca_questo_orario') }}</button>
+            <div class="modal-body fs-4">
+                <p>
+                    {{ __('admin.Ordine_di') }} <strong>{{$order->name}} </strong>{{ __('admin.per_il') }} <strong>{{$order->date_slot}}</strong>
+                </p>
+                {{-- <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p> --}}
             </div>
+            <section class="modal-body fs-4">
+                <p>{{ __('admin.Seleziona_lorario_corretto') }}</p>
+                <select name="new_time" required>
+                    @php
+                        $slot = DateTime::createFromFormat('H:i', $times_start);
+                        $slotEnd = DateTime::createFromFormat('H:i', $times_end);
+                        $interval = intval($times_interval);
+                        $hasOption = false;
+                    @endphp
+
+                    @while ($slot && $slot <= $slotEnd)
+                        @php
+                            $timeValue = $slot->format('H:i');
+                            $hasOption = true;
+                        @endphp
+                        <option value="{{ $timeValue }}" {{ $timeValue == $ora_formatata ? 'selected' : '' }}>{{ $timeValue }}</option>
+                        @php $slot->modify("+{$interval} minutes"); @endphp
+                    @endwhile
+
+                    @unless ($hasOption)
+                        <option value="">{{ __('admin.Nessun_orario_disponibile') }}</option>
+                    @endunless
+                </select>
+                <p class="mt-4 mb-3">{{ __('admin.Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria') }}</p>
+
+            </section>
+            <div class="modal-footer">
+                <button type="submit" name="block" value="0" class="my_btn_5">{{ __('admin.Lascia_attivo') }}</button>
+                <button type="submit" name="block" value="1" class="my_btn_3">{{ __('admin.Blocca_questo_orario') }}</button>
+            </div>
+            
         </form>
     </div>
 </div>
@@ -296,8 +326,8 @@
                     <input value="0" type="hidden" name="wa">
                     <input value="1" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_2">{{__('admin.Conferma')}}</button>
-            </form>
+                    <button type="submit" class="w-100 my_btn_3">{{__('admin.Conferma')}}</button>
+                </form>
             {{-- <form action="{{ route('admin.orders.status') }}" method="POST">
                     @csrf
                     <input value="1" type="hidden" name="wa">
@@ -330,7 +360,7 @@
                     <input value="0" type="hidden" name="wa">
                     <input value="0" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_2">{{__('admin.Annulla')}}</button>
+                    <button type="submit" class="w-100 my_btn_5">{{__('admin.Annulla')}}</button>
             </form>
             {{-- <form action="{{ route('admin.orders.status') }}" method="POST">
                     @csrf

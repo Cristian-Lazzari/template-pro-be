@@ -535,13 +535,13 @@ document.addEventListener("DOMContentLoaded", () => {
                                     <div class="cart">`;
                             o.products.forEach(p => {
                                 html += `<div class="item_cart">
-                                            <div class="name">${p.name}</div>
+                                            <div class="name">${p.pivot?.quantity ?? 1}- ${p.name}</div>
                                             <div class="price">€${p.price / 100}</div>
                                         </div>`;
                             });
                             o.menus.forEach(p => {
                                 html += `<div class="item_cart">
-                                            <div class="name">${p.name}</div>
+                                            <div class="name">${p.pivot?.quantity ?? 1}- ${p.name}</div>
                                             <div class="price">€${p.price / 100}</div>
                                         </div>`;
                             });
