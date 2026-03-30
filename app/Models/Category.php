@@ -13,6 +13,8 @@ class Category extends Model
     use HasFactory;
     use HasTranslations;
 
+    protected $appends = ['name', 'description'];
+
     protected $with = ['translations'];
     
     public function products() {    

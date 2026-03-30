@@ -19,6 +19,36 @@ class ProductController extends Controller
         app()->setLocale($lang);
         // config(['app.locale' => $lang]);
 
+        $hideProductTranslations = function ($product) {
+            $product->makeHidden(['translations']);
+            $product->ingredients->each(function ($ingredient) {
+                $ingredient->makeHidden(['translations']);
+                $ingredient->allergens->each(function ($allergen) {
+                    $allergen->makeHidden(['translations']);
+                });
+            });
+            $product->directAllergens->each(function ($allergen) {
+                $allergen->makeHidden(['translations']);
+            });
+        };
+
+        $hideMenuTranslations = function ($menu) use ($hideProductTranslations) {
+            $menu->makeHidden(['translations']);
+            $menu->products->each(function ($product) use ($hideProductTranslations) {
+                $hideProductTranslations($product);
+            });
+        };
+
+        $hideCategoryTranslations = function ($category) use ($hideProductTranslations, $hideMenuTranslations) {
+            $category->makeHidden(['translations']);
+            $category->products->each(function ($product) use ($hideProductTranslations) {
+                $hideProductTranslations($product);
+            });
+            $category->menus->each(function ($menu) use ($hideMenuTranslations) {
+                $hideMenuTranslations($menu);
+            });
+        };
+
         /*
         |--------------------------------------------------------------------------
         | TRADUZIONI
@@ -227,6 +257,18 @@ class ProductController extends Controller
         }
 
         $featuredCategory = null;
+
+        $categories->each(function ($category) use ($hideCategoryTranslations) {
+            $hideCategoryTranslations($category);
+        });
+
+        $featuredProducts->each(function ($product) use ($hideProductTranslations) {
+            $hideProductTranslations($product);
+        });
+
+        $featuredMenus->each(function ($menu) use ($hideMenuTranslations) {
+            $hideMenuTranslations($menu);
+        });
 
         if($featuredProducts->count() || $featuredMenus->count()){
 
