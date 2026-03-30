@@ -14,7 +14,7 @@ trait HasTranslations
         $currentTranslation = $this->translations->firstWhere('lang', $locale);
         $currentValue = $currentTranslation?->$field;
 
-        if ($currentValue !== null && $currentValue !== '') {
+        if ($currentValue !== null && trim((string) $currentValue) !== '') {
             return $currentValue;
         }
 

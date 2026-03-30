@@ -98,7 +98,9 @@ class ProductController extends Controller
         */
 
         $translationScope = function ($q) use ($lang, $defaultLang) {
-            $q->whereIn('lang', [$lang, $defaultLang])
+            $langs = array_values(array_unique([$lang, 'en', $defaultLang]));
+
+            $q->whereIn('lang', $langs)
             ->orderByRaw("CASE WHEN lang = ? THEN 0 ELSE 1 END", [$lang]);
         };
 
