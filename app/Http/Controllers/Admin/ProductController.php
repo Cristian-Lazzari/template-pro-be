@@ -397,8 +397,8 @@ class ProductController extends Controller
                 ProductTranslation::updateOrCreate(
                     [   'product_id' => $product->id, 'lang' => $lang   ],
                     [
-                        'name' => $n_trans ? $translator->translate($data['name'], $lang) : $v['name'],
-                        'description' => $n_trans ? $translator->translate($data['description'], $lang) : $v['description'],
+                        'name' => ($n_trans || $v['name'] !== null) ? $translator->translate($data['name'], $lang) : $v['name'],
+                        'description' => ($n_trans || $v['description'] !== null) ? $translator->translate($data['description'], $lang) : $v['description'],
                     ]
                 );
                 
