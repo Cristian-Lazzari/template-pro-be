@@ -154,8 +154,9 @@ class Ecce35MenuSeeder extends Seeder
                 $query->where('lang', 'it')->whereIn('name', $productNames);
             })
             ->get()
-            ->each
-            ->delete();
+            ->each(function (Product $product) {
+                $this->deleteProductSafely($product);
+            });
     }
 
     private function deleteUnusedCategories(array $categoryNames): void
@@ -178,6 +179,19 @@ class Ecce35MenuSeeder extends Seeder
             ->get()
             ->each
             ->delete();
+    }
+
+    private function deleteProductSafely(Product $product): void
+    {
+        $product->ingredients()->detach();
+        $product->directAllergens()->detach();
+        $product->orders()->detach();
+
+        DB::table('menu_product')
+            ->where('product_id', $product->id)
+            ->delete();
+
+        $product->delete();
     }
 
     private function mapMenuAllergensToSystemIds(array $menuAllergens): array
