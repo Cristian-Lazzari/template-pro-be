@@ -19,32 +19,74 @@ class ProductController extends Controller
         app()->setLocale($lang);
         // config(['app.locale' => $lang]);
 
-        $hideProductTranslations = function ($product) {
+        $toCollection = function ($value) {
+            if ($value instanceof \Illuminate\Support\Collection) {
+                return $value;
+            }
+
+            if (is_array($value)) {
+                return collect($value);
+            }
+
+            return collect();
+        };
+
+        $hideProductTranslations = function ($product) use ($toCollection) {
             $product->makeHidden(['translations']);
-            $product->ingredients->each(function ($ingredient) {
+
+            $ingredients = $product->relationLoaded('ingredients')
+                ? $product->getRelation('ingredients')
+                : $product->ingredients()->get();
+
+            $toCollection($ingredients)->each(function ($ingredient) use ($toCollection) {
                 $ingredient->makeHidden(['translations']);
-                $ingredient->allergens->each(function ($allergen) {
+
+                $allergens = $ingredient->relationLoaded('allergens')
+                    ? $ingredient->getRelation('allergens')
+                    : $ingredient->allergens()->get();
+
+                $toCollection($allergens)->each(function ($allergen) {
                     $allergen->makeHidden(['translations']);
                 });
             });
-            $product->directAllergens->each(function ($allergen) {
+
+            $directAllergens = $product->relationLoaded('directAllergens')
+                ? $product->getRelation('directAllergens')
+                : $product->directAllergens()->get();
+
+            $toCollection($directAllergens)->each(function ($allergen) {
                 $allergen->makeHidden(['translations']);
             });
         };
 
-        $hideMenuTranslations = function ($menu) use ($hideProductTranslations) {
+        $hideMenuTranslations = function ($menu) use ($hideProductTranslations, $toCollection) {
             $menu->makeHidden(['translations']);
-            $menu->products->each(function ($product) use ($hideProductTranslations) {
+
+            $products = $menu->relationLoaded('products')
+                ? $menu->getRelation('products')
+                : $menu->products()->get();
+
+            $toCollection($products)->each(function ($product) use ($hideProductTranslations) {
                 $hideProductTranslations($product);
             });
         };
 
-        $hideCategoryTranslations = function ($category) use ($hideProductTranslations, $hideMenuTranslations) {
+        $hideCategoryTranslations = function ($category) use ($hideProductTranslations, $hideMenuTranslations, $toCollection) {
             $category->makeHidden(['translations']);
-            $category->products->each(function ($product) use ($hideProductTranslations) {
+
+            $products = $category->relationLoaded('products')
+                ? $category->getRelation('products')
+                : $category->products()->get();
+
+            $toCollection($products)->each(function ($product) use ($hideProductTranslations) {
                 $hideProductTranslations($product);
             });
-            $category->menus->each(function ($menu) use ($hideMenuTranslations) {
+
+            $menus = $category->relationLoaded('menus')
+                ? $category->getRelation('menus')
+                : $category->menus()->get();
+
+            $toCollection($menus)->each(function ($menu) use ($hideMenuTranslations) {
                 $hideMenuTranslations($menu);
             });
         };
