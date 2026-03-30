@@ -332,7 +332,7 @@
                             @if($alreadyLinked)
                                 <button type="button" class="available-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
                                     {{ $ingredient->name }}
-                                    <span class="remove-ingredient">€</span>
+                                    <span class="remove-ingredient">-</span>
                                 </button>
                             @endif
                         @endforeach
@@ -341,7 +341,7 @@
                         @foreach ($product->ingredients as $ingredient)
                             <button type="button" class="associated-ingredient" data-id="{{ $ingredient->id }}" data-name="{{ $ingredient->name }}">
                                 {{ $ingredient->name }}
-                                <span class="remove-ingredient">€</span>
+                                <span class="remove-ingredient">-</span>
                             </button>
                         @endforeach
                     @endif
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function () {
         button.className = 'associated-ingredient';
         button.dataset.id = id;
         button.dataset.name = name;
-        button.innerHTML = `${name} <span class="remove-ingredient">€</span>`;
+        button.innerHTML = `${name} <span class="remove-ingredient">-</span>`;
 
         button.querySelector('.remove-ingredient').addEventListener('click', () => {
             button.remove();
