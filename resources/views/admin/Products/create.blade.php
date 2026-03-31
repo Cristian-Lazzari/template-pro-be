@@ -301,8 +301,8 @@
         <div class="check_c">
             <p>
                 @foreach( $allergens as $a)
-                    <input type="checkbox" class="btn-check" id="all{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" 
-                    @if (in_array($a->id, old('allergens_ing', [])))  checked @endif
+                    <input type="checkbox" class="btn-check" id="all{{ $a->id }}" name="allergens[]" value="{{ $a->id }}" 
+                    @if (in_array($a->id, old('allergens', [])))  checked @endif
                     >
                     <label class="btn 
                     @if($a->special)
