@@ -187,8 +187,8 @@ class ProductController extends Controller
         $product->category_id   = $data['category_id'];
 
         $product->price         = $price * 100;       
-        $product->name   = isset($data['name']);
-        $product->description   = isset($data['description']);
+
+
         $product->promotion   = isset($data['promotion']) ? true : false;
         $product->old_price   = isset($data['old_price']) ? (float) str_replace(',', '.', $data['old_price']) * 100 : null;
         
