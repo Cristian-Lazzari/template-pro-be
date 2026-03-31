@@ -109,7 +109,15 @@ class WaController extends Controller
             $m .= ' dal *tuo collega*';
 
             $messages = json_decode($or_res->whatsapp_message_id, true);
-            $old_id = $messages[$p];
+            $old_id = is_array($messages) ? ($messages[$p] ?? null) : null;
+            if (!$old_id) {
+                Log::warning("(WC) message_co_worker senza message_id di contesto", [
+                    'p' => $p,
+                    'whatsapp_message_id' => $or_res->whatsapp_message_id,
+                    'or_res_id' => $or_res->id ?? null,
+                ]);
+                return null;
+            }
 
             Log::info("(WC) Esecuzione message_co_worker", [
                 'o_r' => $o_r,
@@ -505,11 +513,10 @@ class WaController extends Controller
         $setting = Setting::where('name', 'wa')->first();
         $property = json_decode($setting->property, true);
         $now = Carbon::now();
-        if($c < 2){
+        if($c === 0){
             $property['last_response_wa_1'] = $now;
-        }else {
+        }elseif($c === 1) {
             $property['last_response_wa_2'] = $now;
-
         }
         $setting->property= json_encode($property);
         $setting->update();

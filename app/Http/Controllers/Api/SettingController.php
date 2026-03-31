@@ -29,8 +29,8 @@ class SettingController extends Controller
         }
         
         // Cerca l'ordine o la prenotazione
-        $order = Order::where('whatsapp_message_id', $messageId)->first();
-        $reservation = Reservation::where('whatsapp_message_id', $messageId)->first();
+        $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
+        $reservation = Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
         
         if (!$order && !$reservation) {
             return response()->json(['error' => 'Nessun ordine o prenotazione trovata'], 404);
@@ -125,7 +125,15 @@ class SettingController extends Controller
             
             // Controllo se la risposta è entro 24 ore
             $messages = json_decode($or_res->whatsapp_message_id, true);
-            $old_id = $messages[$p];
+            $old_id = is_array($messages) ? ($messages[$p] ?? null) : null;
+            if (!$old_id) {
+                Log::warning("(SC) message_default senza message_id di contesto", [
+                    'p' => $p,
+                    'whatsapp_message_id' => $or_res->whatsapp_message_id,
+                    'or_res_id' => $or_res->id ?? null,
+                ]);
+                return null;
+            }
             if ($this->isLastResponseWaWithin24Hours($p)) {
     
                 $data = [

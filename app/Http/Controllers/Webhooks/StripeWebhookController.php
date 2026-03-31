@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Webhooks;
 
 use Carbon\Carbon;
+use Exception;
+use UnexpectedValueException;
 use Stripe\Stripe;
 use Stripe\Webhook;
 use App\Models\Date;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -21,45 +26,41 @@ class StripeWebhookController extends Controller
     public function handleStripeWebhook(Request $request)
     {
         try {
-        // La tua chiave segreta di Stripe
-        $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
-        
-        Log::warning(" SESSIONE CONTROLLER");
-        // Imposta la chiave segreta di Stripe
-        Stripe::setApiKey($stripeSecretKey);
+            // La tua chiave segreta di Stripe
+            $stripeSecretKey = config('configurazione.STRIPE_SECRET');
 
-        // Ottieni il corpo della richiesta
-        $payload = $request->getContent();
-        $sigHeader = $request->header('Stripe-Signature');
+            Log::warning(" SESSIONE CONTROLLER");
+            // Imposta la chiave segreta di Stripe
+            Stripe::setApiKey($stripeSecretKey);
 
-        // Il tuo endpoint segreto (ottenuto quando configuri il webhook)
-        $endpointSecret = config('configurazione.STRIPE_WEBHOOK_SECRET'); // Inserisci il tuo endpoint segreto
+            // Ottieni il corpo della richiesta
+            $payload = $request->getContent();
+            $sigHeader = $request->header('Stripe-Signature');
 
-        try {
-            // Verifica il webhook
-            $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
-        } catch (UnexpectedValueException $e) {
-            // Il payload non è valido
-            return response()->json(['error' => 'Invalid payload'], 400);
-        } catch (\Stripe\Exception\SignatureVerificationException $e) {
-            // La firma non è valida
-            return response()->json(['error' => 'Invalid signature'], 400);
-        }
+            // Il tuo endpoint segreto (ottenuto quando configuri il webhook)
+            $endpointSecret = config('configurazione.STRIPE_WEBHOOK_SECRET'); // Inserisci il tuo endpoint segreto
 
-        // Gestisci gli eventi pertinenti
-        if($event->type == 'checkout.session.completed'){
-            $session = $event->data->object; // contiene i dettagli della sessione
-            return $this->handleCheckoutSessionCompleted($session);
-               
-        }
-        elseif($event->type == 'payment_intent.payment_failed'){
-            $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-            return $this->handlePaymentIntentFailed($paymentIntent);
-        }
+            try {
+                // Verifica il webhook
+                $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
+            } catch (UnexpectedValueException $e) {
+                // Il payload non è valido
+                return response()->json(['error' => 'Invalid payload'], 400);
+            } catch (\Stripe\Exception\SignatureVerificationException $e) {
+                // La firma non è valida
+                return response()->json(['error' => 'Invalid signature'], 400);
+            }
 
-        
+            // Gestisci gli eventi pertinenti
+            if ($event->type == 'checkout.session.completed') {
+                $session = $event->data->object; // contiene i dettagli della sessione
+                return $this->handleCheckoutSessionCompleted($session);
+            } elseif ($event->type == 'payment_intent.payment_failed') {
+                $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
+                return $this->handlePaymentIntentFailed($paymentIntent);
+            }
 
-        //return response()->json(['status' => 'success'], 200);
+            return response()->json(['status' => 'ignored'], 200);
         } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
@@ -251,6 +252,11 @@ class StripeWebhookController extends Controller
 
         $numbers_wa_set_s = Setting::where('name', 'wa')->firstOrFail();
         $numbers_wa_set = json_decode($numbers_wa_set_s->property, true);
+        $numbers = $numbers_wa_set['numbers'] ?? [];
+
+        if (empty($numbers)) {
+            Log::warning('(StripeWebhookController) Nessun numero WhatsApp configurato per le notifiche.');
+        }
 
         $data_i = [
             'messaging_product' => 'whatsapp',
@@ -339,34 +345,34 @@ class StripeWebhookController extends Controller
         $messageId = [];
         $type_m_1 = false;
         $type_m_2 = false;
-        foreach ($numbers_wa_set['numbers'] as $num) {
+        foreach ($numbers as $num) {
             $data_t['to'] = $num;
             $data_i['to'] = $num;
             if($this->isLastResponseWaWithin24Hours($n)){
-                if($n == 1){
+                if($n == 0){
                     $type_m_1 = 0;
-                }else{     
+                }else{
                     $type_m_2 = 0;
                 }
                 $response = Http::withHeaders([
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
                 ])->post($url, $data_i);
-                $m_id = $response->json()['messages'][0]['id'] ?? null;
+                $m_id = $this->extractWhatsappMessageId($response, $num, 'interactive');
                 if($m_id){
                     array_push($messageId, $m_id);
                 }
             }else{
-                if($n == 1){
+                if($n == 0){
                     $type_m_1 = 1;
-                }else{     
+                }else{
                     $type_m_2 = 1;
                 }
                 $response = Http::withHeaders([
                     'Authorization' => config('configurazione.WA_TO'),
                     'Content-Type' => 'application/json'
                 ])->post($url, $data_t);
-                $m_id = $response->json()['messages'][0]['id'] ?? null;
+                $m_id = $this->extractWhatsappMessageId($response, $num, 'template');
                 if($m_id){
                     array_push($messageId, $m_id);
                 }
@@ -385,8 +391,8 @@ class StripeWebhookController extends Controller
         $order->update();
         $this->send_mail($order);
         // Log dei dati inviati
-        $mx = $this->save_message([        
-            'wa_id' => $newOrder->whatsapp_message_id,
+        $mx = $this->save_message([
+            'wa_id' => $order->whatsapp_message_id,
             'type_1' => $type_m_1,
             'type_2' => $type_m_2,
             'source' => config('configurazione.db'),
@@ -439,7 +445,8 @@ class StripeWebhookController extends Controller
         // Decodifica wa_id e verifica se è valido
         $mex = json_decode($data_am1['wa_id'], true);
         if (!is_array($mex)) {
-            return response()->json(['success' => false, 'error' => 'Si è verificato un errore. Riprova più tardi.']);
+            Log::warning('(StripeWebhookController) wa_id non valido per save_message', ['wa_id' => $data_am1['wa_id']]);
+            return $source;
         }
 
         Log::info("wa_id decodificato con successo:", ['wa_id' => $mex]);
@@ -461,6 +468,23 @@ class StripeWebhookController extends Controller
         }
         return $source;
         
+    }
+
+    protected function extractWhatsappMessageId($response, $number, $type)
+    {
+        $payload = $response->json();
+        $messageId = $payload['messages'][0]['id'] ?? null;
+
+        if (!$response->successful() || !$messageId) {
+            Log::error('(StripeWebhookController) Invio WhatsApp fallito', [
+                'number' => $number,
+                'type' => $type,
+                'status' => $response->status(),
+                'response' => $payload,
+            ]);
+        }
+
+        return $messageId;
     }
 
     protected function send_mail($order){

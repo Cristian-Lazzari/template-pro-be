@@ -64,9 +64,9 @@ class ReservationController extends Controller
 
         if(count($res_in_time)){
             foreach ($res_in_time as $r) {
-                $p_= json_decode($r->n_person, 1);
-                $n_adult = $p['adult'];
-                $n_child = $p['child'];
+                $p_ = json_decode($r->n_person, 1);
+                $n_adult = $p_['adult'] ?? 0;
+                $n_child = $p_['child'] ?? 0;
                 $tot_p = $n_adult + $n_child;
                 $av -= $tot_p;
                 if($av < 0){
