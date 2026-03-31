@@ -6,7 +6,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 //use Database\Seeders\PostsTableSeeder;
 use Database\Seeders\UsersTableSeeder;
-use Database\Seeders\ProductsTableSeeder;
 use Database\Seeders\SettingsTableSeeder;
 use Database\Seeders\AllergensFromConfigSeeder;
 
@@ -23,7 +22,7 @@ class DatabaseSeeder extends Seeder
             AllergensFromConfigSeeder::class,
             
             //PostsTableSeeder::class,
-            ProductsTableSeeder::class,
+            Ecce35MenuSeeder::class,
         ]);
     }
 }

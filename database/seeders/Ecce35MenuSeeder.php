@@ -27,7 +27,7 @@ class Ecce35MenuSeeder extends Seeder
                 $category = $this->upsertCategory($categoryName);
 
                 foreach ($products as $productData) {
-                    $this->upsertProduct($category, $productData);
+                    $this->createProduct($category, $productData);
                 }
             }
 
@@ -64,14 +64,9 @@ class Ecce35MenuSeeder extends Seeder
         return $category->fresh();
     }
 
-    private function upsertProduct(Category $category, array $data): void
+    private function createProduct(Category $category, array $data): void
     {
-        $translation = ProductTranslation::query()
-            ->where('lang', 'it')
-            ->where('name', $data['name'])
-            ->first();
-
-        $product = $translation?->product ?? new Product();
+        $product = new Product();
 
         $product->category_id = $category->id;
         $product->price = $data['price'];
@@ -84,18 +79,14 @@ class Ecce35MenuSeeder extends Seeder
         $product->promotion = false;
         $product->save();
 
-        ProductTranslation::updateOrCreate(
+        ProductTranslation::create(
             [
                 'product_id' => $product->id,
                 'lang' => 'it',
-            ],
-            [
                 'name' => $data['name'],
                 'description' => $data['description'],
             ]
         );
-
-        $product->translations()->where('lang', '!=', 'it')->delete();
 
         $syncIngredients = [];
 
