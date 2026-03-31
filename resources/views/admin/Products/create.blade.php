@@ -301,7 +301,7 @@
         <div class="check_c">
             <p>
                 @foreach( $allergens as $a)
-                    <input type="checkbox" class="btn-check" id="b{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" 
+                    <input type="checkbox" class="btn-check" id="all{{ $a->id }}" name="allergens_ing[]" value="{{ $a->id }}" 
                     @if (in_array($a->id, old('allergens_ing', [])))  checked @endif
                     >
                     <label class="btn 
@@ -311,7 +311,7 @@
                         btn-outline-light
                     @endif
                     " 
-                    for="b{{ $a->id }}">{{ $a->name }}</label>
+                    for="all{{ $a->id }}">{{ $a->name }}</label>
                 @endforeach
             </p>
         </div>
