@@ -8,7 +8,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SettingsTableSeeder extends Seeder
 {
-   
     public function run()
     {
         $settings = [
@@ -47,11 +46,23 @@ class SettingsTableSeeder extends Seeder
             ],
             [
                 'name' => 'Posizione',
-                'property' => []
+                'property' => [
+                    'foto_maps' => '',
+                    'link_maps' => '',
+                    'indirizzo' => '',
+                ]
             ],
             [
                 'name' => 'Contatti',
-                'property' => []
+                'property' => [
+                    'telefono' => '',
+                    'email' => '',
+                    'instagram' => '',
+                    'facebook' => '',
+                    'youtube' => '',
+                    'tiktok' => '',
+                    'whatsapp' => '',
+                ]
             ],
             [
                 'name' => 'Possibilità di consegna a domicilio',  
@@ -122,6 +133,7 @@ class SettingsTableSeeder extends Seeder
                         7 => [],
                     ],
                     'day_off' => [],
+                    'time_blocked' => [],
                     'max_asporto' => 0,
                     'max_domicilio' => 0,
                     'max_table' => 0,
@@ -133,18 +145,23 @@ class SettingsTableSeeder extends Seeder
                 'name' => 'Lingua',
                 'property' => [
                     'default' => 'it',
-                    'languages' => ['it', 'en', 'fr', 'de'],
+                    'languages' => ['it', 'en', 'es', 'fr', 'de', 'ja', 'ro'],
                 ]
             ],
         ];
    
 
         foreach ($settings as $s) {
-            $string = json_encode($s['property'], true);  
-            $s['property'] = $string;
-            dump( $s['name']);
-            // Creazione della voce di impostazione
-            Setting::create($s);
+            $setting = Setting::firstOrNew(['name' => $s['name']]);
+
+            $existingProperty = json_decode($setting->property ?? '[]', true);
+            if (!is_array($existingProperty)) {
+                $existingProperty = [];
+            }
+
+            $setting->status = $s['status'] ?? $setting->status;
+            $setting->property = json_encode(array_replace_recursive($s['property'], $existingProperty));
+            $setting->save();
         }
     }
 }
