@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UsersTableSeeder::class,
+            SettingsTableSeeder::class,
             AllergensFromConfigSeeder::class,
             
             //PostsTableSeeder::class,
             ProductsTableSeeder::class,
-            SettingsTableSeeder::class,
         ]);
     }
 }
