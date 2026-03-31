@@ -248,6 +248,7 @@ class OrderController extends Controller
     public function index()
     {
         $order_remove = Order::where('status', 4)
+            ->whereNull('checkout_session_id')
             ->where('created_at', '<', Carbon::now()->subHours(2))
             ->get();
         if (!$order_remove->isEmpty()) {

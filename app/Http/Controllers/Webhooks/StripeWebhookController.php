@@ -54,7 +54,7 @@ class StripeWebhookController extends Controller
             // Gestisci gli eventi pertinenti
             if ($event->type == 'checkout.session.completed') {
                 $session = $event->data->object; // contiene i dettagli della sessione
-                return $this->handleCheckoutSessionCompleted($session);
+                return $this->processCheckoutSession($session);
             } elseif ($event->type == 'payment_intent.payment_failed') {
                 $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
                 return $this->handlePaymentIntentFailed($paymentIntent);
@@ -80,84 +80,128 @@ class StripeWebhookController extends Controller
 
 
 
-    protected function handleCheckoutSessionCompleted($session)
+    public function processCheckoutSession($session)
     {
-        // Aggiorna il tuo database per segnare l'ordine come completato
-        $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        $order = Order::where('id', $orderId)->with('products', 'menus')->firstOrFail();
-        $date = Date::where('date_slot', $order->date_slot)->first();
-        $vis = json_decode($date->visible, true);
-        $av = json_decode($date->availability, true);
-        $res = json_decode($date->reserving, true);
+        $orderId = $session->metadata->order_id ?? null;
+        if (!$orderId) {
+            Log::error('(StripeWebhookController) order_id mancante nei metadata Stripe', [
+                'session_id' => $session->id ?? null,
+            ]);
 
-        // aggiorno la disponibilità in date
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1); 
-        if($property_adv['too']){
-            $res_c1 = $res['cucina_1'];
-            $res_c2 = $res['cucina_2'];
-            $av_c1  = $av['cucina_1'];
-            $av_c2  = $av['cucina_2'];
-            // Inizializza i contatori
-            $np_c1  = 0;
-            $np_c2  = 0;
-            // Cicla sui prodotti associati all'ordine
-            foreach ($order->products as $product) {
-                // return $product;
-                // Controlla il tipo di cucina del prodotto
-                if ($product->type_plate == 1) {
-                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
-                } elseif ($product->type_plate == 2) {
-                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
-                }
-            }
-            
-            if(isset($order->comune)){
-                if( ($res['domicilio'] + 1) < $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                } else{
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                    $vis['domicilio'] = 0;
-                }
-            }
-            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
-            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                $vis['cucina_1'] = 0;
-            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
-                $vis['cucina_2'] = 0;
-            }else{
-                $vis['cucina_1'] = 0;
-                $vis['cucina_2'] = 0;
-            }
-            $res['cucina_1'] += $np_c1;
-            $res['cucina_2'] += $np_c2;
-            
-        }else{
-            if(isset($order->comune)){
-                if(($res['domicilio'] + 1) < $av['domicilio']){}
-                else{
-                    $vis['domicilio'] = 0;
-                }
-                $res['domicilio'] = $res['domicilio'] + 1;
-            }else{
-                if(($res['asporto'] + 1) < $av['asporto']){}
-                else{
-                    $vis['asporto'] = 0;
-                }
-                $res['asporto'] = $res['asporto'] + 1;
-            }
+            return response()->json(['error' => 'order_id missing'], 400);
         }
-        $date->visible = json_encode($vis);
-        $date->reserving = json_encode($res);
-        $date->update();
 
-        // Esegui la logica per aggiornare lo stato dell'ordine nel database
-        
+        $order = Order::where('id', $orderId)->with('products', 'menus')->firstOrFail();
+
+        if (in_array($order->status, [3, 5, 6], true)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Ordine già processato',
+            ]);
+        }
+
+        $order->checkout_session_id = $session->payment_intent ?? $order->checkout_session_id;
+        $order->status = 3;
+        $order->save();
+
+        $date = Date::where('date_slot', $order->date_slot)->first();
+        if (!$date) {
+            Log::warning('(StripeWebhookController) Slot data non trovato durante la conferma ordine', [
+                'order_id' => $order->id,
+                'date_slot' => $order->date_slot,
+            ]);
+        } else {
+            $vis = json_decode($date->visible, true);
+            $av = json_decode($date->availability, true);
+            $res = json_decode($date->reserving, true);
+
+            // aggiorno la disponibilità in date
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, 1); 
+            if($property_adv['too']){
+                $res_c1 = $res['cucina_1'];
+                $res_c2 = $res['cucina_2'];
+                $av_c1  = $av['cucina_1'];
+                $av_c2  = $av['cucina_2'];
+                $np_c1  = 0;
+                $np_c2  = 0;
+                foreach ($order->products as $product) {
+                    if ($product->type_plate == 1) {
+                        $np_c1 += $product->pivot->quantity * $product->slot_plate;
+                    } elseif ($product->type_plate == 2) {
+                        $np_c2 += $product->pivot->quantity * $product->slot_plate;
+                    }
+                }
+
+                if(isset($order->comune)){
+                    if( ($res['domicilio'] + 1) < $av['domicilio']){
+                        $res['domicilio'] = $res['domicilio'] + 1;
+                    } else{
+                        $res['domicilio'] = $res['domicilio'] + 1;
+                        $vis['domicilio'] = 0;
+                    }
+                }
+                if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
+                elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
+                    $vis['cucina_1'] = 0;
+                }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
+                    $vis['cucina_2'] = 0;
+                }else{
+                    $vis['cucina_1'] = 0;
+                    $vis['cucina_2'] = 0;
+                }
+                $res['cucina_1'] += $np_c1;
+                $res['cucina_2'] += $np_c2;
+            }else{
+                if(isset($order->comune)){
+                    if(($res['domicilio'] + 1) < $av['domicilio']){}
+                    else{
+                        $vis['domicilio'] = 0;
+                    }
+                    $res['domicilio'] = $res['domicilio'] + 1;
+                }else{
+                    if(($res['asporto'] + 1) < $av['asporto']){}
+                    else{
+                        $vis['asporto'] = 0;
+                    }
+                    $res['asporto'] = $res['asporto'] + 1;
+                }
+            }
+            $date->visible = json_encode($vis);
+            $date->reserving = json_encode($res);
+            $date->update();
+        }
+
+        try {
+            $this->sendWhatsAppNotifications($order);
+        } catch (\Throwable $e) {
+            Log::error('(StripeWebhookController) Errore invio WhatsApp post-pagamento', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $this->send_mail($order);
+        } catch (\Throwable $e) {
+            Log::error('(StripeWebhookController) Errore invio mail post-pagamento', [
+                'order_id' => $order->id,
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successo',
+        ]); 
+    }
+
+    protected function sendWhatsAppNotifications($order)
+    {
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
         foreach ($order->menus as $menu) {
-            // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
             $order_mess .= "☞ ";
             if ($menu->pivot->quantity !== 1) {
@@ -166,7 +210,6 @@ class StripeWebhookController extends Controller
             }
             $info .= "*```" . $menu->name. "```*";
             $order_mess .= "*```" . $menu->name. "```*";
-            // Gestisci le opzioni del prodotto
             $info .= "\n ```Prodotti:``` " ;
             $order_mess .= " ```Prodotti:``` " ;
             if ($menu->fixed_menu == '2') {
@@ -195,12 +238,10 @@ class StripeWebhookController extends Controller
                     $count ++;
                 }
             }
-            // Separatore tra i prodotti
             $info .= " \n\n";
             $order_mess .= " " . " ";
         }
         foreach ($order->products as $product) {
-            // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
             $order_mess .= "☞ ";
             if ($product->pivot->quantity !== 1) {
@@ -210,25 +251,21 @@ class StripeWebhookController extends Controller
             $info .= "*```" . $product->name. "```*";
             $order_mess .= "*```" . $product->name. "```*";
 
-            // Gestisci le opzioni del prodotto
             if ($product->pivot->option !== '[]') {
                 $options = json_decode($product->pivot->option);
                 $info .= "\n ```Opzioni:``` " . implode(', ', $options);
                 $order_mess .= " ```Opzioni:``` " . implode(', ', $options);
             }
-            // Gestisci gli ingredienti aggiunti
             if ($product->pivot->add !== '[]') {
                 $addedIngredients = json_decode($product->pivot->add);
                 $info .= "\n ```Aggiunte:``` " . implode(', ', $addedIngredients);
                 $order_mess .= " ```Aggiunte:``` " . implode(', ', $addedIngredients);
             }
-            // Gestisci gli ingredienti rimossi
             if ($product->pivot->remove !== '[]') {
                 $removedIngredients = json_decode($product->pivot->remove);
                 $info .= "\n ```Rimossi:``` " . implode(', ', $removedIngredients);
                 $order_mess .= " ```Rimossi:``` " . implode(', ', $removedIngredients);
             }
-            // Separatore tra i prodotti
             $info .= " \n\n";
             $order_mess .= " " . " ";
         }
@@ -247,7 +284,6 @@ class StripeWebhookController extends Controller
         $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
             "📞 Chiama: " . $order->phone . "\n\n" .
             "🔗 Vedi dalla Dashboard: $link_id";
-        // Definisci l'URL della richiesta
         $url = 'https://graph.facebook.com/v24.0/'. config('configurazione.WA_ID') . '/messages';
 
         $numbers_wa_set_s = Setting::where('name', 'wa')->firstOrFail();
@@ -379,31 +415,18 @@ class StripeWebhookController extends Controller
             }
             $n ++;
         }
-        
-        
-        
+
         $order->whatsapp_message_id = json_encode($messageId);
-        $order->update();
+        $order->save();
 
-
-        $order->checkout_session_id = $session->payment_intent;
-        $order->status = 3;
-        $order->update();
-        $this->send_mail($order);
-        // Log dei dati inviati
         $mx = $this->save_message([
             'wa_id' => $order->whatsapp_message_id,
             'type_1' => $type_m_1,
             'type_2' => $type_m_2,
             'source' => config('configurazione.db'),
         ]);
-        return response()->json([
-            'success' => true,
-            'message' => 'Successo',
-            'data' => $mx,
-        ]); 
-       
-        
+
+        return $mx;
     }
     protected function save_message($data_am1){
         $config = [

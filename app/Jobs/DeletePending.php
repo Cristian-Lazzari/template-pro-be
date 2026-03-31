@@ -28,12 +28,23 @@ class DeletePending implements ShouldQueue
         ->whereIn('order_id', function ($query) {
             $query->select('id')
                 ->from('orders')
-                ->where('status', 4);
+                ->where('status', 4)
+                ->whereNull('checkout_session_id');
+        })
+        ->delete();
+
+        DB::table('menu_order')
+        ->whereIn('order_id', function ($query) {
+            $query->select('id')
+                ->from('orders')
+                ->where('status', 4)
+                ->whereNull('checkout_session_id');
         })
         ->delete();
         
         DB::table('orders')
             ->where('status', 4)
+            ->whereNull('checkout_session_id')
             ->where('created_at', '<=', Carbon::now()->subMinutes(20))
             ->delete();
          

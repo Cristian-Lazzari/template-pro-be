@@ -37,9 +37,9 @@ Route::get('getDays',           [DateController::class, 'getDays'])->name('api.d
 Route::get('client_default',    [SettingController::class, 'client_default'])->name('api.client_default'); // annullamento tramite mail
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
+Route::get('payment/success',   [PaymentController::class, 'success'])->name('api.payment.success');
 
 Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');
-
 
 
 
