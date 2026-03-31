@@ -21,7 +21,7 @@ class ProductController extends Controller
     
 
     private $validationsFalse = [
-        'name'          => 'required|string|min:1|max:100|unique:products,name',
+        'name'          => 'required|string|min:1|max:100|unique:product_translations,name',
         'image'         => 'nullable|image|max:1024',
     ];
 
@@ -32,7 +32,7 @@ class ProductController extends Controller
     
     
     private $validations_ingredient = [
-        'name_ing'          => 'required|string|min:2|unique:ingredients,name',
+        'name_ing'          => 'required|string|min:2|max:100|unique:ingredient_translations,name',
         'price_ing'         => 'required',
         'image_ing'         => 'nullable|image',
     ];
