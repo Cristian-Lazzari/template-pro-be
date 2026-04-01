@@ -18,15 +18,9 @@ class DateController extends Controller
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);  
 
-
-        $timeString = $filter == 1 ? $property_adv['delay_res'] : $property_adv['delay_or'];
-        list($hours, $minutes) = explode(":", $timeString);
-        $totalMinutes = ($hours * 60) + $minutes;
-
-        // Ottieni la data di inizio 
-    $startDateTime = Carbon::now()->startOfMinute()->addMinutes($totalMinutes);
-
-
+        $timeString = $filter == 1 ? ($property_adv['delay_res'] ?? 0) : ($property_adv['delay_or'] ?? 0);
+        $totalMinutes = $this->parseDelayToMinutes($timeString);
+        $startDateTime = Carbon::now()->startOfMinute()->addMinutes($totalMinutes);
 
         $year = $this->get_date($startDateTime, $filter);
 
@@ -34,6 +28,10 @@ class DateController extends Controller
 
         return response()->json([
             'startDateTime' => $startDateTime->format('d/m/Y'),
+            'minDateTime' => $startDateTime->format('d/m/Y H:i'),
+            'minDate' => $startDateTime->format('Y-m-d'),
+            'minTime' => $startDateTime->format('H:i'),
+            'delayMinutes' => $totalMinutes,
             'success'   => true,
             'results'   => $year,    
             'filter'   => $filter,      
@@ -100,10 +98,34 @@ class DateController extends Controller
         return $reserved;
     }
 
+    private function parseDelayToMinutes($delay): int
+    {
+        if (is_numeric($delay)) {
+            return max(0, (int) $delay);
+        }
+
+        $delay = trim((string) $delay);
+        if ($delay === '') {
+            return 0;
+        }
+
+        $parts = array_map('intval', explode(':', $delay));
+        $hours = $parts[0] ?? 0;
+        $minutes = $parts[1] ?? 0;
+        $seconds = $parts[2] ?? 0;
+
+        return max(0, ($hours * 60) + $minutes + (int) ceil($seconds / 60));
+    }
+
+    private function slotRespectsDelay(Carbon $slotDateTime, Carbon $startDateTime): bool
+    {
+        return $slotDateTime->greaterThanOrEqualTo($startDateTime);
+    }
+
     private function get_date($startDateTime, $source){
         $reserved = $this->get_res($startDateTime->copy(), $source);
         //return $reserved;
-        $first_day = Carbon::now()->startOfDay();
+        $first_day = $startDateTime->copy()->startOfDay();
         $slotStartDateTime = $startDateTime->copy();
 
         $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
@@ -143,7 +165,7 @@ class DateController extends Controller
                 foreach ($week[$first_day->format('N')] as $time => $property) {
                     $slotDateTime = Carbon::createFromFormat('Y-m-d H:i', $day['date'].' '.$time);
 
-                    if ($slotDateTime->lt($slotStartDateTime)) {
+                    if (!$this->slotRespectsDelay($slotDateTime, $slotStartDateTime)) {
                         continue;
                     }
 
