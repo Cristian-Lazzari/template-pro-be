@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
+use Stripe\Stripe;
 use App\Models\Order;
+use App\Models\Setting;
+use Stripe\PaymentIntent;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Webhooks\StripeWebhookController;
 
 class PaymentController extends Controller
 {        
     public function checkout($cart, $id, $delivery, $menus) 
     {
        
-        $final_destination = config('configurazione.APP_URL') . '/api/payment/success?session_id={CHECKOUT_SESSION_ID}';
+        $final_destination = config('configurazione.domain') . '/success-pay'; 
         $final_destination_error = config('configurazione.domain') . '/error-pay'; 
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
 
@@ -159,15 +161,9 @@ class PaymentController extends Controller
             'cancel_url' => $final_destination_error,
         ]);
 
-        Order::where('id', $id)->update([
-            'checkout_session_id' => $checkout_session->id,
-        ]);
-
         
         return $checkout_session->url;
 
     }
-
-   
 
 }

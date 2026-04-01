@@ -85,72 +85,12 @@ class StripeWebhookController extends Controller
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
         $order = Order::where('id', $orderId)->with('products', 'menus')->firstOrFail();
-        $date = Date::where('date_slot', $order->date_slot)->first();
-        $vis = json_decode($date->visible, true);
-        $av = json_decode($date->availability, true);
-        $res = json_decode($date->reserving, true);
 
         // aggiorno la disponibilità in date
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1); 
-        if($property_adv['too']){
-            $res_c1 = $res['cucina_1'];
-            $res_c2 = $res['cucina_2'];
-            $av_c1  = $av['cucina_1'];
-            $av_c2  = $av['cucina_2'];
-            // Inizializza i contatori
-            $np_c1  = 0;
-            $np_c2  = 0;
-            // Cicla sui prodotti associati all'ordine
-            foreach ($order->products as $product) {
-                // return $product;
-                // Controlla il tipo di cucina del prodotto
-                if ($product->type_plate == 1) {
-                    $np_c1 += $product->pivot->quantity * $product->slot_plate;
-                } elseif ($product->type_plate == 2) {
-                    $np_c2 += $product->pivot->quantity * $product->slot_plate;
-                }
-            }
-            
-            if(isset($order->comune)){
-                if( ($res['domicilio'] + 1) < $av['domicilio']){
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                } else{
-                    $res['domicilio'] = $res['domicilio'] + 1;
-                    $vis['domicilio'] = 0;
-                }
-            }
-            if((($res_c1 + $np_c1) < $av_c1) && (($res_c2 + $np_c2) < $av_c2)){}
-            elseif((($res_c1 + $np_c1) == $av_c1) && (($res_c2 + $np_c2) < $av_c2)){
-                $vis['cucina_1'] = 0;
-            }elseif((($res_c2 + $np_c2) == $av_c2) && (($res_c1 + $np_c1) < $av_c1)){
-                $vis['cucina_2'] = 0;
-            }else{
-                $vis['cucina_1'] = 0;
-                $vis['cucina_2'] = 0;
-            }
-            $res['cucina_1'] += $np_c1;
-            $res['cucina_2'] += $np_c2;
-            
-        }else{
-            if(isset($order->comune)){
-                if(($res['domicilio'] + 1) < $av['domicilio']){}
-                else{
-                    $vis['domicilio'] = 0;
-                }
-                $res['domicilio'] = $res['domicilio'] + 1;
-            }else{
-                if(($res['asporto'] + 1) < $av['asporto']){}
-                else{
-                    $vis['asporto'] = 0;
-                }
-                $res['asporto'] = $res['asporto'] + 1;
-            }
-        }
-        $date->visible = json_encode($vis);
-        $date->reserving = json_encode($res);
-        $date->update();
 
+    
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
@@ -383,9 +323,6 @@ class StripeWebhookController extends Controller
         
         
         $order->whatsapp_message_id = json_encode($messageId);
-        $order->update();
-
-
         $order->checkout_session_id = $session->payment_intent;
         $order->status = 3;
         $order->update();

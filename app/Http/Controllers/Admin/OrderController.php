@@ -21,62 +21,6 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
-    
-
-    public function filter(Request $request){
-        
-        // FUNZIONE DI FILTRAGGIO INDEX
-        $status = $request->input('status');
-        $name = $request->input('name');
-        $order = $request->input('order');
-        $date = $request->input('date');
-
-        $filters = [
-            'name'          => $name ,
-            'status'        => $status ,
-            'date'          => $date ,
-            'order'         => $order,     
-        ];
-        //dd($date);
-        $query = Order::query();
-       
-        if ($name) {
-            $query->where('name', 'like', '%' . $name . '%')
-            ->orWhere('surname', 'like', '%' . $name . '%');
-        } 
-        if ($status == 4) {
-            $query->where('status', 0)
-            ->orWhere('status', 6);
-        } else if ($status == 1) {
-            $query->where('status', 1)
-            ->orWhere('status', 5);
-        } else if ($status == 2) {
-            $query->where('status', 2)
-            ->orWhere('status', 3);
-        } else if ($status == 5) {
-            $query->where('status', 3)
-            ->orWhere('status', 5);
-        }else{ 
-            $query->where('status', '!=', 4);
-        }
-        if($date){
-            $formattedDate = DateTime::createFromFormat('Y-m-d', $date)->format('d/m/Y');
-
-            $query->where('date_slot', 'like', '%' . $formattedDate . '%');
-        }
-        if($order){
-            $orders = $query->orderBy('date_slot', 'asc')->get();
-        }else{
-            $orders = $query->orderBy('created_at', 'asc')->get();    
-        }        
-    
-
-        $data = [];
-        array_push($data, $filters);
-        array_push($data, $orders);
-
-        return redirect()->back()->with('filter', $data);
-    }
 
     protected function statusF( $c_a, $id){
 
@@ -238,6 +182,7 @@ class OrderController extends Controller
         
         return redirect()->back()->with('success', $m['m']);   
     }
+
     public function status_mail(){
         $id = request()->query('id');
         $c_a = request()->query('c_a');
@@ -245,23 +190,6 @@ class OrderController extends Controller
         $this->statusF( $c_a, $id);
     }
 
-    public function index()
-    {
-        $order_remove = Order::where('status', 4)
-            ->whereNull('checkout_session_id')
-            ->where('created_at', '<', Carbon::now()->subHours(2))
-            ->get();
-        if (!$order_remove->isEmpty()) {
-            foreach ($order_remove as $k) {
-                $k->menus()->detach(); // se hai la relazione many-to-many definita
-                // Poi elimina l'ordine
-                $k->delete();
-            }
-        }
-
-        $orders = Order::orderBy('date_slot', 'asc')->get();
-        return view('admin.Orders.index', compact('orders'));
-    }
 
     public function show($id)
     {
