@@ -1146,6 +1146,14 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 .okk{
     background-color: rgba($c2, .6) !important;
+    .status.paid{
+        color: var(--c3) !important;
+        text-shadow: 0 0 10px var(--c2_op);
+    }
+     .status.refound{
+        color: var(--c3) !important;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.473);
+    }
     //box-shadow: inset 10px 10px 30px var(--c2) !important;
 }
 svg.null, svg.okk{
