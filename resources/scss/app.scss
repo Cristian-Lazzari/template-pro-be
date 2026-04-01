@@ -1255,8 +1255,8 @@ svg.to_see{
         flex-direction: column;
         gap: .4rem;
         .null, .okk, .to_see{
-            height: $fs_md;
-            width: $fs_md;
+            height: $fs_sm;
+            width: $fs_sm;
         }
         .status{
             display: inline-flex;
