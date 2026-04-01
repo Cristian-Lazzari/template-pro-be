@@ -476,12 +476,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     <div class="time-content">
                 `;
-                const confirm_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#1f9d55" class="bi okk bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 1 0-1.171-.94L7.477 9.317 5.384 7.223a.75.75 0 0 0-1.06 1.06z"/></svg>`;
+                const confirm_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi okk bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`;
                 const to_see_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi to_see bi-exclamation-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>`;
-                const null_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#e3342f" class="bi null bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 5.646a.5.5 0 1 0-.708.708L7.293 9l-2.647 2.646a.5.5 0 0 0 .708.708L8 9.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 9l2.647-2.646a.5.5 0 0 0-.708-.708L8 8.293z"/></svg>`;
+                const null_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi null bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>`;
                 const paid_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-back" viewBox="0 0 16 16"><path d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z"/><path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1m-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1"/></svg>`;
 
                 const getStatusClass = (statusValue) => {
+                    const parsedStatus = Number(statusValue);
                     const statusMap = {
                         0: 'null',
                         1: 'okk',
@@ -492,29 +493,30 @@ document.addEventListener("DOMContentLoaded", () => {
                         6: 'null',
                     };
 
-                    return statusMap[statusValue] ?? 'to_see';
+                    return statusMap[parsedStatus] ?? 'to_see';
                 };
 
                 // Prenotazioni
                 if (res.length > 0) {
                     res.forEach(r => {
+                        const rStatus = Number(r.status);
                         const n_person = JSON.parse(r.n_person)
                         const child = n_person.child
                         const adult = n_person.adult
                         const child_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-arms-up" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/><path d="m5.93 6.704-.846 8.451a.768.768 0 0 0 1.523.203l.81-4.865a.59.59 0 0 1 1.165 0l.81 4.865a.768.768 0 0 0 1.523-.203l-.845-8.451A1.5 1.5 0 0 1 10.5 5.5L13 2.284a.796.796 0 0 0-1.239-.998L9.634 3.84a.7.7 0 0 1-.33.235c-.23.074-.665.176-1.304.176-.64 0-1.074-.102-1.305-.176a.7.7 0 0 1-.329-.235L4.239 1.286a.796.796 0 0 0-1.24.998l2.5 3.216c.317.316.475.758.43 1.204Z"/></svg>`
                         const adult_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-standing" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M6 6.75v8.5a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2.75a.75.75 0 0 0 1.5 0v-2.5a.25.25 0 0 1 .5 0"/></svg>`
-                        const paid_label = r.status == 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`
+                        const paid_label = rStatus === 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`
 
                         const domain_link = "{{config('configurazione.APP_URL')}}" + '/admin/reservations/' + r.id
 
-                        html += `<a href="${domain_link}" class="res-item ${getStatusClass(r.status)}">
+                        html += `<a href="${domain_link}" class="res-item ${getStatusClass(rStatus)}">
                                     <div class="top">
                                         <div class="id">R${r.id ?? ''} </div>
-                                        ${[0, 6].includes(r.status) ? null_svg : ''}
-                                        ${[2, 3].includes(r.status) ? to_see_svg : ''}
-                                        ${[1, 4, 5].includes(r.status) ? confirm_svg : ''}
+                                        ${[0, 6].includes(rStatus) ? null_svg : ''}
+                                        ${[2, 3].includes(rStatus) ? to_see_svg : ''}
+                                        ${[1, 4, 5].includes(rStatus) ? confirm_svg : ''}
                                         <div class="name">${r.name + ' ' + r.surname} </div>
-                                        ${[3, 5, 6].includes(r.status) ? `<div class="${r.status == 6 ? 'refound' : 'paid'} status">${paid_svg} ${paid_label}</div>` : ''}
+                                        ${[3, 5, 6].includes(rStatus) ? `<div class="${rStatus === 6 ? 'refound' : 'paid'} status">${paid_svg} ${paid_label}</div>` : ''}
                                         <div class="guest">
                                             ${adult> 0 ? adult + adult_svg : ''} 
                                             ${child> 0 ? child + child_svg : ''}
@@ -526,16 +528,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Ordini
                 if (or.length > 0) {
                     or.forEach(o => {
-                        const paid_label = o.status == 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`
+                        const oStatus = Number(o.status);
+                        const paid_label = oStatus === 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`
                         const domain_link = "{{config('configurazione.APP_URL')}}" + '/admin/orders/' + o.id
-                        html += `<a href="${domain_link}" class="order-item ${getStatusClass(o.status)}">
+                        html += `<a href="${domain_link}" class="order-item ${getStatusClass(oStatus)}">
                                     <div class="top">
                                         <div class="id">O${o.id ?? ''} </div>
-                                        ${[0, 6].includes(o.status) ? null_svg : ''}
-                                        ${[2, 3].includes(o.status) ? to_see_svg : ''}
-                                        ${[1, 4, 5].includes(o.status) ? confirm_svg : ''}
+                                        ${[0, 6].includes(oStatus) ? null_svg : ''}
+                                        ${[2, 3].includes(oStatus) ? to_see_svg : ''}
+                                        ${[1, 4, 5].includes(oStatus) ? confirm_svg : ''}
                                         <div class="name">${o.name + ' ' + o.surname} </div>
-                                        ${[3, 5, 6].includes(o.status) ? `<div class="${o.status == 6 ? 'refound' : 'paid'} status">${paid_svg} ${paid_label}</div>` : ''}
+                                        ${[3, 5, 6].includes(oStatus) ? `<div class="${oStatus === 6 ? 'refound' : 'paid'} status">${paid_svg} ${paid_label}</div>` : ''}
                                         <div class="price">€${o.tot_price / 100}</div>
                                     </div>
                                     <div class="cart">`;
@@ -551,9 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                             <div class="price">€${p.price / 100}</div>
                                         </div>`;
                             });
-                                    html += `</div>`
+                                    html += `</div></a>`
                         });
-                        html += `</a>`;
                 }
                 html += `
                         </div>
