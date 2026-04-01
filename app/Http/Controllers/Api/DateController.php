@@ -103,7 +103,7 @@ class DateController extends Controller
     private function get_date($startDateTime, $source){
         $reserved = $this->get_res($startDateTime->copy(), $source);
         //return $reserved;
-        $first_day = $startDateTime->copy();
+        $first_day = Carbon::now()->startOfDay();
         $slotStartDateTime = $startDateTime->copy();
 
         $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
