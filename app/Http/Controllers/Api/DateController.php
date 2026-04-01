@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 
-use App\Models\Date;
 use App\Models\Order;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -42,6 +41,7 @@ class DateController extends Controller
         ]);
         
     }
+
     private function get_res($now, $source){
         $reservations = [];
         $orders = [];
@@ -99,10 +99,12 @@ class DateController extends Controller
 
         return $reserved;
     }
+
     private function get_date($startDateTime, $source){
-        $reserved = $this->get_res(Carbon::now(), $source);
+        $reserved = $this->get_res($startDateTime->copy(), $source);
         //return $reserved;
-        $first_day = $startDateTime;
+        $first_day = $startDateTime->copy();
+        $slotStartDateTime = $startDateTime->copy();
 
         $adv = json_decode(Setting::where('name', 'advanced')->first()->property, 1);
         $week = $adv['week_set'];
@@ -139,6 +141,12 @@ class DateController extends Controller
 
             if (!isset($adv['day_off']) || !in_array($first_day->copy()->format('Y-m-d'), $adv['day_off'])) {
                 foreach ($week[$first_day->format('N')] as $time => $property) {
+                    $slotDateTime = Carbon::createFromFormat('Y-m-d H:i', $day['date'].' '.$time);
+
+                    if ($slotDateTime->lt($slotStartDateTime)) {
+                        continue;
+                    }
+
                     if(in_array($source, $property)){
                         if($source == 1){
                             $day['times'][$time] = [
