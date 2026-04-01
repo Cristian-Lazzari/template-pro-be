@@ -67,6 +67,8 @@ Route::middleware(['auth', 'verified'])
         // Rotte product
         
         Route::get('products/archived', [ProductController::class, 'archived'])->name('products.archived');
+        Route::get('products/search', [ProductController::class, 'search'])->name('products.search');
+        Route::get('products/{product}/quick-view', [ProductController::class, 'quickView'])->name('products.quick-view');
         Route::post('products/filter',  [ProductController::class, 'filter'])->name('products.filter');
         Route::post('products/status',  [ProductController::class, 'status'])->name('products.status');
         

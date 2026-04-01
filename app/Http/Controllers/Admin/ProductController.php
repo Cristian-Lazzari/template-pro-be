@@ -12,6 +12,7 @@ use App\Models\ProductTranslation;
 use App\Models\Setting;
 use App\Services\GoogleTranslateService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
   //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
@@ -92,8 +93,133 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products    = Product::where('archived', false)->orderBy('updated_at', 'desc')->get();
-        return view('admin.Products.index', compact('products'));
+        $locale = app()->getLocale();
+        $defaultLocale = config('configurazione.default_lang', 'en');
+
+        $products = Product::query()
+            ->without(['directAllergens.translations', 'translations', 'ingredients.allergens'])
+            ->leftJoin('product_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('products.id', '=', 'pt_locale.product_id')
+                    ->where('pt_locale.lang', $locale);
+            })
+            ->leftJoin('product_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('products.id', '=', 'pt_default.product_id')
+                    ->where('pt_default.lang', $defaultLocale);
+            })
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
+                $join->on('categories.id', '=', 'ct_locale.category_id')
+                    ->where('ct_locale.lang', $locale);
+            })
+            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
+                $join->on('categories.id', '=', 'ct_default.category_id')
+                    ->where('ct_default.lang', $defaultLocale);
+            })
+            ->where('products.archived', false)
+            ->orderBy('products.updated_at', 'desc')
+            ->select([
+                'products.id',
+                'products.image',
+                'products.price',
+                'products.visible',
+                DB::raw("COALESCE(NULLIF(pt_locale.name, ''), pt_default.name) as display_name"),
+                DB::raw("COALESCE(NULLIF(ct_locale.name, ''), ct_default.name) as category_name"),
+            ])
+            ->simplePaginate(60);
+
+        $categories = Category::query()
+            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
+                $join->on('categories.id', '=', 'ct_locale.category_id')
+                    ->where('ct_locale.lang', $locale);
+            })
+            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
+                $join->on('categories.id', '=', 'ct_default.category_id')
+                    ->where('ct_default.lang', $defaultLocale);
+            })
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('products')
+                    ->whereColumn('products.category_id', 'categories.id')
+                    ->where('products.archived', false);
+            })
+            ->orderByRaw("COALESCE(NULLIF(ct_locale.name, ''), ct_default.name) asc")
+            ->select([
+                'categories.id',
+                DB::raw("COALESCE(NULLIF(ct_locale.name, ''), ct_default.name) as name"),
+            ])
+            ->get();
+
+        return view('admin.Products.index', compact('products', 'categories'));
+    }
+
+    public function search(Request $request)
+    {
+        $locale = app()->getLocale();
+        $defaultLocale = config('configurazione.default_lang', 'en');
+        $search = trim((string) $request->query('q', ''));
+        $categoryId = $request->query('category_id');
+        $sort = $request->query('sort', 'recent') === 'alpha' ? 'alpha' : 'recent';
+
+        $query = Product::query()
+            ->without(['directAllergens.translations', 'translations', 'ingredients.allergens'])
+            ->leftJoin('product_translations as pt_locale', function ($join) use ($locale) {
+                $join->on('products.id', '=', 'pt_locale.product_id')
+                    ->where('pt_locale.lang', $locale);
+            })
+            ->leftJoin('product_translations as pt_default', function ($join) use ($defaultLocale) {
+                $join->on('products.id', '=', 'pt_default.product_id')
+                    ->where('pt_default.lang', $defaultLocale);
+            })
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+            ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {
+                $join->on('categories.id', '=', 'ct_locale.category_id')
+                    ->where('ct_locale.lang', $locale);
+            })
+            ->leftJoin('category_translations as ct_default', function ($join) use ($defaultLocale) {
+                $join->on('categories.id', '=', 'ct_default.category_id')
+                    ->where('ct_default.lang', $defaultLocale);
+            })
+            ->where('products.archived', false);
+
+        if ($search !== '') {
+            $query->where(function ($nested) use ($search) {
+                $nested->where('pt_locale.name', 'like', "%{$search}%")
+                    ->orWhere('pt_default.name', 'like', "%{$search}%");
+            });
+        }
+
+        if (is_numeric($categoryId)) {
+            $query->where('products.category_id', (int) $categoryId);
+        }
+
+        if ($sort === 'alpha') {
+            $query->orderByRaw("COALESCE(NULLIF(pt_locale.name, ''), pt_default.name) asc");
+        } else {
+            $query->orderBy('products.updated_at', 'desc');
+        }
+
+        $products = $query
+            ->limit(400)
+            ->select([
+                'products.id',
+                'products.image',
+                'products.price',
+                'products.visible',
+                DB::raw("COALESCE(NULLIF(pt_locale.name, ''), pt_default.name) as display_name"),
+                DB::raw("COALESCE(NULLIF(ct_locale.name, ''), ct_default.name) as category_name"),
+            ])
+            ->get();
+
+        return response()->json([
+            'html' => view('admin.Products.partials.index_cards', compact('products'))->render(),
+        ]);
+    }
+
+    public function quickView(Product $product)
+    {
+        $product->load(['category', 'ingredients.allergens', 'directAllergens']);
+
+        return view('admin.Products.partials.quick_view_modal_body', compact('product'));
     }
 
     public function create()
