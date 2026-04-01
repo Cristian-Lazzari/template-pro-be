@@ -168,40 +168,6 @@ class PaymentController extends Controller
 
     }
 
-    public function success(Request $request)
-    {
-        $sessionId = $request->query('session_id');
-        $successDestination = config('configurazione.domain') . '/success-pay';
-        $errorDestination = config('configurazione.domain') . '/error-pay';
-
-        if (!$sessionId) {
-            return redirect()->away($errorDestination);
-        }
-
-        try {
-            $stripe = new \Stripe\StripeClient(config('configurazione.STRIPE_SECRET'));
-            $session = $stripe->checkout->sessions->retrieve($sessionId);
-
-            if (($session->payment_status ?? null) !== 'paid') {
-                Log::warning('(PaymentController) Sessione Stripe non pagata nel return URL', [
-                    'session_id' => $sessionId,
-                    'payment_status' => $session->payment_status ?? null,
-                ]);
-
-                return redirect()->away($errorDestination);
-            }
-
-            app(StripeWebhookController::class)->processCheckoutSession($session);
-
-            return redirect()->away($successDestination);
-        } catch (\Throwable $e) {
-            Log::error('(PaymentController) Errore conferma pagamento da success URL', [
-                'session_id' => $sessionId,
-                'message' => $e->getMessage(),
-            ]);
-
-            return redirect()->away($errorDestination);
-        }
-    }
+   
 
 }
