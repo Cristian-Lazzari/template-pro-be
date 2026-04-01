@@ -24,7 +24,7 @@ class DateController extends Controller
         $totalMinutes = ($hours * 60) + $minutes;
 
         // Ottieni la data di inizio 
-        $startDateTime = Carbon::now()->addMinutes($totalMinutes);
+    $startDateTime = Carbon::now()->startOfMinute()->addMinutes($totalMinutes);
 
 
 

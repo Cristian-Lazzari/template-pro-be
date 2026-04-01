@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Menu;
 use App\Models\Order;
@@ -11,7 +12,7 @@ use App\Models\MenuOrder;
 use App\Models\Ingredient;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
-use App\Mail\confermaOrdineAdmin;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -43,6 +44,20 @@ class OrderController extends Controller
             $property_adv = json_decode($adv_s->property, 1);  
 
             $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
+
+            $timeString = !isset($data['comune'])
+                ? ($property_adv['delay_or'] ?? '00:00')
+                : ($property_adv['delay_or'] ?? '00:00');
+            list($hours, $minutes) = explode(':', $timeString);
+            $minDateTime = Carbon::now()->addMinutes((((int) $hours) * 60) + (int) $minutes);
+
+            if ($carbonDate->lt($minDateTime)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Orario non disponibile: anticipo minimo non rispettato'
+                ]);
+            }
+
             // Convertilo nel formato desiderato
             $f_date = $carbonDate->copy()->format('Y-m-d');
             $f_time = $carbonDate->copy()->format('H:i');

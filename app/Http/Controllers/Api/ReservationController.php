@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\confermaOrdineAdmin;
 use App\Models\Reservation;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -38,6 +37,19 @@ class ReservationController extends Controller
         $property_adv = json_decode($adv_s->property, 1);
 
         $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
+
+        $timeString = $property_adv['delay_res'] ?? '00:00';
+        list($hours, $minutes) = explode(':', $timeString);
+        $minDateTime = Carbon::now()->addMinutes((((int) $hours) * 60) + (int) $minutes);
+
+        if ($carbonDate->lt($minDateTime)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Orario non disponibile: anticipo minimo non rispettato',
+                'r' => 'delay_res'
+            ]);
+        }
+
         // Convertilo nel formato desiderato
         $f_date = $carbonDate->copy()->format('Y-m-d');
         $f_time = $carbonDate->copy()->format('H:i');
