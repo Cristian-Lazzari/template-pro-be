@@ -1250,6 +1250,24 @@ svg.to_see{
             height: $fs_md;
             width: $fs_md;
         }
+        .status{
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: $fs_xsm;
+            font-weight: 900;
+            white-space: nowrap;
+            svg{
+                width: 14px;
+                height: 14px;
+            }
+        }
+        .paid{
+            color: var(--c2);
+        }
+        .refound{
+            color: #e3342f;
+        }
 
         .top{
             display: flex;
