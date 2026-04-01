@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\confermaOrdineAdmin;
 use App\Models\Reservation;
 use App\Models\Setting;
 use Carbon\Carbon;

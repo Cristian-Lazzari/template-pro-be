@@ -11,6 +11,7 @@ use App\Models\Setting;
 use App\Models\MenuOrder;
 use App\Models\Ingredient;
 use App\Models\OrderProduct;
+use App\Mail\confermaOrdineAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
