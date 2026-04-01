@@ -4,15 +4,15 @@
     "src": "public/images/back.png"
   },
   "resources/js/app.js": {
-    "file": "../public/build/assets/app.82c6a187.js",
+    "file": "assets/app.82c6a187.js",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.02a5deec.css"
+      "assets/app.87ae8c72.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.02a5deec.css",
+    "file": "assets/app.87ae8c72.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }
