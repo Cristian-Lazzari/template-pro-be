@@ -24,6 +24,8 @@
  
 <div class="dash_page">
 
+    <div id="productsAsyncAlerts"></div>
+
     <h1>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-fork-knife" viewBox="0 0 16 16">
             <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
@@ -111,8 +113,100 @@ document.addEventListener('DOMContentLoaded', () => {
     const categorySelect = document.getElementById('categorySelect');
     const dynamicPreviewImage = document.getElementById('dynamicPreviewImage');
     const infoModalBody = document.getElementById('productInfoModalBody');
+    const productInfoModalElement = document.getElementById('productInfoModal');
+    const asyncAlerts = document.getElementById('productsAsyncAlerts');
     const defaultListHtml = productContainer.innerHTML;
     const searchUrlBase = "{{ route('admin.products.search') }}";
+
+    function showAsyncAlert(message, type = 'primary') {
+        if (!asyncAlerts) {
+            return;
+        }
+
+        asyncAlerts.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
+
+    function ensureEmptyStateCard() {
+        const cards = productContainer.querySelectorAll('.res-item.prod');
+        if (cards.length === 0) {
+            productContainer.innerHTML = '<div class="res-item prod"><div class="name_cat"><div class="name">Nessun prodotto trovato</div></div></div>';
+        }
+    }
+
+    function bindModalStatusForms() {
+        const forms = infoModalBody.querySelectorAll('.js-product-status-form');
+
+        forms.forEach(form => {
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+
+                const formData = new FormData(form);
+                const productId = String(formData.get('id') || '');
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method || 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+
+                    const data = await response.json();
+                    const card = productContainer.querySelector(`.res-item.prod[data-product-id="${productId}"]`);
+
+                    if (data.should_remove && card) {
+                        card.remove();
+                        ensureEmptyStateCard();
+                    }
+
+                    if (data.action === 'archived' && productInfoModalElement) {
+                        if (window.bootstrap && window.bootstrap.Modal) {
+                            const modal = window.bootstrap.Modal.getOrCreateInstance(productInfoModalElement);
+                            modal.hide();
+                        } else {
+                            const closeBtn = infoModalBody.querySelector('.btn_close');
+                            if (closeBtn) {
+                                closeBtn.click();
+                            }
+                        }
+                    }
+
+                    if (card && data.product) {
+                        card.classList.toggle('not_v', !data.product.visible);
+                    }
+
+                    const visibleToggleButton = infoModalBody.querySelector('.js-toggle-visible-btn');
+                    if (visibleToggleButton && data.product) {
+                        visibleToggleButton.classList.toggle('not', !data.product.visible);
+                    }
+
+                    showAsyncAlert(data.message || 'Stato aggiornato correttamente.', 'primary');
+                } catch (error) {
+                    showAsyncAlert('Errore durante l\'aggiornamento dello stato del prodotto.', 'danger');
+                } finally {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                    }
+                }
+            });
+        });
+    }
 
     // --- ORDINAMENTO ---
     let sortMode = 'recent';
@@ -152,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     infoModalBody.innerHTML = await response.text();
+                    bindModalStatusForms();
                 } catch (error) {
                     infoModalBody.innerHTML = '<div class="text-center text-danger py-4">Errore nel caricamento dei dettagli.</div>';
                 }

@@ -1,5 +1,5 @@
 @forelse ($products as $item)
-    <div class="res-item @if(!$item->visible) not_v @endif prod">
+    <div class="res-item @if(!$item->visible) not_v @endif prod" data-product-id="{{$item->id}}">
         @if (isset($item->image))
             <button type="button" class="image_btn preview-image" data-bs-toggle="modal" data-bs-target="#imageModal" data-image-src="{{ asset('public/storage/' . $item->image) }}" data-image-alt="{{$item->display_name}}">
                 <img src="{{ asset('public/storage/' . $item->image) }}" alt="{{$item->display_name}}" loading="lazy" decoding="async">

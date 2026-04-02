@@ -12,13 +12,13 @@
         </svg>
     </a>
 
-    <form action="{{ route('admin.products.status') }}" method="POST">
+    <form action="{{ route('admin.products.status') }}" method="POST" class="js-product-status-form" data-status-action="visible">
         @csrf
         <input type="hidden" name="archive" value="0">
         <input type="hidden" name="v" value="1">
         <input type="hidden" name="a" value="0">
         <input type="hidden" name="id" value="{{$product->id}}">
-        <button type="submit" class="edit @if(!$product->visible) not @endif visible">
+        <button type="submit" class="edit @if(!$product->visible) not @endif visible js-toggle-visible-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
                 <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
@@ -30,7 +30,7 @@
         </button>
     </form>
 
-    <form action="{{ route('admin.products.status') }}" method="POST">
+    <form action="{{ route('admin.products.status') }}" method="POST" class="js-product-status-form" data-status-action="archived">
         @csrf
         <input type="hidden" name="archive" value="0">
         <input type="hidden" name="v" value="0">

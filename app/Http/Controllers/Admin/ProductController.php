@@ -40,48 +40,60 @@ class ProductController extends Controller
 
    
     
-    public function status(Request $request){
-        $a = $request->a ;
-        $v = $request->v ;
-        $archive = $request->archive ;
-        $categories = Category::all();
-        ///se uguale a 1 archivio il prodotto
-        if($a == 1){
-            $p = Product::where('id', $request['id'])->firstOrFail();
-            $p->archived = !$p->archived;
-            $p->update();
-            if ($p->archived) {
-                $m = '"' . $p->name . '" e\' stato archiviato correttamente';
-            } else{
-                $m = '"' . $p->name . '" e\' stato ripristinato correttamente';
-            }
-            if ($archive == 1) {
-                $products = Product::where('archived', true)->get();
-                return to_route('admin.products.archived', compact('products', 'categories'))->with('success', $m);
-            } else{
-                $products = Product::where('archived', false)->get();
-                return to_route('admin.products.index', compact('products', 'categories'))->with('success', $m);
-            }
-            
-            
-        } 
-        if($v == 1){
-            $p = Product::where('id', $request['id'])->firstOrFail();
-            $p->visible = !$p->visible;
-            $p->update();
-            if ($p->visible) {
-                $m = '"' . $p->name . '" e\' visibile ai tuoi clienti ';
-            } else{
-                $m = '"' . $p->name . '" non e\' visibile ai tuoi clienti';
-            }
-            if ($archive == 1) {
-                $products = Product::where('archived', true)->get();
-                return to_route('admin.products.archived', compact('products', 'categories'))->with('success', $m);
-            } else{
-                $products = Product::where('archived', false)->get();
-                return to_route('admin.products.index', compact('products', 'categories'))->with('success', $m);
-            }
-        } 
+    public function status(Request $request)
+    {
+        $archiveContext = (int) $request->input('archive', 0);
+        $toggleArchive = (int) $request->input('a', 0) === 1;
+        $toggleVisible = (int) $request->input('v', 0) === 1;
+
+        $product = Product::where('id', $request->input('id'))->firstOrFail();
+        $message = null;
+        $action = null;
+
+        if ($toggleArchive) {
+            $product->archived = !$product->archived;
+            $product->save();
+            $action = 'archived';
+            $message = $product->archived
+                ? '"' . $product->name . '" e\' stato archiviato correttamente'
+                : '"' . $product->name . '" e\' stato ripristinato correttamente';
+        }
+
+        if ($toggleVisible) {
+            $product->visible = !$product->visible;
+            $product->save();
+            $action = 'visible';
+            $message = $product->visible
+                ? '"' . $product->name . '" e\' visibile ai tuoi clienti '
+                : '"' . $product->name . '" non e\' visibile ai tuoi clienti';
+        }
+
+        if (is_null($message)) {
+            $message = 'Nessuna modifica applicata.';
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            $shouldRemoveFromList = ($archiveContext === 1 && !$product->archived)
+                || ($archiveContext !== 1 && $product->archived);
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'action' => $action,
+                'should_remove' => $shouldRemoveFromList,
+                'product' => [
+                    'id' => $product->id,
+                    'visible' => (bool) $product->visible,
+                    'archived' => (bool) $product->archived,
+                ],
+            ]);
+        }
+
+        if ($archiveContext === 1) {
+            return to_route('admin.products.archived')->with('success', $message);
+        }
+
+        return to_route('admin.products.index')->with('success', $message);
     }
 
     public function archived(Request $request){
