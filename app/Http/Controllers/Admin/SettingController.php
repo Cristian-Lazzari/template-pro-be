@@ -89,12 +89,6 @@ class SettingController extends Controller
             $property['sala_1'] = $request->sala_1;
             $property['sala_2'] = $request->sala_2;
             
-            $property['delay_res'] = $request->delay_res;
-            $property['delay_or'] = $request->delay_or;
-            
-            $property['times_end'] = $request->times_end;
-            $property['times_start'] = $request->times_start;
-            $property['times_interval'] = $request->times_interval;
             $property['p_iva'] = $request->p_iva;
             $property['r_sociale'] = $request->r_sociale;
             $property['c_rea'] = $request->c_rea;
@@ -103,7 +97,6 @@ class SettingController extends Controller
             $property['u_imprese'] = $request->u_imprese;
             $property['method'] = $request->method ? $request->method : [];
             $property['set_time'] = [];
-            $property['max_day_res'] = $request->max_day_res;
             if($request->dt && in_array($request->services, [2,4])){
                 $property['set_time'][] = $request->sala_1;
                 $property['set_time'][] = $request->sala_2;

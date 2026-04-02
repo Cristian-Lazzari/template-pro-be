@@ -10,10 +10,31 @@ use App\Http\Controllers\Controller;
 class DateController extends Controller
 {
     public function generate(Request $request){    
-        $data = $request->all();
-        $times_slot = $data['times_slot_'];
+        $data = $request->validate([
+            'delay_or' => 'nullable|date_format:H:i',
+            'delay_res' => 'nullable|date_format:H:i',
+            'max_day_res' => 'nullable|integer|min:1|max:365',
+            'times_start' => 'required|date_format:H:i',
+            'times_end' => 'required|date_format:H:i',
+            'times_interval' => 'required|integer|min:1|max:1440',
+            'max_table' => 'nullable|integer|min:0',
+            'max_table_1' => 'nullable|integer|min:0',
+            'max_table_2' => 'nullable|integer|min:0',
+            'max_asporto' => 'nullable|integer|min:0',
+            'max_domicilio' => 'nullable|integer|min:0',
+            'times_slot_' => 'nullable|array',
+        ]);
+
+        $times_slot = $data['times_slot_'] ?? [];
         $set = Setting::where('name', 'advanced')->first();
         $adv = json_decode($set->property, 1);
+
+        $adv['delay_or'] = $data['delay_or'] ?? ($adv['delay_or'] ?? null);
+        $adv['delay_res'] = $data['delay_res'] ?? ($adv['delay_res'] ?? null);
+        $adv['max_day_res'] = $data['max_day_res'] ?? ($adv['max_day_res'] ?? null);
+        $adv['times_start'] = $data['times_start'];
+        $adv['times_end'] = $data['times_end'];
+        $adv['times_interval'] = (int) $data['times_interval'];
 
         for ($i=1; $i < 8; $i++) { 
             if(!array_key_exists($i, $times_slot)){

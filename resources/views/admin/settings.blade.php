@@ -663,44 +663,6 @@ $adv = json_decode($setting['advanced']->property, 1);
                             </div>
                         </div>
                     </div>
-                    <div class="set_a ">
-              
-                        <h4 class="w-100">
-                            {{__('admin.Gestione_date')}}
-                        </h4>
-                        <div class="split">
-                            <div class="input_label">
-                                <label class="" id="basic-addon1">{{__('admin.Latenza_ordini')}}</label>
-                                <input type="time" class="" name="delay_or" value="{{$adv['delay_or']}}">
-                            </div>
-                            <div class="input_label">
-                                <label class="" id="basic-addon1">{{__('admin.Latenza_prenotazioni')}}</label>
-                                <input type="time" class="" name="delay_res" value="{{$adv['delay_res']}}">
-                            </div>
-                        </div>
-                        <div class="split">
-                            <div class="input_label">
-                                <label class="" id="basic-addon1">{{__('admin.Latenza_prenotazioni_giorni')}}</label>
-                                <input type="number" class="" name="max_day_res" value="{{$adv['max_day_res']}}">
-                            </div>
-                            <div class="input_label">
-                                <label class="" id="basic-addon1">{{__('admin.Intervallo_minuti')}}</label>
-                                <input type="number" class="" name="times_interval" value="{{$adv['times_interval']}}">
-                            </div>
-                        </div>
-                        <div class="split">
-                            <div class="input_label">
-                                <label class="" id="basic-addon1">{{__('admin.Orario_inizio')}}o</label>
-                                <input type="time" class="" name="times_start" value="{{$adv['times_start']}}">
-                            </div>
-                            <div class="input_label">
-                                <label class="" id="basic-addon1">{{__('admin.Orario_fine')}}</label>
-                                <input type="time" class="" name="times_end" value="{{$adv['times_end']}}">
-                            </div>
-                        </div>
-                        
-                       
-                    </div>
                 </div>
                 <div class="more_info">
                     <h4>{{__('admin.Info_legali')}}</h4>
@@ -932,4 +894,3 @@ $adv = json_decode($setting['advanced']->property, 1);
 </script> --}}
 
 @endsection
-

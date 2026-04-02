@@ -28,24 +28,9 @@
     </div>
 @endif
 @php
-    $day_time = [];
-    $start = new DateTime($property_adv['times_start']);
-    $end = new DateTime($property_adv['times_end']);
-    $index = 1;
-    $interval = $property_adv['times_interval'];
-
-    // Loop finché l'orario di inizio è inferiore all'orario di fine
-    while ($start <= $end) {
-        $day_time[$index] = [
-            'time' => $start->format('H:i'),
-            'set' => ''
-        ];
-        // Incrementa l'orario di inizio con l'intervallo specificato
-        $start->modify("+$interval minutes");
-        $index++;
-    }
-    $pack = $property_adv['services'];
-    $double = $property_adv['dt'];
+    $pack = (int) ($property_adv['services'] ?? 0);
+    $double = (int) ($property_adv['dt'] ?? 0);
+    $weekSet = $property_adv['week_set'] ?? [1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => []];
 @endphp
 
 <div class="dash_page">
@@ -215,6 +200,36 @@
                 </h2>
 
                 <div class="inputs iv2">
+                    <div class="input_c">
+                        <label for="delay_or">{{ __('admin.Latenza_ordini') }}</label>
+                        <input name="delay_or" id="delay_or" type="time" value="{{$property_adv['delay_or'] ?? ''}}">
+                        @error('delay_or') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="input_c">
+                        <label for="delay_res">{{ __('admin.Latenza_prenotazioni') }}</label>
+                        <input name="delay_res" id="delay_res" type="time" value="{{$property_adv['delay_res'] ?? ''}}">
+                        @error('delay_res') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="input_c">
+                        <label for="max_day_res">{{ __('admin.Latenza_prenotazioni_giorni') }}</label>
+                        <input name="max_day_res" id="max_day_res" type="number" min="1" value="{{$property_adv['max_day_res'] ?? ''}}">
+                        @error('max_day_res') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="input_c">
+                        <label for="times_interval">{{ __('admin.Intervallo_minuti') }}</label>
+                        <input name="times_interval" id="times_interval" type="number" min="1" value="{{$property_adv['times_interval'] ?? ''}}">
+                        @error('times_interval') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="input_c">
+                        <label for="times_start">{{ __('admin.Orario_inizio') }}</label>
+                        <input name="times_start" id="times_start" type="time" value="{{$property_adv['times_start'] ?? ''}}">
+                        @error('times_start') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="input_c">
+                        <label for="times_end">{{ __('admin.Orario_fine') }}</label>
+                        <input name="times_end" id="times_end" type="time" value="{{$property_adv['times_end'] ?? ''}}">
+                        @error('times_end') <p class="error">{{ $message }}</p> @enderror
+                    </div>
                     <div class="input_c @if(!(in_array($pack, [2,4]) && $double)) d-none @endif" >
                         <label for="max_table_1">N° di posti per {{$property_adv['sala_1']}}</label>
                         <input name="max_table_1" id="max_table_1" type="number" placeholder="N° di posti in {{$property_adv['sala_1']}} per fascia oraria" value="{{$property_adv['max_table_1'] ?? ''}}"> 
@@ -243,69 +258,13 @@
                     </div>
                 </div>
 
-                <div class="days">
-                    @foreach ([1, 2, 3, 4, 5, 6, 7] as $day)
-                    <input class="btn-check" style="visibility: hidden; position: absolute;"  name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample{{$day}}" aria-expanded="true" aria-controls="multiCollapseExample{{$day}}" id="day_{{ $day }}" value="{{ $day }}">
-                    <div class="day" >
-                        <div class="top_day">
-                            {{ \Carbon\Carbon::create()->startOfWeek()->addDays($day-1)->translatedFormat('l') }}
-                           {{-- {{ [' ','lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'][$day] }} --}}
-                        </div>
-                        <label for="day_{{ $day }}"  class="btn_close">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
-                            </svg>
-                        </label>
-                    </div>
-                    <div class="collapse multi-collapse 
-                    @if(count($property_adv['week_set'][$day])) show @endif
-                    " id="multiCollapseExample{{$day}}">
-                        <div class="modal_body">
-                            <div class="scroller">
-                                @foreach ($day_time as $t) @php $time = $t['time']; @endphp
-                                    @php
-                                        $checked_1 = isset($property_adv['week_set'][$day]) && isset($property_adv['week_set'][$day][$time]) && in_array(1, $property_adv['week_set'][$day][$time]);
-                                        $checked_2 = isset($property_adv['week_set'][$day]) && isset($property_adv['week_set'][$day][$time]) && in_array(2, $property_adv['week_set'][$day][$time]);
-                                        $checked_3 = isset($property_adv['week_set'][$day]) && isset($property_adv['week_set'][$day][$time]) && in_array(3, $property_adv['week_set'][$day][$time]);
-                                    @endphp
-                                    <div class="time">
-                                        <h5 onclick="event.preventDefault()">{{$time}}</h5>
-                                        @if (in_array($pack, [2, 4]))
-                                        <input type="checkbox" @if($checked_1) checked @endif class="btn-check" id="times_{{$day}}_{{$time}}t" name="times_slot_[{{$day}}][{{$time}}][]" value="1">
-                                        <label class="btn btn-outline-light shadow-sm left " for="times_{{$day}}_{{$time}}t">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
-                                                <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
-                                            </svg>
-                                        </label>
-                                        @endif 
-                                        @if (in_array($pack, [3, 4]))
-                                            <input type="checkbox" @if($checked_2) checked @endif  class="btn-check" id="times_{{$day}}_{{$time}}a" name="times_slot_[{{$day}}][{{$time}}][]" value="2">
-                                            <label class="btn btn-outline-light shadow-sm center " for="times_{{$day}}_{{$time}}a">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
-                                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                </svg>
-                                            </label>
-                                        @endif 
-                                        @if (in_array($pack, [3, 4]))
-                                            <input type="checkbox" @if($checked_3) checked @endif class="btn-check" id="times_{{$day}}_{{$time}}d" name="times_slot_[{{$day}}][{{$time}}][]" value="3">
-                                            <label class="btn btn-outline-light shadow-sm right" for="times_{{$day}}_{{$time}}d">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16">
-                                                    <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-                                                </svg>
-                                            </label>
-                                        @endif 
-                                    </div>
-                                @endforeach             
-                            </div>
-                        </div>        
-                    </div>
-                    @endforeach
-                </div>
+                <div class="days" id="availability-days"></div>
+                <p id="availability-slots-feedback" class="error m-2 d-none"></p>
                 @error('days_on') <p class="error m-2">{{ __('admin.seleziona_Attiva_nei_giorni_i_cui_sei_operativo') }}</p> @enderror
                 
                 <div class="modal-footer">
                     <button type="button" class="my_btn_1 d " data-bs-dismiss="modal">{{ __('admin.Annulla') }}</button>
-                    <button type="sumbit" class="my_btn_1 add ">{{__('admin.Aggiorna')}}</button>
+                    <button type="submit" class="my_btn_1 add ">{{__('admin.Aggiorna')}}</button>
                 </div>
             </form>
         </div>
@@ -416,164 +375,308 @@ document.addEventListener("DOMContentLoaded", () => {
     const dayButtons = document.querySelectorAll("#calendar_1 .day");
     const detailsContainer = document.getElementById("day-details");
     const blockTimeUrl = "{{ route('admin.dates.blockTime') }}";
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+    const availabilityDaysContainer = document.getElementById("availability-days");
+    const availabilityFeedback = document.getElementById("availability-slots-feedback");
+    const availabilityForm = document.querySelector("#staticBackdropav form");
+    const availabilitySubmitButton = availabilityForm?.querySelector('button[type="submit"]');
+    const startInput = document.getElementById("times_start");
+    const endInput = document.getElementById("times_end");
+    const intervalInput = document.getElementById("times_interval");
+    const initialWeekSet = @json($weekSet);
+    const enabledServices = {
+        table: @json(in_array($pack, [2, 4])),
+        takeAway: @json(in_array($pack, [3, 4])),
+        delivery: @json(in_array($pack, [3, 4])),
+    };
+    const dayNames = {
+        1: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(0)->translatedFormat('l') }}",
+        2: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(1)->translatedFormat('l') }}",
+        3: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(2)->translatedFormat('l') }}",
+        4: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(3)->translatedFormat('l') }}",
+        5: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(4)->translatedFormat('l') }}",
+        6: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(5)->translatedFormat('l') }}",
+        7: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(6)->translatedFormat('l') }}",
+    };
 
-    dayButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            // Rimuove evidenza precedente e la aggiunge a quella cliccata
-            document.querySelectorAll(".day.day-active").forEach(d => d.classList.remove("day-active"));
-            button.classList.add("day-active");
+    const timeServiceIcons = {
+        table: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg>`,
+        takeAway: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg>`,
+        delivery: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16"><path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>`,
+    };
 
-            // Legge i dati del giorno
-            const dayData = JSON.parse(button.dataset.day);
-            const { date, times, status } = dayData;
+    const detailIcons = {
+        confirm: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi okk bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`,
+        warning: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi to_see bi-exclamation-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>`,
+        null: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi null bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>`,
+        paid: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-back" viewBox="0 0 16 16"><path d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z"/><path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1m-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1"/></svg>`,
+        adult: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-standing" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M6 6.75v8.5a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2.75a.75.75 0 0 0 1.5 0v-2.5a.25.25 0 0 1 .5 0"/></svg>`,
+        child: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-arms-up" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/><path d="m5.93 6.704-.846 8.451a.768.768 0 0 0 1.523.203l.81-4.865a.59.59 0 0 1 1.165 0l.81 4.865a.768.768 0 0 0 1.523-.203l-.845-8.451A1.5 1.5 0 0 1 10.5 5.5L13 2.284a.796.796 0 0 0-1.239-.998L9.634 3.84a.7.7 0 0 1-.33.235c-.23.074-.665.176-1.304.176-.64 0-1.074-.102-1.305-.176a.7.7 0 0 1-.329-.235L4.239 1.286a.796.796 0 0 0-1.24.998l2.5 3.216c.317.316.475.758.43 1.204Z"/></svg>`,
+    };
 
-            // Costruisce l’HTML degli orari
-            let html = `
-                <div class="day-info">
-                    <div class="time-list ${status == 3 || status == 0 ? 'op' : ''}">
+    function normalizeWeekSet(weekSet) {
+        const normalized = {};
+        for (let day = 1; day <= 7; day += 1) {
+            normalized[day] = weekSet?.[day] ?? weekSet?.[String(day)] ?? {};
+        }
+        return normalized;
+    }
+
+    function collectWeekSelections() {
+        const selections = normalizeWeekSet({});
+        if (!availabilityDaysContainer) {
+            return selections;
+        }
+
+        availabilityDaysContainer.querySelectorAll('input[type="checkbox"][name^="times_slot_"]').forEach((input) => {
+            const match = input.name.match(/^times_slot_\[(\d+)\]\[([0-9]{2}:[0-9]{2})\]\[\]$/);
+            if (!match || !input.checked) {
+                return;
+            }
+
+            const day = match[1];
+            const time = match[2];
+            if (!Array.isArray(selections[day][time])) {
+                selections[day][time] = [];
+            }
+            selections[day][time].push(Number(input.value));
+        });
+
+        return selections;
+    }
+
+    function parseMinutes(value) {
+        if (!value || !value.includes(':')) {
+            return null;
+        }
+
+        const [hours, minutes] = value.split(':').map(Number);
+        if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+            return null;
+        }
+
+        return (hours * 60) + minutes;
+    }
+
+    function formatMinutes(totalMinutes) {
+        const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+        const minutes = String(totalMinutes % 60).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    function buildTimeSlots(startValue, endValue, intervalValue) {
+        const startMinutes = parseMinutes(startValue);
+        const endMinutes = parseMinutes(endValue);
+        const interval = Number(intervalValue);
+
+        if (startMinutes === null || endMinutes === null || !Number.isInteger(interval) || interval <= 0 || startMinutes > endMinutes) {
+            return [];
+        }
+
+        const slots = [];
+        for (let minute = startMinutes; minute <= endMinutes; minute += interval) {
+            slots.push(formatMinutes(minute));
+            if (interval === 0) {
+                break;
+            }
+        }
+
+        return slots;
+    }
+
+    function buildServiceToggle(day, time, suffix, value, positionClass, icon, checked) {
+        const safeTime = time.replace(':', '-');
+        const inputId = `times_${day}_${safeTime}_${suffix}`;
+
+        return `
+            <input type="checkbox" ${checked ? 'checked' : ''} class="btn-check" id="${inputId}" name="times_slot_[${day}][${time}][]" value="${value}">
+            <label class="btn btn-outline-light shadow-sm ${positionClass}" for="${inputId}">
+                ${icon}
+            </label>
+        `;
+    }
+
+    function renderAvailabilityDays() {
+        if (!availabilityDaysContainer || !startInput || !endInput || !intervalInput) {
+            return;
+        }
+
+        const previousSelections = availabilityDaysContainer.children.length
+            ? collectWeekSelections()
+            : normalizeWeekSet(initialWeekSet);
+
+        const collapseState = {};
+        availabilityDaysContainer.querySelectorAll('.multi-collapse').forEach((collapse) => {
+            collapseState[collapse.dataset.day] = collapse.classList.contains('show');
+        });
+
+        const slots = buildTimeSlots(startInput.value, endInput.value, intervalInput.value);
+        const isValid = slots.length > 0;
+
+        availabilityFeedback.classList.toggle('d-none', isValid);
+        availabilityFeedback.textContent = isValid
+            ? ''
+            : "Inserisci un orario di inizio e fine valido con un intervallo maggiore di 0.";
+
+        if (availabilitySubmitButton) {
+            availabilitySubmitButton.disabled = !isValid;
+        }
+
+        if (!isValid) {
+            availabilityDaysContainer.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        for (let day = 1; day <= 7; day += 1) {
+            const daySelections = previousSelections[day] ?? {};
+            const hasSelections = Object.keys(daySelections).length > 0;
+            const showCollapse = collapseState[day] ?? hasSelections;
+
+            html += `
+                <input class="btn-check" style="visibility: hidden; position: absolute;" name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample${day}" aria-expanded="${showCollapse}" aria-controls="multiCollapseExample${day}" id="day_${day}" value="${day}">
+                <div class="day">
+                    <div class="top_day">${dayNames[day]}</div>
+                    <label for="day_${day}" class="btn_close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/></svg>
+                    </label>
+                </div>
+                <div class="collapse multi-collapse ${showCollapse ? 'show' : ''}" id="multiCollapseExample${day}" data-day="${day}">
+                    <div class="modal_body">
+                        <div class="scroller">
             `;
 
-            for (const [time, data] of Object.entries(times)) {
-                const res = data.res;
-                const or = data.or;
-                const properties = data.property.join(", ");
-                const isBlocked = data.blocked === true;
-                const selectedDate = new Date(date + 'T00:00:00');
-                const today = new Date();
-                today.setHours(0,0,0,0);
-                const isPastDate = selectedDate < today;
-                const canBlock = !isBlocked && !isPastDate;
+            slots.forEach((time) => {
+                const selectedServices = Array.isArray(daySelections[time]) ? daySelections[time].map(Number) : [];
+                html += `<div class="time"><h5 onclick="event.preventDefault()">${time}</h5>`;
 
-                html += `
-                    <div class="time-item ${isBlocked ? 'blocked' : ''}">
-                        <div class="time-header">
-                            <strong>${time}</strong>
-                             <div class="line ${isBlocked ? 'blocked-line' : ''}"></div>
-                            <p class="prop"> 
-                `;
-                if(properties.includes(1)){
-                    html += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
-                            <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
-                        </svg>`;
-                    }
-                    if(properties.includes(2)){
-                    html += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
-                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                        </svg>`;
+                if (enabledServices.table) {
+                    html += buildServiceToggle(day, time, 't', 1, 'left', timeServiceIcons.table, selectedServices.includes(1));
                 }
-                if(properties.includes(3)){
-                    html += ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16">
-                            <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-                        </svg>`;
+                if (enabledServices.takeAway) {
+                    html += buildServiceToggle(day, time, 'a', 2, 'center', timeServiceIcons.takeAway, selectedServices.includes(2));
                 }
-                html += `</p>
-                            ${isBlocked ? `<button type="button" class="unblock-time-btn" data-date="${date}" data-time="${time}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></svg>
-                                </button>` : (canBlock ? `<button type="button" class="block-time-btn" data-date="${date}" data-time="${time}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg>
-                                    </button>` : '')}
-                        </div>
-                    <div class="time-content">
-                `;
-                const confirm_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi okk bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`;
-                const to_see_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi to_see bi-exclamation-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>`;
-                const null_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi null bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>`;
-                const paid_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card-2-back" viewBox="0 0 16 16"><path d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z"/><path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1m-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1"/></svg>`;
-
-                const getStatusClass = (statusValue) => {
-                    const parsedStatus = Number(statusValue);
-                    const statusMap = {
-                        0: 'null',
-                        1: 'okk',
-                        2: 'to_see',
-                        3: 'to_see',
-                        4: 'okk',
-                        5: 'okk',
-                        6: 'null',
-                    };
-
-                    return statusMap[parsedStatus] ?? 'to_see';
-                };
-
-                // Prenotazioni
-                if (res.length > 0) {
-                    res.forEach(r => {
-                        const rStatus = Number(r.status);
-                        const n_person = JSON.parse(r.n_person)
-                        const child = n_person.child
-                        const adult = n_person.adult
-                        const child_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-arms-up" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/><path d="m5.93 6.704-.846 8.451a.768.768 0 0 0 1.523.203l.81-4.865a.59.59 0 0 1 1.165 0l.81 4.865a.768.768 0 0 0 1.523-.203l-.845-8.451A1.5 1.5 0 0 1 10.5 5.5L13 2.284a.796.796 0 0 0-1.239-.998L9.634 3.84a.7.7 0 0 1-.33.235c-.23.074-.665.176-1.304.176-.64 0-1.074-.102-1.305-.176a.7.7 0 0 1-.329-.235L4.239 1.286a.796.796 0 0 0-1.24.998l2.5 3.216c.317.316.475.758.43 1.204Z"/></svg>`
-                        const adult_svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-standing" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M6 6.75v8.5a.75.75 0 0 0 1.5 0V10.5a.5.5 0 0 1 1 0v4.75a.75.75 0 0 0 1.5 0v-8.5a.25.25 0 1 1 .5 0v2.5a.75.75 0 0 0 1.5 0V6.5a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v2.75a.75.75 0 0 0 1.5 0v-2.5a.25.25 0 0 1 .5 0"/></svg>`
-                        const paid_label = rStatus === 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`
-
-                        const domain_link = "{{config('configurazione.APP_URL')}}" + '/admin/reservations/' + r.id
-
-                        html += `<a href="${domain_link}" class="res-item ${getStatusClass(rStatus)}">
-                                    <div class="top">
-                                        <div class="id">R${r.id ?? ''} </div>
-                                        ${[0, 6].includes(rStatus) ? null_svg : ''}
-                                        ${[2, 3].includes(rStatus) ? to_see_svg : ''}
-                                        ${[1, 4, 5].includes(rStatus) ? confirm_svg : ''}
-                                        <div class="name">${r.name + ' ' + r.surname} </div>
-                                        ${[3, 5, 6].includes(rStatus) ? `<div class="${rStatus === 6 ? 'refound' : 'paid'} status">${paid_svg} ${paid_label}</div>` : ''}
-                                        <div class="guest">
-                                            ${adult> 0 ? adult + adult_svg : ''} 
-                                            ${child> 0 ? child + child_svg : ''}
-                                        </div>
-                                    </div>
-                                </a>`;
-                    });
+                if (enabledServices.delivery) {
+                    html += buildServiceToggle(day, time, 'd', 3, 'right', timeServiceIcons.delivery, selectedServices.includes(3));
                 }
-                // Ordini
-                if (or.length > 0) {
-                    or.forEach(o => {
-                        const oStatus = Number(o.status);
-                        const paid_label = oStatus === 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`
-                        const domain_link = "{{config('configurazione.APP_URL')}}" + '/admin/orders/' + o.id
-                        html += `<a href="${domain_link}" class="order-item ${getStatusClass(oStatus)}">
-                                    <div class="top">
-                                        <div class="id">O${o.id ?? ''} </div>
-                                        ${[0, 6].includes(oStatus) ? null_svg : ''}
-                                        ${[2, 3].includes(oStatus) ? to_see_svg : ''}
-                                        ${[1, 4, 5].includes(oStatus) ? confirm_svg : ''}
-                                        <div class="name">${o.name + ' ' + o.surname} </div>
-                                        ${[3, 5, 6].includes(oStatus) ? `<div class="${oStatus === 6 ? 'refound' : 'paid'} status">${paid_svg} ${paid_label}</div>` : ''}
-                                        <div class="price">€${o.tot_price / 100}</div>
-                                    </div>
-                                    <div class="cart">`;
-                            o.products.forEach(p => {
-                                html += `<div class="item_cart">
-                                            <div class="name">${p.pivot?.quantity ?? 1}* ${p.name}</div>
-                                            <div class="price">€${p.price / 100}</div>
-                                        </div>`;
-                            });
-                            o.menus.forEach(p => {
-                                html += `<div class="item_cart">
-                                            <div class="name">${p.pivot?.quantity ?? 1}* ${p.name}</div>
-                                            <div class="price">€${p.price / 100}</div>
-                                        </div>`;
-                            });
-                                    html += `</div></a>`
-                        });
-                }
-                html += `
+
+                html += `</div>`;
+            });
+
+            html += `
                         </div>
                     </div>
-                `;
+                </div>
+            `;
+        }
+
+        availabilityDaysContainer.innerHTML = html;
+    }
+
+    function getStatusClass(statusValue) {
+        const parsedStatus = Number(statusValue);
+        const statusMap = {
+            0: 'null',
+            1: 'okk',
+            2: 'to_see',
+            3: 'to_see',
+            4: 'okk',
+            5: 'okk',
+            6: 'null',
+        };
+
+        return statusMap[parsedStatus] ?? 'to_see';
+    }
+
+    function renderDayDetails(button) {
+        document.querySelectorAll(".day.day-active").forEach((dayButton) => dayButton.classList.remove("day-active"));
+        button.classList.add("day-active");
+
+        const dayData = JSON.parse(button.dataset.day);
+        const { date, times, status } = dayData;
+        let html = `<div class="day-info"><div class="time-list ${status == 3 || status == 0 ? 'op' : ''}">`;
+
+        for (const [time, data] of Object.entries(times)) {
+            const res = data.res;
+            const or = data.or;
+            const properties = (data.property ?? []).map(Number);
+            const isBlocked = data.blocked === true;
+            const selectedDate = new Date(`${date}T00:00:00`);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const canBlock = !isBlocked && selectedDate >= today;
+
+            html += `<div class="time-item ${isBlocked ? 'blocked' : ''}"><div class="time-header"><strong>${time}</strong><div class="line ${isBlocked ? 'blocked-line' : ''}"></div><p class="prop">`;
+            if (properties.includes(1)) html += timeServiceIcons.table;
+            if (properties.includes(2)) html += timeServiceIcons.takeAway;
+            if (properties.includes(3)) html += timeServiceIcons.delivery;
+            html += `</p>
+                ${isBlocked ? `<button type="button" class="unblock-time-btn" data-date="${date}" data-time="${time}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></svg></button>` : (canBlock ? `<button type="button" class="block-time-btn" data-date="${date}" data-time="${time}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg></button>` : '')}
+            </div><div class="time-content">`;
+
+            if (res.length > 0) {
+                res.forEach((reservation) => {
+                    const reservationStatus = Number(reservation.status);
+                    const people = JSON.parse(reservation.n_person);
+                    const paidLabel = reservationStatus === 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`;
+                    const reservationLink = "{{config('configurazione.APP_URL')}}" + '/admin/reservations/' + reservation.id;
+
+                    html += `<a href="${reservationLink}" class="res-item ${getStatusClass(reservationStatus)}">
+                        <div class="top">
+                            <div class="id">R${reservation.id ?? ''}</div>
+                            ${[0, 6].includes(reservationStatus) ? detailIcons.null : ''}
+                            ${[2, 3].includes(reservationStatus) ? detailIcons.warning : ''}
+                            ${[1, 4, 5].includes(reservationStatus) ? detailIcons.confirm : ''}
+                            <div class="name">${reservation.name + ' ' + reservation.surname}</div>
+                            ${[3, 5, 6].includes(reservationStatus) ? `<div class="${reservationStatus === 6 ? 'refound' : 'paid'} status">${detailIcons.paid} ${paidLabel}</div>` : ''}
+                            <div class="guest">
+                                ${people.adult > 0 ? people.adult + detailIcons.adult : ''}
+                                ${people.child > 0 ? people.child + detailIcons.child : ''}
+                            </div>
+                        </div>
+                    </a>`;
+                });
+            }
+
+            if (or.length > 0) {
+                or.forEach((order) => {
+                    const orderStatus = Number(order.status);
+                    const paidLabel = orderStatus === 6 ? `{{ __('admin.Rimborsato') }}` : `{{ __('admin.Pagato') }}`;
+                    const orderLink = "{{config('configurazione.APP_URL')}}" + '/admin/orders/' + order.id;
+
+                    html += `<a href="${orderLink}" class="order-item ${getStatusClass(orderStatus)}">
+                        <div class="top">
+                            <div class="id">O${order.id ?? ''}</div>
+                            ${[0, 6].includes(orderStatus) ? detailIcons.null : ''}
+                            ${[2, 3].includes(orderStatus) ? detailIcons.warning : ''}
+                            ${[1, 4, 5].includes(orderStatus) ? detailIcons.confirm : ''}
+                            <div class="name">${order.name + ' ' + order.surname}</div>
+                            ${[3, 5, 6].includes(orderStatus) ? `<div class="${orderStatus === 6 ? 'refound' : 'paid'} status">${detailIcons.paid} ${paidLabel}</div>` : ''}
+                            <div class="price">€${order.tot_price / 100}</div>
+                        </div>
+                        <div class="cart">`;
+
+                    order.products.forEach((product) => {
+                        html += `<div class="item_cart"><div class="name">${product.pivot?.quantity ?? 1}* ${product.name}</div><div class="price">€${product.price / 100}</div></div>`;
+                    });
+                    order.menus.forEach((menu) => {
+                        html += `<div class="item_cart"><div class="name">${menu.pivot?.quantity ?? 1}* ${menu.name}</div><div class="price">€${menu.price / 100}</div></div>`;
+                    });
+
+                    html += `</div></a>`;
+                });
             }
 
             html += `</div></div>`;
+        }
 
-            // Mostra nel contenitore
-            detailsContainer.innerHTML = html;
-            attachBlockButtons();
-        });
+        html += `</div></div>`;
+        detailsContainer.innerHTML = html;
+        attachBlockButtons();
+    }
 
     function attachBlockButtons() {
-        document.querySelectorAll('.block-time-btn, .unblock-time-btn').forEach(button => {
+        document.querySelectorAll('.block-time-btn, .unblock-time-btn').forEach((button) => {
             button.addEventListener('click', async () => {
-                // Evita doppi click disabilitando immediatamente
                 if (button.disabled) return;
                 button.disabled = true;
 
@@ -593,25 +696,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
 
                     const result = await response.json();
-
                     if (!result.success) {
                         console.error(`Errore nell'${action === 'block' ? 'blocco' : 'sblocco'} orario:`, result.message);
                         button.disabled = false;
                         return;
                     }
 
-                    // Controlli di sicurezza per il DOM
                     const timeItem = button.closest('.time-item');
-                    if (!timeItem) {
-                        console.warn('timeItem non trovato, possibile DOM modificato');
-                        return;
-                    }
+                    const timeHeader = timeItem?.querySelector('.time-header');
+                    const line = timeItem?.querySelector('.line');
 
-                    const timeHeader = timeItem.querySelector('.time-header');
-                    const line = timeItem.querySelector('.line');
-
-                    if (!timeHeader) {
-                        console.warn('timeHeader non trovato');
+                    if (!timeItem || !timeHeader) {
                         return;
                     }
 
@@ -620,44 +715,36 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (line) line.classList.add('blocked-line');
                         button.remove();
 
-                        const unblockBtn = document.createElement('button');
-                        unblockBtn.type = 'button';
-                        unblockBtn.className = 'unblock-time-btn';
-                        unblockBtn.dataset.date = date;
-                        unblockBtn.dataset.time = time;
-                        unblockBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></svg>`;
-                        timeHeader.appendChild(unblockBtn);
+                        const unblockButton = document.createElement('button');
+                        unblockButton.type = 'button';
+                        unblockButton.className = 'unblock-time-btn';
+                        unblockButton.dataset.date = date;
+                        unblockButton.dataset.time = time;
+                        unblockButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16"><path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/></svg>`;
+                        timeHeader.appendChild(unblockButton);
                     } else {
                         timeItem.classList.remove('blocked');
                         if (line) line.classList.remove('blocked-line');
                         button.remove();
 
-                        const blockBtn = document.createElement('button');
-                        blockBtn.type = 'button';
-                        blockBtn.className = 'block-time-btn';
-                        blockBtn.dataset.date = date;
-                        blockBtn.dataset.time = time;
-                        blockBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg>`;
-                        timeHeader.appendChild(blockBtn);
+                        const blockButton = document.createElement('button');
+                        blockButton.type = 'button';
+                        blockButton.className = 'block-time-btn';
+                        blockButton.dataset.date = date;
+                        blockButton.dataset.time = time;
+                        blockButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16"><path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/></svg>`;
+                        timeHeader.appendChild(blockButton);
                     }
 
-                    // Riattacca gli event listener ai nuovi bottoni
                     attachBlockButtons();
 
-                    // Aggiorna il data-day del giorno corrente per riflettere il cambiamento
-                    const dayButtons = document.querySelectorAll("#calendar_1 .day");
-                    dayButtons.forEach(dayBtn => {
-                        const dayData = JSON.parse(dayBtn.dataset.day);
-                        if (dayData.date === date) {
-                            // Aggiorna il blocked status dell'orario modificato
-                            if (dayData.times[time]) {
-                                dayData.times[time].blocked = (action === 'block');
-                            }
-                            // Riscrivi il data-day aggiornato
-                            dayBtn.dataset.day = JSON.stringify(dayData);
+                    dayButtons.forEach((dayButton) => {
+                        const dayData = JSON.parse(dayButton.dataset.day);
+                        if (dayData.date === date && dayData.times[time]) {
+                            dayData.times[time].blocked = (action === 'block');
+                            dayButton.dataset.day = JSON.stringify(dayData);
                         }
                     });
-
                 } catch (error) {
                     console.error(`Error ${action}ing time:`, error);
                     button.disabled = false;
@@ -666,10 +753,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    [startInput, endInput, intervalInput].forEach((input) => {
+        input?.addEventListener('input', renderAvailabilityDays);
+        input?.addEventListener('change', renderAvailabilityDays);
+    });
+
+    renderAvailabilityDays();
+
+    dayButtons.forEach((button) => {
+        button.addEventListener("click", () => renderDayDetails(button));
     });
 });
 </script>
 
 
 @endsection
-
