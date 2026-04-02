@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -89,10 +90,59 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::where('archived', false)->orderBy('order', 'desc')->get(); 
+        $posts = Post::query()
+            ->where('archived', false)
+            ->orderBy('order', 'desc')
+            ->select(['id', 'title', 'path', 'link', 'image', 'visible'])
+            ->simplePaginate(60);
+
         $news = Post::where('archived', false)->where('path', 1)->orderBy('order', 'desc')->get(); 
         $story = Post::where('archived', false)->where('path', 2)->orderBy('order', 'desc')->get(); 
         return view('admin.Posts.index', compact('posts', 'story', 'news'));
+    }
+
+    public function search(Request $request)
+    {
+        $search = trim((string) $request->query('q', ''));
+        $type = $request->query('type', 'all');
+        $sort = $request->query('sort', 'recent') === 'alpha' ? 'alpha' : 'recent';
+
+        $query = Post::query()->where('archived', false);
+
+        if ($search !== '') {
+            $query->where(function ($nested) use ($search) {
+                $nested->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('hashtag', 'like', "%{$search}%");
+            });
+        }
+
+        if ($type === 'story') {
+            $query->where('path', 2);
+        }
+        if ($type === 'news') {
+            $query->where('path', 1);
+        }
+
+        if ($sort === 'alpha') {
+            $query->orderBy('title', 'asc');
+        } else {
+            $query->orderBy('order', 'desc');
+        }
+
+        $posts = $query
+            ->limit(400)
+            ->select(['id', 'title', 'path', 'link', 'image', 'visible'])
+            ->get();
+
+        return response()->json([
+            'html' => view('admin.Posts.partials.index_cards', compact('posts'))->render(),
+        ]);
+    }
+
+    public function quickView(Post $post)
+    {
+        return view('admin.Posts.partials.quick_view_modal_body', compact('post'));
     }
 
     public function neworder(Request $request)

@@ -81,6 +81,8 @@ Route::middleware(['auth', 'verified'])
         
         Route::post('posts/neworder', [PostController::class, 'neworder'])->name('posts.neworder');
         Route::get('posts/archived',  [PostController::class, 'archived'])->name('posts.archived');
+        Route::get('posts/search',    [PostController::class, 'search'])->name('posts.search');
+        Route::get('posts/{post}/quick-view', [PostController::class, 'quickView'])->name('posts.quick-view');
         Route::post('posts/filter',   [PostController::class, 'filter'])->name('posts.filter');
         Route::post('posts/status',   [PostController::class, 'status'])->name('posts.status');
         
