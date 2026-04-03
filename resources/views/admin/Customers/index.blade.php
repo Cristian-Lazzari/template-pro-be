@@ -130,6 +130,13 @@
         padding: .45rem .75rem;
     }
 
+    .customer-page .customer-card__meta {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+
     .customer-page .customer-card__contacts svg,
     .customer-page .customer-card__button svg {
         width: 16px;
@@ -146,6 +153,12 @@
         color: var(--c3);
         font-size: .84rem;
         font-weight: 900;
+    }
+
+    .customer-page .customer-chip--outline {
+        background: transparent;
+        color: var(--c1);
+        border: 1px solid rgba(30, 45, 100, .16);
     }
 
     .customer-page .customer-card__button {
@@ -187,7 +200,7 @@
     </h1>
 
     <p class="customer-lead">
-        {{ __('admin.Clienti_descrizione') }}
+        Qui trovi sia i clienti registrati sia i contatti ospiti raccolti da ordini e prenotazioni.
     </p>
 
     <div class="customer-summary">
@@ -236,6 +249,11 @@
                             {{ $customer->last_activity_at ? $customer->last_activity_at->format('d/m/Y H:i') : '-' }}
                         </p>
                     </div>
+                    <div class="customer-card__meta">
+                        <span class="customer-chip customer-chip--outline">
+                            {{ $customer->is_registered ? 'Registrato' : 'Ospite' }}
+                        </span>
+                    </div>
                     <div class="customer-card__contacts">
                         <a href="mailto:{{ $customer->email }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
@@ -266,8 +284,8 @@
 
                     @if ($customer->detail_url)
                         <a class="customer-card__button" href="{{ $customer->detail_url }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-arrow-up-right-circle-fill" viewBox="0 0 16 16">
-                                <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m5.5-1a.5.5 0 0 0 0 1h3.793L4.146 13.146a.5.5 0 0 0 .708.708L10 8.707V12.5a.5.5 0 0 0 1 0v-5A.5.5 0 0 0 10.5 7z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-right-circle-fill" viewBox="0 0 16 16">
+                            <path d="M0 8a8 8 0 1 0 16 0A8 8 0 0 0 0 8m5.904 2.803a.5.5 0 1 1-.707-.707L9.293 6H6.525a.5.5 0 1 1 0-1H10.5a.5.5 0 0 1 .5.5v3.975a.5.5 0 0 1-1 0V6.707z"/>
                             </svg>
                             {{ __('admin.Dettagli') }}
                         </a>

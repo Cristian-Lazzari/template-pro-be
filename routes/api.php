@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\DateController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\OrderController;
@@ -34,9 +35,21 @@ Route::get('client_default',    [SettingController::class, 'client_default'])->n
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 
+Route::prefix('customer/auth')->name('api.customer.auth.')->group(function () {
+    Route::post('request-otp', [CustomerAuthController::class, 'requestRegisterOtp'])->name('request_otp');
+    Route::post('request-login-otp', [CustomerAuthController::class, 'requestLoginOtp'])->name('request_login_otp');
+    Route::post('request-password-reset-otp', [CustomerAuthController::class, 'requestPasswordResetOtp'])->name('request_password_reset_otp');
+    Route::post('register', [CustomerAuthController::class, 'register'])->name('register');
+    Route::post('login', [CustomerAuthController::class, 'login'])->name('login');
+    Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('reset_password');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('me', [CustomerAuthController::class, 'me'])->name('me');
+        Route::post('logout', [CustomerAuthController::class, 'logout'])->name('logout');
+    });
+});
+
 
 Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');
-
-
 
 

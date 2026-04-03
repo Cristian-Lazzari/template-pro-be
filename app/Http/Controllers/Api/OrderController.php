@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Customer;
 use Carbon\Carbon;
 use App\Models\Menu;
 use App\Models\Order;
@@ -25,6 +26,7 @@ class OrderController extends Controller
 {
     private $validations = [
         'name'      => 'required|string|max:50',
+        'surname'   => 'required|string|max:50',
         'phone'     => 'required|string|max:20',
         'email'     => 'required|email|max:100',
         'message'   => 'nullable|string|max:1000',
@@ -32,8 +34,20 @@ class OrderController extends Controller
 
     public function store(Request $request)
     { 
-        $request->validate($this->validations);
         $data = $request->all();
+        $authenticatedCustomer = auth('sanctum')->user();
+        if (!$authenticatedCustomer instanceof Customer) {
+            $authenticatedCustomer = null;
+        }
+
+        if ($authenticatedCustomer) {
+            $data['name'] = $authenticatedCustomer->name;
+            $data['surname'] = $authenticatedCustomer->surname;
+            $data['email'] = $authenticatedCustomer->email;
+            $data['phone'] = $authenticatedCustomer->phone ?: ($data['phone'] ?? null);
+        }
+
+        validator($data, $this->validations)->validate();
         $defaultLang = config('app.locale');
         $lang = $data['lang'] ?? $defaultLang;
         app()->setLocale($lang);
@@ -116,6 +130,7 @@ class OrderController extends Controller
             
     
             $newOrder = new Order();
+            $newOrder->customer_id = $authenticatedCustomer?->id;
             
             $newOrder->name = $data['name'];
             $newOrder->surname = $data['surname'];

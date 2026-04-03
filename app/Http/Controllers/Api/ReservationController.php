@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\confermaOrdineAdmin;
+use App\Models\Customer;
 use App\Models\Reservation;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ class ReservationController extends Controller
 {
     private $validations = [
         'name'      => 'required|string|max:50',
+        'surname'   => 'required|string|max:50',
         'phone'     => 'required|string|max:20',
         'email'     => 'required|email|max:100',
         'n_adult'  => 'required|string|max:10',
@@ -27,8 +29,20 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate($this->validations);
         $data = $request->all();
+        $authenticatedCustomer = auth('sanctum')->user();
+        if (!$authenticatedCustomer instanceof Customer) {
+            $authenticatedCustomer = null;
+        }
+
+        if ($authenticatedCustomer) {
+            $data['name'] = $authenticatedCustomer->name;
+            $data['surname'] = $authenticatedCustomer->surname;
+            $data['email'] = $authenticatedCustomer->email;
+            $data['phone'] = $authenticatedCustomer->phone ?: ($data['phone'] ?? null);
+        }
+
+        validator($data, $this->validations)->validate();
         $defaultLang = config('app.locale');
         $lang = $data['lang'];
         app()->setLocale($lang);
@@ -93,6 +107,7 @@ class ReservationController extends Controller
     
         // Crea la nuova prenotazione
         $newRes = new Reservation();
+        $newRes->customer_id = $authenticatedCustomer?->id;
         $newRes->name = $data['name'];
         $newRes->surname = $data['surname'];
         $newRes->phone = $data['phone'];
