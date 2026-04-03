@@ -338,4 +338,11 @@ return array (
   'ship_prepare' => '準備',
   'ship2_delivery' => 'あなたの配送に',
   'ship2_pickup' => 'あなたのピックアップに',
+  'Clienti' => '顧客',
+  'Con_ordini' => '注文あり',
+  'Con_prenotazioni' => '予約あり',
+  'Ordini_e_prenotazioni' => '注文と予約',
+  'Ultima_attivita' => '最終アクティビティ',
+  'Totale_interazioni' => '総インタラクション',
+  'Nessun_cliente_trovato' => '顧客が見つかりません',
 );

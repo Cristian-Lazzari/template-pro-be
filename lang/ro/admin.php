@@ -337,4 +337,11 @@ return array (
   'ship_prepare' => 'prepara',
   'ship2_delivery' => 'la livrarea dvs.',
   'ship2_pickup' => 'la ridicarea dvs.',
+  'Clienti' => 'Clienti',
+  'Con_ordini' => 'Cu comenzi',
+  'Con_prenotazioni' => 'Cu rezervari',
+  'Ordini_e_prenotazioni' => 'Comenzi si rezervari',
+  'Ultima_attivita' => 'Ultima activitate',
+  'Totale_interazioni' => 'Interactiuni totale',
+  'Nessun_cliente_trovato' => 'Nu a fost gasit niciun client',
 );

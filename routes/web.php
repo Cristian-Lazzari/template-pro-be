@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DateController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MailerController;
@@ -39,6 +40,7 @@ Route::middleware(['auth', 'verified'])
         Route::get('/',           [AdminPageController::class, 'dashboard'])->name('dashboard');
    
         Route::get('/statistics', [AdminPageController::class, 'statistics'])->name('statistics');
+        Route::get('/customers',  [CustomerController::class, 'index'])->name('customers.index');
 
         Route::get('/mailer/index',         [MailerController::class, 'mailer'])->name('mailer.index');
         Route::get('/mailer/send_mail',     [MailerController::class, 'send_mail'])->name('mailer.send_mail');
@@ -133,6 +135,5 @@ Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWeb
 Route::post('/webhook/wa', [WaController::class, 'handle'])->middleware('apikey');
 
 //Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);
-
 
 

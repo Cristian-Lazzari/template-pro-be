@@ -338,4 +338,11 @@ return array (
   'ship_prepare' => 'prepare',
   'ship2_delivery' => 'to your delivery',
   'ship2_pickup' => 'to your pickup',
+  'Clienti' => 'Customers',
+  'Con_ordini' => 'With orders',
+  'Con_prenotazioni' => 'With reservations',
+  'Ordini_e_prenotazioni' => 'Orders and reservations',
+  'Ultima_attivita' => 'Last activity',
+  'Totale_interazioni' => 'Total interactions',
+  'Nessun_cliente_trovato' => 'No customer found',
 );
