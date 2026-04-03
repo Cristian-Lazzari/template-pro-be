@@ -342,6 +342,7 @@ return array (
   'Con_ordini' => 'Avec commandes',
   'Con_prenotazioni' => 'Avec reservations',
   'Ordini_e_prenotazioni' => 'Commandes et reservations',
+  'Clienti_descrizione' => 'Tous les clients ayant effectue au moins une commande ou une reservation sur le site, regroupes par e-mail, prenom et nom.',
   'Ultima_attivita' => 'Derniere activite',
   'Totale_interazioni' => 'Interactions totales',
   'Nessun_cliente_trovato' => 'Aucun client trouve',

@@ -341,6 +341,7 @@ return array (
   'Con_ordini' => 'Cu comenzi',
   'Con_prenotazioni' => 'Cu rezervari',
   'Ordini_e_prenotazioni' => 'Comenzi si rezervari',
+  'Clienti_descrizione' => 'Toti clientii care au efectuat cel putin o comanda sau o rezervare pe site, grupati dupa email, prenume si nume.',
   'Ultima_attivita' => 'Ultima activitate',
   'Totale_interazioni' => 'Interactiuni totale',
   'Nessun_cliente_trovato' => 'Nu a fost gasit niciun client',

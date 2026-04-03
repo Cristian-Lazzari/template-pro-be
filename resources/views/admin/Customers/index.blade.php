@@ -187,7 +187,7 @@
     </h1>
 
     <p class="customer-lead">
-        Tutti i clienti che hanno effettuato almeno un ordine o una prenotazione sul sito, raggruppati per email, nome e cognome.
+        {{ __('admin.Clienti_descrizione') }}
     </p>
 
     <div class="customer-summary">

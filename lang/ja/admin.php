@@ -342,6 +342,7 @@ return array (
   'Con_ordini' => '注文あり',
   'Con_prenotazioni' => '予約あり',
   'Ordini_e_prenotazioni' => '注文と予約',
+  'Clienti_descrizione' => 'サイトで少なくとも1件の注文または予約を行ったすべての顧客を、メールアドレス、名、姓でグループ化して表示します。',
   'Ultima_attivita' => '最終アクティビティ',
   'Totale_interazioni' => '総インタラクション',
   'Nessun_cliente_trovato' => '顧客が見つかりません',

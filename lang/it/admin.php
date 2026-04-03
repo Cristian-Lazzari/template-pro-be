@@ -343,6 +343,7 @@ return array (
   'Con_ordini' => 'Con ordini',
   'Con_prenotazioni' => 'Con prenotazioni',
   'Ordini_e_prenotazioni' => 'Ordini e prenotazioni',
+  'Clienti_descrizione' => 'Tutti i clienti che hanno effettuato almeno un ordine o una prenotazione sul sito, raggruppati per email, nome e cognome.',
   'Ultima_attivita' => 'Ultima attivita',
   'Totale_interazioni' => 'Totale interazioni',
   'Nessun_cliente_trovato' => 'Nessun cliente trovato',
