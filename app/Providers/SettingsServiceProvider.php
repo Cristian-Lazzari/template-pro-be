@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class SettingsServiceProvider extends ServiceProvider
@@ -21,7 +22,15 @@ class SettingsServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $setting = Setting::where('name','Lingua')->first();
+        try {
+            if (!Schema::hasTable('settings')) {
+                return;
+            }
+
+            $setting = Setting::where('name', 'Lingua')->first();
+        } catch (\Throwable $exception) {
+            return;
+        }
         
         if(!$setting){
             return;

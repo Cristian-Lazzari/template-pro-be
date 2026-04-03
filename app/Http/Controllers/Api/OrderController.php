@@ -2,28 +2,37 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Mail\confermaOrdineAdmin;
 use App\Models\Customer;
-use Carbon\Carbon;
+use App\Models\Ingredient;
 use App\Models\Menu;
+use App\Models\MenuOrder;
 use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\Setting;
-use App\Models\MenuOrder;
-use App\Models\Ingredient;
-use App\Models\OrderProduct;
+use App\Services\CustomerAuth\CustomerAccessService;
+use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\Api\PaymentController;
-
-
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        private VerifiedCheckoutSessionService $verifiedCheckoutSessionService,
+        private CustomerAccessService $customerAccessService,
+    ) {
+    }
+
     private $validations = [
         'name'      => 'required|string|max:50',
         'surname'   => 'required|string|max:50',
@@ -35,22 +44,57 @@ class OrderController extends Controller
     public function store(Request $request)
     { 
         $data = $request->all();
+        $defaultLang = config('app.locale');
+        $lang = $data['lang'] ?? $defaultLang;
+        app()->setLocale($lang);
+
         $authenticatedCustomer = auth('sanctum')->user();
         if (!$authenticatedCustomer instanceof Customer) {
             $authenticatedCustomer = null;
         }
 
         if ($authenticatedCustomer) {
-            $data['name'] = $authenticatedCustomer->name;
-            $data['surname'] = $authenticatedCustomer->surname;
             $data['email'] = $authenticatedCustomer->email;
-            $data['phone'] = $authenticatedCustomer->phone ?: ($data['phone'] ?? null);
+            $data['name'] = $this->preferredCheckoutValue($data['name'] ?? null, $authenticatedCustomer->name);
+            $data['surname'] = $this->preferredCheckoutValue($data['surname'] ?? null, $authenticatedCustomer->surname);
+            $data['phone'] = $this->preferredCheckoutValue($data['phone'] ?? null, $authenticatedCustomer->phone);
+        } elseif (isset($data['email'])) {
+            $data['email'] = Customer::normalizeEmail((string) $data['email']);
         }
 
         validator($data, $this->validations)->validate();
-        $defaultLang = config('app.locale');
-        $lang = $data['lang'] ?? $defaultLang;
-        app()->setLocale($lang);
+
+        $customerAuthPayload = null;
+
+        if (!$authenticatedCustomer) {
+            $verifiedSessionToken = $this->verifiedCheckoutSessionService->extractTokenFromRequest($request);
+
+            if (!$this->verifiedCheckoutSessionService->isValidForEmail($verifiedSessionToken, $data['email'])) {
+                throw ValidationException::withMessages([
+                    'email' => [Lang::get('customer.messages.checkout_verification_required', [], $lang)],
+                ]);
+            }
+
+            if ($request->boolean('save_details')) {
+                $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
+                    'name' => $data['name'] ?? null,
+                    'surname' => $data['surname'] ?? null,
+                    'phone' => $data['phone'] ?? null,
+                ]);
+
+                $customerAuthPayload = [
+                    'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
+                    'customer' => $this->customerPayload($authenticatedCustomer),
+                ];
+            }
+        } else {
+            $authenticatedCustomer = $this->customerAccessService->syncCustomerProfile($authenticatedCustomer, [
+                'name' => $data['name'] ?? null,
+                'surname' => $data['surname'] ?? null,
+                'phone' => $data['phone'] ?? null,
+            ]);
+        }
+
         try {       
             // return response()->json($cart);
             $adv_s = Setting::where('name', 'advanced')->first();
@@ -200,6 +244,8 @@ class OrderController extends Controller
                     'payment'   => true,
                     'url'       => $payment_url,
                     'orderId'   => $newOrder->id,
+                    'customer' => $authenticatedCustomer ? $this->customerPayload($authenticatedCustomer) : null,
+                    'customer_auth' => $customerAuthPayload,
                 ]);
                 
             }else{
@@ -546,6 +592,8 @@ class OrderController extends Controller
                     'message' => 'Successo',
                     //'source' => config('configurazione.db'),
                     'data' => $mx,
+                    'customer' => $authenticatedCustomer ? $this->customerPayload($authenticatedCustomer) : null,
+                    'customer_auth' => $customerAuthPayload,
                 ]); 
             }
 
@@ -566,6 +614,33 @@ class OrderController extends Controller
             return response()->json($errorInfo, 500);
         }
     }
+
+    private function preferredCheckoutValue($incoming, $fallback)
+    {
+        if (is_string($incoming) && trim($incoming) !== '') {
+            return trim($incoming);
+        }
+
+        if (is_string($fallback) && trim($fallback) !== '') {
+            return trim($fallback);
+        }
+
+        return $fallback;
+    }
+
+    private function customerPayload(Customer $customer): array
+    {
+        return [
+            'id' => $customer->id,
+            'name' => $customer->name,
+            'surname' => $customer->surname,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+            'email_verified_at' => $customer->email_verified_at?->toISOString(),
+            'created_at' => $customer->created_at?->toISOString(),
+        ];
+    }
+
     protected function save_message($data_am1){
         $config = [
             'driver'    => 'mysql',

@@ -13,18 +13,16 @@ class CustomerOtpMail extends Mailable
 
     public string $code;
     public int $expiresInMinutes;
-    public string $purpose;
 
-    public function __construct(string $code, int $expiresInMinutes, string $purpose)
+    public function __construct(string $code, int $expiresInMinutes)
     {
         $this->code = $code;
         $this->expiresInMinutes = $expiresInMinutes;
-        $this->purpose = $purpose;
     }
 
     public function build()
     {
-        return $this->subject(Lang::get('customer.mail.' . $this->purpose . '.subject'))
+        return $this->subject(Lang::get('customer.mail.subject'))
             ->view('emails.customer-otp');
     }
 }

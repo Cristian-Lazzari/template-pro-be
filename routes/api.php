@@ -35,21 +35,16 @@ Route::get('client_default',    [SettingController::class, 'client_default'])->n
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');
 Route::post('orders',           [OrderController::class, 'store'])->name('api.orders.store');
 
-Route::prefix('customer/auth')->name('api.customer.auth.')->group(function () {
-    Route::post('request-otp', [CustomerAuthController::class, 'requestRegisterOtp'])->name('request_otp');
-    Route::post('request-login-otp', [CustomerAuthController::class, 'requestLoginOtp'])->name('request_login_otp');
-    Route::post('request-password-reset-otp', [CustomerAuthController::class, 'requestPasswordResetOtp'])->name('request_password_reset_otp');
-    Route::post('register', [CustomerAuthController::class, 'register'])->name('register');
-    Route::post('login', [CustomerAuthController::class, 'login'])->name('login');
-    Route::post('reset-password', [CustomerAuthController::class, 'resetPassword'])->name('reset_password');
+Route::prefix('auth')->name('api.auth.')->group(function () {
+    Route::post('send-otp', [CustomerAuthController::class, 'sendOtp'])->name('send_otp');
+    Route::post('verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('verify_otp');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', [CustomerAuthController::class, 'me'])->name('me');
+        Route::get('history', [CustomerAuthController::class, 'history'])->name('history');
         Route::post('logout', [CustomerAuthController::class, 'logout'])->name('logout');
     });
 });
 
 
 Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');
-
-
