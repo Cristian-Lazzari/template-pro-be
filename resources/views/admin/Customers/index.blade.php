@@ -10,7 +10,6 @@
     }
 
     .customer-page .summary-card,
-    .customer-page .customer-toolbar,
     .customer-page .customer-card,
     .customer-page .customer-empty {
         background: var(--c3);
@@ -36,7 +35,7 @@
     }
 
     .customer-page .customer-toolbar {
-        padding: .8rem;
+        flex-direction: row;
         display: flex;
         gap: .7rem;
         flex-wrap: wrap;
@@ -58,11 +57,15 @@
     }
 
     .customer-page .customer-toolbar input {
-        flex: 1 1 280px;
+        flex: 1 1 280px !important;
+    }
+    .customer-page .customer-toolbar input::placeholder{
+        color: var(--c3_op_5);
     }
 
+
     .customer-page .customer-toolbar select {
-        flex: 0 0 220px;
+        flex: 0 0 220px !important;
         max-width: 100%;
     }
 
@@ -206,7 +209,7 @@
         </div>
     </div>
 
-    <div class="customer-toolbar">
+    <section class="customer-toolbar">
         <input id="customerSearch" type="text" placeholder="{{ __('admin.Cerca_cliente') }}">
         <select id="customerType">
             <option value="all">{{ __('admin.Tutti') }}</option>
@@ -214,7 +217,7 @@
             <option value="reservations">{{ __('admin.Con_prenotazioni') }}</option>
             <option value="both">{{ __('admin.Ordini_e_prenotazioni') }}</option>
         </select>
-    </div>
+    </section>
 
     <div id="customerList" class="customer-list">
         @foreach ($customers as $customer)
