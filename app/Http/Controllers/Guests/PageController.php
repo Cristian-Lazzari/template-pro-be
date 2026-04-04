@@ -8,13 +8,32 @@ class PageController extends Controller
 {
     public function home()
     {
-        return view('guests.home');
+        return view('guests.home', [
+            'docPages' => $this->documentationList(),
+        ]);
     }
 
     public function documentation()
     {
         return view('guests.documentation', [
-            'sections' => $this->documentationSections(),
+            'onboarding' => $this->onboardingGuide(),
+            'docPages' => $this->documentationList(),
+            'quickActions' => $this->quickActions(),
+        ]);
+    }
+
+    public function documentationTopic(string $page)
+    {
+        $pages = $this->documentationPages();
+
+        abort_unless(isset($pages[$page]), 404);
+
+        $topic = $pages[$page];
+        $topic['related_pages'] = $this->relatedPages($topic['related'] ?? []);
+
+        return view('guests.docs.show', [
+            'page' => $topic,
+            'docPages' => $this->documentationList(),
         ]);
     }
 
@@ -25,193 +44,698 @@ class PageController extends Controller
         ]);
     }
 
-    private function documentationSections(): array
+    private function documentationList(): array
+    {
+        return array_values($this->documentationPages());
+    }
+
+    private function relatedPages(array $slugs): array
+    {
+        $pages = $this->documentationPages();
+
+        return array_values(array_filter(array_map(
+            static fn (string $slug) => $pages[$slug] ?? null,
+            $slugs
+        )));
+    }
+
+    private function quickActions(): array
     {
         return [
             [
-                'id' => 'workflow',
-                'eyebrow' => 'Metodo consigliato',
-                'title' => 'Ordine di lavoro nel Backoffice',
-                'intro' => 'Per usare bene il gestionale conviene seguire sempre la stessa sequenza: configurazione iniziale, struttura del menu, pubblicazione contenuti e poi gestione quotidiana di ordini e prenotazioni.',
-                'points' => [
-                    'Apri Impostazioni per inserire i dati del locale, i contatti e i parametri base del servizio.',
-                    'Crea prima Categorie, Ingredienti e Allergeni: sono la base per compilare schede prodotto chiare e complete.',
-                    'Inserisci Prodotti, Menu fissi e Post promozionali solo dopo avere definito bene disponibilita, sale e fasce orarie.',
-                    'Controlla ogni giorno Dashboard, Date, Ordini e Prenotazioni per mantenere il flusso operativo sempre aggiornato.',
-                ],
+                'icon' => 'calendar-check',
+                'title' => 'E arrivata una nuova prenotazione',
+                'description' => 'Vai subito alla pagina Prenotazioni per vedere filtri, stati e conferme da inviare al cliente.',
+                'page' => 'prenotazioni',
+                'cta' => 'Apri prenotazioni',
             ],
             [
-                'id' => 'dashboard',
-                'eyebrow' => 'Controllo rapido',
-                'title' => 'Dashboard',
-                'intro' => 'La Dashboard e il centro operativo del gestionale. Da qui controlli il calendario, le disponibilita giornaliere e accedi velocemente ai dettagli di prenotazioni e ordini.',
-                'points' => [
-                    'Usa il calendario per visualizzare i giorni con prenotazioni, ordini e capienza occupata.',
-                    'Apri la modal di modifica disponibilita per cambiare latenze, fasce orarie, coperti e parametri di accettazione.',
-                    'Blocca giorni o orari quando il locale e chiuso, al completo oppure deve sospendere un servizio specifico.',
-                    'Controlla le notifiche operative e apri subito il dettaglio della richiesta da gestire.',
-                ],
+                'icon' => 'bag-check',
+                'title' => 'Devi seguire un ordine in corso',
+                'description' => 'Apri Ordini per controllare coda, pagamento, tempi di consegna e cambi di stato.',
+                'page' => 'ordini',
+                'cta' => 'Apri ordini',
             ],
             [
-                'id' => 'menu',
-                'eyebrow' => 'Catalogo',
-                'title' => 'Menu e navigazione commerciale',
-                'intro' => 'La sezione Menu raccoglie la struttura generale dell\'offerta e ti aiuta a mostrare al cliente i prodotti nel modo piu ordinato possibile.',
-                'points' => [
-                    'Organizza il catalogo in gruppi chiari, separando per esempio cucina, beverage, dessert o offerte speciali.',
-                    'Verifica l\'ordine con cui i contenuti vengono presentati per rendere piu veloce la consultazione lato cliente.',
-                    'Usa la struttura menu insieme alle categorie per evitare duplicazioni e mantenere una logica coerente.',
-                ],
+                'icon' => 'journal-richtext',
+                'title' => 'Devi aggiornare menu e prodotti',
+                'description' => 'Entra nella guida Menu e prodotti per inserire nuove schede, allergeni e formule.',
+                'page' => 'menu-prodotti',
+                'cta' => 'Apri menu e prodotti',
             ],
             [
-                'id' => 'categories',
-                'eyebrow' => 'Struttura prodotti',
-                'title' => 'Categorie',
-                'intro' => 'Le categorie servono a classificare piatti, bevande e contenuti commerciali. Una buona organizzazione migliora sia il lavoro interno sia la lettura del menu pubblico.',
-                'points' => [
-                    'Crea categorie semplici e riconoscibili, con nomi brevi e facili da distinguere.',
-                    'Riordina categorie e prodotti tramite le funzioni di ordinamento per decidere la priorita di visualizzazione.',
-                    'Usa categorie separate per piatti del giorno, fuori menu o sezioni stagionali se vuoi aggiornarle rapidamente.',
-                ],
+                'icon' => 'envelope-paper',
+                'title' => 'Vuoi inviare una comunicazione ai clienti',
+                'description' => 'Apri Comunicazioni per usare modelli email, liste e notifiche con un flusso semplice.',
+                'page' => 'comunicazioni',
+                'cta' => 'Apri comunicazioni',
             ],
-            [
-                'id' => 'ingredients-allergens',
-                'eyebrow' => 'Trasparenza',
-                'title' => 'Ingredienti e allergeni',
-                'intro' => 'Queste sezioni servono a compilare prodotti accurati e piu sicuri da consultare per il cliente finale.',
-                'points' => [
-                    'Inserisci gli ingredienti ricorrenti una sola volta e poi richiamali nei prodotti per velocizzare il lavoro.',
-                    'Associa gli allergeni corretti a ogni prodotto per offrire informazioni chiare e ridurre errori operativi.',
-                    'Aggiorna subito ingredienti e allergeni quando cambia una ricetta o un fornitore.',
+        ];
+    }
+
+    private function documentationPages(): array
+    {
+        return [
+            'onboarding' => [
+                'slug' => 'onboarding',
+                'icon' => 'rocket-takeoff',
+                'eyebrow' => 'Primi passi',
+                'title' => 'Onboarding e prima configurazione',
+                'headline' => 'Imposta il gestionale senza saltare i passaggi importanti',
+                'lead' => 'Questa pagina accompagna il titolare o il collaboratore che entra per la prima volta nel Backoffice. Ti mostra cosa controllare prima del primo servizio e in quale ordine farlo.',
+                'summary' => 'Segui questa sequenza quando devi avviare il progetto, fare affiancamento o controllare che il locale sia pronto a ricevere richieste reali.',
+                'badges' => [
+                    'Ideale per nuovi collaboratori',
+                    'Da completare prima del primo servizio',
+                    'Riduce errori su orari, menu e accessi',
                 ],
-            ],
-            [
-                'id' => 'products',
-                'eyebrow' => 'Vendita',
-                'title' => 'Prodotti',
-                'intro' => 'La sezione Prodotti e il cuore del menu digitale. Qui puoi creare schede complete con nome, descrizione, prezzo, immagini, disponibilita e stato di pubblicazione.',
-                'points' => [
-                    'Compila nome, descrizione e prezzo in modo coerente: sono i dati che il cliente usa per decidere l\'acquisto.',
-                    'Associa categoria, ingredienti e allergeni per ottenere schede prodotto complete e professionali.',
-                    'Usa filtri, ricerca, quick view e archivio per gestire rapidamente cataloghi ampi o prodotti stagionali.',
-                    'Disattiva temporaneamente un prodotto quando non e disponibile, senza cancellarne lo storico.',
+                'focus_cards' => [
+                    [
+                        'icon' => 'shop',
+                        'title' => 'Dati del locale',
+                        'description' => 'Controlla nome del locale, contatti, lingua e servizi attivi prima di toccare il resto.',
+                        'items' => [
+                            'Verifica nome visibile ai clienti',
+                            'Conferma telefono e email di contatto',
+                            'Controlla lingua e impostazioni generali',
+                        ],
+                    ],
+                    [
+                        'icon' => 'calendar3',
+                        'title' => 'Disponibilita del servizio',
+                        'description' => 'Assicurati che giorni, orari e blocchi corrispondano davvero al lavoro in sala e in cucina.',
+                        'items' => [
+                            'Orari reali di apertura',
+                            'Giorni chiusi e festivita',
+                            'Servizi attivi: sala, asporto, delivery',
+                        ],
+                    ],
+                    [
+                        'icon' => 'shield-check',
+                        'title' => 'Accessi e verifica finale',
+                        'description' => 'Chiude il giro con un controllo rapido su utenti, password e prova delle pagine principali.',
+                        'items' => [
+                            'Utenti autorizzati',
+                            'Password aggiornate',
+                            'Controllo rapido su prenotazioni e ordini',
+                        ],
+                    ],
                 ],
-            ],
-            [
-                'id' => 'fixed-menus',
-                'eyebrow' => 'Offerte composte',
-                'title' => 'Menu fissi',
-                'intro' => 'I menu fissi permettono di vendere combinazioni gia pronte di prodotti o esperienze. Sono utili per menu pranzo, degustazioni, eventi o promozioni ricorrenti.',
-                'points' => [
-                    'Crea un menu fisso quando vuoi proporre un pacchetto con prezzo unico e struttura predefinita.',
-                    'Mantieni una descrizione molto chiara di cosa e incluso per ridurre richieste di chiarimento.',
-                    'Aggiorna o archivia i menu fissi quando finiscono campagne stagionali o promozioni temporanee.',
+                'flow_title' => 'Sequenza consigliata',
+                'flow_intro' => 'Questo e il flusso piu sicuro per partire senza creare incongruenze tra impostazioni, menu e operativita quotidiana.',
+                'flow_steps' => [
+                    [
+                        'icon' => '1-circle',
+                        'title' => 'Imposta i dati base',
+                        'description' => 'Apri Configurazione e verifica subito nome del locale, contatti, metodi di pagamento e servizi attivi.',
+                    ],
+                    [
+                        'icon' => '2-circle',
+                        'title' => 'Controlla calendario e disponibilita',
+                        'description' => 'Sistema orari, giorni chiusi e limiti del servizio prima di pubblicare il menu.',
+                    ],
+                    [
+                        'icon' => '3-circle',
+                        'title' => 'Prepara menu e prodotti',
+                        'description' => 'Crea categorie, compila i prodotti e aggiungi ingredienti o allergeni dove servono.',
+                    ],
+                    [
+                        'icon' => '4-circle',
+                        'title' => 'Fai il controllo operativo',
+                        'description' => 'Apri Prenotazioni e Ordini per verificare che il team sappia dove intervenire durante il servizio.',
+                    ],
                 ],
-            ],
-            [
-                'id' => 'posts',
-                'eyebrow' => 'Comunicazione',
-                'title' => 'Post e contenuti promozionali',
-                'intro' => 'La sezione Post ti aiuta a pubblicare novita, promozioni, avvisi o contenuti visuali da mettere in evidenza sul front-end.',
-                'points' => [
-                    'Usa i post per comunicare eventi, serate speciali, menu tematici o promozioni a tempo.',
-                    'Mantieni attivi solo i contenuti attuali e archivia quelli scaduti per evitare confusione.',
-                    'Sfrutta ricerca, filtri e ordinamento per gestire facilmente campagne diverse durante l\'anno.',
+                'notification' => [
+                    'tone' => 'info',
+                    'icon' => 'person-workspace',
+                    'badge' => 'Nuovo accesso',
+                    'title' => 'Collaboratore pronto per il primo accesso',
+                    'message' => 'Mario Bianchi e stato aggiunto come collaboratore. Prima di consegnare la password controlla ruolo, email e pagina da cui deve partire.',
+                    'items' => [
+                        'Ruolo: collaboratore operativo',
+                        'Email: sala@trattoriacentro.it',
+                        'Pagina consigliata: Prenotazioni',
+                    ],
                 ],
-            ],
-            [
-                'id' => 'orders',
-                'eyebrow' => 'Operativita quotidiana',
-                'title' => 'Ordini',
-                'intro' => 'Da questa sezione controlli gli ordini ricevuti, ne cambi lo stato e monitori tempi e valore economico delle vendite.',
-                'points' => [
-                    'Filtra gli ordini per stato o periodo per concentrarti prima sulle richieste da evadere.',
-                    'Aggiorna lo stato man mano che l\'ordine viene confermato, preparato, completato o annullato.',
-                    'Usa il cambio orario quando devi concordare una fascia diversa con il cliente.',
-                    'Apri il dettaglio ordine per vedere prodotti, totale, dati cliente e note operative.',
+                'checklist_title' => 'Controlli finali prima di iniziare',
+                'checklist' => [
+                    'Il locale mostra nome, contatti e lingua corretti.',
+                    'Giorni e orari attivi coincidono con il servizio reale.',
+                    'Almeno le categorie principali del menu sono gia pronte.',
+                    'Prenotazioni e ordini si aprono senza dubbi operativi.',
                 ],
+                'faqs' => [
+                    [
+                        'question' => 'Chi deve leggere questa pagina?',
+                        'answer' => 'Il titolare, il responsabile di sala o chiunque debba impostare il gestionale per la prima volta.',
+                    ],
+                    [
+                        'question' => 'Quanto tempo serve per completare il giro iniziale?',
+                        'answer' => 'Di solito bastano 20-30 minuti se hai gia a portata di mano orari, contatti e menu base.',
+                    ],
+                ],
+                'related' => ['configurazione', 'prenotazioni'],
             ],
-            [
-                'id' => 'reservations',
-                'eyebrow' => 'Sala',
+            'configurazione' => [
+                'slug' => 'configurazione',
+                'icon' => 'sliders',
+                'eyebrow' => 'Impostazioni base',
+                'title' => 'Configurazione del locale',
+                'headline' => 'Configura servizi, pagamenti e regole del locale con un ordine chiaro',
+                'lead' => 'Questa guida serve quando devi controllare i dati del locale o cambiare il modo in cui il gestionale accetta richieste e pagamenti.',
+                'summary' => 'Prima di modificare menu, ordini o promozioni conviene passare da qui. Una configurazione corretta evita richieste fuori orario, pagamenti incoerenti e informazioni sbagliate per il cliente.',
+                'badges' => [
+                    'Da rivedere quando cambiano orari o servizi',
+                    'Include pagamenti e canali di vendita',
+                    'Adatta per titolare e responsabili',
+                ],
+                'focus_cards' => [
+                    [
+                        'icon' => 'shop-window',
+                        'title' => 'Anagrafica locale',
+                        'description' => 'Qui aggiorni nome, riferimenti pubblici e informazioni che il cliente puo leggere.',
+                        'items' => [
+                            'Nome locale',
+                            'Telefono ed email',
+                            'Lingua principale',
+                        ],
+                    ],
+                    [
+                        'icon' => 'credit-card-2-back',
+                        'title' => 'Servizi e pagamenti',
+                        'description' => 'Attiva solo i canali che il locale gestisce davvero e verifica i pagamenti disponibili.',
+                        'items' => [
+                            'Sala, asporto e delivery',
+                            'Pagamento online o in loco',
+                            'Regole minime per l ordine',
+                        ],
+                    ],
+                    [
+                        'icon' => 'calendar-range',
+                        'title' => 'Regole del servizio',
+                        'description' => 'Usa questa parte per ritardi minimi, blocchi, slot e capienza.',
+                        'items' => [
+                            'Tempo minimo di preavviso',
+                            'Limiti per tavoli e coperti',
+                            'Blocchi straordinari',
+                        ],
+                    ],
+                ],
+                'flow_title' => 'Come applicare una modifica senza creare problemi',
+                'flow_intro' => 'Quando cambi una regola importante del locale, questo e il flusso piu semplice da seguire.',
+                'flow_steps' => [
+                    [
+                        'icon' => '1-circle',
+                        'title' => 'Apri la sezione giusta',
+                        'description' => 'Entra nella parte dedicata a dati, servizio o pagamenti a seconda della modifica da fare.',
+                    ],
+                    [
+                        'icon' => '2-circle',
+                        'title' => 'Aggiorna solo cio che serve',
+                        'description' => 'Evita cambi doppi in piu pagine: modifica un blocco alla volta e salva.',
+                    ],
+                    [
+                        'icon' => '3-circle',
+                        'title' => 'Controlla l impatto',
+                        'description' => 'Verifica subito se la modifica tocca prenotazioni, ordini o comunicazioni automatiche.',
+                    ],
+                    [
+                        'icon' => '4-circle',
+                        'title' => 'Avvisa il team',
+                        'description' => 'Se cambia una regola di servizio condividila con sala, cucina o amministrazione.',
+                    ],
+                ],
+                'notification' => [
+                    'tone' => 'warning',
+                    'icon' => 'exclamation-triangle',
+                    'badge' => 'Controllo richiesto',
+                    'title' => 'Pagamento online disattivato',
+                    'message' => 'Il locale ha lasciato attivo solo il pagamento in cassa. Controlla che questa scelta sia coerente con asporto e delivery prima di salvare.',
+                    'items' => [
+                        'Servizi attivi: sala e asporto',
+                        'Pagamento online: disattivo',
+                        'Ultimo aggiornamento: oggi ore 09:15',
+                    ],
+                ],
+                'checklist_title' => 'Prima di chiudere la pagina',
+                'checklist' => [
+                    'Hai controllato il canale di vendita corretto.',
+                    'I metodi di pagamento attivi sono davvero disponibili.',
+                    'Gli orari salvati coincidono con il servizio reale.',
+                    'Il team sa che e stata fatta una modifica operativa.',
+                ],
+                'faqs' => [
+                    [
+                        'question' => 'Quando devo tornare in questa pagina?',
+                        'answer' => 'Ogni volta che cambiano orari, chiusure, regole di servizio, pagamenti o dati del locale.',
+                    ],
+                    [
+                        'question' => 'Serve passare da qui anche per una sola giornata speciale?',
+                        'answer' => 'Si, soprattutto se la giornata richiede blocchi o regole diverse dal calendario standard.',
+                    ],
+                ],
+                'related' => ['onboarding', 'comunicazioni'],
+            ],
+            'menu-prodotti' => [
+                'slug' => 'menu-prodotti',
+                'icon' => 'journal-richtext',
+                'eyebrow' => 'Catalogo operativo',
+                'title' => 'Menu, prodotti e formule',
+                'headline' => 'Aggiorna il menu in modo ordinato e leggibile anche per chi non e tecnico',
+                'lead' => 'Questa guida ti aiuta a costruire o correggere il catalogo del locale: categorie, prodotti, ingredienti, allergeni e menu fissi.',
+                'summary' => 'Usa questa pagina quando devi pubblicare un nuovo piatto, cambiare un prezzo o sistemare un prodotto stagionale. La struttura giusta rende tutto piu veloce anche nei giorni di punta.',
+                'badges' => [
+                    'Include prodotti, categorie e allergeni',
+                    'Utile per cambi stagionali',
+                    'Pensata per evitare errori di compilazione',
+                ],
+                'focus_cards' => [
+                    [
+                        'icon' => 'grid-1x2',
+                        'title' => 'Categorie ben ordinate',
+                        'description' => 'Prima di creare i prodotti conviene controllare in che sezione del menu devono comparire.',
+                        'items' => [
+                            'Antipasti, primi, dessert',
+                            'Ordine di lettura del menu',
+                            'Sezioni visibili o nascoste',
+                        ],
+                    ],
+                    [
+                        'icon' => 'fork-knife',
+                        'title' => 'Scheda prodotto completa',
+                        'description' => 'Ogni prodotto deve avere i dati essenziali per chi ordina e per chi gestisce il servizio.',
+                        'items' => [
+                            'Nome e prezzo',
+                            'Descrizione breve',
+                            'Ingredienti e allergeni',
+                        ],
+                    ],
+                    [
+                        'icon' => 'card-checklist',
+                        'title' => 'Formule e menu fissi',
+                        'description' => 'Usa questa parte per degustazioni, menu pranzo o offerte che hanno un prezzo unico.',
+                        'items' => [
+                            'Contenuto della formula',
+                            'Prezzo finale',
+                            'Periodo di validita',
+                        ],
+                    ],
+                ],
+                'flow_title' => 'Flusso veloce per pubblicare un nuovo piatto',
+                'flow_intro' => 'Quando arriva una novita in menu ti conviene seguire questi passaggi, cosi il prodotto esce gia completo e coerente.',
+                'flow_steps' => [
+                    [
+                        'icon' => '1-circle',
+                        'title' => 'Scegli categoria e visibilita',
+                        'description' => 'Definisci in quale parte del menu andra il prodotto e se deve essere subito visibile.',
+                    ],
+                    [
+                        'icon' => '2-circle',
+                        'title' => 'Compila la scheda',
+                        'description' => 'Inserisci nome, prezzo, descrizione, immagine e note utili per il cliente.',
+                    ],
+                    [
+                        'icon' => '3-circle',
+                        'title' => 'Aggiungi ingredienti e allergeni',
+                        'description' => 'Completa sempre la parte informativa per evitare errori in sala e in cucina.',
+                    ],
+                    [
+                        'icon' => '4-circle',
+                        'title' => 'Controlla il risultato finale',
+                        'description' => 'Rileggi la scheda e verifica che il prodotto compaia nel punto giusto del catalogo.',
+                    ],
+                ],
+                'notification' => [
+                    'tone' => 'danger',
+                    'icon' => 'slash-circle',
+                    'badge' => 'Prodotto nascosto',
+                    'title' => 'Ravioli al brasato non disponibili per oggi',
+                    'message' => 'Il prodotto e stato nascosto dalla vendita online ma resta nel catalogo per mantenere storico e dati completi.',
+                    'items' => [
+                        'Categoria: Primi piatti',
+                        'Stato: nascosto',
+                        'Azione consigliata: riattiva quando torna disponibile',
+                    ],
+                ],
+                'checklist_title' => 'Controlli utili prima di pubblicare',
+                'checklist' => [
+                    'Il prodotto e nella categoria giusta.',
+                    'Prezzo e descrizione sono aggiornati.',
+                    'Allergeni e ingredienti sono presenti se necessari.',
+                    'Le formule scadute sono state archiviate o nascoste.',
+                ],
+                'faqs' => [
+                    [
+                        'question' => 'Meglio cancellare un prodotto o archiviarlo?',
+                        'answer' => 'Se vuoi conservare lo storico conviene nasconderlo o archiviarlo, non cancellarlo subito.',
+                    ],
+                    [
+                        'question' => 'Posso pubblicare un prodotto senza immagine?',
+                        'answer' => 'Si, ma nome, prezzo e descrizione devono comunque essere chiari e completi.',
+                    ],
+                ],
+                'related' => ['ordini', 'comunicazioni'],
+            ],
+            'prenotazioni' => [
+                'slug' => 'prenotazioni',
+                'icon' => 'calendar-check',
+                'eyebrow' => 'Gestione tavoli',
                 'title' => 'Prenotazioni',
-                'intro' => 'Le prenotazioni gestiscono coperti, turni e presenza dei clienti in sala. E la sezione da consultare ogni giorno insieme al calendario disponibilita.',
-                'points' => [
-                    'Controlla numero persone, data, orario e note prima di confermare una prenotazione.',
-                    'Aggiorna gli stati per distinguere richieste confermate, da ricontattare, completate o annullate.',
-                    'Usa i filtri per visualizzare velocemente le richieste del giorno o di un periodo specifico.',
-                    'Apri il dettaglio prenotazione per avere subito sotto mano tutti i dati utili al servizio.',
+                'headline' => 'Conferma, aggiorna e controlla le prenotazioni senza perdere il filo',
+                'lead' => 'Questa pagina e pensata per chi lavora in sala o al telefono. Ti mostra come gestire le richieste tavolo con filtri chiari, stati leggibili e messaggi pronti.',
+                'summary' => 'Usa questa guida quando arrivano richieste nuove, quando devi spostare un tavolo o quando vuoi avere sotto controllo il servizio della giornata.',
+                'badges' => [
+                    'Perfetta per sala e reception',
+                    'Include flusso di conferma al cliente',
+                    'Utile nei momenti di punta',
+                ],
+                'focus_cards' => [
+                    [
+                        'icon' => 'funnel',
+                        'title' => 'Filtri rapidi',
+                        'description' => 'Riduci subito l elenco alle richieste davvero utili per il turno che stai gestendo.',
+                        'items' => [
+                            'Oggi',
+                            'In attesa',
+                            'Numero persone',
+                        ],
+                    ],
+                    [
+                        'icon' => 'clipboard-check',
+                        'title' => 'Stato sempre chiaro',
+                        'description' => 'Ogni prenotazione deve mostrare se e da confermare, confermata, arrivata o annullata.',
+                        'items' => [
+                            'In attesa',
+                            'Confermata',
+                            'Arrivato',
+                        ],
+                    ],
+                    [
+                        'icon' => 'chat-left-text',
+                        'title' => 'Dettaglio utile al servizio',
+                        'description' => 'Apri il dettaglio quando ti servono note, contatto cliente, allergie o richieste sul tavolo.',
+                        'items' => [
+                            'Telefono cliente',
+                            'Note di sala',
+                            'Preferenze tavolo',
+                        ],
+                    ],
+                ],
+                'flow_title' => 'Flusso completo di una prenotazione',
+                'flow_intro' => 'Dal primo arrivo della richiesta fino all ingresso del cliente, questo e il percorso operativo piu semplice da seguire.',
+                'flow_steps' => [
+                    [
+                        'icon' => '1-circle',
+                        'title' => 'Arriva la richiesta',
+                        'description' => 'Controlla subito data, orario, numero persone e note prima di confermare.',
+                    ],
+                    [
+                        'icon' => '2-circle',
+                        'title' => 'Verifica disponibilita',
+                        'description' => 'Confronta la richiesta con i tavoli e con il carico del servizio.',
+                    ],
+                    [
+                        'icon' => '3-circle',
+                        'title' => 'Aggiorna lo stato',
+                        'description' => 'Passa la richiesta a confermata o contatta il cliente se serve una modifica.',
+                    ],
+                    [
+                        'icon' => '4-circle',
+                        'title' => 'Accoglienza in sala',
+                        'description' => 'Quando il cliente arriva, registra l ingresso e usa le note per gestire al meglio il tavolo.',
+                    ],
+                ],
+                'notification' => [
+                    'tone' => 'warning',
+                    'icon' => 'bell',
+                    'badge' => 'Nuova prenotazione',
+                    'title' => 'Tavolo da confermare entro 15 minuti',
+                    'message' => 'Giulia Rossi ha richiesto un tavolo da 4 persone per sabato alle 20:30. Controlla disponibilita e invia conferma o proposta alternativa.',
+                    'items' => [
+                        'Data: sabato 12 aprile',
+                        'Orario: 20:30',
+                        'Numero persone: 4',
+                    ],
+                ],
+                'checklist_title' => 'Controllo rapido per ogni richiesta',
+                'checklist' => [
+                    'Numero persone corretto e coerente con la disponibilita.',
+                    'Stato aggiornato subito dopo il controllo.',
+                    'Note importanti visibili per sala e cucina.',
+                    'Cliente avvisato in caso di modifica o ritardo.',
+                ],
+                'faqs' => [
+                    [
+                        'question' => 'Cosa faccio se il tavolo richiesto non e disponibile?',
+                        'answer' => 'Aggiorna lo stato, contatta il cliente e proponi subito un orario o una soluzione alternativa.',
+                    ],
+                    [
+                        'question' => 'Quando segno una prenotazione come arrivata?',
+                        'answer' => 'Nel momento in cui il tavolo viene effettivamente accolto in sala, cosi lo stato resta affidabile.',
+                    ],
+                ],
+                'related' => ['ordini', 'configurazione'],
+            ],
+            'ordini' => [
+                'slug' => 'ordini',
+                'icon' => 'bag-check',
+                'eyebrow' => 'Coda operativa',
+                'title' => 'Ordini',
+                'headline' => 'Segui gli ordini passo dopo passo con una coda semplice da leggere',
+                'lead' => 'Questa pagina serve a chi gestisce cucina, cassa o consegne. Mostra cosa controllare per ogni ordine e come evitare confusione nei momenti di punta.',
+                'summary' => 'Aprila per controllare nuovi ordini, cambi di stato, pagamenti e tempi. Una coda ordinata aiuta tutto il team a lavorare con piu calma e precisione.',
+                'badges' => [
+                    'Valida per asporto e delivery',
+                    'Include pagamenti e tempi',
+                    'Utile per cucina, cassa e consegne',
+                ],
+                'focus_cards' => [
+                    [
+                        'icon' => 'list-task',
+                        'title' => 'Coda del momento',
+                        'description' => 'Ordina gli ordini per stato e fascia oraria per capire subito cosa preparare prima.',
+                        'items' => [
+                            'Nuovi ordini',
+                            'In preparazione',
+                            'Pronti per ritiro o consegna',
+                        ],
+                    ],
+                    [
+                        'icon' => 'cash-coin',
+                        'title' => 'Importo e pagamento',
+                        'description' => 'Controlla se l ordine e pagato, da incassare o da verificare prima di chiuderlo.',
+                        'items' => [
+                            'Totale ordine',
+                            'Metodo di pagamento',
+                            'Stato pagamento',
+                        ],
+                    ],
+                    [
+                        'icon' => 'truck',
+                        'title' => 'Dettaglio consegna',
+                        'description' => 'Apri il dettaglio per indirizzo, telefono, orario richiesto e note del cliente.',
+                        'items' => [
+                            'Indirizzo o punto ritiro',
+                            'Telefono cliente',
+                            'Note sul servizio',
+                        ],
+                    ],
+                ],
+                'flow_title' => 'Flusso operativo dell ordine',
+                'flow_intro' => 'Questo e il percorso consigliato per tenere allineati cucina, cassa e consegna.',
+                'flow_steps' => [
+                    [
+                        'icon' => '1-circle',
+                        'title' => 'Nuovo ordine ricevuto',
+                        'description' => 'Controlla subito totale, canale di vendita e orario promesso al cliente.',
+                    ],
+                    [
+                        'icon' => '2-circle',
+                        'title' => 'Passa in preparazione',
+                        'description' => 'Aggiorna lo stato appena la cucina prende in carico la comanda.',
+                    ],
+                    [
+                        'icon' => '3-circle',
+                        'title' => 'Segna pronto',
+                        'description' => 'Quando il lavoro e concluso, segnalo in modo chiaro per cassa o consegna.',
+                    ],
+                    [
+                        'icon' => '4-circle',
+                        'title' => 'Chiudi l ordine',
+                        'description' => 'Registra consegna o ritiro e verifica che il pagamento sia coerente con lo stato finale.',
+                    ],
+                ],
+                'notification' => [
+                    'tone' => 'danger',
+                    'icon' => 'clock-history',
+                    'badge' => 'Ordine in ritardo',
+                    'title' => 'Asporto delle 21:00 non ancora pronto',
+                    'message' => 'L ordine #148 e in preparazione da 28 minuti. Controlla cucina e avvisa il cliente se serve un aggiornamento sui tempi.',
+                    'items' => [
+                        'Cliente: Luca Verdi',
+                        'Totale: 46,00 EUR',
+                        'Pagamento: online confermato',
+                    ],
+                ],
+                'checklist_title' => 'Ogni ordine dovrebbe chiudersi cosi',
+                'checklist' => [
+                    'Stato aggiornato a ogni passaggio chiave.',
+                    'Pagamento controllato prima della chiusura.',
+                    'Orario promesso coerente con il lavoro reale.',
+                    'Cliente avvisato se cambia il tempo di consegna o ritiro.',
+                ],
+                'faqs' => [
+                    [
+                        'question' => 'Quando aggiorno un ordine a pronto?',
+                        'answer' => 'Quando cucina ha davvero completato la preparazione e il ritiro o la consegna possono partire.',
+                    ],
+                    [
+                        'question' => 'Perche conviene aggiornare sempre lo stato?',
+                        'answer' => 'Perche aiuta tutto il team a capire cosa e fermo, cosa e in ritardo e cosa puo essere chiuso.',
+                    ],
+                ],
+                'related' => ['prenotazioni', 'menu-prodotti'],
+            ],
+            'comunicazioni' => [
+                'slug' => 'comunicazioni',
+                'icon' => 'envelope-paper',
+                'eyebrow' => 'Contatto clienti',
+                'title' => 'Comunicazioni, notifiche ed email',
+                'headline' => 'Invia comunicazioni chiare ai clienti senza riscrivere tutto ogni volta',
+                'lead' => 'Questa guida raccoglie i passaggi base per template, invii e notifiche, con esempi pronti da leggere anche da chi non ha esperienza tecnica.',
+                'summary' => 'Usala per campagne email, avvisi di servizio, messaggi su promozioni o conferme operative. Il flusso e semplice: scegli il messaggio, controlla i destinatari e invia solo dopo una verifica finale.',
+                'badges' => [
+                    'Include email HTML di esempio',
+                    'Valida per avvisi e promo',
+                    'Adatta a chi gestisce clienti e marketing',
+                ],
+                'focus_cards' => [
+                    [
+                        'icon' => 'file-earmark-text',
+                        'title' => 'Template riutilizzabili',
+                        'description' => 'Prepara modelli semplici per non ripartire ogni volta da una pagina vuota.',
+                        'items' => [
+                            'Conferme e promemoria',
+                            'Promo stagionali',
+                            'Avvisi di servizio',
+                        ],
+                    ],
+                    [
+                        'icon' => 'people',
+                        'title' => 'Liste clienti ordinate',
+                        'description' => 'Controlla sempre a chi andra il messaggio prima di premere invia.',
+                        'items' => [
+                            'Clienti abituali',
+                            'Chi ha prenotato recentemente',
+                            'Contatti inseriti manualmente',
+                        ],
+                    ],
+                    [
+                        'icon' => 'send-check',
+                        'title' => 'Invio con controllo finale',
+                        'description' => 'Un ultimo controllo evita errori su testo, destinatari e call to action.',
+                        'items' => [
+                            'Oggetto email',
+                            'Link e pulsanti',
+                            'Data e ora di invio',
+                        ],
+                    ],
+                ],
+                'flow_title' => 'Flusso semplice per una comunicazione ben fatta',
+                'flow_intro' => 'Segui questi passaggi quando devi inviare una promo, un avviso o una conferma ai clienti.',
+                'flow_steps' => [
+                    [
+                        'icon' => '1-circle',
+                        'title' => 'Scegli il modello',
+                        'description' => 'Parti da un template gia pronto per non dimenticare le parti importanti del messaggio.',
+                    ],
+                    [
+                        'icon' => '2-circle',
+                        'title' => 'Controlla i destinatari',
+                        'description' => 'Verifica lista, segmenti e contatti extra prima dell invio.',
+                    ],
+                    [
+                        'icon' => '3-circle',
+                        'title' => 'Rileggi titolo e contenuto',
+                        'description' => 'Assicurati che oggetto, testo e pulsante siano chiari e coerenti.',
+                    ],
+                    [
+                        'icon' => '4-circle',
+                        'title' => 'Invia o programma',
+                        'description' => 'Chiudi il lavoro con un invio immediato o pianificato e tieni traccia della comunicazione.',
+                    ],
+                ],
+                'notification' => [
+                    'tone' => 'success',
+                    'icon' => 'check2-circle',
+                    'badge' => 'Invio programmato',
+                    'title' => 'Campagna brunch di domenica pronta',
+                    'message' => 'Il messaggio verra inviato domani alle 11:30 ai clienti che hanno prenotato nelle ultime sei settimane.',
+                    'items' => [
+                        'Destinatari: 184',
+                        'Oggetto: Brunch speciale di domenica',
+                        'Stato: programmata',
+                    ],
+                ],
+                'checklist_title' => 'Prima di inviare una comunicazione',
+                'checklist' => [
+                    'Lista destinatari controllata.',
+                    'Oggetto e testo riletti una volta.',
+                    'Pulsante o link principale funzionante.',
+                    'Periodo dell offerta o dell avviso chiaramente scritto.',
+                ],
+                'faqs' => [
+                    [
+                        'question' => 'Quando conviene usare un template?',
+                        'answer' => 'Sempre, soprattutto per conferme, promemoria, promo ricorrenti o messaggi stagionali.',
+                    ],
+                    [
+                        'question' => 'Meglio inviare subito o programmare?',
+                        'answer' => 'Se il messaggio non e urgente conviene programmarlo in un orario leggibile per il cliente.',
+                    ],
+                ],
+                'related' => ['menu-prodotti', 'configurazione'],
+            ],
+        ];
+    }
+
+    private function onboardingGuide(): array
+    {
+        return [
+            'eyebrow' => 'Percorso consigliato',
+            'title' => 'Come leggere questa documentazione senza perderti',
+            'intro' => 'La guida guest adesso e organizzata come un piccolo centro assistenza: un indice iniziale e pagine operative separate. Parti dall onboarding se e la tua prima volta, poi apri solo la sezione che ti serve davvero.',
+            'steps' => [
+                [
+                    'icon' => '1-circle',
+                    'title' => 'Parti dall onboarding',
+                    'description' => 'Usa la pagina iniziale per controllare dati del locale, servizi e accessi.',
+                ],
+                [
+                    'icon' => '2-circle',
+                    'title' => 'Apri la pagina giusta',
+                    'description' => 'Scegli Prenotazioni, Ordini, Menu o Comunicazioni in base a quello che devi fare subito.',
+                ],
+                [
+                    'icon' => '3-circle',
+                    'title' => 'Segui il flusso visivo',
+                    'description' => 'Ogni pagina mostra box reali, badge, notifiche e passaggi da seguire senza interpretazioni tecniche.',
+                ],
+                [
+                    'icon' => '4-circle',
+                    'title' => 'Chiudi con la checklist',
+                    'description' => 'Prima di uscire controlla sempre la checklist finale per non dimenticare passaggi importanti.',
                 ],
             ],
-            [
-                'id' => 'dates',
-                'eyebrow' => 'Disponibilita',
-                'title' => 'Date, giorni e fasce orarie',
-                'intro' => 'La gestione Date definisce il comportamento reale del locale: orari disponibili, giorni aperti, blocchi, capienza e regole di prenotazione.',
-                'points' => [
-                    'Genera o aggiorna i giorni disponibili quando cambiano stagionalita, turni o orari di servizio.',
-                    'Blocca date e fasce orarie in anticipo per festivita, ferie, eventi privati o manutenzioni.',
-                    'Controlla la disponibilita per singolo giorno quando devi fare una modifica puntuale senza alterare tutto il calendario.',
-                    'Verifica sempre le latenze di ordini e prenotazioni dopo ogni cambiamento organizzativo.',
-                ],
+            'checklist' => [
+                'Hai aperto la pagina piu adatta al problema del momento.',
+                'Hai seguito i box con esempi reali e non solo il testo descrittivo.',
+                'Hai controllato la checklist finale della sezione.',
+                'Se la modifica tocca il servizio, hai avvisato il team.',
             ],
-            [
-                'id' => 'customers',
-                'eyebrow' => 'Relazione cliente',
-                'title' => 'Clienti',
-                'intro' => 'La sezione Clienti raccoglie i contatti che interagiscono con il gestionale. Serve per consultazione, storico e iniziative di fidelizzazione.',
-                'points' => [
-                    'Consulta i dati cliente per riconoscere utenti abituali e gestire richieste ricorrenti con piu velocita.',
-                    'Usa le informazioni raccolte per organizzare comunicazioni mirate o verifiche operative.',
-                    'Mantieni i dati puliti e coerenti per facilitare assistenza e marketing.',
-                ],
-            ],
-            [
-                'id' => 'statistics',
-                'eyebrow' => 'Analisi',
-                'title' => 'Statistiche',
-                'intro' => 'Le statistiche aiutano a leggere l\'andamento del locale nel tempo: prodotti piu venduti, ricavi, ordini, prenotazioni e distribuzione dei risultati.',
-                'points' => [
-                    'Usa i grafici per capire quali prodotti trainano le vendite e quali categorie rendono meno.',
-                    'Controlla l\'andamento dei ricavi per giorno o periodo per individuare trend e picchi.',
-                    'Confronta conferme e cancellazioni di ordini e prenotazioni per migliorare organizzazione e offerta.',
-                    'Questa sezione puo dipendere dal piano attivo, quindi potrebbe non essere presente in tutte le installazioni.',
-                ],
-            ],
-            [
-                'id' => 'mailer',
-                'eyebrow' => 'Comunicazione diretta',
-                'title' => 'Mailer',
-                'intro' => 'Il Mailer serve per inviare comunicazioni ai clienti e gestire modelli pronti all\'uso per campagne o messaggi ricorrenti.',
-                'points' => [
-                    'Crea modelli email riutilizzabili per promozioni, avvisi o comunicazioni stagionali.',
-                    'Prepara invii rapidi quando vuoi raggiungere una lista clienti senza riscrivere il contenuto ogni volta.',
-                    'Rivedi il testo del modello prima dell\'invio, soprattutto se contiene offerte a tempo o informazioni logistiche.',
-                    'Anche questa funzione puo dipendere dal piano attivo.',
-                ],
-            ],
-            [
-                'id' => 'settings',
-                'eyebrow' => 'Configurazione',
-                'title' => 'Impostazioni',
-                'intro' => 'In Impostazioni definisci i parametri generali del gestionale e i dati strutturali del locale. E la sezione piu importante nella fase iniziale e ogni volta che cambia il servizio.',
-                'points' => [
-                    'Aggiorna numeri, recapiti, configurazioni avanzate e aree di servizio quando cambiano le esigenze del locale.',
-                    'Usa le opzioni avanzate per affinare comportamento del sistema, limiti, tempi e disponibilita.',
-                    'Controlla con attenzione le modifiche prima di salvare se incidono su prenotazioni, ordini o calendario.',
-                    'Quando necessario usa le funzioni dedicate per annullare disponibilita o aggiornare impostazioni in blocco.',
-                ],
-            ],
-            [
-                'id' => 'profile',
-                'eyebrow' => 'Sicurezza',
-                'title' => 'Profilo e accesso',
-                'intro' => 'L\'area profilo permette di mantenere aggiornati i dati dell\'utente amministratore e le credenziali di accesso.',
-                'points' => [
-                    'Aggiorna email e password periodicamente per mantenere il Backoffice sicuro.',
-                    'Concedi l\'accesso solo a persone autorizzate e cambia subito le credenziali in caso di turnover.',
-                    'Verifica sempre che l\'indirizzo email principale sia corretto per ricevere eventuali comunicazioni di sistema.',
-                ],
+            'tips' => [
+                'Le pagine sono pensate per ristoratori e collaboratori: testi brevi, icone grandi e passaggi in ordine.',
+                'Se lavori durante il servizio, usa prima Prenotazioni e Ordini. Se stai preparando il locale, parti da Configurazione e Menu.',
             ],
         ];
     }
@@ -220,25 +744,25 @@ class PageController extends Controller
     {
         return [
             [
-                'version' => 'v1.0',
+                'version' => 'v1.1',
                 'date' => '04/04/2026',
-                'title' => 'Apertura area pubblica di supporto',
-                'summary' => 'Sono state introdotte due pagine pubbliche consultabili senza login: una documentazione completa del Backoffice e una pagina dedicata al registro aggiornamenti.',
+                'title' => 'Documentazione guest divisa in pagine operative',
+                'summary' => 'La guida pubblica non e piu una sola pagina lunga: ora include un indice centrale e pagine dedicate per onboarding, configurazione, prenotazioni, ordini, menu e comunicazioni.',
                 'items' => [
-                    'Creata una pagina Documentazione con panoramica operativa e spiegazione di tutte le principali sezioni del gestionale.',
-                    'Creata una pagina Aggiornamenti pronta ad accogliere le prossime release e modifiche evolutive del progetto.',
-                    'Aggiornata la home pubblica con accessi rapidi a login, documentazione e changelog.',
+                    'Creato un hub documentazione con accessi rapidi ai flussi piu usati.',
+                    'Aggiunte pagine Blade dedicate con esempi visivi reali per prenotazioni, ordini, email e notifiche.',
+                    'Allineate le icone alla libreria Bootstrap Icons con markup reale pronto all uso.',
                 ],
             ],
             [
-                'version' => 'Prossimi update',
+                'version' => 'Prossimo update',
                 'date' => 'Da compilare',
-                'title' => 'Spazio riservato alle prossime novita',
-                'summary' => 'Da questo punto in avanti conviene aggiungere qui ogni modifica rilevante, indicando data, obiettivo e impatto operativo.',
+                'title' => 'Spazio riservato ai prossimi rilasci',
+                'summary' => 'Usa questa sezione per tracciare i prossimi miglioramenti del Backoffice con impatto operativo chiaro.',
                 'items' => [
-                    'Aggiungi un nuovo blocco per ogni rilascio o intervento importante.',
-                    'Indica sempre cosa cambia per l\'utente Backoffice e se serve un nuovo flusso operativo.',
-                    'Se una modifica richiede attenzione, specifica anche eventuali passaggi manuali o controlli da fare dopo il deploy.',
+                    'Aggiungi una voce nuova per ogni rilascio importante.',
+                    'Scrivi sempre cosa cambia per il ristoratore o per il collaboratore.',
+                    'Segnala se il team deve fare un controllo manuale dopo il deploy.',
                 ],
             ],
         ];

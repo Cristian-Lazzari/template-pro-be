@@ -2,8 +2,8 @@
 
 @section('title', 'Area pubblica Backoffice')
 @section('kicker', 'Accesso e supporto')
-@section('headline', 'Benvenuto nell\'area pubblica del gestionale')
-@section('lead', 'Da qui puoi entrare nel Backoffice, leggere la documentazione operativa e consultare gli aggiornamenti del progetto senza autenticazione.')
+@section('headline', 'Area pubblica pronta per accesso, guida e aggiornamenti')
+@section('lead', 'Da qui puoi entrare nel Backoffice, aprire la nuova documentazione guest divisa per pagine operative e consultare gli aggiornamenti del progetto senza autenticazione.')
 
 @section('hero_actions')
     <a class="public-button public-button--solid" href="{{ route('login') }}">{{ __('admin.Accedi') }}</a>
@@ -13,10 +13,10 @@
 @section('contents')
     <section class="public-grid public-grid--home">
         <article class="public-card">
-            <p class="public-card__eyebrow">Operativita</p>
-            <h2>Documentazione Backoffice</h2>
-            <p>Una guida unica con spiegazioni chiare su dashboard, prodotti, prenotazioni, ordini, impostazioni e tutte le altre funzioni principali.</p>
-            <a class="public-inline-link" href="{{ route('guest.documentation') }}">Vai alla guida completa</a>
+            <p class="public-card__eyebrow">Documentazione</p>
+            <h2>Indice operativo guest</h2>
+            <p>Apri il centro documentazione con pagine dedicate per onboarding, configurazione, prenotazioni, ordini, menu e comunicazioni.</p>
+            <a class="public-inline-link" href="{{ route('guest.documentation') }}">Apri l'indice documentazione</a>
         </article>
 
         <article class="public-card">
@@ -32,5 +32,18 @@
             <p>Se hai le credenziali puoi accedere direttamente al Backoffice e gestire i contenuti del locale.</p>
             <a class="public-inline-link" href="{{ route('login') }}">{{ __('admin.Accedi') }}</a>
         </article>
+    </section>
+
+    <section class="public-panel public-panel--soft">
+        <div class="public-panel__header">
+            <p class="public-panel__eyebrow">Pagine piu usate</p>
+            <h2>Accessi diretti alle guide operative</h2>
+        </div>
+
+        <div class="doc-topic-grid doc-topic-grid--compact">
+            @foreach (array_slice($docPages, 0, 4) as $page)
+                @include('guests.partials.doc-topic-card', ['page' => $page])
+            @endforeach
+        </div>
     </section>
 @endsection
