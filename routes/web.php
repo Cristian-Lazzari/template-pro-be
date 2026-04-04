@@ -21,14 +21,12 @@ use App\Http\Controllers\Webhooks\WaController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {
-    return view('guests/home');
-});
-Route::get('/doc', function () {
-    return view('guests/documentazione');
-});
+Route::get('/', [GuestsPageController::class, 'home'])->name('guest.home');
+Route::get('/documentazione', [GuestsPageController::class, 'documentation'])->name('guest.documentation');
+Route::get('/doc', [GuestsPageController::class, 'documentation']);
+Route::get('/aggiornamenti', [GuestsPageController::class, 'updates'])->name('guest.updates');
 Route::get('/delete_succes', function () {
-    return view('guests/documentazione');
+    return view('guests.delete_success');
 });
 
 
@@ -135,5 +133,4 @@ Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWeb
 Route::post('/webhook/wa', [WaController::class, 'handle'])->middleware('apikey');
 
 //Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);
-
 
