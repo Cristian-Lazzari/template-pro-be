@@ -13,54 +13,142 @@
 @php
 $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita','Boost up +' ];
 $adv = json_decode($setting['advanced']->property, 1);
+$tavoliState = match ((int) $setting['Prenotazione Tavoli']['status']) {
+    2 => ['label' => 'Online', 'tone' => 'active'],
+    1 => ['label' => 'Telefono', 'tone' => 'warning'],
+    default => ['label' => 'Off', 'tone' => 'off'],
+};
+$asportoState = match ((int) $setting['Prenotazione Asporti']['status']) {
+    2 => ['label' => 'Online', 'tone' => 'active'],
+    1 => ['label' => 'Telefono', 'tone' => 'warning'],
+    default => ['label' => 'Off', 'tone' => 'off'],
+};
+$domicilioState = match ((int) $setting['Possibilità di consegna a domicilio']['status']) {
+    1 => ['label' => 'Attivo', 'tone' => 'active'],
+    default => ['label' => 'Off', 'tone' => 'off'],
+};
+$ferieSetting = json_decode($setting['Periodo di Ferie']['property'], true);
+$ferieState = ((int) $setting['Periodo di Ferie']['status']) === 1
+    ? ['label' => 'In ferie', 'tone' => 'warning']
+    : ['label' => 'Operativo', 'tone' => 'active'];
+$promoState = ((int) $setting['Promozione Tavoli']['status']) === 1
+    ? ['label' => 'Attiva', 'tone' => 'active']
+    : ['label' => 'Off', 'tone' => 'off'];
+$defaultLang = strtoupper((string) config('configurazione.default_lang'));
+$menuFixState = match ((string) ($adv['menu_fix_set'] ?? '0')) {
+    '0' => ['label' => 'Fisso', 'tone' => 'neutral'],
+    '1' => ['label' => 'Tutti', 'tone' => 'active'],
+    '2' => ['label' => 'Carta', 'tone' => 'neutral'],
+    default => ['label' => 'Default', 'tone' => 'neutral'],
+};
+$servicesState = match ((string) ($adv['services'] ?? '4')) {
+    '2' => ['label' => 'Tavoli', 'tone' => 'active'],
+    '3' => ['label' => 'Asporto', 'tone' => 'active'],
+    '4' => ['label' => 'Tutti', 'tone' => 'active'],
+    default => ['label' => 'Custom', 'tone' => 'warning'],
+};
+$doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
+    ? ['label' => 'Attiva', 'tone' => 'active']
+    : ['label' => 'Off', 'tone' => 'off'];
 
 @endphp
 
-<div class="dash_page">
-    <h1>
+<div class="dash_page settings-page">
+    <h1 class="settings-page__title">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-wide-connected" viewBox="0 0 16 16">
             <path d="M7.068.727c.243-.97 1.62-.97 1.864 0l.071.286a.96.96 0 0 0 1.622.434l.205-.211c.695-.719 1.888-.03 1.613.931l-.08.284a.96.96 0 0 0 1.187 1.187l.283-.081c.96-.275 1.65.918.931 1.613l-.211.205a.96.96 0 0 0 .434 1.622l.286.071c.97.243.97 1.62 0 1.864l-.286.071a.96.96 0 0 0-.434 1.622l.211.205c.719.695.03 1.888-.931 1.613l-.284-.08a.96.96 0 0 0-1.187 1.187l.081.283c.275.96-.918 1.65-1.613.931l-.205-.211a.96.96 0 0 0-1.622.434l-.071.286c-.243.97-1.62.97-1.864 0l-.071-.286a.96.96 0 0 0-1.622-.434l-.205.211c-.695.719-1.888.03-1.613-.931l.08-.284a.96.96 0 0 0-1.186-1.187l-.284.081c-.96.275-1.65-.918-.931-1.613l.211-.205a.96.96 0 0 0-.434-1.622l-.286-.071c-.97-.243-.97-1.62 0-1.864l.286-.071a.96.96 0 0 0 .434-1.622l-.211-.205c-.719-.695-.03-1.888.931-1.613l.284.08a.96.96 0 0 0 1.187-1.186l-.081-.284c-.275-.96.918-1.65 1.613-.931l.205.211a.96.96 0 0 0 1.622-.434zM12.973 8.5H8.25l-2.834 3.779A4.998 4.998 0 0 0 12.973 8.5m0-1a4.998 4.998 0 0 0-7.557-3.779l2.834 3.78zM5.048 3.967l-.087.065zm-.431.355A4.98 4.98 0 0 0 3.002 8c0 1.455.622 2.765 1.615 3.678L7.375 8zm.344 7.646.087.065z"/>
         </svg>
         {{__('admin.Impostazioni')}}
     </h1>
-    <div class="targhetta">
+    <section class="settings-overview">
+        <div class="settings-overview__intro">
+            <p class="settings-kicker">Stato attuale</p>
+            <h2>Stati attivi in evidenza</h2>
+            <p class="settings-lead">Verde attivo, giallo attenzione, rosso spento.</p>
+            <div class="settings-status-grid">
+                <article class="settings-status-card">
+                    <span>Tavoli</span>
+                    <strong class="settings-state settings-state--{{ $tavoliState['tone'] }}">{{ $tavoliState['label'] }}</strong>
+                </article>
+                <article class="settings-status-card">
+                    <span>Asporto</span>
+                    <strong class="settings-state settings-state--{{ $asportoState['tone'] }}">{{ $asportoState['label'] }}</strong>
+                </article>
+                @if (config('configurazione.subscription') > 1)
+                    <article class="settings-status-card">
+                        <span>Domicilio</span>
+                        <strong class="settings-state settings-state--{{ $domicilioState['tone'] }}">{{ $domicilioState['label'] }}</strong>
+                    </article>
+                @endif
+                <article class="settings-status-card">
+                    <span>Ferie</span>
+                    <strong class="settings-state settings-state--{{ $ferieState['tone'] }}">{{ $ferieState['label'] }}</strong>
+                </article>
+                <article class="settings-status-card">
+                    <span>Promo tavoli</span>
+                    <strong class="settings-state settings-state--{{ $promoState['tone'] }}">{{ $promoState['label'] }}</strong>
+                </article>
+                <article class="settings-status-card">
+                    <span>Lingua</span>
+                    <strong class="settings-state settings-state--neutral">{{ $defaultLang }}</strong>
+                </article>
+            </div>
+        </div>
 
-        <a href="{{config('configurazione.domain')}}" class="img_bg">
-            <img src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
-        </a>
-        <a href="{{config('configurazione.domain')}}">
-            <h2 >{{config('configurazione.APP_NAME')}}</h2>
-        </a>
-        <a class="pack" href="https://future-plus.it/#pacchetti">
-            <img src="https://future-plus.it/img/favicon.png" alt="">
-            {{__('admin.Pacchetto')}}: {{$pack[config('configurazione.subscription')]}}</a>
+        <div class="settings-overview__aside">
+            <div class="targhetta">
 
-       
-    </div>
-    <div class="theme my-4"> 
-        <p>{{__('admin.Tema')}}:
-            <strong id="light_s">{{__('admin.Scuro')}}</strong>
-            <strong id="dark_s">{{__('admin.Chiaro')}}</strong>
-        </p>
-        <button id="theme-toggle" class="my_btn_3">
-            <svg id="dark" xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
-                <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
-            </svg>
+                <a href="{{config('configurazione.domain')}}" class="img_bg">
+                    <img src="{{config('configurazione.domain') . '/img/favicon.png'}}" alt="">
+                </a>
+                <a href="{{config('configurazione.domain')}}">
+                    <h2 >{{config('configurazione.APP_NAME')}}</h2>
+                </a>
+                <a class="pack" href="https://future-plus.it/#pacchetti">
+                    <img src="https://future-plus.it/img/favicon.png" alt="">
+                    {{__('admin.Pacchetto')}}: {{$pack[config('configurazione.subscription')]}}</a>
 
-            <svg id="light" xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="bi bi-sun-fill" viewBox="0 0 16 16">
-                <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
-            </svg>
-        </button>
-    </div>
+            
+            </div>
+            <div class="settings-theme-card">
+                <p class="settings-theme-card__eyebrow">Esperienza di lettura</p>
+                <div class="theme my-4"> 
+                    <p>{{__('admin.Tema')}}:
+                        <strong id="light_s">{{__('admin.Scuro')}}</strong>
+                        <strong id="dark_s">{{__('admin.Chiaro')}}</strong>
+                    </p>
+                    <button id="theme-toggle" class="my_btn_3">
+                        <svg id="dark" xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
+                            <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
+                        </svg>
+
+                        <svg id="light" xmlns="http://www.w3.org/2000/svg"  fill="currentColor" class="bi bi-sun-fill" viewBox="0 0 16 16">
+                            <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="settings-theme-card__note">Il cambio tema resta immediato e non modifica il comportamento dei campi.</p>
+            </div>
+        </div>
+    </section>
     
     
-    <form class="setting" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
+    <form class="setting settings-form" action="{{ route('admin.settings.updateAll')}}" method="POST" enctype="multipart/form-data">
         @csrf
-        
+        <section class="settings-panel settings-panel--primary">
+            <div class="settings-panel__header">
+                <p class="settings-kicker">Impostazioni rapide</p>
+                <h2>Servizi, lingua e promozioni usate ogni giorno</h2>
+                <p>Qui cambi le opzioni che incidono subito sul locale.</p>
+            </div>
+
        <div class="set">
             <div class="set-cont">
                 <div class="g_set">
-                    <h5>{{__('admin.Lingua_di_default')}}: {{config('configurazione.default_lang')}}</h5>
+                    <div class="settings-card-head">
+                        <h5>{{__('admin.Lingua_di_default')}}</h5>
+                        <span class="settings-state settings-state--neutral">{{ $defaultLang }}</span>
+                    </div>
                     @php   $languages = json_decode($setting['Lingua']['property'], 1)['languages']; @endphp
                     <div class="radio-inputs">
                         @foreach ($languages as $l)
@@ -89,7 +177,10 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>{{__('admin.Tavoli')}}</h5>
+                        <div class="settings-card-head">
+                            <h5>{{__('admin.Tavoli')}}</h5>
+                            <span class="settings-state settings-state--{{ $tavoliState['tone'] }}">{{ $tavoliState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 0) checked  @endif value="0" >
@@ -125,7 +216,10 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>{{__('admin.Asporto')}}</h5>
+                        <div class="settings-card-head">
+                            <h5>{{__('admin.Asporto')}}</h5>
+                            <span class="settings-state settings-state--{{ $asportoState['tone'] }}">{{ $asportoState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 0) checked  @endif value="0" >
@@ -211,7 +305,10 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>{{ __('admin.Domicilio') }}</h5>
+                        <div class="settings-card-head">
+                            <h5>{{ __('admin.Domicilio') }}</h5>
+                            <span class="settings-state settings-state--{{ $domicilioState['tone'] }}">{{ $domicilioState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="domicilio_status"  @if($setting['Possibilità di consegna a domicilio']['status'] == 0) checked  @endif value="0" >
@@ -288,7 +385,10 @@ $adv = json_decode($setting['advanced']->property, 1);
             <div class="set">
                 <div class="set-cont">
                     <div class="g_set">
-                        <h5>{{ __('admin.Ferie') }}</h5>
+                        <div class="settings-card-head">
+                            <h5>{{ __('admin.Ferie') }}</h5>
+                            <span class="settings-state settings-state--{{ $ferieState['tone'] }}">{{ $ferieState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="ferie_status"  @if($setting['Periodo di Ferie']['status'] == 0) checked  @endif value="0" >
@@ -316,12 +416,15 @@ $adv = json_decode($setting['advanced']->property, 1);
                 
                 <div class="set-cont promo_set">
                     <div class="g_set">
-                        <h5>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
-                                <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A3 3 0 0 1 3 2.506zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43zM9 3h2.932l.023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0zm6 4v7.5a1.5 1.5 0 0 1-1.5 1.5H9V7zM2.5 16A1.5 1.5 0 0 1 1 14.5V7h6v9z"/>
-                            </svg>
-                            {{ __('admin.Promozione') }} 
-                        </h5>
+                        <div class="settings-card-head">
+                            <h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16">
+                                    <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A3 3 0 0 1 3 2.506zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43zM9 3h2.932l.023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0zm6 4v7.5a1.5 1.5 0 0 1-1.5 1.5H9V7zM2.5 16A1.5 1.5 0 0 1 1 14.5V7h6v9z"/>
+                                </svg>
+                                {{ __('admin.Promozione') }} 
+                            </h5>
+                            <span class="settings-state settings-state--{{ $promoState['tone'] }}">{{ $promoState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input type="radio" name="table_promo"  @if($setting['Promozione Tavoli']['status']== 0) checked  @endif value="0" >
@@ -353,6 +456,14 @@ $adv = json_decode($setting['advanced']->property, 1);
             <button type="submit" class="my_btn_1 my_btn_2 w-75 m-auto">{{__('admin.Aggiorna')}}</button>
             
         </div>
+        </section>
+
+        <section class="settings-panel settings-panel--secondary">
+            <div class="settings-panel__header">
+                <p class="settings-kicker">Dettagli del locale</p>
+                <h2>Dati pubblici, contatti e copertura del servizio</h2>
+                <p>Apri solo la sezione che devi aggiornare.</p>
+            </div>
         <div class="bottom-set">
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">
@@ -576,7 +687,8 @@ $adv = json_decode($setting['advanced']->property, 1);
                 @endif
             </div>
         </div>
-        <div class="actions">
+        </section>
+        <div class="actions settings-form-actions">
             <button type="button" class=" my_btn_3 m-auto" data-bs-toggle="modal" data-bs-target="#staticBackdropav">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
@@ -588,8 +700,8 @@ $adv = json_decode($setting['advanced']->property, 1);
 
 
     <div class="modal fade" id="staticBackdropav" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropavLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable large_m">
-            <form action="{{ route('admin.settings.advanced')}}" method="POST" class="modal-content s_advanced">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable large_m settings-modal-dialog">
+            <form action="{{ route('admin.settings.advanced')}}" method="POST" class="modal-content s_advanced settings-advanced-modal">
                 @csrf
                 <button type="button" class="btn_close" data-bs-dismiss="modal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
@@ -604,7 +716,10 @@ $adv = json_decode($setting['advanced']->property, 1);
                 {{__('admin.Impostazioni_a')}}</h2>
                 <div class="top-set_a">
                     <div class="set_a">
-                        <h4>{{__('admin.Gestione_menu')}}</h4>
+                        <div class="settings-card-head">
+                            <h4>{{__('admin.Gestione_menu')}}</h4>
+                            <span class="settings-state settings-state--{{ $menuFixState['tone'] }}">{{ $menuFixState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input @checked($adv['menu_fix_set']== '0') type="radio" name="menu_fix_set" value="0" >
@@ -621,7 +736,10 @@ $adv = json_decode($setting['advanced']->property, 1);
                         </div>
                     </div>
                     <div class="set_a">
-                        <h4>{{__('admin.Servizi_attivi')}}</h4>
+                        <div class="settings-card-head">
+                            <h4>{{__('admin.Servizi_attivi')}}</h4>
+                            <span class="settings-state settings-state--{{ $servicesState['tone'] }}">{{ $servicesState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input class="critical-radio1" @checked($adv['services']== '3') type="radio" name="services" value="3" >
@@ -640,7 +758,10 @@ $adv = json_decode($setting['advanced']->property, 1);
                     </div>
 
                     <div class="set_a last">
-                        <h4>{{__('admin.Doppia_sala')}}</h4>
+                        <div class="settings-card-head">
+                            <h4>{{__('admin.Doppia_sala')}}</h4>
+                            <span class="settings-state settings-state--{{ $doubleRoomState['tone'] }}">{{ $doubleRoomState['label'] }}</span>
+                        </div>
                         <div class="radio-inputs">
                             <label class="radio">
                                 <input class="critical-radio3" @checked($adv['dt']== 0) type="radio" name="dt" value="0" >
@@ -745,11 +866,11 @@ $adv = json_decode($setting['advanced']->property, 1);
     @if (config('configurazione.subscription') > 2)
         <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
+                <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content settings-basic-modal">
                     @csrf
                     <input type="hidden" name="ar" value="remove">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop1Label">{{ __('admin.Seleziona_i_comuni_che_vuoi_rimuovere') }}</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdrop1Label">{{ __('admin.Seleziona_i_comuni_che_vuoi_rimuovere') }}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -773,11 +894,11 @@ $adv = json_decode($setting['advanced']->property, 1);
         
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content">
+                <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="modal-content settings-basic-modal">
                     @csrf
                     <input type="hidden" name="ar" value="add">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdropLabel">{{__('admin.Aggiungi_comune')}}</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">{{__('admin.Aggiungi_comune')}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -808,10 +929,10 @@ $adv = json_decode($setting['advanced']->property, 1);
 
         <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop2Label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <form action="{{ route('admin.settings.numbers')}}" method="POST" class="modal-content">
+                <form action="{{ route('admin.settings.numbers')}}" method="POST" class="modal-content settings-basic-modal">
                     @csrf
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" style="color: black" id="staticBackdrop2Label">{{__('admin.Modifica_wa')}}</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdrop2Label">{{__('admin.Modifica_wa')}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
