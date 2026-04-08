@@ -2185,7 +2185,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     .settings-page .setting .input-group-text,
     .settings-page .settings-basic-modal .input-group-text{
-        flex: 1 0 100%;
+        //flex: 1 0 100%;
         justify-content: flex-start;
         white-space: normal;
     }
@@ -2198,7 +2198,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 
     .settings-page .setting .radio-inputs .radio{
-        flex: 1 1 calc(50% - 4px);
+        flex: 1 1 calc(30% - 4px);
     }
 
     .settings-page .setting .radio-inputs .name{
