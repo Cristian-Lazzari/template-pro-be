@@ -1,6 +1,6 @@
 {
   "public/images/back.png": {
-    "file": "assets/back.18582180.png",
+    "file": "../public/build/assets/back.18582180.png",
     "src": "public/images/back.png"
   },
   "resources/js/app.js": {
@@ -8,11 +8,11 @@
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.f2c72309.css"
+      "../public/build/assets/app.73933045.css"
     ]
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.f2c72309.css",
+    "file": "../public/build/assets/app.73933045.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }

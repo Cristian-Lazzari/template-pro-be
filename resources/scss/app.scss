@@ -1,7 +1,4 @@
 @import "~bootstrap/scss/bootstrap";
-$c1_op:#1e2d6472;
-$c2_op:#10b7937b;
-$c3_op:#d8dde880;
 $c1: #090333;
 $c2:#0eb792;
 $c3: #d8dde8;
@@ -68,16 +65,9 @@ $c3: #d8dde8;
     }
     
 }
-[data-theme="light"] {
-}
-
-$c_red: rgb(219, 92, 92);
 $bg-p-p : var(--c3);
 $c-delete : var(--c2);
 $c-update : var(--c3);
-$c-new : var(--c1); 
-$t : rgba(193, 206, 236, 0.43);
-$cfilter : var(--c2);
 
 .op{
     opacity: .5;
@@ -1592,7 +1582,6 @@ $svg_n: clamp(25px, 5vw, 30px);
         }
     }
     .set{
-        $brr-set-m : 12px;
         $brr-set : 10px;
         color: var(--c3);
         display: flex;
@@ -5266,21 +5255,6 @@ section{
     flex-direction: column;
     gap: 2rem;
     padding: 1rem;
-    .top{
-        #dayModalLabel{
-            display: flex;
-            gap: .3rem;
-            flex-wrap: wrap;
-            div{
-                background-color: var(--c3);
-                color: var(--c1);
-                padding: .5rem;
-                border-radius: 5px;
-                transition: all linear .3s;
-            }
-
-        }
-    }
     .top_day{
         width: 100%;
         display: flex;
