@@ -1,46 +1,89 @@
-<nav class="navbar navbar-expand-lg nav">
+@php
+    $navItems = [
+        [
+            'key' => 'dashboard',
+            'label' => 'Dashboard',
+            'route' => route('admin.dashboard'),
+            'icon' => 'calendar2-check-fill',
+            'active' => request()->routeIs('admin.dashboard'),
+        ],
+        // [
+        //     'key' => 'requests',
+        //     'label' => 'Richieste',
+        //     'route' => route('admin.reservations.index'),
+        //     'icon' => 'inboxes-fill',
+        //     'active' => request()->routeIs('admin.reservations.*') || request()->routeIs('admin.orders.*') || request()->routeIs('admin.list'),
+        // ],
+        [
+            'key' => 'menu',
+            'label' => 'Menu',
+            'route' => route('admin.menu'),
+            'icon' => 'fork-knife',
+            'active' => request()->routeIs('admin.menu') || request()->routeIs('admin.products.*') || request()->routeIs('admin.menus.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.ingredients.*') || request()->routeIs('admin.allergens.*'),
+        ],
+        [
+            'key' => 'posts',
+            'label' => 'Contenuti',
+            'route' => route('admin.posts.index'),
+            'icon' => 'images',
+            'active' => request()->routeIs('admin.posts.*'),
+        ],
+    ];
 
-    <a class="link_nav" href="{{ route('admin.dashboard') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-check-fill" viewBox="0 0 16 16">
-        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5m9.954 3H2.545c-.3 0-.545.224-.545.5v1c0 .276.244.5.545.5h10.91c.3 0 .545-.224.545-.5v-1c0-.276-.244-.5-.546-.5m-2.6 5.854a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
-        </svg>
-    </a>
+    if (config('configurazione.subscription') > 1) {
+        $navItems[] = [
+            'key' => 'statistics',
+            'label' => 'Statistiche',
+            'route' => route('admin.statistics'),
+            'icon' => 'graph-up-arrow',
+            'active' => request()->routeIs('admin.statistics'),
+        ];
+    }
 
-    <a class="link_nav " href="{{ route('admin.menu') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fork-knife" viewBox="0 0 16 16">
-            <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
-        </svg>
-    </a>
-    <a class="link_nav " href="{{ route('admin.posts.index') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
-        <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-        <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"/>
-        </svg>
-    </a>
-    
-    @if (config('configurazione.subscription') > 1 )
-        <a class="link_nav " href="{{route('admin.statistics')}}">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
-</svg>
-        </a>
-    @endif
-    @if (config('configurazione.subscription') > 2 )
-        <a class="link_nav " href="{{route('admin.mailer.index')}}"> 
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-arrow-up" viewBox="0 0 16 16">
-                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4.5a.5.5 0 0 1-1 0V5.383l-7 4.2-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h5.5a.5.5 0 0 1 0 1H2a2 2 0 0 1-2-1.99zm1 7.105 4.708-2.897L1 5.383zM1 4v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1"/>
-                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.354-5.354 1.25 1.25a.5.5 0 0 1-.708.708L13 12.207V14a.5.5 0 0 1-1 0v-1.717l-.28.305a.5.5 0 0 1-.737-.676l1.149-1.25a.5.5 0 0 1 .722-.016"/>
-            </svg> 
-        </a>
-    @endif
-    <a class="link_nav " href="{{ route('admin.customers.index') }}" title="{{ __('admin.Clienti') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-        </svg>
-    </a>
-    <a class="link_nav ml-auto" href="{{ route('admin.settings') }}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-wide-connected" viewBox="0 0 16 16">
-            <path d="M7.068.727c.243-.97 1.62-.97 1.864 0l.071.286a.96.96 0 0 0 1.622.434l.205-.211c.695-.719 1.888-.03 1.613.931l-.08.284a.96.96 0 0 0 1.187 1.187l.283-.081c.96-.275 1.65.918.931 1.613l-.211.205a.96.96 0 0 0 .434 1.622l.286.071c.97.243.97 1.62 0 1.864l-.286.071a.96.96 0 0 0-.434 1.622l.211.205c.719.695.03 1.888-.931 1.613l-.284-.08a.96.96 0 0 0-1.187 1.187l.081.283c.275.96-.918 1.65-1.613.931l-.205-.211a.96.96 0 0 0-1.622.434l-.071.286c-.243.97-1.62.97-1.864 0l-.071-.286a.96.96 0 0 0-1.622-.434l-.205.211c-.695.719-1.888.03-1.613-.931l.08-.284a.96.96 0 0 0-1.186-1.187l-.284.081c-.96.275-1.65-.918-.931-1.613l.211-.205a.96.96 0 0 0-.434-1.622l-.286-.071c-.97-.243-.97-1.62 0-1.864l.286-.071a.96.96 0 0 0 .434-1.622l-.211-.205c-.719-.695-.03-1.888.931-1.613l.284.08a.96.96 0 0 0 1.187-1.186l-.081-.284c-.275-.96.918-1.65 1.613-.931l.205.211a.96.96 0 0 0 1.622-.434zM12.973 8.5H8.25l-2.834 3.779A4.998 4.998 0 0 0 12.973 8.5m0-1a4.998 4.998 0 0 0-7.557-3.779l2.834 3.78zM5.048 3.967l-.087.065zm-.431.355A4.98 4.98 0 0 0 3.002 8c0 1.455.622 2.765 1.615 3.678L7.375 8zm.344 7.646.087.065z"/>
-        </svg>
-    </a>
+    if (config('configurazione.subscription') > 2) {
+        $navItems[] = [
+            'key' => 'mailer',
+            'label' => 'Mailer',
+            'route' => route('admin.mailer.index'),
+            'icon' => 'envelope-arrow-up',
+            'active' => request()->routeIs('admin.mailer.*') || request()->routeIs('admin.models.delete'),
+        ];
+    }
+
+    $navItems[] = [
+        'key' => 'customers',
+        'label' => 'Clienti',
+        'route' => route('admin.customers.index'),
+        'icon' => 'people-fill',
+        'active' => request()->routeIs('admin.customers.*'),
+    ];
+
+    $navItems[] = [
+        'key' => 'settings',
+        'label' => 'Impostazioni',
+        'route' => route('admin.settings'),
+        'icon' => 'gear-wide-connected',
+        'active' => request()->routeIs('admin.settings.*') || request()->routeIs('admin.profile.*'),
+    ];
+@endphp
+
+<nav class="admin-nav" aria-label="Navigazione dashboard">
+    <div class="admin-nav__shell">
+        <div class="admin-nav__group">
+            @foreach ($navItems as $item)
+                <a href="{{ $item['route'] }}" class="admin-nav__link admin-nav__link--{{ $item['key'] }} {{ $item['active'] ? 'is-active' : '' }}" aria-current="{{ $item['active'] ? 'page' : 'false' }}">
+                    <span class="admin-nav__icon">
+                        @if ($item['key'] === 'menu')
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fork-knife" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M13 .5c0-.276-.226-.506-.498-.465-1.703.257-2.94 2.012-3 8.462a.5.5 0 0 0 .498.5c.56.01 1 .13 1 1.003v5.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5zM4.25 0a.25.25 0 0 1 .25.25v5.122a.128.128 0 0 0 .256.006l.233-5.14A.25.25 0 0 1 5.24 0h.522a.25.25 0 0 1 .25.238l.233 5.14a.128.128 0 0 0 .256-.006V.25A.25.25 0 0 1 6.75 0h.29a.5.5 0 0 1 .498.458l.423 5.07a1.69 1.69 0 0 1-1.059 1.711l-.053.022a.92.92 0 0 0-.58.884L6.47 15a.971.971 0 1 1-1.942 0l.202-6.855a.92.92 0 0 0-.58-.884l-.053-.022a1.69 1.69 0 0 1-1.059-1.712L3.462.458A.5.5 0 0 1 3.96 0z"/>
+                            </svg>
+                        @else
+                            <x-icon :name="$item['icon']" />
+                        @endif
+                    </span>
+                    <span class="admin-nav__label">{{ $item['label'] }}</span>
+                </a>
+            @endforeach
+        </div>
+    </div>
 </nav>

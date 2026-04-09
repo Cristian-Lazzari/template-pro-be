@@ -1,5 +1,7 @@
 import './bootstrap';
 
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import '~resources/scss/app.scss';
 
 import.meta.glob([
@@ -7,4 +9,3 @@ import.meta.glob([
 ]);
 
 import * as bootstrap from 'bootstrap';
-
