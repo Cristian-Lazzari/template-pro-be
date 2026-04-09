@@ -13,6 +13,22 @@ class CustomerAccessService
         return $this->findByEmail($email) !== null;
     }
 
+    public function hasHistoricalEmailEvidence(string $email): bool
+    {
+        $normalizedEmail = Customer::normalizeEmail($email);
+
+        if ($this->customerExists($normalizedEmail)) {
+            return true;
+        }
+
+        return Order::query()
+            ->whereRaw('LOWER(TRIM(email)) = ?', [$normalizedEmail])
+            ->exists()
+            || Reservation::query()
+                ->whereRaw('LOWER(TRIM(email)) = ?', [$normalizedEmail])
+                ->exists();
+    }
+
     public function completeVerifiedAccess(
         string $email,
         array $attributes = [],
@@ -43,7 +59,7 @@ class CustomerAccessService
         ];
     }
 
-    public function findOrCreateForVerifiedCheckout(string $email, array $attributes = []): Customer
+    public function findOrCreateForVerifiedCheckout(string $email, array $attributes = [], bool $newsletterOptIn = false): Customer
     {
         $normalizedEmail = Customer::normalizeEmail($email);
         $customer = $this->findByEmail($normalizedEmail);
@@ -55,6 +71,7 @@ class CustomerAccessService
         }
 
         $this->syncCustomerProfile($customer, $attributes);
+        $this->syncMarketingConsentFromNewsletter($customer, $newsletterOptIn);
         $this->backfillCustomerRelations($customer);
 
         return $customer->fresh();
@@ -108,6 +125,7 @@ class CustomerAccessService
             'surname' => $this->preferredValue($attributes['surname'] ?? null, $guestProfile['surname'] ?? '', ''),
             'email' => $email,
             'phone' => $this->nullIfEmpty($this->preferredValue($attributes['phone'] ?? null, $guestProfile['phone'] ?? null, null)),
+            'marketing_consent_at' => $this->guestMarketingConsentAt($email),
             'email_verified_at' => now(),
         ];
     }
@@ -165,6 +183,46 @@ class CustomerAccessService
         $trimmed = trim($value);
 
         return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function guestMarketingConsentAt(string $email)
+    {
+        $normalizedEmail = Customer::normalizeEmail($email);
+
+        $latestOrderConsentAt = Order::query()
+            ->where('news_letter', true)
+            ->whereRaw('LOWER(TRIM(email)) = ?', [$normalizedEmail])
+            ->max('created_at');
+
+        $latestReservationConsentAt = Reservation::query()
+            ->where('news_letter', true)
+            ->whereRaw('LOWER(TRIM(email)) = ?', [$normalizedEmail])
+            ->max('created_at');
+
+        $timestamps = array_filter([$latestOrderConsentAt, $latestReservationConsentAt]);
+
+        if ($timestamps === []) {
+            return null;
+        }
+
+        rsort($timestamps);
+
+        return $timestamps[0];
+    }
+
+    private function syncMarketingConsentFromNewsletter(Customer $customer, bool $newsletterOptIn): void
+    {
+        $historicalConsentAt = $this->guestMarketingConsentAt($customer->email);
+        $marketingConsentAt = $customer->marketing_consent_at ?: $historicalConsentAt;
+
+        if ($newsletterOptIn && !$marketingConsentAt) {
+            $marketingConsentAt = now();
+        }
+
+        if ($marketingConsentAt !== $customer->marketing_consent_at) {
+            $customer->marketing_consent_at = $marketingConsentAt;
+            $customer->save();
+        }
     }
 
     private function backfillCustomerRelations(Customer $customer): void

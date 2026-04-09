@@ -148,6 +148,15 @@ class SettingsTableSeeder extends Seeder
                     'languages' => ['it', 'en', 'es', 'fr', 'de', 'ja', 'ro'],
                 ]
             ],
+            [
+                'name' => 'customer_profile',
+                'status' => 1,
+                'property' => [
+                    'marketing_consent_text' => 'Vuoi ricevere novita, eventi e offerte del ristorante via email?',
+                    'profiling_consent_text' => 'Vuoi ricevere promozioni personalizzate in base ai tuoi gusti e alle tue preferenze?',
+                    'questions' => [],
+                ]
+            ],
         ];
    
 

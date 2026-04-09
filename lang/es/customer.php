@@ -9,6 +9,9 @@ return [
         'otp_incorrect' => 'El codigo introducido no es correcto.',
         'otp_verified' => 'Email confirmado correctamente.',
         'checkout_verification_required' => 'Confirma tu email con el codigo recibido antes de completar el pedido.',
+        'registration_incomplete' => 'Completa los datos obligatorios para finalizar el registro.',
+        'registration_completed' => 'Perfil de cliente completado correctamente.',
+        'consents_updated' => 'Preferencias de privacidad actualizadas correctamente.',
         'logout_completed' => 'Sesion cerrada correctamente.',
     ],
     'mail' => [

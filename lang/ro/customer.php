@@ -9,6 +9,9 @@ return [
         'otp_incorrect' => 'Codul introdus nu este corect.',
         'otp_verified' => 'Email confirmat cu succes.',
         'checkout_verification_required' => 'Confirma mai intai emailul cu codul primit inainte de a finaliza comanda.',
+        'registration_incomplete' => 'Completeaza datele necesare pentru a finaliza inregistrarea.',
+        'registration_completed' => 'Profilul clientului a fost completat cu succes.',
+        'consents_updated' => 'Preferintele de confidentialitate au fost actualizate cu succes.',
         'logout_completed' => 'Deconectare efectuata cu succes.',
     ],
     'mail' => [

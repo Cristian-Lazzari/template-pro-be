@@ -11,7 +11,8 @@
 
     .customer-page .summary-card,
     .customer-page .customer-card,
-    .customer-page .customer-empty {
+    .customer-page .customer-empty,
+    .customer-page .customer-settings {
         background: var(--c3);
         color: var(--c1);
         border-radius: 16px;
@@ -80,6 +81,103 @@
         display: flex;
         flex-direction: column;
         gap: .9rem;
+    }
+
+    .customer-page .customer-settings {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: grid;
+        gap: 1rem;
+    }
+
+    .customer-page .customer-settings__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: .9rem;
+    }
+
+    .customer-page .customer-settings label {
+        display: flex;
+        flex-direction: column;
+        gap: .4rem;
+        font-weight: 700;
+    }
+
+    .customer-page .customer-settings textarea,
+    .customer-page .customer-settings input[type="text"] {
+        width: 100%;
+        min-height: 44px;
+        border-radius: 12px;
+        border: 1px solid var(--c3_op_3);
+        background: var(--c1);
+        color: var(--c3);
+        padding: .75rem .9rem;
+    }
+
+    .customer-page .customer-settings textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .customer-page .question-list {
+        display: grid;
+        gap: .8rem;
+    }
+
+    .customer-page .question-item {
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px;
+        padding: .85rem;
+        display: grid;
+        gap: .7rem;
+    }
+
+    .customer-page .question-item__row {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr auto auto;
+        gap: .7rem;
+        align-items: center;
+    }
+
+    .customer-page .question-item__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .9rem;
+    }
+
+    .customer-page .customer-button,
+    .customer-page .customer-button--ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .45rem;
+        border-radius: 12px;
+        padding: .7rem 1rem;
+        font-weight: 900;
+        text-decoration: none;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .customer-page .customer-button {
+        background: var(--c2);
+        color: var(--c3);
+    }
+
+    .customer-page .customer-button--ghost {
+        background: transparent;
+        color: var(--c1);
+        border: 1px solid rgba(255,255,255,.22);
+    }
+
+    .customer-page .customer-settings__actions {
+        display: flex;
+        gap: .7rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .customer-page .customer-card {
@@ -185,6 +283,10 @@
             flex-direction: column;
         }
 
+        .customer-page .question-item__row {
+            grid-template-columns: 1fr;
+        }
+
         .customer-page .customer-toolbar {
             top: 10px;
         }
@@ -222,6 +324,66 @@
         </div>
     </div>
 
+    <form class="customer-settings" method="POST" action="{{ route('admin.customers.profile_settings') }}">
+        @csrf
+        <div>
+            <h2 style="margin:0 0 .35rem;">Profilo cliente</h2>
+            <p style="margin:0; opacity:.8;">
+                Configura il questionario che completa il passaggio da ospite a registrato e personalizza i testi dei consensi.
+            </p>
+        </div>
+
+        <div class="customer-settings__grid">
+            <label>
+                <span>Testo consenso marketing</span>
+                <textarea name="marketing_consent_text">{{ old('marketing_consent_text', $profileSettings['marketing_consent_text'] ?? '') }}</textarea>
+            </label>
+
+            <label>
+                <span>Testo consenso profilazione</span>
+                <textarea name="profiling_consent_text">{{ old('profiling_consent_text', $profileSettings['profiling_consent_text'] ?? '') }}</textarea>
+            </label>
+        </div>
+
+        <div>
+            <div class="customer-settings__actions" style="margin-bottom:.8rem;">
+                <div>
+                    <strong>Domande personalizzate</strong>
+                    <p style="margin:.2rem 0 0; opacity:.8;">Le risposte verranno salvate in JSON nel profilo cliente.</p>
+                </div>
+                <button type="button" class="customer-button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>
+            </div>
+
+            <div id="customerQuestionList" class="question-list">
+                @foreach (($profileSettings['questions'] ?? []) as $index => $question)
+                    <div class="question-item" data-question-item>
+                        <input type="hidden" name="questions[{{ $index }}][key]" value="{{ $question['key'] ?? '' }}">
+                        <div class="question-item__row">
+                            <label>
+                                <span>Domanda</span>
+                                <input type="text" name="questions[{{ $index }}][label]" value="{{ $question['label'] ?? '' }}">
+                            </label>
+                            <label>
+                                <span>Placeholder</span>
+                                <input type="text" name="questions[{{ $index }}][placeholder]" value="{{ $question['placeholder'] ?? '' }}">
+                            </label>
+                            <label class="question-item__toggle">
+                                <input type="checkbox" name="questions[{{ $index }}][required]" value="1" @checked(($question['required'] ?? false))>
+                                <span>Obbligatoria</span>
+                            </label>
+                            <button type="button" class="customer-button--ghost" data-remove-question>Rimuovi</button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="customer-settings__actions">
+            <span style="opacity:.75;">Gli stati marketing nel database restano: no marketing, soft marketing, full.</span>
+            <button type="submit" class="customer-button">Salva configurazione</button>
+        </div>
+    </form>
+
     <section class="customer-toolbar">
         <input id="customerSearch" type="text" placeholder="{{ __('admin.Cerca_cliente') }}">
         <select id="customerType">
@@ -251,7 +413,16 @@
                     </div>
                     <div class="customer-card__meta">
                         <span class="customer-chip customer-chip--outline">
-                            {{ $customer->is_registered ? 'Registrato' : 'Ospite' }}
+                            {{ $customer->account_state === 'registered' ? 'Registrato' : 'Ospite' }}
+                        </span>
+                        <span class="customer-chip customer-chip--outline">
+                            @if ($customer->marketing_state === 'full')
+                                Full
+                            @elseif ($customer->marketing_state === 'soft_marketing')
+                                Soft marketing
+                            @else
+                                No marketing
+                            @endif
                         </span>
                     </div>
                     <div class="customer-card__contacts">
@@ -308,6 +479,52 @@
         const typeSelect = document.getElementById('customerType');
         const cards = Array.from(document.querySelectorAll('[data-customer-card]'));
         const emptyState = document.getElementById('customerEmpty');
+        const questionList = document.getElementById('customerQuestionList');
+        const addQuestionButton = document.getElementById('addCustomerQuestion');
+
+        function questionIndex() {
+            return questionList.querySelectorAll('[data-question-item]').length;
+        }
+
+        function createQuestionItem(index) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'question-item';
+            wrapper.dataset.questionItem = '1';
+            wrapper.innerHTML = `
+                <input type="hidden" name="questions[${index}][key]" value="">
+                <div class="question-item__row">
+                    <label>
+                        <span>Domanda</span>
+                        <input type="text" name="questions[${index}][label]" value="">
+                    </label>
+                    <label>
+                        <span>Placeholder</span>
+                        <input type="text" name="questions[${index}][placeholder]" value="">
+                    </label>
+                    <label class="question-item__toggle">
+                        <input type="checkbox" name="questions[${index}][required]" value="1">
+                        <span>Obbligatoria</span>
+                    </label>
+                    <button type="button" class="customer-button--ghost" data-remove-question>Rimuovi</button>
+                </div>
+            `;
+
+            return wrapper;
+        }
+
+        addQuestionButton?.addEventListener('click', function () {
+            questionList.appendChild(createQuestionItem(questionIndex()));
+        });
+
+        questionList?.addEventListener('click', function (event) {
+            const removeButton = event.target.closest('[data-remove-question]');
+            if (!removeButton) {
+                return;
+            }
+
+            const item = removeButton.closest('[data-question-item]');
+            item?.remove();
+        });
 
         function renderCustomers() {
             const search = (searchInput.value || '').trim().toLowerCase();

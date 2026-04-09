@@ -42,6 +42,8 @@ Route::prefix('auth')->name('api.auth.')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', [CustomerAuthController::class, 'me'])->name('me');
         Route::get('history', [CustomerAuthController::class, 'history'])->name('history');
+        Route::put('profile', [CustomerAuthController::class, 'updateProfile'])->name('profile');
+        Route::patch('consents', [CustomerAuthController::class, 'updateConsents'])->name('consents');
         Route::post('logout', [CustomerAuthController::class, 'logout'])->name('logout');
     });
 });

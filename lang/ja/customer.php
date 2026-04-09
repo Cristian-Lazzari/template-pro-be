@@ -9,6 +9,9 @@ return [
         'otp_incorrect' => '入力されたコードが正しくありません。',
         'otp_verified' => 'メールアドレスの確認が完了しました。',
         'checkout_verification_required' => '注文を完了する前に、受信したコードでメールアドレスを確認してください。',
+        'registration_incomplete' => '登録を完了するには必要な情報を入力してください。',
+        'registration_completed' => '顧客プロフィールが正常に完了しました。',
+        'consents_updated' => 'プライバシー設定を更新しました。',
         'logout_completed' => 'ログアウトしました。',
     ],
     'mail' => [

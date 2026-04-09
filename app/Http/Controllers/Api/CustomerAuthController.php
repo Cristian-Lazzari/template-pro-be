@@ -10,10 +10,12 @@ use App\Models\Product;
 use App\Models\Reservation;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\EmailOtpService;
+use App\Services\CustomerAuth\CustomerProfileSettingsService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Validation\ValidationException;
 
 class CustomerAuthController extends Controller
 {
@@ -22,6 +24,7 @@ class CustomerAuthController extends Controller
     public function __construct(
         private EmailOtpService $emailOtpService,
         private CustomerAccessService $customerAccessService,
+        private CustomerProfileSettingsService $customerProfileSettingsService,
         private VerifiedCheckoutSessionService $verifiedCheckoutSessionService,
     ) {
     }
@@ -30,10 +33,24 @@ class CustomerAuthController extends Controller
     {
         $data = $request->validate([
             'email' => ['required', 'email', 'max:100'],
+            'intent' => ['nullable', 'in:account,checkout'],
         ]);
 
         $lang = $this->resolveLang($request);
         $email = Customer::normalizeEmail($data['email']);
+        $intent = $data['intent'] ?? 'checkout';
+        $customerExists = $this->customerAccessService->customerExists($email);
+        $hasHistoricalEvidence = $this->customerAccessService->hasHistoricalEmailEvidence($email);
+
+        if ($intent === 'checkout' && $hasHistoricalEvidence) {
+            return response()->json([
+                'success' => true,
+                'message' => $this->message($lang, 'messages.otp_verified'),
+                'otp_required' => false,
+                'customer_exists' => $customerExists,
+                'verified_session' => $this->verifiedCheckoutSessionService->issue($email),
+            ]);
+        }
 
         $otpPayload = $this->emailOtpService->send($email, $lang);
 
@@ -41,7 +58,8 @@ class CustomerAuthController extends Controller
             'success' => true,
             'message' => $otpPayload['message'],
             'expires_in_minutes' => $otpPayload['expires_in_minutes'],
-            'customer_exists' => $this->customerAccessService->customerExists($email),
+            'otp_required' => true,
+            'customer_exists' => $customerExists,
         ]);
     }
 
@@ -81,6 +99,7 @@ class CustomerAuthController extends Controller
             'message' => $this->message($lang, 'messages.otp_verified'),
             'token' => $access['token'],
             'customer' => $access['customer'] ? $this->customerPayload($access['customer']) : null,
+            'profile_settings' => $this->customerProfileSettingsService->get(),
             'customer_exists' => $access['customer_exists'],
             'created_customer' => $access['created_customer'],
             'verified_session' => $this->verifiedCheckoutSessionService->issue($email),
@@ -97,6 +116,87 @@ class CustomerAuthController extends Controller
         return response()->json([
             'success' => true,
             'customer' => $this->customerPayload($customer),
+            'profile_settings' => $this->customerProfileSettingsService->get(),
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $customer = $request->user();
+        if (!$customer instanceof Customer) {
+            abort(403);
+        }
+
+        $settings = $this->customerProfileSettingsService->get();
+        $questions = $settings['questions'] ?? [];
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'surname' => ['required', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'gender' => ['required', 'string', 'max:20'],
+            'age' => ['required', 'integer', 'min:1', 'max:120'],
+            'profile_answers' => ['nullable', 'array'],
+            'marketing_enabled' => ['nullable', 'boolean'],
+            'profiling_enabled' => ['nullable', 'boolean'],
+        ]);
+
+        $customer->name = trim((string) $data['name']);
+        $customer->surname = trim((string) $data['surname']);
+        $customer->phone = $this->nullableTrimmed($data['phone'] ?? null);
+        $customer->gender = trim((string) $data['gender']);
+        $customer->age = (int) $data['age'];
+        $customer->profile_answers = $this->customerProfileSettingsService->normalizeAnswers(
+            $data['profile_answers'] ?? [],
+            $questions
+        );
+
+        if (!$this->customerProfileSettingsService->isRegistrationComplete($customer, $questions)) {
+            throw ValidationException::withMessages([
+                'profile' => [$this->message($this->resolveLang($request), 'messages.registration_incomplete')],
+            ]);
+        }
+
+        $this->applyConsentPreferences(
+            $customer,
+            $request->boolean('marketing_enabled'),
+            $request->boolean('profiling_enabled')
+        );
+
+        $customer->registered_at = $customer->registered_at ?: now();
+        $customer->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->message($this->resolveLang($request), 'messages.registration_completed'),
+            'customer' => $this->customerPayload($customer->fresh()),
+        ]);
+    }
+
+    public function updateConsents(Request $request)
+    {
+        $customer = $request->user();
+        if (!$customer instanceof Customer) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'marketing_enabled' => ['required', 'boolean'],
+            'profiling_enabled' => ['required', 'boolean'],
+        ]);
+
+        $this->applyConsentPreferences(
+            $customer,
+            (bool) $data['marketing_enabled'],
+            (bool) $data['profiling_enabled']
+        );
+
+        $customer->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->message($this->resolveLang($request), 'messages.consents_updated'),
+            'customer' => $this->customerPayload($customer->fresh()),
         ]);
     }
 
@@ -171,15 +271,33 @@ class CustomerAuthController extends Controller
 
     private function customerPayload(Customer $customer): array
     {
-        return [
-            'id' => $customer->id,
-            'name' => $customer->name,
-            'surname' => $customer->surname,
-            'email' => $customer->email,
-            'phone' => $customer->phone,
-            'email_verified_at' => $customer->email_verified_at?->toISOString(),
-            'created_at' => $customer->created_at?->toISOString(),
-        ];
+        return $customer->toApiPayload();
+    }
+
+    private function applyConsentPreferences(Customer $customer, bool $marketingEnabled, bool $profilingEnabled): void
+    {
+        if (!$marketingEnabled) {
+            $customer->marketing_consent_at = null;
+            $customer->profiling_consent_at = null;
+
+            return;
+        }
+
+        $customer->marketing_consent_at = $customer->marketing_consent_at ?: now();
+        $customer->profiling_consent_at = $profilingEnabled
+            ? ($customer->profiling_consent_at ?: now())
+            : null;
+    }
+
+    private function nullableTrimmed($value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 
     private function transformOrderHistory(Order $order): array

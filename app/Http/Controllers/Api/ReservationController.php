@@ -69,13 +69,13 @@ class ReservationController extends Controller
                 ]);
             }
 
-            if ($request->boolean('save_details')) {
-                $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
-                    'name' => $data['name'] ?? null,
-                    'surname' => $data['surname'] ?? null,
-                    'phone' => $data['phone'] ?? null,
-                ]);
+            $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
+                'name' => $data['name'] ?? null,
+                'surname' => $data['surname'] ?? null,
+                'phone' => $data['phone'] ?? null,
+            ], $request->boolean('news_letter'));
 
+            if ($request->boolean('save_details')) {
                 $customerAuthPayload = [
                     'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
                     'customer' => $this->customerPayload($authenticatedCustomer),
@@ -367,15 +367,7 @@ class ReservationController extends Controller
 
     private function customerPayload(Customer $customer): array
     {
-        return [
-            'id' => $customer->id,
-            'name' => $customer->name,
-            'surname' => $customer->surname,
-            'email' => $customer->email,
-            'phone' => $customer->phone,
-            'email_verified_at' => $customer->email_verified_at?->toISOString(),
-            'created_at' => $customer->created_at?->toISOString(),
-        ];
+        return $customer->toApiPayload();
     }
 
     protected function save_message($data_am1){

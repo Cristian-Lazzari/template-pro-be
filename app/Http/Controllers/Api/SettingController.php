@@ -80,6 +80,9 @@ class SettingController extends Controller
             'success' => true,
             'asporto'   => $settings['Prenotazione Asporti'],
             'domicilio' => $settings['Possibilità di consegna a domicilio'],
+            'customer_profile' => isset($settings['customer_profile'])
+                ? json_decode($settings['customer_profile']->property ?? '{}', true)
+                : ['marketing_consent_text' => '', 'profiling_consent_text' => '', 'questions' => []],
             
             'promo_table'    => $settings['Promozione Tavoli'],
             'tavoli'    => $settings['Prenotazione Tavoli']->status,

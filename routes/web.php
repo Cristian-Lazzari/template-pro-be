@@ -41,6 +41,9 @@ Route::middleware(['auth', 'verified'])
    
         Route::get('/statistics', [AdminPageController::class, 'statistics'])->name('statistics');
         Route::get('/customers',  [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/customers/guest/{email}', [CustomerController::class, 'showGuest'])->where('email', '.*')->name('customers.show_guest');
+        Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+        Route::post('/customers/profile-settings', [CustomerController::class, 'updateProfileSettings'])->name('customers.profile_settings');
 
         Route::get('/mailer/index',         [MailerController::class, 'mailer'])->name('mailer.index');
         Route::get('/mailer/send_mail',     [MailerController::class, 'send_mail'])->name('mailer.send_mail');
