@@ -227,7 +227,7 @@ return array (
   'Combo_prodotti' => 'Produktkombinationen',
   'Prodotti_ordinati' => 'Bestellte Produkte',
   'Conferma' => 'Bestätigen',
-  'Posticipa_e_Conferma' => 'Verschieben und bestätigen',
+  'Posticipa_e_Conferma' => 'Verschieben',
   'Conferma_e_posticipa_questo_ordine' => 'Diese Bestellung bestätigen und verschieben',
   'Seleziona_lorario_corretto' => 'Richtige Uhrzeit auswählen:',
   'Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria' => 'Möchten Sie andere Bestellungen für dieses Zeitfenster blockieren?',

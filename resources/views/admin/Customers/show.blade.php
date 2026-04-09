@@ -338,8 +338,8 @@
                 </p>
 
                 <div class="customer-doc-chip-row">
-                    <span class="settings-state settings-state--{{ $accountTone }}">{{ $accountLabels[$accountState] ?? ucfirst($accountState) }}</span>
-                    <span class="settings-state settings-state--{{ $marketingTone }}">{{ $marketingLabels[$marketingState] ?? $marketingState }}</span>
+                    <x-dashboard.state-pill :tone="$accountTone">{{ $accountLabels[$accountState] ?? ucfirst($accountState) }}</x-dashboard.state-pill>
+                    <x-dashboard.state-pill :tone="$marketingTone">{{ $marketingLabels[$marketingState] ?? $marketingState }}</x-dashboard.state-pill>
                 </div>
 
                 <div class="customer-doc-actions">
@@ -470,7 +470,7 @@
                     <span>Marketing</span>
                     <strong>{{ $customer->marketing_consent_at ? 'Attivo' : 'Disattivo' }}</strong>
                     <small>
-                        <span class="settings-state settings-state--{{ $marketingConsentTone }}">{{ $customer->marketing_consent_at ? 'Registrato' : 'Assente' }}</span>
+                        <x-dashboard.state-pill :tone="$marketingConsentTone">{{ $customer->marketing_consent_at ? 'Registrato' : 'Assente' }}</x-dashboard.state-pill>
                     </small>
                     <small>{{ $customer->marketing_consent_at ? \Carbon\Carbon::parse($customer->marketing_consent_at)->format('d/m/Y H:i') : 'Mai registrato' }}</small>
                 </article>
@@ -478,7 +478,7 @@
                     <span>Profilazione</span>
                     <strong>{{ $customer->profiling_consent_at ? 'Attiva' : 'Disattiva' }}</strong>
                     <small>
-                        <span class="settings-state settings-state--{{ $profilingConsentTone }}">{{ $customer->profiling_consent_at ? 'Registrata' : 'Assente' }}</span>
+                        <x-dashboard.state-pill :tone="$profilingConsentTone">{{ $customer->profiling_consent_at ? 'Registrata' : 'Assente' }}</x-dashboard.state-pill>
                     </small>
                     <small>{{ $customer->profiling_consent_at ? \Carbon\Carbon::parse($customer->profiling_consent_at)->format('d/m/Y H:i') : 'Mai registrata' }}</small>
                 </article>
@@ -532,7 +532,7 @@
                                     <strong>#O{{ $order->id }}</strong>
                                     <p>{{ $order->activity_at ? $order->activity_at->format('d/m/Y H:i') : '-' }}</p>
                                 </div>
-                                <span class="settings-state settings-state--{{ $status['tone'] }}">{{ $status['label'] }}</span>
+                                <x-dashboard.state-pill :tone="$status['tone']">{{ $status['label'] }}</x-dashboard.state-pill>
                             </div>
 
                             <div class="customer-doc-activity-meta">
@@ -574,7 +574,7 @@
                                     <strong>#R{{ $reservation->id }}</strong>
                                     <p>{{ $reservation->activity_at ? $reservation->activity_at->format('d/m/Y H:i') : '-' }}</p>
                                 </div>
-                                <span class="settings-state settings-state--{{ $status['tone'] }}">{{ $status['label'] }}</span>
+                                <x-dashboard.state-pill :tone="$status['tone']">{{ $status['label'] }}</x-dashboard.state-pill>
                             </div>
 
                             <div class="customer-doc-activity-meta">

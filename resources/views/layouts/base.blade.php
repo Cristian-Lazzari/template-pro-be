@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- Favicon --}}
     <link rel="shortcut icon" href="{{ asset('public/favicon.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>{{ __('admin.Dashboard_') }}</title>
     @vite('resources/js/app.js')
     
@@ -122,4 +123,3 @@
 
 </body>
 </html>
-

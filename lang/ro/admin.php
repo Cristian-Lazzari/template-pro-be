@@ -227,7 +227,7 @@ return array (
   'Combo_prodotti' => 'Combo produse',
   'Prodotti_ordinati' => 'Produse comandate',
   'Conferma' => 'Confirmă',
-  'Posticipa_e_Conferma' => 'Amână și confirmă',
+  'Posticipa_e_Conferma' => 'Amână',
   'Conferma_e_posticipa_questo_ordine' => 'Confirmă și amână această comandă',
   'Seleziona_lorario_corretto' => 'Selectează ora corectă:',
   'Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria' => 'Vrei să blochezi alte comenzi în acest interval?',

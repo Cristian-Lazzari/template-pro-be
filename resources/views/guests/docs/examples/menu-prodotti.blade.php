@@ -1,72 +1,59 @@
 <section class="public-panel public-panel--soft">
     <div class="public-panel__header">
-        <p class="public-panel__eyebrow">Esempio visivo</p>
-        <h2>Scheda prodotto reale pronta da leggere e controllare</h2>
+        <p class="public-panel__eyebrow">Blocchi reali del dashboard</p>
+        <h2>Prodotti mostrati con card indice e pannello info coerenti con la UI admin</h2>
     </div>
 
-    <div class="doc-showcase">
-        <div class="doc-console">
-            <div class="doc-console__header">
-                <div>
-                    <strong>Scheda prodotto</strong>
-                    <p>Un esempio completo con prezzo, allergeni e stato visibilita.</p>
+    <div class="dashboard-preview-grid">
+        <div class="dashboard-preview-stack prod_index">
+            <div class="res-item prod" data-product-id="148">
+                <div class="no_img">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image-fill" viewBox="0 0 16 16">
+                        <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+                    </svg>
                 </div>
-                <span class="badge text-bg-success">Visibile online</span>
+
+                <div class="name_cat">
+                    <div class="name">Tagliatelle al ragu della casa</div>
+                    <div class="cat">Primi piatti</div>
+                </div>
+
+                <div class="price_btn">
+                    <div class="price">€14,00</div>
+                    <button type="button" class="action_menu action_menu_info">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                        </svg>Info
+                    </button>
+                </div>
             </div>
-
-            <article class="doc-product-card">
-                <div class="doc-product-card__top">
-                    <div>
-                        <p class="public-card__eyebrow">Primi piatti</p>
-                        <h3>Tagliatelle al ragu della casa</h3>
-                    </div>
-                    <strong>14,00 EUR</strong>
-                </div>
-
-                <p>Pasta fresca all uovo con ragu lento di manzo, parmigiano e fondo di cottura.</p>
-
-                <div class="doc-tag-row">
-                    <span class="badge text-bg-light">Uova</span>
-                    <span class="badge text-bg-light">Sedano</span>
-                    <span class="badge text-bg-light">Glutine</span>
-                    <span class="badge text-bg-success">Disponibile</span>
-                </div>
-
-                <div class="doc-product-card__footer">
-                    <div>
-                        <strong>Ingredienti chiave</strong>
-                        <span>Pasta fresca, manzo, pomodoro, parmigiano</span>
-                    </div>
-                    <div>
-                        <strong>Formula pranzo</strong>
-                        <span>Incluso nel menu lavoro</span>
-                    </div>
-                </div>
-            </article>
         </div>
 
-        <div class="doc-side-panel">
-            <div class="doc-mini-list">
-                <div class="doc-mini-list__item">
-                    <i class="bi bi-grid-1x2"></i>
-                    <span>Categoria gia assegnata</span>
+        <div class="modal-content dashboard-product-modal-preview">
+            <div class="modal-body">
+                <div class="name_cat">
+                    <div class="name">Tagliatelle al ragu della casa</div>
+                    <div class="cat">Primi piatti</div>
                 </div>
-                <div class="doc-mini-list__item">
-                    <i class="bi bi-ui-checks-grid"></i>
-                    <span>Allergeni compilati</span>
-                </div>
-                <div class="doc-mini-list__item">
-                    <i class="bi bi-card-checklist"></i>
-                    <span>Collegamento formula attivo</span>
-                </div>
-            </div>
 
-            <div class="alert alert-success doc-alert" role="alert">
-                <div class="doc-alert__title">
-                    <i class="bi bi-check-circle"></i>
-                    <strong>Pubblicazione pronta</strong>
+                <section>
+                    <h4>Ingredienti</h4>
+                    <p>Pasta fresca all uovo, ragu di manzo, pomodoro, parmigiano.</p>
+                </section>
+
+                <section>
+                    <h4>Descrizione</h4>
+                    <p>Piatto visibile nel catalogo con descrizione, prezzo e informazioni utili al servizio.</p>
+                </section>
+
+                <div class="price">€14,00</div>
+
+                <div class="allergens">
+                    <div class="al">Glutine</div>
+                    <div class="al">Uova</div>
+                    <div class="al">Sedano</div>
+                    <x-dashboard.state-pill tone="active">Visibile</x-dashboard.state-pill>
                 </div>
-                <p>La scheda e completa e puo essere lasciata visibile senza ulteriori passaggi.</p>
             </div>
         </div>
     </div>

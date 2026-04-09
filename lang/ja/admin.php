@@ -227,7 +227,7 @@ return array (
   'Combo_prodotti' => '商品コンボ',
   'Prodotti_ordinati' => '注文された商品',
   'Conferma' => '確認',
-  'Posticipa_e_Conferma' => '延期して確認',
+  'Posticipa_e_Conferma' => '延期',
   'Conferma_e_posticipa_questo_ordine' => 'この注文を確認して延期',
   'Seleziona_lorario_corretto' => '正しい時間を選択:',
   'Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria' => 'この時間帯の他の注文をブロックしますか？',

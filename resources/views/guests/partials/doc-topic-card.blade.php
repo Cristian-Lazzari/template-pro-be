@@ -20,7 +20,7 @@
 
     <div class="doc-badge-row">
         @foreach (array_slice($page['badges'], 0, 2) as $badge)
-            <span class="badge rounded-pill text-bg-light">{{ $badge }}</span>
+            <x-dashboard.state-pill tone="neutral">{{ $badge }}</x-dashboard.state-pill>
         @endforeach
     </div>
 

@@ -227,7 +227,7 @@ return array (
   'Combo_prodotti' => 'Combos de produits',
   'Prodotti_ordinati' => 'Produits commandés',
   'Conferma' => 'Confirmer',
-  'Posticipa_e_Conferma' => 'Reporter et confirmer',
+  'Posticipa_e_Conferma' => 'Reporter',
   'Conferma_e_posticipa_questo_ordine' => 'Confirmer et reporter cette commande',
   'Seleziona_lorario_corretto' => 'Sélectionnez l\'horaire correct :',
   'Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria' => 'Voulez-vous bloquer d\'autres commandes pour ce créneau ?',

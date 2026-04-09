@@ -227,7 +227,7 @@ return array (
   'Combo_prodotti' => 'Product combos',
   'Prodotti_ordinati' => 'Ordered products',
   'Conferma' => 'Confirm',
-  'Posticipa_e_Conferma' => 'Postpone and confirm',
+  'Posticipa_e_Conferma' => 'Postpone',
   'Conferma_e_posticipa_questo_ordine' => 'Confirm and postpone this order',
   'Seleziona_lorario_corretto' => 'Select the correct time:',
   'Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria' => 'Do you want to block other orders for this time slot?',
