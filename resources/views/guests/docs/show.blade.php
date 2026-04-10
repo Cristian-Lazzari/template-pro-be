@@ -43,7 +43,7 @@
 
     @includeIf('guests.docs.examples.' . $page['slug'])
 
-    @if ($page['slug'] !== 'ordini')
+    @if (!in_array($page['slug'], ['ordini', 'prenotazioni'], true))
         <section class="public-panel">
             <div class="public-panel__header">
                 <p class="public-panel__eyebrow">Cosa trovi in questa pagina</p>

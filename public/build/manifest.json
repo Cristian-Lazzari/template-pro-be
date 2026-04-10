@@ -3,13 +3,13 @@
     "file": "../public/build/assets/bootstrap-icons.6c757103.woff2",
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
-  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
-    "file": "../public/build/assets/bootstrap-icons.f55513b7.woff",
-    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
-  },
   "public/images/back.png": {
     "file": "../public/build/assets/back.18582180.png",
     "src": "public/images/back.png"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
+    "file": "../public/build/assets/bootstrap-icons.f55513b7.woff",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
   },
   "resources/js/app.js": {
     "file": "../public/build/assets/app.74686577.js",
@@ -17,7 +17,7 @@
     "isEntry": true,
     "css": [
       "../public/build/assets/app.394814fc.css",
-      "../public/build/assets/app.5bfce60f.css"
+      "../public/build/assets/app.ad9f286c.css"
     ],
     "assets": [
       "assets/bootstrap-icons.6c757103.woff2",
@@ -29,7 +29,7 @@
     "src": "resources/js/app.css"
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.5bfce60f.css",
+    "file": "../public/build/assets/app.ad9f286c.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }

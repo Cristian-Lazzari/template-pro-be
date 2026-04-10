@@ -100,6 +100,9 @@
     $dateLabel = trim(($giorniSettimana[$giornoSettimana] ?? '') . ' ' . ($dataFormattata ?? ''));
     $fulfillmentTitle = isset($order->comune) ? __('admin.Consegnare_a_domicilio') : __('admin.Ritiro_dasporto');
     $fulfillmentValue = isset($order->comune) ? collect([$order->comune, $order->address, $order->address_n])->filter()->implode(', ') : null;
+    $cancelButtonLabel = in_array($order->status, [3, 5], true) ? 'Rimborsa e Annulla' : 'Annulla';
+    $confirmResultLabel = $order->status === 3 ? 'Confermato e incassato' : 'Confermato';
+    $cancelResultLabel = in_array($order->status, [3, 5], true) ? 'Rimborsato e annullato' : 'Annullato';
 @endphp
 
 <div class="order-detail-page">
@@ -129,127 +132,153 @@
             </button>
         @endif
         @if (in_array($order->status, [1, 2, 3, 5]))
-            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_5">{{ in_array($order->status, [3, 5]) ? 'Rimborsa e Annulla' : 'Annulla' }}</button>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelModal" class="w-100 my_btn_5">{{ $cancelButtonLabel }}</button>
         @endif
     </x-dashboard.order-detail>
 </div>
 
 <!-- Modale per la posticipazione -->
 <div class="modal fade" id="changeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="changeModalLabel" aria-hidden="true">
-    <div class="modal-dialog ">
-        <form action="{{ route('admin.orders.changetime') }}" method="POST" class="modal-content mymodal_make_res">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('admin.orders.changetime') }}" method="POST" class="w-100">
             @csrf
             <input value="{{$order->id}}" type="hidden" name="id">
-            <div class="modal-header">
-                <h1 class="modal-title fs-2" id="changeModalLabel">{{ __('admin.Conferma_e_posticipa_questo_ordine') }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body fs-4">
-                <p>
-                    {{ __('admin.Ordine_di') }} <strong>{{$order->name}} </strong>{{ __('admin.per_il') }} <strong>{{$order->date_slot}}</strong>
-                </p>
-                {{-- <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p> --}}
-            </div>
-            <section class="modal-body fs-4">
-                <p>{{ __('admin.Seleziona_lorario_corretto') }}</p>
-                <select name="new_time" required>
-                    @php
-                        $slot = DateTime::createFromFormat('H:i', $times_start);
-                        $slotEnd = DateTime::createFromFormat('H:i', $times_end);
-                        $interval = intval($times_interval);
-                        $hasOption = false;
-                    @endphp
+            <x-dashboard.action-modal
+                title-id="changeModalLabel"
+                title="{{ __('admin.Conferma_e_posticipa_questo_ordine') }}"
+                eyebrow="Posticipa"
+                tone="warning"
+                entity-label="{{ __('admin.Ordine_di') }}"
+                :subject="$order->name"
+                :date-slot="$order->date_slot"
+                description="Aggiorni l orario e confermi l ordine nello stesso passaggio."
+            >
+                <x-slot name="details">
+                    <div class="dashboard-action-modal__detail">
+                        <span>Stato finale</span>
+                        <strong>Confermato</strong>
+                    </div>
 
-                    @while ($slot && $slot <= $slotEnd)
+                    <div class="dashboard-action-modal__detail">
+                        <span>Fascia originale</span>
+                        <strong>La lasci attiva o la blocchi ora</strong>
+                    </div>
+                </x-slot>
+
+                <div class="dashboard-action-modal__field">
+                    <label for="order-new-time">{{ __('admin.Seleziona_lorario_corretto') }}</label>
+
+                    <select id="order-new-time" name="new_time" required>
                         @php
-                            $timeValue = $slot->format('H:i');
-                            $hasOption = true;
+                            $slot = DateTime::createFromFormat('H:i', $times_start);
+                            $slotEnd = DateTime::createFromFormat('H:i', $times_end);
+                            $interval = intval($times_interval);
+                            $hasOption = false;
                         @endphp
-                        <option value="{{ $timeValue }}" {{ $timeValue == $oraFormattata ? 'selected' : '' }}>{{ $timeValue }}</option>
-                        @php $slot->modify("+{$interval} minutes"); @endphp
-                    @endwhile
 
-                    @unless ($hasOption)
-                        <option value="">{{ __('admin.Nessun_orario_disponibile') }}</option>
-                    @endunless
-                </select>
-                <p class="mt-4 mb-3">{{ __('admin.Vuoi_bloccare_altri_ordini_per_questa_fascia_oraria') }}</p>
+                        @while ($slot && $slot <= $slotEnd)
+                            @php
+                                $timeValue = $slot->format('H:i');
+                                $hasOption = true;
+                            @endphp
+                            <option value="{{ $timeValue }}" {{ $timeValue == $oraFormattata ? 'selected' : '' }}>{{ $timeValue }}</option>
+                            @php $slot->modify("+{$interval} minutes"); @endphp
+                        @endwhile
 
-            </section>
-            <div class="modal-footer">
-                <button type="submit" name="block" value="0" class="my_btn_5">{{ __('admin.Lascia_attivo') }}</button>
-                <button type="submit" name="block" value="1" class="my_btn_3">{{ __('admin.Blocca_questo_orario') }}</button>
-            </div>
-            
+                        @unless ($hasOption)
+                            <option value="">{{ __('admin.Nessun_orario_disponibile') }}</option>
+                        @endunless
+                    </select>
+                </div>
+
+                <p class="dashboard-action-modal__hint">Scegli uno slot realistico. Il cliente riceve l aggiornamento con il nuovo orario.</p>
+
+                <x-slot name="footer">
+                    <button type="submit" name="block" value="0" class="my_btn_5">{{ __('admin.Lascia_attivo') }}</button>
+                    <button type="submit" name="block" value="1" class="my_btn_3">{{ __('admin.Blocca_questo_orario') }}</button>
+                </x-slot>
+            </x-dashboard.action-modal>
         </form>
     </div>
 </div>
 
 <!-- Modale per la conferma -->
 <div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content mymodal_make_res">
-            <div class="modal-header">
-                <h1 class="modal-title fs-3" id="confirmModalLabel">{{ __('admin.Gestione_notifica_per_conferma') }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body fs-4">
-                <p>
-                    {{ __('admin.Ordine_di') }} <strong>{{$order->name}} </strong>{{ __('admin.per_il') }} <strong>{{$order->date_slot}}</strong>
-                </p>
-                {{-- <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p> --}}
-            </div>
-            <div class="modal-footer">
+    <div class="modal-dialog modal-dialog-centered">
+        <x-dashboard.action-modal
+            title-id="confirmModalLabel"
+            title="Conferma ordine"
+            eyebrow="Conferma"
+            tone="success"
+            entity-label="{{ __('admin.Ordine_di') }}"
+            :subject="$order->name"
+            :date-slot="$order->date_slot"
+            description="Usa questa azione quando orario, servizio e totale sono corretti."
+        >
+            <x-slot name="details">
+                <div class="dashboard-action-modal__detail">
+                    <span>Stato finale</span>
+                    <strong>{{ $confirmResultLabel }}</strong>
+                </div>
+
+                <div class="dashboard-action-modal__detail">
+                    <span>Avviso cliente</span>
+                    <strong>Email automatica</strong>
+                </div>
+            </x-slot>
+
+            <p class="dashboard-action-modal__hint">Il cliente riceve subito la conferma con il riepilogo dell ordine.</p>
+
+            <x-slot name="footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">
                     @csrf
                     <input value="0" type="hidden" name="wa">
                     <input value="1" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_3">{{__('admin.Conferma')}}</button>
+                    <button type="submit" class="w-100 my_btn_3">Conferma ordine</button>
                 </form>
-            {{-- <form action="{{ route('admin.orders.status') }}" method="POST">
-                    @csrf
-                    <input value="1" type="hidden" name="wa">
-                    <input value="1" type="hidden" name="c_a">
-                    <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_3">Si</button>
-            </form> --}}
-            </div>
-        </div>
+            </x-slot>
+        </x-dashboard.action-modal>
     </div>
 </div>
 
 <!-- Modale per l'annullamento -->
 <div class="modal fade" id="cancelModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content mymodal_make_res">
-            <div class="modal-header">
-                <h1 class="modal-title fs-3" id="cancelModalLabel">{{ __('admin.Gestione_notifica_per_annullamento') }}</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body fs-4">
-                <p>
-                    {{ __('admin.Ordine_di') }} <strong>{{$order->name}} </strong>{{ __('admin.per_il') }} <strong>{{$order->date_slot}}</strong>
-                </p>
-                {{-- <p>{{ __('admin.Oltre_alla_mail_automatica_vuoi_anche_inviare_un_messaggio_su_whatsapp') }}</p> --}}
-            </div>
-            <div class="modal-footer">
+    <div class="modal-dialog modal-dialog-centered">
+        <x-dashboard.action-modal
+            title-id="cancelModalLabel"
+            title="{{ $cancelButtonLabel }}"
+            eyebrow="Annulla"
+            tone="danger"
+            entity-label="{{ __('admin.Ordine_di') }}"
+            :subject="$order->name"
+            :date-slot="$order->date_slot"
+            :description="in_array($order->status, [3, 5], true) ? 'Il pagamento risulta gia incassato: questa azione avvia anche il rimborso.' : 'Usa questa azione solo se non puoi evadere l ordine richiesto.'"
+        >
+            <x-slot name="details">
+                <div class="dashboard-action-modal__detail">
+                    <span>Stato finale</span>
+                    <strong>{{ $cancelResultLabel }}</strong>
+                </div>
+
+                <div class="dashboard-action-modal__detail">
+                    <span>Avviso cliente</span>
+                    <strong>Email automatica</strong>
+                </div>
+            </x-slot>
+
+            <p class="dashboard-action-modal__hint">Procedi solo dopo un ultimo controllo su orario, servizio e pagamento.</p>
+
+            <x-slot name="footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">
                     @csrf
                     <input value="0" type="hidden" name="wa">
                     <input value="0" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_5">{{__('admin.Annulla')}}</button>
-            </form>
-            {{-- <form action="{{ route('admin.orders.status') }}" method="POST">
-                    @csrf
-                    <input value="1" type="hidden" name="wa">
-                    <input value="0" type="hidden" name="c_a">
-                    <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_3">Si</button>
-            </form> --}}
-            </div>
-        </div>
+                    <button type="submit" class="w-100 my_btn_5">{{ $cancelButtonLabel }}</button>
+                </form>
+            </x-slot>
+        </x-dashboard.action-modal>
     </div>
 </div>
 
