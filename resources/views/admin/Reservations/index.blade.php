@@ -26,7 +26,7 @@
 
 <div class="dash_page">
     <h1>
-        <i class="bi bi-credit-card-2-front-fill" style="font-size: 16px"></i>
+        <i class="bi bi-credit-card-2-front-fill"></i>
         {{__('admin.Lista_prenotazioni')}}
         <br>
         & {{__('admin.Ordini')}}
@@ -40,12 +40,12 @@
                 <input type="text" id="searchInput" class="search" placeholder="{{__('admin.Cerca_cliente')}}" >
                 <button id="typeToggle" class="type">{{__('admin.Tutti')}}</button>
                 <button id="sortToggle" class="order">
-                    <i class="bi bi-sort-down-alt" style="font-size: 16px"></i>
+                    <i class="bi bi-sort-down-alt"></i>
                 </button>
             </div>
             <label for="f">
-                <i class="bi bi-funnel-fill" style="font-size: 16px"></i>
-                <i class="bi bi-funnel" style="font-size: 16px"></i>
+                <i class="bi bi-funnel-fill"></i>
+                <i class="bi bi-funnel"></i>
             </label>
         </div>
     </div>
@@ -94,17 +94,17 @@
                         <div class="guest">
                         @if ($n_person->adult > 0)
                             {{$n_person->adult}}
-                            <i class="bi bi-person-standing" style="font-size: 16px"></i>
+                            <i class="bi bi-person-standing"></i>
                         @endif
                         @if ($n_person->child > 0)
                             {{$n_person->child}}
-                            <i class="bi bi-person-arms-up" style="font-size: 16px"></i>
+                            <i class="bi bi-person-arms-up"></i>
                         @endif
                     </div>
                     @endif
                     @if (in_array($res->status, [3,5,6]))
                         <div class="{{ $res->status == 6 ? 'refound' : 'paid' }} status">
-                            <i class="bi bi-credit-card-2-back" style="font-size: 16px"></i>
+                            <i class="bi bi-credit-card-2-back"></i>
                             {{ $res->status == 6 ? __('admin.Rimborsato') : __('admin.Pagato') }}
                         </div>
                     @endif
@@ -115,7 +115,7 @@
                     
                     <div class="btn-group dropup">
                         <button type="button" class="action_menu" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-three-dots-vertical" style="font-size: 16px"></i>
+                            <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
@@ -251,8 +251,8 @@ document.addEventListener("DOMContentLoaded", function() {
         render();
     });
 
-    down_svg = `<i class="bi bi-sort-down-alt" style="font-size: 16px"></i>`;
-    up_svg = `<i class="bi bi-sort-up" style="font-size: 16px"></i>`;
+    down_svg = `<i class="bi bi-sort-down-alt"></i>`;
+    up_svg = `<i class="bi bi-sort-up"></i>`;
 
     sortToggle?.addEventListener("click", () => {
         sortDir = sortDir === "desc" ? "asc" : "desc";

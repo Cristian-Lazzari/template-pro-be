@@ -50,12 +50,12 @@
                     @endforeach
                 </select>
                 <button id="sortToggle" class="order">
-                    <i class="bi bi-sort-down-alt" style="font-size: 16px"></i>
+                    <i class="bi bi-sort-down-alt"></i>
                 </button>
             </div>
             <label for="f">
-                <i class="bi bi-funnel-fill" style="font-size: 16px"></i>
-                <i class="bi bi-funnel" style="font-size: 16px"></i>
+                <i class="bi bi-funnel-fill"></i>
+                <i class="bi bi-funnel"></i>
             </label>
         </div>
     </div>
@@ -200,9 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let sortMode = 'recent';
 
     const iconRecent = `
-        <i class="bi bi-sort-down-alt" style="font-size: 16px"></i>`;
+        <i class="bi bi-sort-down-alt"></i>`;
     const iconAlpha = `
-        <i class="bi bi-sort-alpha-down" style="font-size: 16px"></i>`;
+        <i class="bi bi-sort-alpha-down"></i>`;
 
     function bindDynamicEvents() {
         productContainer.querySelectorAll('.preview-image').forEach(button => {

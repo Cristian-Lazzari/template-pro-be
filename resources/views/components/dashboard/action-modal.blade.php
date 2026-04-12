@@ -14,6 +14,7 @@
     $hasDetails = isset($details) && trim((string) $details) !== '';
     $hasFooter = isset($footer) && trim((string) $footer) !== '';
     $hasContent = trim((string) $slot) !== '';
+    $hasTitleIcon = isset($titleIcon) && trim((string) $titleIcon) !== '';
 @endphp
 
 <div {{ $attributes->class(['modal-content mymodal_make_res dashboard-action-modal', 'dashboard-action-modal--' . $tone]) }}>
@@ -23,8 +24,16 @@
                 <p class="dashboard-action-modal__eyebrow">{{ $eyebrow }}</p>
             @endif
 
-            <div>
-                <h1 @if ($titleId) id="{{ $titleId }}" @endif class="modal-title">{{ $title }}</h1>
+            <div class="dashboard-action-modal__title-copy">
+                <div class="dashboard-action-modal__title-row">
+                    @if ($hasTitleIcon)
+                        <span class="dashboard-action-modal__title-icon" aria-hidden="true">
+                            {{ $titleIcon }}
+                        </span>
+                    @endif
+
+                    <h1 @if ($titleId) id="{{ $titleId }}" @endif class="modal-title">{{ $title }}</h1>
+                </div>
 
                 @if ($description)
                     <p class="dashboard-action-modal__description">{{ $description }}</p>

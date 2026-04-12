@@ -55,7 +55,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
 
 <div class="dash_page settings-page">
     <h1 class="settings-page__title">
-        <i class="bi bi-gear-wide-connected" style="font-size: 16px"></i>
+        <i class="bi bi-gear-wide-connected"></i>
         {{__('admin.Impostazioni')}}
     </h1>
     <section class="settings-overview">
@@ -179,20 +179,20 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             <label class="radio">
                                 <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 0) checked  @endif value="0" >
                                 <span class="name">
-                                    <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-x-circle-fill"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <i class="bi bi-telephone-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-telephone-fill"></i>
                                 </span>
                             </label>
                             @if (config('configurazione.subscription') > 1 )   
                             <label class="radio">
                                 <input type="radio" name="tavoli_status"  @if($setting['Prenotazione Tavoli']['status'] == 2) checked  @endif value="2" >
                                 <span class="name">
-                                    <i class="bi bi-window-sidebar" style="font-size: 16px"></i>
+                                    <i class="bi bi-window-sidebar"></i>
                                 </span>
                             </label>
                             @endif
@@ -211,20 +211,20 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 0) checked  @endif value="0" >
                                 <span class="name">
-                                    <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-x-circle-fill"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <i class="bi bi-telephone-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-telephone-fill"></i>
                                 </span>
                             </label>
                             @if (config('configurazione.subscription') > 1)   
                             <label class="radio">
                                 <input type="radio" name="asporto_status"  @if($setting['Prenotazione Asporti']['status'] == 2) checked  @endif value="2" >
                                 <span class="name">
-                                    <i class="bi bi-window-sidebar" style="font-size: 16px"></i>
+                                    <i class="bi bi-window-sidebar"></i>
                                 </span>
                             </label>
                             @endif
@@ -237,20 +237,20 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             <label class="radio">
                                 <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 0) checked  @endif value="0" >
                                 <span class="name">
-                                    <i class="bi bi-cash-coin" style="font-size: 16px"></i>
+                                    <i class="bi bi-cash-coin"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <i class="bi bi-cash-coin" style="font-size: 16px"></i>
-                                    <i class="bi bi-credit-card-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-cash-coin"></i>
+                                    <i class="bi bi-credit-card-fill"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="asporto_pay" @if($asporto_p['pay'] == 2) checked  @endif value="2" >
                                 <span class="name">
-                                    <i class="bi bi-credit-card-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-credit-card-fill"></i>
                                 </span>
                             </label>
                         </div>
@@ -279,13 +279,13 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             <label class="radio">
                                 <input type="radio" name="domicilio_status"  @if($setting['Possibilità di consegna a domicilio']['status'] == 0) checked  @endif value="0" >
                                 <span class="name">
-                                    <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-x-circle-fill"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="domicilio_status"  @if($setting['Possibilità di consegna a domicilio']['status'] == 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <i class="bi bi-check-circle-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-check-circle-fill"></i>
                                 </span>
                             </label>
                         </div>
@@ -297,20 +297,20 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             <label class="radio">
                                 <input type="radio" name="domicilio_pay" @if($domicilio_p['pay'] == 0) checked  @endif value="0" >
                                 <span class="name">
-                                    <i class="bi bi-cash-coin" style="font-size: 16px"></i>
+                                    <i class="bi bi-cash-coin"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="domicilio_pay" @if($domicilio_p['pay'] == 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <i class="bi bi-cash-coin" style="font-size: 16px"></i>
-                                    <i class="bi bi-credit-card-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-cash-coin"></i>
+                                    <i class="bi bi-credit-card-fill"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="domicilio_pay" @if($domicilio_p['pay'] == 2) checked  @endif value="2" >
                                 <span class="name">
-                                    <i class="bi bi-credit-card-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-credit-card-fill"></i>
                                 </span>
                             </label>
                         </div>
@@ -366,7 +366,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                     <div class="g_set">
                         <div class="settings-card-head">
                             <h5>
-                                <i class="bi bi-gift-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-gift-fill"></i>
                                 {{ __('admin.Promozione') }} 
                             </h5>
                             <span class="settings-state settings-state--{{ $promoState['tone'] }}">{{ $promoState['label'] }}</span>
@@ -375,13 +375,13 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             <label class="radio">
                                 <input type="radio" name="table_promo"  @if($setting['Promozione Tavoli']['status']== 0) checked  @endif value="0" >
                                 <span class="name">
-                                    <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-x-circle-fill"></i>
                                 </span>
                             </label>
                             <label class="radio">
                                 <input type="radio" name="table_promo"  @if($setting['Promozione Tavoli']['status']== 1) checked  @endif value="1" >
                                 <span class="name">
-                                    <i class="bi bi-check-circle-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-check-circle-fill"></i>
                                 </span>
                             </label>
                         </div>
@@ -515,31 +515,31 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                                 </div>        
                                 <div class="input-group ">
                                     <label for="instagram" class="input-group-text">
-                                        <i class="bi bi-instagram" style="font-size: 16px"></i>
+                                        <i class="bi bi-instagram"></i>
                                     </label>
                                     <input type="text" class="form-control"  placeholder="{{__('admin.Link_instagram')}}" name="instagram" @if(isset($property_contatti['instagram'])) value="{{ $property_contatti['instagram'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="facebook" class="input-group-text">
-                                        <i class="bi bi-facebook" style="font-size: 16px"></i>
+                                        <i class="bi bi-facebook"></i>
                                     </label>
                                     <input type="text" class="form-control" placeholder="{{__('admin.Link_facebook')}}" name="facebook" @if(isset($property_contatti['facebook'])) value="{{ $property_contatti['facebook'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="tiktok" class="input-group-text">
-                                        <i class="bi bi-tiktok" style="font-size: 16px"></i>
+                                        <i class="bi bi-tiktok"></i>
                                     </label>
                                     <input type="text" class="form-control"  placeholder="{{__('admin.Link_tiktok')}}" name="tiktok" @if(isset($property_contatti['tiktok'])) value="{{ $property_contatti['tiktok'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="youtube" class="input-group-text">
-                                        <i class="bi bi-youtube" style="font-size: 16px"></i>
+                                        <i class="bi bi-youtube"></i>
                                     </label>
                                     <input type="text" class="form-control"  placeholder="{{__('admin.Link_youtube')}}" name="youtube" @if(isset($property_contatti['youtube'])) value="{{ $property_contatti['youtube'] }}" @endif>
                                 </div>        
                                 <div class="input-group ">
                                     <label for="whatsapp" class="input-group-text">
-                                        <i class="bi bi-whatsapp" style="font-size: 16px"></i>
+                                        <i class="bi bi-whatsapp"></i>
                                     </label>
                                     <input type="text" class="form-control" placeholder="+39001110000"  name="whatsapp" @if(isset($property_contatti['whatsapp'])) value="{{ $property_contatti['whatsapp'] }}" @endif>
                                 </div>        
@@ -622,7 +622,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
         </section>
         <div class="actions settings-form-actions">
             <button type="button" class=" my_btn_3 m-auto" data-bs-toggle="modal" data-bs-target="#staticBackdropav">
-                <i class="bi bi-sliders" style="font-size: 16px"></i>
+                <i class="bi bi-sliders"></i>
                 {{__('admin.Impostazioni_a')}}</button>
         </div>   
 
@@ -638,7 +638,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                     {{__('admin.Chiudi')}}
                 </button>
                 <h2>
-                    <i class="bi bi-sliders" style="font-size: 16px"></i>
+                    <i class="bi bi-sliders"></i>
                 {{__('admin.Impostazioni_a')}}</h2>
                 <div class="top-set_a">
                     <div class="set_a">

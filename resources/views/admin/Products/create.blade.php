@@ -22,7 +22,7 @@
         <div class="split">
             <div>
                 <label class="label_c" for="name"> 
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
                 <p><input @if(!isset($data)) value="{{ old('name') }}" @else value="{{ $data['name'] }}" @endif  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
@@ -30,7 +30,7 @@
             </div>
             <div class="price_input">
                 <label class="label_c" for="price">   
-                    <i class="bi bi-123" style="font-size: 16px"></i>
+                    <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
                 <p><input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" step="0.01" placeholder=" Inserisci il prezzo "><span>€</span></p> 
                 @error('price') <p class="error">{{ $message }}</p> @enderror
@@ -40,14 +40,14 @@
             
             <div>
                 <label class="label_c" for="file-input">
-                    <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                    <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                 <p><input type="file" id="file-input" name="image" ></p>
                 @error('image') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="label_c" for="category_id">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>
+                    <i class="bi bi-view-list"></i>
                     {{__('admin.Categoria')}}</label>
                 <p>
                     <select name="category_id" id="category_id">
@@ -61,7 +61,7 @@
         </div>
         <p class="desc"> 
             <label class="label_c" for="description">
-            <i class="bi bi-body-text" style="font-size: 16px"></i> 
+            <i class="bi bi-body-text"></i> 
             {{__('admin.Descrizione')}}</label>   
             <textarea name="description" id="description" cols="30" rows="10" >@if(!isset($data)) {{ old('description') }} @else {{ $data['description'] }} @endif </textarea>
         </p>
@@ -74,7 +74,7 @@
             @if ($property_adv['too'])
             <div>
                 <label class="label_c" for="slot_plate">
-                <i class="bi bi-123" style="font-size: 16px"></i>{{ __('admin.Spazio_occupato') }}</label>
+                <i class="bi bi-123"></i>{{ __('admin.Spazio_occupato') }}</label>
                 <p><input @if(!isset($data)) value="{{ old('slot_plate', 0) }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="Inserisci lo spazio  "></p>
                 @error('slot_plate') <p class="error">{{ $message }}</p> @enderror
             </div>
@@ -82,7 +82,7 @@
             <div>
                 
                 <label class="label_c" for="type_plate">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>{{ __('admin.Tipo_di_piatto') }}</label>
+                    <i class="bi bi-view-list"></i>{{ __('admin.Tipo_di_piatto') }}</label>
                 <p>
                     <select name="type_plate" id="type_plate">
                         <option @if( 0 == old('type_plate')) selected  @elseif(isset($data) && 0 == $data['type_plate']) selected @endif value="0">{{ __('admin.altro') }}</option>
@@ -96,7 +96,7 @@
             <div>
                 
                 <label class="label_c" for="tag_set">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>{{ __('admin.Custom_Ingredienti') }}</label>
+                    <i class="bi bi-view-list"></i>{{ __('admin.Custom_Ingredienti') }}</label>
                 <p>
                     <select name="tag_set" id="tag_set">
                         <option @if( 0 == old('tag_set')) selected  @elseif(isset($data) && 0 == $data['tag_set']) selected @endif value="0">{{ __('admin.NON_modificabile') }}</option>
@@ -126,14 +126,14 @@
                     <div class="split">
                         <div>
                             <label class="label_c" for="name_ing">
-                                <i class="bi bi-type" style="font-size: 16px"></i>
+                                <i class="bi bi-type"></i>
                                 {{__('admin.Nome')}}</label>
                             <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" Inserisci il nome"></p>
                             @error('name_ing') <p class="error">{{ $message }}</p> @enderror
                         </div>
                         <div class="price_input">
                             <label class="label_c" for="price_ing">
-                                <i class="bi bi-123" style="font-size: 16px"></i>
+                                <i class="bi bi-123"></i>
                                 {{__('admin.Prezzo')}}</label>
                             <p><span>€</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" Inserisci il prezzo "></p>
                             @error('price_ing') <p class="error">{{ $message }}</p> @enderror
@@ -141,14 +141,14 @@
                     </div>
                     <div>
                         <label class="label_c" for="file-input1"> 
-                            <i class="bi bi-file-earmark-image" style="font-size: 16px"></i> 
+                            <i class="bi bi-file-earmark-image"></i> 
                             {{__('admin.Immagine')}}</label>
                         <p><input type="file" id="file-input1" name="image_ing" ></p>
                         @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
                     </div> 
                     <div class="check_c">
                         <label class="label_c" for="type">
-                            <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>{{ __('admin.Categorie_abbinate') }}</label>
+                            <i class="bi bi-ui-checks-grid"></i>{{ __('admin.Categorie_abbinate') }}</label>
                         <p>
                             
                             @foreach ($categories as $c)
@@ -163,7 +163,7 @@
                     
                     <div class="check_c">
                         <label class="label_c" for="type">
-                            <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                            <i class="bi bi-ui-checks-grid"></i>
                             {{__('admin.Allergeni')}}</label>
                         <p>
                             @foreach( $allergens as $a)
@@ -191,12 +191,12 @@
     </div>
     <section class="cont_i">
         <h2>
-            <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>{{ __('admin.Abbina_Ingredienti') }}</h2>
+            <i class="bi bi-ui-checks-grid"></i>{{ __('admin.Abbina_Ingredienti') }}</h2>
             <!-- Button trigger modal -->
 
         <div id="associated-ingredients" class="check_c">
             <h3>
-                <i class="bi bi-check-square-fill" style="font-size: 16px"></i>{{ __('admin.Ingredienti_abbinati') }}</h3>
+                <i class="bi bi-check-square-fill"></i>{{ __('admin.Ingredienti_abbinati') }}</h3>
             <p id="associated-list">
                 @if(isset($data['ingredients']))
                     @foreach($ingredients as $ingredient)
@@ -217,7 +217,7 @@
 
         <div class="check_c">
             <h3>
-                <i class="bi bi-square" style="font-size: 16px"></i>{{ __('admin.Ingredienti_disponibili') }}</h3>
+                <i class="bi bi-square"></i>{{ __('admin.Ingredienti_disponibili') }}</h3>
             <p id="available-ingredients">
                 @foreach($ingredients as $ingredient)
                     @php
@@ -259,7 +259,7 @@
     </section>
     <section class="cont_i">
         <h2 for="type">
-            <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+            <i class="bi bi-ui-checks-grid"></i>
             {{__('admin.Allergeni')}}
         <h2>
         <div class="check_c">

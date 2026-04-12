@@ -1,462 +1,837 @@
 @extends('layouts.base')
 
 @section('contents')
+@php
+    $accountLabels = [
+        'guest' => 'Ospite',
+        'registered' => 'Registrato',
+    ];
+
+    $marketingLabels = [
+        'no_marketing' => 'No marketing',
+        'soft_marketing' => 'Soft marketing',
+        'full' => 'Full marketing',
+    ];
+
+    $profileSettingsExpanded = session()->hasOldInput();
+@endphp
+
 <style>
-    .customer-page .customer-summary {
+    .customer-page.customer-page--detail {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: .8rem;
-        margin-bottom: 1rem;
-    }
-
-    .customer-page .summary-card,
-    .customer-page .customer-card,
-    .customer-page .customer-empty,
-    .customer-page .customer-settings {
-        background: var(--c3);
-        color: var(--c1);
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
-    }
-
-    .customer-page .summary-card {
-        padding: .9rem 1rem;
-    }
-
-    .customer-page .summary-card span {
-        display: block;
-        font-size: .85rem;
-        opacity: .75;
-    }
-
-    .customer-page .summary-card strong {
-        display: block;
-        font-size: 1.5rem;
-        line-height: 1.2;
-    }
-
-    .customer-page .customer-toolbar {
-        flex-direction: row;
-        display: flex;
-        gap: .7rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-        position: sticky;
-        top: 25px;
-        z-index: 50;
-    }
-
-    .customer-page .customer-toolbar input,
-    .customer-page .customer-toolbar select {
-        min-height: 44px;
-        border-radius: 12px;
-        border: 1px solid var(--c3_op_3);
-        background: var(--c1);
-        color: var(--c3);
-        padding: .75rem .9rem;
-        font-weight: 700;
-    }
-
-    .customer-page .customer-toolbar input {
-        flex: 1 1 280px !important;
-    }
-    .customer-page .customer-toolbar input::placeholder{
-        color: var(--c3_op_5);
-    }
-
-
-    .customer-page .customer-toolbar select {
-        flex: 0 0 220px !important;
-        max-width: 100%;
-    }
-
-    .customer-page .customer-lead {
-        text-align: center;
-        margin: -1.5rem auto 1.4rem;
-        max-width: 640px;
-        opacity: .78;
-    }
-
-    .customer-page .customer-list {
-        display: flex;
-        flex-direction: column;
-        gap: .9rem;
-    }
-
-    .customer-page .customer-settings {
-        padding: 1rem;
-        margin-bottom: 1rem;
-        display: grid;
-        gap: 1rem;
-    }
-
-    .customer-page .customer-settings__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: .9rem;
-    }
-
-    .customer-page .customer-settings label {
-        display: flex;
-        flex-direction: column;
-        gap: .4rem;
-        font-weight: 700;
-    }
-
-    .customer-page .customer-settings textarea,
-    .customer-page .customer-settings input[type="text"] {
+        gap: 22px;
         width: 100%;
-        min-height: 44px;
-        border-radius: 12px;
-        border: 1px solid var(--c3_op_3);
-        background: var(--c1);
+    }
+
+    .customer-page__hero,
+    .customer-page__settings,
+    .customer-page__toolbar-shell,
+    .customer-page__empty,
+    .customer-card {
+        width: 100%;
+    }
+
+    .customer-page__hero-copy,
+    .customer-page__hero-title,
+    .customer-page__summary-side,
+    .customer-page__toolbar-badges,
+    .customer-page__settings-copy,
+    .customer-page__actions,
+    .customer-card__identity,
+    .customer-card__title {
+        display: grid;
+        gap: 12px;
+    }
+
+    .customer-page__hero-title h1,
+    .customer-card__title h2 {
+        margin: 0;
         color: var(--c3);
-        padding: .75rem .9rem;
     }
 
-    .customer-page .customer-settings textarea {
-        min-height: 100px;
-        resize: vertical;
+    .customer-page__hero-title h1 {
+        font-size: clamp(32px, 4vw, 48px);
+        line-height: 1.02;
     }
 
-    .customer-page .question-list {
+    .customer-card__title h2 {
+        font-size: clamp(18px, 1.8vw, 24px);
+        line-height: 1.08;
+    }
+
+    .customer-page__hero-title p,
+    .customer-page__summary-card small,
+    .customer-page__field > span,
+    .customer-page__field p,
+    .question-item__field > span,
+    .customer-page__actions p,
+    .customer-card__title p,
+    .customer-page__empty p {
+        margin: 0;
+        color: rgba(216, 221, 232, 0.78);
+        line-height: 1.65;
+    }
+
+    .customer-page__summary-grid,
+    .customer-page__field-grid,
+    .customer-page__toolbar-grid,
+    .customer-page__list,
+    .question-list {
         display: grid;
-        gap: .8rem;
+        gap: 14px;
     }
 
-    .customer-page .question-item {
-        background: rgba(255,255,255,.06);
-        border: 1px solid rgba(255,255,255,.12);
-        border-radius: 14px;
-        padding: .85rem;
-        display: grid;
-        gap: .7rem;
+    .customer-page__summary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .customer-page .question-item__row {
-        display: grid;
-        grid-template-columns: 1.4fr 1fr auto auto;
-        gap: .7rem;
-        align-items: center;
+    .customer-page__summary-card,
+    .customer-page__mini-card {
+        border-radius: 18px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.05);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
-    .customer-page .question-item__toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        font-size: .9rem;
+    .customer-page__summary-card,
+    .customer-page__mini-card {
+        padding: 16px;
     }
 
-    .customer-page .customer-button,
-    .customer-page .customer-button--ghost {
+    .customer-page__summary-card span,
+    .customer-page__mini-card span,
+    .customer-page__field > span,
+    .question-item__field > span {
+        display: block;
+        font-size: .78rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: rgba(216, 221, 232, 0.64);
+    }
+
+    .customer-page__summary-card strong,
+    .customer-page__mini-card strong {
+        display: block;
+        margin-top: 10px;
+        color: var(--c3);
+        font-size: clamp(1.1rem, 2vw, 1.75rem);
+        line-height: 1.05;
+    }
+
+    .customer-page__summary-side,
+    .customer-page__toolbar-badges {
+        align-content: start;
+        justify-items: end;
+    }
+
+    .customer-page__button,
+    .customer-page__button--ghost {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: .45rem;
-        border-radius: 12px;
-        padding: .7rem 1rem;
-        font-weight: 900;
+        gap: 10px;
+        min-height: 46px;
+        padding: 0 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(216, 221, 232, 0.14);
+        font-weight: 800;
         text-decoration: none;
-        border: 0;
+        cursor: pointer;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .customer-page__button:hover,
+    .customer-page__button--ghost:hover {
+        transform: translateY(-1px);
+    }
+
+    .customer-page__button {
+        background: linear-gradient(135deg, rgba(14, 183, 146, 0.18), rgba(216, 221, 232, 0.08));
+        border-color: rgba(14, 183, 146, 0.28);
+        color: var(--c3);
+    }
+
+    .customer-page__button--ghost {
+        background: rgba(216, 221, 232, 0.06);
+        color: rgba(216, 221, 232, 0.94);
+    }
+
+    .customer-page__button i,
+    .customer-page__button--ghost i {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .customer-page__settings-toggle-shell,
+    .customer-page__settings-body {
+        display: grid;
+        gap: 12px;
+    }
+
+    .customer-page__settings-toggle-shell {
+        align-content: start;
+        justify-items: end;
+    }
+
+    .customer-page__settings-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 46px;
+        padding: 0 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(216, 221, 232, 0.14);
+        background: rgba(216, 221, 232, 0.06);
+        color: rgba(216, 221, 232, 0.94);
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .customer-page__settings-toggle:hover {
+        transform: translateY(-1px);
+        border-color: rgba(14, 183, 146, 0.28);
+        background: rgba(14, 183, 146, 0.12);
+    }
+
+    .customer-page__settings-toggle:focus-visible {
+        outline: 2px solid rgba(142, 246, 219, 0.42);
+        outline-offset: 3px;
+    }
+
+    .customer-page__settings-toggle i {
+        font-size: 14px;
+        line-height: 1;
+        transition: transform .18s ease;
+    }
+
+    .customer-page__settings-toggle[aria-expanded="true"] {
+        border-color: rgba(14, 183, 146, 0.28);
+        background: rgba(14, 183, 146, 0.12);
+    }
+
+    .customer-page__settings-toggle[aria-expanded="true"] i {
+        transform: rotate(180deg);
+    }
+
+    .customer-page__settings-toggle-text--open {
+        display: none;
+    }
+
+    .customer-page__settings-toggle[aria-expanded="true"] .customer-page__settings-toggle-text--closed {
+        display: none;
+    }
+
+    .customer-page__settings-toggle[aria-expanded="true"] .customer-page__settings-toggle-text--open {
+        display: inline;
+    }
+
+    .customer-page__settings-body {
+        gap: 24px;
+    }
+
+    .customer-page__field-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .customer-page__toolbar-grid {
+        grid-template-columns: minmax(0, 1.6fr) minmax(240px, .7fr);
+    }
+
+    .customer-page__field,
+    .question-item__field {
+        display: grid;
+        gap: 10px;
+    }
+
+    .customer-page__field input,
+    .customer-page__field select,
+    .customer-page__field textarea,
+    [data-question-item] input[type="text"] {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(216, 221, 232, 0.16);
+        background: rgba(9, 3, 51, 0.56);
+        color: var(--c3);
+    }
+
+    .customer-page__field textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .customer-page__field input::placeholder {
+        color: rgba(216, 221, 232, 0.48);
+    }
+
+    .question-item__fields {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .question-item__footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .customer-page__actions {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+
+    .customer-card.order-detail {
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .customer-card .order-detail__header {
+        gap: 12px;
+    }
+
+    .customer-card .order-detail__status {
+        padding: 8px 12px;
+    }
+
+    .customer-card__pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+    }
+
+    .customer-card__compact {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px 12px;
+        align-items: center;
+    }
+
+    .customer-card__details {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .customer-card__meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .customer-card__summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: rgba(216, 221, 232, 0.74);
+        font-size: .95rem;
+        line-height: 1.5;
+    }
+
+    .customer-card__summary strong {
+        color: var(--c3);
+        font-size: .98rem;
+        font-family: monospace;
+    }
+
+    .customer-card__action {
+        justify-self: end;
+    }
+
+    .customer-card__action .customer-page__button {
+        min-width: 112px;
+        min-height: 40px;
+        padding: 0 12px;
+        border-radius: 14px;
+    }
+
+    [data-question-item] label.question-item__switch {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+        padding: 10px 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.44);
         cursor: pointer;
     }
 
-    .customer-page .customer-button {
-        background: var(--c2);
-        color: var(--c3);
+    .question-item__switch input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        border: 0;
+        white-space: nowrap;
+        appearance: none;
+        -webkit-appearance: none;
     }
 
-    .customer-page .customer-button--ghost {
-        background: transparent;
-        color: var(--c1);
-        border: 1px solid rgba(255,255,255,.22);
-    }
-
-    .customer-page .customer-settings__actions {
-        display: flex;
-        gap: .7rem;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .customer-page .customer-card {
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: .9rem;
-    }
-
-    .customer-page .customer-card__top,
-    .customer-page .customer-card__bottom,
-    .customer-page .customer-card__contacts,
-    .customer-page .customer-card__stats {
-        display: flex;
-        gap: .7rem;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .customer-page .customer-card__name {
-        display: flex;
-        flex-direction: column;
-        gap: .15rem;
-    }
-
-    .customer-page .customer-card__name h2 {
-        margin: 0;
-        font-size: 1rem;
-        text-transform: uppercase;
-        font-weight: 900;
-    }
-
-    .customer-page .customer-card__name p {
-        margin: 0;
-        opacity: .72;
-    }
-
-    .customer-page .customer-card__contacts a {
+    [data-question-item] .question-item__switch-ui {
         display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        color: inherit;
-        text-decoration: none;
-        font-weight: 700;
-        background: rgba(30, 45, 100, .08);
+        flex: 0 0 auto;
+        width: 48px;
+        height: 28px;
         border-radius: 999px;
-        padding: .45rem .75rem;
+        background: rgba(216, 221, 232, 0.18);
+        border: 1px solid rgba(216, 221, 232, 0.14);
+        transition: background .2s ease, border-color .2s ease;
+        position: relative;
     }
 
-    .customer-page .customer-card__meta {
-        display: inline-flex;
-        align-items: center;
-        gap: .5rem;
-        flex-wrap: wrap;
+    [data-question-item] .question-item__switch-ui::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--c3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+        transition: transform .2s ease, background .2s ease;
     }
 
-    .customer-page .customer-card__contacts svg,
-    .customer-page .customer-card__button svg {
-        width: 16px;
-        height: 16px;
+    .question-item__switch-copy {
+        display: grid;
+        gap: 2px;
     }
 
-    .customer-page .customer-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        padding: .45rem .7rem;
-        border-radius: 999px;
-        background: var(--c1);
+    .question-item__switch-copy strong {
         color: var(--c3);
-        font-size: .84rem;
-        font-weight: 900;
+        font-size: .95rem;
+        line-height: 1.2;
     }
 
-    .customer-page .customer-chip--outline {
-        background: transparent;
-        color: var(--c1);
-        border: 1px solid rgba(30, 45, 100, .16);
+    .question-item__switch-copy small {
+        color: rgba(216, 221, 232, 0.72);
+        line-height: 1.4;
     }
 
-    .customer-page .customer-card__button {
-        display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        text-decoration: none;
-        background: var(--c2);
-        color: var(--c3);
-        padding: .65rem .9rem;
-        border-radius: 12px;
-        font-weight: 900;
+    .question-item__switch input:checked + .question-item__switch-ui {
+        background: rgba(14, 183, 146, 0.28);
+        border-color: rgba(14, 183, 146, 0.34);
     }
 
-    .customer-page .customer-empty {
-        padding: 1rem;
+    .question-item__switch input:checked + .question-item__switch-ui::after {
+        transform: translateX(20px);
+        background: #8ef6db;
+    }
+
+    .question-item__switch input:focus-visible + .question-item__switch-ui {
+        outline: 2px solid rgba(142, 246, 219, 0.42);
+        outline-offset: 3px;
+    }
+
+    .customer-page__empty {
+        display: grid;
+        place-items: center;
+        min-height: 220px;
         text-align: center;
     }
 
-    @media (max-width: 640px) {
-        .customer-page .customer-card__top,
-        .customer-page .customer-card__bottom {
-            align-items: flex-start;
-            flex-direction: column;
-        }
+    .customer-page__empty strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--c3);
+        font-size: 1.2rem;
+    }
 
-        .customer-page .question-item__row {
+    .customer-page__empty-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        margin-bottom: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.06);
+        color: var(--c3);
+    }
+
+    .customer-page__empty-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .customer-page__empty-icon i {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    @media (max-width: 1120px) {
+        .customer-page__field-grid,
+        .customer-page__toolbar-grid,
+        .customer-page__actions {
             grid-template-columns: 1fr;
         }
 
-        .customer-page .customer-toolbar {
-            top: 10px;
+        .customer-page__summary-side,
+        .customer-page__toolbar-badges,
+        .customer-page__settings-toggle-shell {
+            justify-items: start;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .customer-page__summary-grid,
+        .customer-page__list,
+        .question-item__fields,
+        .question-item__footer {
+            grid-template-columns: 1fr;
+        }
+
+        .customer-card__compact,
+        .customer-page__actions {
+            grid-template-columns: 1fr;
+        }
+
+        .customer-page__button,
+        .customer-page__button--ghost,
+        .customer-page__settings-toggle,
+        .customer-card__meta-row .order-detail__contact {
+            width: 100%;
+        }
+
+        .customer-card__action {
+            justify-self: stretch;
+        }
+
+        .customer-card__summary {
+            gap: 6px;
         }
     }
 </style>
 
-<div class="dash_page customer-page">
-    <h1>
-        <i class="bi bi-people-fill" style="font-size: 16px"></i>
-        {{ __('admin.Clienti') }}
-    </h1>
-
-    <p class="customer-lead">
-        Qui trovi sia i clienti registrati sia i contatti ospiti raccolti da ordini e prenotazioni.
-    </p>
-
-    <div class="customer-summary">
-        <div class="summary-card">
-            <span>{{ __('admin.Clienti') }}</span>
-            <strong>{{ $stats['total'] }}</strong>
-        </div>
-        <div class="summary-card">
-            <span>{{ __('admin.Con_ordini') }}</span>
-            <strong>{{ $stats['with_orders'] }}</strong>
-        </div>
-        <div class="summary-card">
-            <span>{{ __('admin.Con_prenotazioni') }}</span>
-            <strong>{{ $stats['with_reservations'] }}</strong>
-        </div>
-        <div class="summary-card">
-            <span>{{ __('admin.Ordini_e_prenotazioni') }}</span>
-            <strong>{{ $stats['with_both'] }}</strong>
-        </div>
-    </div>
-
-    <form class="customer-settings" method="POST" action="{{ route('admin.customers.profile_settings') }}">
-        @csrf
-        <div>
-            <h2 style="margin:0 0 .35rem;">Profilo cliente</h2>
-            <p style="margin:0; opacity:.8;">
-                Configura il questionario che completa il passaggio da ospite a registrato e personalizza i testi dei consensi.
-            </p>
-        </div>
-
-        <div class="customer-settings__grid">
-            <label>
-                <span>Testo consenso marketing</span>
-                <textarea name="marketing_consent_text">{{ old('marketing_consent_text', $profileSettings['marketing_consent_text'] ?? '') }}</textarea>
-            </label>
-
-            <label>
-                <span>Testo consenso profilazione</span>
-                <textarea name="profiling_consent_text">{{ old('profiling_consent_text', $profileSettings['profiling_consent_text'] ?? '') }}</textarea>
-            </label>
-        </div>
-
-        <div>
-            <div class="customer-settings__actions" style="margin-bottom:.8rem;">
-                <div>
-                    <strong>Domande personalizzate</strong>
-                    <p style="margin:.2rem 0 0; opacity:.8;">Le risposte verranno salvate in JSON nel profilo cliente.</p>
+<div class="dash_page customer-page customer-page--detail">
+    <section class="order-detail order-detail--active customer-page__hero">
+        <header class="order-detail__header">
+            <div class="customer-page__hero-copy">
+                <div class="order-detail__status">
+                    <span class="order-detail__status-icon order-detail__status-icon--active">
+                        <x-icon name="people-fill" />
+                    </span>
+                    <strong>{{ __('admin.Clienti') }}</strong>
                 </div>
-                <button type="button" class="customer-button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>
+
+                <div class="customer-page__hero-title">
+                    <h1>{{ __('admin.Clienti') }}</h1>
+                    <p>
+                        Qui vedi subito chi torna spesso, chi ha gia ordinato o prenotato
+                        e chi merita un attenzione in piu dopo il servizio.
+                        Deve essere una pagina rapida, utile e facile da leggere anche nei momenti di corsa.
+                    </p>
+                </div>
             </div>
 
-            <div id="customerQuestionList" class="question-list">
-                @foreach (($profileSettings['questions'] ?? []) as $index => $question)
-                    <div class="question-item" data-question-item>
-                        <input type="hidden" name="questions[{{ $index }}][key]" value="{{ $question['key'] ?? '' }}">
-                        <div class="question-item__row">
-                            <label>
-                                <span>Domanda</span>
-                                <input type="text" name="questions[{{ $index }}][label]" value="{{ $question['label'] ?? '' }}">
-                            </label>
-                            <label>
-                                <span>Placeholder</span>
-                                <input type="text" name="questions[{{ $index }}][placeholder]" value="{{ $question['placeholder'] ?? '' }}">
-                            </label>
-                            <label class="question-item__toggle">
-                                <input type="checkbox" name="questions[{{ $index }}][required]" value="1" @checked(($question['required'] ?? false))>
-                                <span>Obbligatoria</span>
-                            </label>
-                            <button type="button" class="customer-button--ghost" data-remove-question>Rimuovi</button>
-                        </div>
-                    </div>
-                @endforeach
+            <div class="order-detail__contacts">
+                <a href="#customerProfileSettings" class="order-detail__contact">
+                    <x-icon name="sliders" />
+                    <span>Configura profilo cliente</span>
+                </a>
+
+                <a href="#customerList" class="order-detail__contact">
+                    <x-icon name="person-vcard-fill" />
+                    <span>Vai ai profili</span>
+                </a>
+            </div>
+        </header>
+
+        <div class="customer-page__summary-grid">
+            <article class="customer-page__summary-card">
+                <span>{{ __('admin.Clienti') }}</span>
+                <strong>{{ $stats['total'] }}</strong>
+                <small>Una rubrica unica con clienti registrati e ospiti.</small>
+            </article>
+
+            <article class="customer-page__summary-card">
+                <span>{{ __('admin.Con_ordini') }}</span>
+                <strong>{{ $stats['with_orders'] }}</strong>
+                <small>Persone che hanno gia acquistato online.</small>
+            </article>
+
+            <article class="customer-page__summary-card">
+                <span>{{ __('admin.Con_prenotazioni') }}</span>
+                <strong>{{ $stats['with_reservations'] }}</strong>
+                <small>Clienti che hanno gia prenotato un tavolo.</small>
+            </article>
+
+            <article class="customer-page__summary-card">
+                <span>{{ __('admin.Ordini_e_prenotazioni') }}</span>
+                <strong>{{ $stats['with_both'] }}</strong>
+                <small>Clienti che usano piu di un canale con il locale.</small>
+            </article>
+        </div>
+    </section>
+
+    <form id="customerProfileSettings" class="order-detail order-detail--warning customer-page__settings" method="POST" action="{{ route('admin.customers.profile_settings') }}">
+        @csrf
+
+        <div class="order-detail__summary">
+            <div class="order-detail__meta">
+                <p class="order-detail__code">Profilazione cliente</p>
+                <p class="order-detail__time">Consensi e questionario</p>
+                <p class="order-detail__date">
+                    Qui imposti i messaggi che il cliente legge quando lascia i suoi dati
+                    e scegli poche domande che ti aiutano davvero a lavorare meglio, per esempio preferenze,
+                    ricorrenze o esigenze da ricordare.
+                </p>
+            </div>
+
+            <div class="customer-page__settings-toggle-shell">
+                <div class="customer-page__summary-side">
+                    <x-dashboard.state-pill tone="warning">Consensi</x-dashboard.state-pill>
+                    <x-dashboard.state-pill tone="neutral">Questionario</x-dashboard.state-pill>
+                </div>
+
+                <button
+                    type="button"
+                    class="customer-page__settings-toggle"
+                    id="customerProfileSettingsToggle"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#customerProfileSettingsContent"
+                    aria-expanded="{{ $profileSettingsExpanded ? 'true' : 'false' }}"
+                    aria-controls="customerProfileSettingsContent"
+                >
+                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--closed">Apri sezione</span>
+                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--open">Chiudi sezione</span>
+                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
 
-        <div class="customer-settings__actions">
-            <span style="opacity:.75;">Gli stati marketing nel database restano: no marketing, soft marketing, full.</span>
-            <button type="submit" class="customer-button">Salva configurazione</button>
+        <div id="customerProfileSettingsContent" class="collapse{{ $profileSettingsExpanded ? ' show' : '' }}">
+            <div class="customer-page__settings-body">
+                <section class="order-detail__section">
+                    <div class="order-detail__section-head">
+                        <h3>
+                            <span class="order-detail__section-icon">
+                                <x-icon name="chat-square-text-fill" />
+                            </span>
+                            Testi dei consensi
+                        </h3>
+                    </div>
+
+                    <div class="customer-page__field-grid">
+                        <label class="customer-page__field">
+                            <span>Testo consenso marketing</span>
+                            <textarea name="marketing_consent_text">{{ old('marketing_consent_text', $profileSettings['marketing_consent_text'] ?? '') }}</textarea>
+                        </label>
+
+                        <label class="customer-page__field">
+                            <span>Testo consenso profilazione</span>
+                            <textarea name="profiling_consent_text">{{ old('profiling_consent_text', $profileSettings['profiling_consent_text'] ?? '') }}</textarea>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="order-detail__section">
+                    <div class="order-detail__section-head">
+                        <h3>
+                            <span class="order-detail__section-icon">
+                                <x-icon name="patch-question-fill" />
+                            </span>
+                            Domande personalizzate
+                        </h3>
+                    </div>
+
+                    <div class="customer-page__actions" style="margin-bottom: 14px;">
+                        <div class="customer-page__settings-copy">
+                            <p>Meglio poche domande chiare che un modulo lungo: il cliente compila piu volentieri e tu raccogli informazioni che poi userai davvero.</p>
+                        </div>
+
+                        <button type="button" class="customer-page__button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>
+                    </div>
+
+                    <div id="customerQuestionList" class="question-list">
+                        @foreach (($profileSettings['questions'] ?? []) as $index => $question)
+                            <div class="dashboard-action-modal__detail" data-question-item>
+                                <input type="hidden" name="questions[{{ $index }}][key]" value="{{ $question['key'] ?? '' }}">
+                                <div class="question-item__fields">
+                                    <label class="question-item__field">
+                                        <span>Domanda</span>
+                                        <input type="text" name="questions[{{ $index }}][label]" value="{{ $question['label'] ?? '' }}">
+                                    </label>
+
+                                    <label class="question-item__field">
+                                        <span>Placeholder</span>
+                                        <input type="text" name="questions[{{ $index }}][placeholder]" value="{{ $question['placeholder'] ?? '' }}">
+                                    </label>
+                                </div>
+
+                                <div class="question-item__footer">
+                                    <label class="question-item__switch">
+                                        <input type="checkbox" name="questions[{{ $index }}][required]" value="1" @checked(($question['required'] ?? false))>
+                                        <span class="question-item__switch-ui" aria-hidden="true"></span>
+                                        <div class="question-item__switch-copy">
+                                            <strong>Da compilare sempre</strong>
+                                            <small>Attivala solo se la risposta ti serve davvero.</small>
+                                        </div>
+                                    </label>
+
+                                    <button type="button" class="customer-page__button--ghost" data-remove-question>Rimuovi</button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <div class="customer-page__actions">
+                    <p>Regola semplice: se un informazione non ti aiuta in sala, nelle prenotazioni o nel richiamo del cliente, meglio non chiederla.</p>
+                    <button type="submit" class="customer-page__button">Salva configurazione</button>
+                </div>
+            </div>
         </div>
     </form>
 
-    <section class="customer-toolbar">
-        <input id="customerSearch" type="text" placeholder="{{ __('admin.Cerca_cliente') }}">
-        <select id="customerType">
-            <option value="all">{{ __('admin.Tutti') }}</option>
-            <option value="orders">{{ __('admin.Con_ordini') }}</option>
-            <option value="reservations">{{ __('admin.Con_prenotazioni') }}</option>
-            <option value="both">{{ __('admin.Ordini_e_prenotazioni') }}</option>
-        </select>
+    <section class="order-detail customer-page__toolbar-shell">
+        <div class="order-detail__summary">
+            <div class="order-detail__meta">
+                <p class="order-detail__code">Ricerca e filtro</p>
+                <p class="order-detail__time">Trova il cliente giusto in pochi secondi</p>
+                <p class="order-detail__date">
+                    Cerca una persona per nome, email o telefono.
+                    In pochi secondi puoi aprire la sua scheda, vedere se ordina, se prenota
+                    e capire da dove arriva il rapporto con il locale.
+                </p>
+            </div>
+
+            <div class="customer-page__toolbar-badges">
+                <x-dashboard.state-pill tone="neutral">Filtro live</x-dashboard.state-pill>
+                <x-dashboard.state-pill tone="warning">Storico unificato</x-dashboard.state-pill>
+            </div>
+        </div>
+
+        <section class="order-detail__section">
+            <div class="customer-page__toolbar-grid">
+                <label class="customer-page__field">
+                    <span>{{ __('admin.Cerca_cliente') }}</span>
+                    <input id="customerSearch" type="text" placeholder="{{ __('admin.Cerca_cliente') }}">
+                </label>
+
+                <label class="customer-page__field">
+                    <span>Vista rapida</span>
+                    <select id="customerType">
+                        <option value="all">{{ __('admin.Tutti') }}</option>
+                        <option value="orders">{{ __('admin.Con_ordini') }}</option>
+                        <option value="reservations">{{ __('admin.Con_prenotazioni') }}</option>
+                        <option value="both">{{ __('admin.Ordini_e_prenotazioni') }}</option>
+                    </select>
+                </label>
+            </div>
+        </section>
     </section>
 
-    <div id="customerList" class="customer-list">
+    <div id="customerList" class="customer-page__list">
         @foreach ($customers as $customer)
+            @php
+                $displayName = trim(($customer->name ?? '') . ' ' . ($customer->surname ?? '')) ?: $customer->email;
+                $accountTone = $customer->account_state === 'registered' ? 'active' : 'warning';
+                $marketingTone = match ($customer->marketing_state) {
+                    'full' => 'active',
+                    'soft_marketing' => 'warning',
+                    default => 'off',
+                };
+                $marketingLabel = $marketingLabels[$customer->marketing_state] ?? ucfirst((string) $customer->marketing_state);
+            @endphp
+
             <article
-                class="customer-card"
+                class="order-detail order-detail--{{ $accountTone }} customer-card"
                 data-customer-card
                 data-search="{{ $customer->search_text }}"
                 data-has-orders="{{ $customer->orders_count > 0 ? 1 : 0 }}"
                 data-has-reservations="{{ $customer->reservations_count > 0 ? 1 : 0 }}"
             >
-                <div class="customer-card__top">
-                    <div class="customer-card__name">
-                        <h2>{{ trim($customer->name . ' ' . $customer->surname) ?: $customer->email }}</h2>
-                        <p>
-                            {{ __('admin.Ultima_attivita') }}:
-                            {{ $customer->last_activity_at ? $customer->last_activity_at->format('d/m/Y H:i') : '-' }}
-                        </p>
-                    </div>
-                    <div class="customer-card__meta">
-                        <span class="customer-chip customer-chip--outline">
-                            {{ $customer->account_state === 'registered' ? 'Registrato' : 'Ospite' }}
-                        </span>
-                        <span class="customer-chip customer-chip--outline">
-                            @if ($customer->marketing_state === 'full')
-                                Full
-                            @elseif ($customer->marketing_state === 'soft_marketing')
-                                Soft marketing
-                            @else
-                                No marketing
-                            @endif
-                        </span>
-                    </div>
-                    <div class="customer-card__contacts">
-                        <a href="mailto:{{ $customer->email }}">
-                            <i class="bi bi-envelope-fill"></i>
-                            {{ $customer->email }}
-                        </a>
-                        @if ($customer->phone)
-                            <a href="tel:{{ $customer->phone }}">
-                                <i class="bi bi-telephone-fill"></i>
-                                {{ $customer->phone }}
-                            </a>
-                        @endif
-                    </div>
-                </div>
+                <header class="order-detail__header">
+                    <div class="customer-card__identity">
+                        <div class="order-detail__status">
+                            <span class="order-detail__status-icon order-detail__status-icon--{{ $accountTone }}">
+                                @if ($customer->account_state === 'registered')
+                                    <x-icon name="person-check-fill" />
+                                @else
+                                    <x-icon name="person-fill" />
+                                @endif
+                            </span>
+                            <strong>{{ $accountLabels[$customer->account_state] ?? ucfirst((string) $customer->account_state) }}</strong>
+                        </div>
 
-                <div class="customer-card__bottom">
-                    <div class="customer-card__stats">
-                        <span class="customer-chip">{{ __('admin.Ordini') }}: {{ $customer->orders_count }}</span>
-                        <span class="customer-chip">{{ __('admin.Prenotazioni') }}: {{ $customer->reservations_count }}</span>
-                        <span class="customer-chip">{{ __('admin.Totale_interazioni') }}: {{ $customer->interactions_count }}</span>
+                        <div class="customer-card__title">
+                            <h2>{{ $displayName }}</h2>
+                            <p>
+                                Ultimo movimento:
+                                {{ $customer->last_activity_at ? $customer->last_activity_at->format('d/m/Y H:i') : '-' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="customer-card__pill-row">
+                        <x-dashboard.state-pill :tone="$marketingTone">{{ $marketingLabel }}</x-dashboard.state-pill>
+                    </div>
+                </header>
+
+                <div class="customer-card__compact">
+                    <div class="customer-card__details">
+                        <div class="customer-card__meta-row">
+                            <a href="mailto:{{ $customer->email }}" class="order-detail__contact">
+                                <x-icon name="envelope-arrow-up-fill" />
+                                <span>{{ $customer->email }}</span>
+                            </a>
+
+                            @if ($customer->phone)
+                                <a href="tel:{{ $customer->phone }}" class="order-detail__contact">
+                                    <x-icon name="telephone-outbound-fill" />
+                                    <span>{{ $customer->phone }}</span>
+                                </a>
+                            @endif
+                        </div>
+
+                        <p class="customer-card__summary">
+                            <strong>{{ $customer->orders_count }}</strong> ordini
+                            <span aria-hidden="true">•</span>
+                            <strong>{{ $customer->reservations_count }}</strong> prenotazioni
+                            <span aria-hidden="true">•</span>
+                            <strong>{{ $customer->interactions_count }}</strong> interazioni
+                        </p>
                     </div>
 
                     @if ($customer->detail_url)
-                        <a class="customer-card__button" href="{{ $customer->detail_url }}">
-                            <i class="bi bi-arrow-up-right-circle-fill" style="font-size: 16px"></i>
-                            {{ __('admin.Dettagli') }}
-                        </a>
+                        <div class="customer-card__action">
+                            <a class="customer-page__button" href="{{ $customer->detail_url }}">
+                                <x-icon name="arrow-up-right-circle-fill" />
+                                <span>Apri</span>
+                            </a>
+                        </div>
                     @endif
                 </div>
             </article>
         @endforeach
     </div>
 
-    <div id="customerEmpty" class="customer-empty" @if($customers->isNotEmpty()) hidden @endif>
-        {{ __('admin.Nessun_cliente_trovato') }}
+    <div id="customerEmpty" class="order-detail customer-page__empty" @if($customers->isNotEmpty()) hidden @endif>
+        <div>
+            <span class="customer-page__empty-icon" aria-hidden="true">
+                <x-icon name="search" />
+            </span>
+            <strong>{{ __('admin.Nessun_cliente_trovato') }}</strong>
+            <p>Prova con un altro nome oppure allarga il filtro per vedere piu clienti.</p>
+        </div>
     </div>
 </div>
 @endsection
@@ -470,6 +845,9 @@
         const emptyState = document.getElementById('customerEmpty');
         const questionList = document.getElementById('customerQuestionList');
         const addQuestionButton = document.getElementById('addCustomerQuestion');
+        const profileSettingsToggle = document.getElementById('customerProfileSettingsToggle');
+        const profileSettingsCollapse = document.getElementById('customerProfileSettingsContent');
+        const profileSettingsAnchors = Array.from(document.querySelectorAll('[href="#customerProfileSettings"]'));
 
         function questionIndex() {
             return questionList.querySelectorAll('[data-question-item]').length;
@@ -477,24 +855,30 @@
 
         function createQuestionItem(index) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'question-item';
+            wrapper.className = 'dashboard-action-modal__detail';
             wrapper.dataset.questionItem = '1';
             wrapper.innerHTML = `
                 <input type="hidden" name="questions[${index}][key]" value="">
-                <div class="question-item__row">
-                    <label>
+                <div class="question-item__fields">
+                    <label class="question-item__field">
                         <span>Domanda</span>
                         <input type="text" name="questions[${index}][label]" value="">
                     </label>
-                    <label>
+                    <label class="question-item__field">
                         <span>Placeholder</span>
                         <input type="text" name="questions[${index}][placeholder]" value="">
                     </label>
-                    <label class="question-item__toggle">
+                </div>
+                <div class="question-item__footer">
+                    <label class="question-item__switch">
                         <input type="checkbox" name="questions[${index}][required]" value="1">
-                        <span>Obbligatoria</span>
+                        <span class="question-item__switch-ui" aria-hidden="true"></span>
+                        <div class="question-item__switch-copy">
+                            <strong>Da compilare sempre</strong>
+                            <small>Attivala solo se la risposta ti serve davvero.</small>
+                        </div>
                     </label>
-                    <button type="button" class="customer-button--ghost" data-remove-question>Rimuovi</button>
+                    <button type="button" class="customer-page__button--ghost" data-remove-question>Rimuovi</button>
                 </div>
             `;
 
@@ -514,6 +898,28 @@
             const item = removeButton.closest('[data-question-item]');
             item?.remove();
         });
+
+        function openProfileSettings() {
+            if (!profileSettingsToggle || !profileSettingsCollapse) {
+                return;
+            }
+
+            if (profileSettingsCollapse.classList.contains('show') || profileSettingsCollapse.classList.contains('collapsing')) {
+                return;
+            }
+
+            profileSettingsToggle.click();
+        }
+
+        profileSettingsAnchors.forEach(function (anchor) {
+            anchor.addEventListener('click', function () {
+                window.requestAnimationFrame(openProfileSettings);
+            });
+        });
+
+        if (window.location.hash === '#customerProfileSettings') {
+            openProfileSettings();
+        }
 
         function renderCustomers() {
             const search = (searchInput.value || '').trim().toLowerCase();

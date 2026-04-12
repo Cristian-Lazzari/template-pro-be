@@ -19,7 +19,7 @@ $domain = 'https://future-plus.it/allergens/';
         <div class="split">
             <div>
                 <label class="label_c" for="name_ing"> 
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
                 <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" Inserisci il nome"></p>
@@ -27,7 +27,7 @@ $domain = 'https://future-plus.it/allergens/';
             </div>
             <div>
                 <label class="label_c" for="price_ing">
-                    <i class="bi bi-123" style="font-size: 16px"></i>
+                    <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
                 <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" Inserisci il prezzo "></p>
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
@@ -35,7 +35,7 @@ $domain = 'https://future-plus.it/allergens/';
         </div>
         <div class="check_c">
             <label class="label_c" for="type">
-                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                <i class="bi bi-ui-checks-grid"></i>
                 Categorie abbinate</label>
             <p>
                 
@@ -51,7 +51,7 @@ $domain = 'https://future-plus.it/allergens/';
         <div class="split"> 
             <div>
                 <label class="label_c" for="file-input"> 
-                    <i class="bi bi-file-earmark-image" style="font-size: 16px"></i> 
+                    <i class="bi bi-file-earmark-image"></i> 
                     {{__('admin.Immagine')}}</label>
                 <p><input type="file" id="file-input" name="image_ing" ></p>
                 @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
@@ -64,7 +64,7 @@ $domain = 'https://future-plus.it/allergens/';
         
         <div class="check_c">
             <label class="label_c" for="type">
-                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                <i class="bi bi-ui-checks-grid"></i>
                 {{__('admin.Allergeni')}}</label>
             <p>
                 @foreach( $allergens as $a)

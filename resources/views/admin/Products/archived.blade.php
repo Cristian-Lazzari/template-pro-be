@@ -29,7 +29,7 @@ $domain = 'https://future-plus.it/allergens/';
 <div class="dash_page">
 
     <h1>
-        <i class="bi bi-fork-knife" style="font-size: 16px"></i>{{ __('admin.Archivio_Prodotti') }}</h1>
+        <i class="bi bi-fork-knife"></i>{{ __('admin.Archivio_Prodotti') }}</h1>
     
     <div class="action-page">
         <a class="my_btn_3 m-1 w-auto" href="{{ route('admin.products.index') }}">{{__('admin.Esci')}}</a>
@@ -57,7 +57,7 @@ $domain = 'https://future-plus.it/allergens/';
                     </div>
                 @else
                     <div class="no_img">
-                        <i class="bi bi-image-fill" style="font-size: 16px"></i>
+                        <i class="bi bi-image-fill"></i>
                     </div>
                 @endif 
                 <div class="name_cat">
@@ -67,7 +67,7 @@ $domain = 'https://future-plus.it/allergens/';
                 <div class="price_btn">
                     <div class="price">€{{$item->price / 100}}</div>
                     <button type="button" class="action_menu action_menu_info" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
-                        <i class="bi bi-info-circle-fill" style="font-size: 16px"></i>{{ __('admin.Info') }}</button>
+                        <i class="bi bi-info-circle-fill"></i>{{ __('admin.Info') }}</button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -104,7 +104,7 @@ $domain = 'https://future-plus.it/allergens/';
                                     @if (count($item->ingredients))
                                         <section>
                                             <h4>
-                                                <i class="bi bi-card-list" style="font-size: 16px"></i>
+                                                <i class="bi bi-card-list"></i>
                                                 {{__('admin.Ingredienti')}}</h4>
                                             <p>
                                                 @foreach ($item->ingredients as $ingredient)     
@@ -116,7 +116,7 @@ $domain = 'https://future-plus.it/allergens/';
                                     @if ($item->description)
                                         <section>
                                             <h4>
-                                                <i class="bi bi-card-text" style="font-size: 16px"></i>
+                                                <i class="bi bi-card-text"></i>
                                                 {{__('admin.Descrizione')}}</h4>
                                             <p>{{$item->description}}</p>
                                         </section>

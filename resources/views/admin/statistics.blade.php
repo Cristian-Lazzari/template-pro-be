@@ -52,7 +52,7 @@
                         </div>
                         <div class="st ok">
                             <span class="label">
-                                <i class="ok bi bi-check-circle-fill" style="font-size: 16px"></i>
+                                <i class="ok bi bi-check-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{$or['confirm'] / $order_count * 100}}">
                                 <p>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="st st_null">
                             <span class="label">
-                                <i class="null bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                <i class="null bi bi-x-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{$or['cancelled'] / $order_count * 100}}">
                                 <p>
@@ -123,7 +123,7 @@
                         </div>
                         <div class="st ok">
                             <span class="label">
-                                <i class="bi bi-check-circle-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-check-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{$res['confirm'] / $res_count * 100}}">
                                 <p>
@@ -133,7 +133,7 @@
                         </div>
                         <div class="st st_null">
                             <span class="label">
-                                <i class="null bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                <i class="null bi bi-x-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{$res['cancelled'] / $res_count * 100}}">
                                 <p>
@@ -181,14 +181,14 @@
                     <div class="line">
                         <div class="st top_s">
                             <span class="label">
-                                <i class="bi bi-person-standing" style="font-size: 16px"></i>{{ __('admin.Adulti') }}</span>
+                                <i class="bi bi-person-standing"></i>{{ __('admin.Adulti') }}</span>
                             <span class="count">
                                 {{ $res_people['adults_confirmed'] + $res_people['adults_cancelled'] }}
                             </span>
                         </div>
                         <div class="st ok">
                             <span class="label">
-                                <i class="bi bi-check-circle-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-check-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{ ($res_people['adults_confirmed'] + $res_people['children_confirmed'] ) / $res_count * 100}}">
                                 <p>
@@ -198,7 +198,7 @@
                         </div>
                         <div class="st st_null">
                             <span class="label">
-                                <i class="null bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                <i class="null bi bi-x-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{ $res_people['adults_cancelled'] / $res_count * 100}}">
                                 <p>
@@ -210,14 +210,14 @@
                     <div class="line">
                         <div class="st top_s">
                             <span class="label">
-                                <i class="bi bi-person-arms-up" style="font-size: 16px"></i>{{ __('admin.Bambini') }}</span>
+                                <i class="bi bi-person-arms-up"></i>{{ __('admin.Bambini') }}</span>
                             <span class="count">
                                 {{ $res_people['children_confirmed'] + $res_people['children_cancelled'] }}
                             </span>
                         </div>
                         <div class="st ok">
                             <span class="label">
-                                <i class="bi bi-check-circle-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-check-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{ $res_people['children_confirmed'] / $res_count * 100}}">
                                 <p>
@@ -227,7 +227,7 @@
                         </div>
                         <div class="st st_null">
                             <span class="label">
-                                <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-x-circle-fill"></i>
                             </span>
                             <div class="donut-wrapper" style="--percent: {{ $res_people['children_cancelled'] / $res_count * 100}}">
                                 <p>

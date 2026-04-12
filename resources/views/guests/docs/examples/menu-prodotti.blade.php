@@ -8,7 +8,7 @@
         <div class="dashboard-preview-stack prod_index">
             <div class="res-item prod" data-product-id="148">
                 <div class="no_img">
-                    <i class="bi bi-image-fill" style="font-size: 16px"></i>
+                    <i class="bi bi-image-fill"></i>
                 </div>
 
                 <div class="name_cat">

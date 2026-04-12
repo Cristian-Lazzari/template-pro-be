@@ -15,7 +15,7 @@
         <div class="split">
             <div>
                 <label class="label_c" for="name"> 
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
                 <p><input value="{{ old('name', $menu->name) }}"  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
@@ -23,7 +23,7 @@
             </div>
             <div class="price_input">
                 <label class="label_c" for="price">   
-                    <i class="bi bi-123" style="font-size: 16px"></i>
+                    <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
                 <p><input value="{{old('price', $menu->price) / 100 }}" step="0.01" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>€</span></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
@@ -39,7 +39,7 @@
             </div>
             <div class="price_input">
                 <label class="label_c" for="old_price">   
-                    <i class="bi bi-123" style="font-size: 16px"></i>
+                    <i class="bi bi-123"></i>
                     {{__('admin.Prezzo_barrato')}}</label>
                 <p><span>€</span><input value="{{old('old_price', $menu->old_price / 100 )}}" type="number" name="old_price" id="old_price" step="0.01" placeholder=" Inserisci il prezzo "></p>
                 @error('old_price') <p class="error">{{ $message }}</p> @enderror
@@ -48,14 +48,14 @@
         <div class="split">
             <div>
                 <label class="label_c" for="file-input">
-                    <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                    <i class="bi bi-file-earmark-image"></i>
                 {{__('admin.Immagine')}}</label>
                 <p class="img-cont">
                     <input type="file" id="file-input" name="image" >
                     @if (isset($menu->image))
                         <input type="checkbox" class="btn-check" id="b2" name="img_off">
                         <label class="btn btn-outline-danger" for="b2">
-                            <i class="bi bi-trash-fill" style="font-size: 16px"></i>
+                            <i class="bi bi-trash-fill"></i>
                         </label>
                         <img class="" src="{{ asset('public/storage/' . $menu->image) }}" alt="{{$menu->name }}">
                     @endif 
@@ -64,7 +64,7 @@
             </div>
             <div>
                 <label class="label_c" for="category_id">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>
+                    <i class="bi bi-view-list"></i>
                     {{__('admin.Categoria')}}</label>
                 <p>
                     <select name="category_id" id="category_id">
@@ -78,7 +78,7 @@
         </div>
         <p class="desc"> 
             <label class="label_c" for="description">
-            <i class="bi bi-body-text" style="font-size: 16px"></i> 
+            <i class="bi bi-body-text"></i> 
             {{__('admin.Descrizione')}}</label>   
             <textarea name="description" id="description" cols="1" rows="3" >{{ old('description', $menu->description) }}  </textarea>
         </p>
@@ -102,7 +102,7 @@
 
     <section id="section_fix" class="cont_i d-none">
         <h2>
-            <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+            <i class="bi bi-ui-checks-grid"></i>
             Abbina Prodotti</h2>
         <div class="check_c">
             

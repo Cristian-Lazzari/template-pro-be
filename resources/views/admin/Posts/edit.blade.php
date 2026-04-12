@@ -25,7 +25,7 @@
         <div class="split">
             <div>
                 <label class="label_c" for="title">
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                     {{__('admin.Titolo')}}</label>
                 <p><input value="{{ old('title', $post->title) }}" type="text" name="title" id="title" placeholder=" Inserisci il titolo"></p>
                 @error('title') <p class="error">{{ $message }}</p> @enderror
@@ -41,14 +41,14 @@
         <div class="split">    
             <div>
                 <label class="label_c" for="file-input">
-                    <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                    <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                 <p><input   type="file" id="file-input" name="image" ></p>
                 @error('image') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="label_c" for="path">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>
+                    <i class="bi bi-view-list"></i>
                     {{__('admin.Pagina_di_destinazione')}}</label>
                 <p>
                     <select name="path" id="path">
@@ -61,10 +61,10 @@
         </div>
         <p class="desc"> 
             <label class="label_c" for="description">
-                <i class="bi bi-body-text" style="font-size: 16px"></i>
+                <i class="bi bi-body-text"></i>
                 {{__('admin.Descrizione')}} 
                 <button class="my_btn_4" type="button" data-bs-toggle="collapse" data-bs-target="#desc" aria-expanded="false" aria-controls="desc">
-                    <i class="bi bi-info-circle-fill" style="font-size: 16px"></i>
+                    <i class="bi bi-info-circle-fill"></i>
                 </button>
             </label>
             <div class="collapse" id="desc">
@@ -77,13 +77,13 @@
         <div class="split">
             <div class="desc">
                 <label class="label_c" for="hashtag">
-                    <i class="bi bi-hash" style="font-size: 16px"></i>{{ __('admin.Hashtag_') }}</label>
+                    <i class="bi bi-hash"></i>{{ __('admin.Hashtag_') }}</label>
                 <textarea name="hashtag" id="hashtag" cols="1" rows="2"  >{{ old('hashtag', $post->hashtag) }}</textarea>
                    
             </div>
             <div>
                 <label class="label_c" for="link">
-                    <i class="bi bi-link-45deg" style="font-size: 16px"></i>{{ __('admin.Link_IG_') }}</label>
+                    <i class="bi bi-link-45deg"></i>{{ __('admin.Link_IG_') }}</label>
                 <p><input value="{{ old('link', $post->link) }}" type="text" name="link" id="link" placeholder=" Inserisci il link"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror
             </div>     

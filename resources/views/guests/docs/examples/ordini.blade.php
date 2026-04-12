@@ -21,7 +21,7 @@
                                 <strong>20:30</strong>
                                 <div class="line"></div>
                                 <p class="prop">
-                                    <i class="bi bi-bag" style="font-size: 16px"></i>
+                                    <i class="bi bi-bag"></i>
                                 </p>
                             </div>
 
@@ -89,11 +89,11 @@
                         <p class="p_day">12</p>
                         <span class="bookings">
                             <strong>3</strong>
-                            <i class="bi bi-bag" style="font-size: 16px"></i>
+                            <i class="bi bi-bag"></i>
                         </span>
                         <span class="bookings top">
                             <strong>1</strong>
-                            <i class="bi bi-truck" style="font-size: 16px"></i>
+                            <i class="bi bi-truck"></i>
                         </span>
                     </button>
                 </div>
@@ -115,11 +115,11 @@
                             <input type="text" class="search" value="verdi" placeholder="Cerca cliente">
                             <button class="type">Ordini</button>
                             <button class="order">
-                                <i class="bi bi-sort-down-alt" style="font-size: 16px"></i>
+                                <i class="bi bi-sort-down-alt"></i>
                             </button>
                         </div>
                         <label>
-                            <i class="bi bi-funnel-fill" style="font-size: 16px"></i>
+                            <i class="bi bi-funnel-fill"></i>
                         </label>
                     </div>
                 </div>
@@ -138,12 +138,12 @@
                             </svg>
                             <div class="name">Luca Verdi</div>
                             <div class="paid status">
-                                <i class="bi bi-credit-card-2-back" style="font-size: 16px"></i>
+                                <i class="bi bi-credit-card-2-back"></i>
                                 Pagato
                             </div>
                             <div class="price">€46</div>
                             <button type="button" class="action_menu">
-                                <i class="bi bi-three-dots-vertical" style="font-size: 16px"></i>
+                                <i class="bi bi-three-dots-vertical"></i>
                             </button>
                         </div>
                     </div>
@@ -231,11 +231,11 @@
                         <p class="p_day">12</p>
                         <span class="bookings">
                             <strong>3</strong>
-                            <i class="bi bi-bag" style="font-size: 16px"></i>
+                            <i class="bi bi-bag"></i>
                         </span>
                         <span class="bookings top">
                             <strong>1</strong>
-                            <i class="bi bi-truck" style="font-size: 16px"></i>
+                            <i class="bi bi-truck"></i>
                         </span>
                     </button>
                 </div>
@@ -249,10 +249,10 @@
                                 <strong>20:30</strong>
                                 <div class="line"></div>
                                 <p class="prop">
-                                    <i class="bi bi-bag" style="font-size: 16px"></i>
+                                    <i class="bi bi-bag"></i>
                                 </p>
                                 <button type="button" class="block-time-btn">
-                                    <i class="bi bi-toggle-on" style="font-size: 16px"></i>
+                                    <i class="bi bi-toggle-on"></i>
                                 </button>
                             </div>
 
@@ -286,10 +286,10 @@
                                 <strong>21:00</strong>
                                 <div class="line blocked-line"></div>
                                 <p class="prop">
-                                    <i class="bi bi-truck" style="font-size: 16px"></i>
+                                    <i class="bi bi-truck"></i>
                                 </p>
                                 <button type="button" class="unblock-time-btn">
-                                    <i class="bi bi-toggle-off" style="font-size: 16px"></i>
+                                    <i class="bi bi-toggle-off"></i>
                                 </button>
                             </div>
                         </div>

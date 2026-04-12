@@ -123,7 +123,7 @@
     </div>
 
     <button type="button" class="my_btn_3 m-auto mb-3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecial">
-        <i class="bi bi-shuffle" style="font-size: 16px"></i>
+        <i class="bi bi-shuffle"></i>
         {{__('admin.Modifica_ordine')}}
     </button>
         <!-- Modal ORDINA LE CATEGORIE -->

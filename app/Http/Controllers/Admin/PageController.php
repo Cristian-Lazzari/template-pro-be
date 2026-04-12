@@ -429,7 +429,11 @@ class PageController extends Controller
         return view('admin.menu', compact('menus', 'products', 'stat'));
     }
     protected function menu_int(){
-        $menus = Menu::where('fixed_menu', '!=', '0')->where('promo', 1)->with('products', 'category')->orderBy('updated_at', 'desc')->get();
+        $menus = Menu::where('fixed_menu', '!=', '0')
+            ->where('promo', 1)
+            ->with(['products.category', 'category'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
         foreach ($menus as $c) {
             if($c->fixed_menu == '2'){
                 $choices = [];
@@ -443,7 +447,10 @@ class PageController extends Controller
                 $c->fixed_menu = $choices;
             }
         }
-        $products = Product::where('promotion', 1)->get();
+        $products = Product::where('promotion', 1)
+            ->with(['category', 'ingredients'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
         $totalProducts = Product::count();
         $nonArchivedProducts = Product::where('archived', false)->count();
         $archivedProducts = Product::where('archived', true)->count();

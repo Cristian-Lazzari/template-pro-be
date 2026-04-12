@@ -22,7 +22,7 @@
         <section class="check_c">
             <h3 class="mb-4">{{ __('admin.Scegli_la_lista_di_destinatari') }}</h3>        
             <label class="label_c" for="type">
-                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                <i class="bi bi-ui-checks-grid"></i>
                 Liste
             </label>
 
@@ -59,7 +59,7 @@
         <section class="check_c">
             <h3 class="mb-4">{{ __('admin.Scegli_un_modello_da_inviare') }}</h3>        
             <label class="label_c" for="type">
-                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                <i class="bi bi-ui-checks-grid"></i>
                 Modelli Mail
             </label>
 

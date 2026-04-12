@@ -2,7 +2,7 @@
 
 @section('contents')
 <a onclick="history.back()" class="btn btn-outline-light my-5">
-    <i class="bi bi-arrow-90deg-left" style="font-size: 16px"></i>
+    <i class="bi bi-arrow-90deg-left"></i>
 </a>
 @php
     $dataOra = DateTime::createFromFormat('d/m/Y H:i', $reservation->date_slot);

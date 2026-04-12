@@ -30,7 +30,7 @@
             <div class="split">
                 <div>
                     <label class="label_c" for="name"> 
-                        <i class="bi bi-type" style="font-size: 16px"></i>
+                        <i class="bi bi-type"></i>
                         {{__('admin.Nome')}}
                     </label>
                     <p>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="price_input">
                     <label class="label_c" for="price">   
-                        <i class="bi bi-123" style="font-size: 16px"></i>
+                        <i class="bi bi-123"></i>
                         {{__('admin.Prezzo')}}</label>
                     <p><input @if(!isset($data)) value="{{  $product->price / 100 }}" @else value="{{ $data['price'] / 100}}" @endif  step="0.01" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>€</span></p>
                     @error('price') <p class="error">{{ $message }}</p> @enderror
@@ -53,14 +53,14 @@
                 
                 <div>
                     <label class="label_c" for="file-input">
-                        <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                        <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                     <p class="img-cont">
                         <input type="file" id="file-input" name="image" >
                         @if (isset($product->image))
                             <input type="checkbox" class="btn-check" id="b2" name="img_off">
                             <label class="btn btn-outline-danger" for="b2">
-                                <i class="bi bi-trash-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-trash-fill"></i>
                             </label>
                             <img class="" src="{{ asset('public/storage/' . $product->image) }}" alt="{{$product->name }}">
                         @endif 
@@ -69,7 +69,7 @@
                 </div>
                 <div>
                     <label class="label_c" for="category_id">
-                        <i class="bi bi-view-list" style="font-size: 16px"></i>
+                        <i class="bi bi-view-list"></i>
                         {{__('admin.Categoria')}}</label>
                     <p>
                         <select name="category_id" id="category_id">
@@ -83,14 +83,14 @@
             </div>
             <p class="desc"> 
                 <label class="label_c" for="description">
-                    <i class="bi bi-body-text" style="font-size: 16px"></i> 
+                    <i class="bi bi-body-text"></i> 
                     {{__('admin.Descrizione')}}</label>   
                 <textarea name="description" id="description" cols="1" rows="4" >{{ old('description', $translations[$dfl]->description) }}</textarea>
             </p>
             {{-- multilingua --}}
             <section class="cont_i">
                 <label class="label_c" for="l*">
-                    <i class="bi bi-translate" style="font-size: 16px"></i>
+                    <i class="bi bi-translate"></i>
                     {{__('admin.Multilingua')}}</label> 
                     
                     <div class="check_c"  style="border: none !important; padding: 0; border-radius: 0; width: fit-content">
@@ -112,14 +112,14 @@
                                             <section class="more_i">  
                                                 <p class="desc">
                                                     <label class="label_c" for="translations[{{$i}}][name]">
-                                                        <i class="bi bi-type" style="font-size: 16px"></i>
+                                                        <i class="bi bi-type"></i>
                                                         {{__('admin.Nome')}}</label>
                                                     <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder=" Inserisci il nome">
                 
                                                 </p>
                                                 <p class="desc"> 
                                                     <label class="label_c" for="translations[{{$i}}][description]">
-                                                        <i class="bi bi-body-text" style="font-size: 16px"></i> 
+                                                        <i class="bi bi-body-text"></i> 
                                                         {{__('admin.Descrizione')}}</label>   
                                                     <textarea name="translations[{{$i}}][description]" id="translations[{{$i}}][description]" cols="1" rows="4" >{{$translations[$i]->description ?? '' }}</textarea>
                                                 </p>
@@ -145,7 +145,7 @@
                 </div>
                 <div class="price_input">
                     <label class="label_c" for="old_price">
-                        <i class="bi bi-123" style="font-size: 16px"></i>
+                        <i class="bi bi-123"></i>
                         {{__('admin.Prezzo_barrato')}}</label>
                     <p><span>€</span><input @if($product->old_price) value="{{  $product->old_price / 100 }}" @else value="{{ old('old_price')}}" @endif  step="0.01" type="number" name="old_price" id="old_price" placeholder=" Inserisci il prezzo barrato"></p>
                 </div>
@@ -158,14 +158,14 @@
                 @if ($property_adv['too'])
                 <div>
                     <label class="label_c" for="slot_plate">
-                    <i class="bi bi-123" style="font-size: 16px"></i> Spazio occupato</label>
+                    <i class="bi bi-123"></i> Spazio occupato</label>
                     <p><input @if(!isset($data)) value="{{ old('slot_plate', $product->slot_plate) }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="Inserisci lo spazio  "></p>
                     @error('slot_plate') <p class="error">{{ $message }}</p> @enderror
                 </div>
             
                 <div>
                     <label class="label_c" for="type_plate">
-                        <i class="bi bi-view-list" style="font-size: 16px"></i>{{ __('admin.Tipo_di_piatto') }}</label>
+                        <i class="bi bi-view-list"></i>{{ __('admin.Tipo_di_piatto') }}</label>
                     <p>
                         <select name="type_plate" id="type_plate">
                             <option @if( 0 == old('type_plate', $product->type_plate)) selected  @elseif(isset($data) && 0 == $data['type_plate']) selected @endif value="0">{{ __('admin.altro') }}</option>
@@ -178,7 +178,7 @@
                 @endif
                 <div>
                     <label class="label_c" for="tag_set">
-                        <i class="bi bi-view-list" style="font-size: 16px"></i>{{ __('admin.Custom_Ingredienti') }}</label>
+                        <i class="bi bi-view-list"></i>{{ __('admin.Custom_Ingredienti') }}</label>
                     <p>
                         <select name="tag_set" id="tag_set">
                             <option @if( 0 == old('tag_set', $product->tag_set)) selected  @elseif(isset($data) && 0 == $data['tag_set']) selected @endif value="0">{{ __('admin.NON_modificabile') }}</option>
@@ -206,14 +206,14 @@
                         <div class="split">
                             <div>
                                 <label class="label_c" for="name_ing">
-                                    <i class="bi bi-type" style="font-size: 16px"></i>
+                                    <i class="bi bi-type"></i>
                                     {{__('admin.Nome')}}</label>
                                 <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" Inserisci il nome"></p>
                                 @error('name_ing') <p class="error">{{ $message }}</p> @enderror
                             </div>
                             <div class="price_input">
                                 <label class="label_c" for="price_ing">
-                                    <i class="bi bi-123" style="font-size: 16px"></i>
+                                    <i class="bi bi-123"></i>
                                     {{__('admin.Prezzo')}}</label>
                                 <p><span>€</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing"  step="0.01" placeholder=" Inserisci il prezzo "></p>
                                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
@@ -222,7 +222,7 @@
                         
                         <div>
                             <label class="label_c" for="file-input1"> 
-                                <i class="bi bi-file-earmark-image" style="font-size: 16px"></i> 
+                                <i class="bi bi-file-earmark-image"></i> 
                                 {{__('admin.Immagine')}}</label>
                             <p><input type="file" id="file-input" name="image_ing" ></p>
                             @error('image_ing') <p class="error">{{ $message }}</p> @enderror    
@@ -230,7 +230,7 @@
                     
                         <div class="check_c">
                             <label class="label_c" for="type">
-                                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                                <i class="bi bi-ui-checks-grid"></i>
                                 Categorie abbinate</label>
                             <p>
                                 
@@ -246,7 +246,7 @@
                         
                         <div class="check_c">
                             <label class="label_c" for="type">
-                                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                                <i class="bi bi-ui-checks-grid"></i>
                                 {{__('admin.Allergeni')}}</label>
                             <p>
                                 @foreach( $allergens as $a)
@@ -272,12 +272,12 @@
         {{-- ingedienti --}}
         <section class="cont_i">
             <h2>
-                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                <i class="bi bi-ui-checks-grid"></i>
                 Abbina Ingredienti
             </h2>
             <div id="associated-ingredients" class="check_c">
                 <h3>
-                    <i class="bi bi-check-square-fill" style="font-size: 16px"></i> Ingredienti abbinati
+                    <i class="bi bi-check-square-fill"></i> Ingredienti abbinati
                 </h3>
                 <p id="associated-list">
                     @if(isset($data['ingredients']))
@@ -307,7 +307,7 @@
 
             <div class="check_c">
                 <h3>
-                    <i class="bi bi-square" style="font-size: 16px"></i>
+                    <i class="bi bi-square"></i>
                     Ingredienti disponibili
                 </h3>
                 <p id="available-ingredients">
@@ -347,7 +347,7 @@
         </section>
         <section >
             <label class="label_c" for="type">
-                <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>
+                <i class="bi bi-ui-checks-grid"></i>
                 {{__('admin.Allergeni')}}</label>
             <div class="check_c">
                 <p>

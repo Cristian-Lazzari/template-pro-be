@@ -19,7 +19,7 @@
             <div class="split">
                 <div>
                     <label class="label_c" for="name"> 
-                        <i class="bi bi-type" style="font-size: 16px"></i>
+                        <i class="bi bi-type"></i>
                         {{__('admin.Nome')}}
                     </label>
                     <p><input value="{{ old('name', $allergen->name) }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
@@ -27,7 +27,7 @@
                 </div>
                 <div>
                     <label class="label_c" for="special">
-                        <i class="bi bi-view-list" style="font-size: 16px"></i>
+                        <i class="bi bi-view-list"></i>
                         {{__('admin.Tipo')}}</label>
                     <p>
                         <select name="special" id="special">
@@ -44,14 +44,14 @@
             <div class="split">
                 <div>
                     <label class="label_c" for="file-input">
-                        <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                        <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                     <p class="img-cont">
                         <input type="file" id="file-input" name="image" >
                         @if (isset($allergen->img))
                             <input type="checkbox" class="btn-check" id="b2" name="img_off">
                             <label class="btn btn-outline-danger" for="b2">
-                                <i class="bi bi-trash-fill" style="font-size: 16px"></i>
+                                <i class="bi bi-trash-fill"></i>
                             </label>
                             <img class="" src="{{ asset('public/storage/' . $allergen->img) }}" alt="{{$allergen->name }}">
                         @endif 

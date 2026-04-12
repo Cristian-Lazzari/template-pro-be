@@ -6,7 +6,7 @@
             </button>
         @else
             <div class="no_img">
-                <i class="bi bi-image-fill" style="font-size: 16px"></i>
+                <i class="bi bi-image-fill"></i>
             </div>
         @endif
 

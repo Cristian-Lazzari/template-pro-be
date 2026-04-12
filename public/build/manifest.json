@@ -16,8 +16,8 @@
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "../public/build/assets/app.394814fc.css",
-      "../public/build/assets/app.ad9f286c.css"
+      "../public/build/assets/app.75a37c8c.css",
+      "../public/build/assets/app.f5d15764.css"
     ],
     "assets": [
       "assets/bootstrap-icons.6c757103.woff2",
@@ -25,11 +25,11 @@
     ]
   },
   "resources/js/app.css": {
-    "file": "../public/build/assets/app.394814fc.css",
+    "file": "../public/build/assets/app.75a37c8c.css",
     "src": "resources/js/app.css"
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.ad9f286c.css",
+    "file": "../public/build/assets/app.f5d15764.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }

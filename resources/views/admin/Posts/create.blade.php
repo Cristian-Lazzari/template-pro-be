@@ -16,7 +16,7 @@
 
         <p class=" w-100">
             <label class="label_c" for="title">
-                <i class="bi bi-type" style="font-size: 16px"></i>
+                <i class="bi bi-type"></i>
                 {{__('admin.Titolo')}}</label>
             <input class="w-100" value="{{ old('title') }}" type="text" name="title" id="title" placeholder=" Inserisci il titolo">
             @error('title') <p class="error">{{ $message }}</p> @enderror
@@ -25,14 +25,14 @@
         <div class="split">    
             <div>
                 <label class="label_c" for="file-input">
-                    <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                    <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                 <p><input type="file" id="file-input" name="image" ></p>
              
             </div>
             <div>
                 <label class="label_c" for="path">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>
+                    <i class="bi bi-view-list"></i>
                     {{__('admin.Pagina_di_destinazione')}}</label>
                 <p>
                     <select name="path" id="path">
@@ -46,10 +46,10 @@
            @error('image') <p class="error">{{ $message }}</p> @enderror
         <p class="desc"> 
             <label class="label_c" for="description">
-                <i class="bi bi-body-text" style="font-size: 16px"></i>
+                <i class="bi bi-body-text"></i>
                 {{__('admin.Descrizione')}} 
                 <button class="my_btn_4" type="button" data-bs-toggle="collapse" data-bs-target="#desc" aria-expanded="false" aria-controls="desc">
-                    <i class="bi bi-info-circle-fill" style="font-size: 16px"></i>
+                    <i class="bi bi-info-circle-fill"></i>
                 </button>
             </label>
             <div class="collapse" id="desc">
@@ -63,14 +63,14 @@
         <div class="split">
             <div class="desc">
                 <label class="label_c" for="hashtag">
-                    <i class="bi bi-hash" style="font-size: 16px"></i>
+                    <i class="bi bi-hash"></i>
                     Hashtag *</label>
                 <textarea name="hashtag" id="hashtag" cols="1" rows="2"  >{{ old('hashtag') }}</textarea>
                 
             </div>
             <div>
                 <label class="label_c" for="link">
-                    <i class="bi bi-link-45deg" style="font-size: 16px"></i>                      
+                    <i class="bi bi-link-45deg"></i>                      
                     Link IG *</label>
                 <p><input value="{{ old('link') }}" type="text" name="link" id="link" placeholder=" Inserisci il link"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror

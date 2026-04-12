@@ -21,7 +21,7 @@
                                 <strong>20:30</strong>
                                 <div class="line"></div>
                                 <p class="prop">
-                                    <i class="bi bi-people" style="font-size: 16px"></i>
+                                    <i class="bi bi-people"></i>
                                 </p>
                             </div>
 
@@ -35,9 +35,9 @@
                                         <div class="name">Giulia Rossi</div>
                                         <div class="guest">
                                             2
-                                            <i class="bi bi-person-standing" style="font-size: 16px"></i>
+                                            <i class="bi bi-person-standing"></i>
                                             1
-                                            <i class="bi bi-person-arms-up" style="font-size: 16px"></i>
+                                            <i class="bi bi-person-arms-up"></i>
                                         </div>
                                     </div>
                                 </a>
@@ -77,11 +77,11 @@
                         <p class="p_day">12</p>
                         <span class="bookings">
                             <strong>9</strong>
-                            <i class="bi bi-person-lines-fill" style="font-size: 16px"></i>
+                            <i class="bi bi-person-lines-fill"></i>
                         </span>
                         <span class="bookings top">
                             <strong>2</strong>
-                            <i class="bi bi-inboxes" style="font-size: 16px"></i>
+                            <i class="bi bi-inboxes"></i>
                         </span>
                     </button>
                 </div>
@@ -103,11 +103,11 @@
                             <input type="text" class="search" value="rossi" placeholder="Cerca cliente">
                             <button class="type">Prenotazioni</button>
                             <button class="order">
-                                <i class="bi bi-sort-down-alt" style="font-size: 16px"></i>
+                                <i class="bi bi-sort-down-alt"></i>
                             </button>
                         </div>
                         <label>
-                            <i class="bi bi-funnel-fill" style="font-size: 16px"></i>
+                            <i class="bi bi-funnel-fill"></i>
                         </label>
                     </div>
                 </div>
@@ -210,11 +210,11 @@
                         <p class="p_day">12</p>
                         <span class="bookings">
                             <strong>9</strong>
-                            <i class="bi bi-person-lines-fill" style="font-size: 16px"></i>
+                            <i class="bi bi-person-lines-fill"></i>
                         </span>
                         <span class="bookings top">
                             <strong>2</strong>
-                            <i class="bi bi-inboxes" style="font-size: 16px"></i>
+                            <i class="bi bi-inboxes"></i>
                         </span>
                     </button>
                 </div>
@@ -228,10 +228,10 @@
                                 <strong>20:30</strong>
                                 <div class="line"></div>
                                 <p class="prop">
-                                    <i class="bi bi-people" style="font-size: 16px"></i>
+                                    <i class="bi bi-people"></i>
                                 </p>
                                 <button type="button" class="block-time-btn">
-                                    <i class="bi bi-toggle-on" style="font-size: 16px"></i>
+                                    <i class="bi bi-toggle-on"></i>
                                 </button>
                             </div>
 
@@ -245,9 +245,9 @@
                                         <div class="name">Giulia Rossi</div>
                                         <div class="guest">
                                             2
-                                            <i class="bi bi-person-standing" style="font-size: 16px"></i>
+                                            <i class="bi bi-person-standing"></i>
                                             1
-                                            <i class="bi bi-person-arms-up" style="font-size: 16px"></i>
+                                            <i class="bi bi-person-arms-up"></i>
                                         </div>
                                     </div>
                                 </a>
@@ -262,7 +262,7 @@
                                         <div class="name">Marco Ferri</div>
                                         <div class="guest">
                                             4
-                                            <i class="bi bi-person-standing" style="font-size: 16px"></i>
+                                            <i class="bi bi-person-standing"></i>
                                         </div>
                                     </div>
                                 </a>
@@ -274,10 +274,10 @@
                                 <strong>21:30</strong>
                                 <div class="line blocked-line"></div>
                                 <p class="prop">
-                                    <i class="bi bi-people" style="font-size: 16px"></i>
+                                    <i class="bi bi-people"></i>
                                 </p>
                                 <button type="button" class="unblock-time-btn">
-                                    <i class="bi bi-toggle-off" style="font-size: 16px"></i>
+                                    <i class="bi bi-toggle-off"></i>
                                 </button>
                             </div>
                         </div>

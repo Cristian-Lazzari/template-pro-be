@@ -30,7 +30,7 @@
         <div class="split">
             <div>
                 <label class="label_c" for="name"> 
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
                 <p><input value="{{ old('name', $translations[$dfl]->name ?? '') }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
@@ -40,7 +40,7 @@
         </div>
         <p class="desc">
             <label class="label_c" for="description"> 
-                <i class="bi bi-type" style="font-size: 16px"></i>
+                <i class="bi bi-type"></i>
                   {{__('admin.Descrizione')}} 
             </label>
             <textarea name="description" id="description" cols="30" rows="10" >{{ old('description', $translations[$dfl]->description ?? '') }}</textarea>
@@ -50,7 +50,7 @@
                 {{-- multilingua --}}
         <section class="cont_i">
             <label class="label_c" for="l*">
-                <i class="bi bi-translate" style="font-size: 16px"></i>
+                <i class="bi bi-translate"></i>
                 {{__('admin.Multilingua')}}</label> 
                 
                 <div class="check_c"  style="border: none !important; padding: 0; border-radius: 0; width: fit-content">
@@ -72,14 +72,14 @@
                                         <section class="more_i">  
                                             <p class="desc">
                                                 <label class="label_c" for="translations[{{$i}}][name]">
-                                                    <i class="bi bi-type" style="font-size: 16px"></i>
+                                                    <i class="bi bi-type"></i>
                                                     {{__('admin.Nome')}}</label>
                                                 <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder=" Inserisci il nome">
             
                                             </p>
                                             <p class="desc"> 
                                                 <label class="label_c" for="translations[{{$i}}][description]">
-                                                    <i class="bi bi-body-text" style="font-size: 16px"></i> 
+                                                    <i class="bi bi-body-text"></i> 
                                                     {{__('admin.Descrizione')}}</label>   
                                                 <textarea name="translations[{{$i}}][description]" id="translations[{{$i}}][description]" cols="1" rows="4" >{{$translations[$i]->description ?? '' }}</textarea>
                                             </p>

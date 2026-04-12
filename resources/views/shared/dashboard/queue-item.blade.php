@@ -38,19 +38,19 @@
             <div class="guest">
                 @if (($nPerson['adult'] ?? 0) > 0)
                     {{ $nPerson['adult'] }}
-                    <i class="bi bi-person-standing" style="font-size: 16px"></i>
+                    <i class="bi bi-person-standing"></i>
                 @endif
 
                 @if (($nPerson['child'] ?? 0) > 0)
                     {{ $nPerson['child'] }}
-                    <i class="bi bi-person-arms-up" style="font-size: 16px"></i>
+                    <i class="bi bi-person-arms-up"></i>
                 @endif
             </div>
         @endif
 
         @if (in_array($status, [3, 5, 6], true))
             <div class="{{ $status === 6 ? 'refound' : 'paid' }} status">
-                <i class="bi bi-credit-card-2-back" style="font-size: 16px"></i>
+                <i class="bi bi-credit-card-2-back"></i>
                 {{ $status === 6 ? 'Rimborsato' : 'Pagato' }}
             </div>
         @endif

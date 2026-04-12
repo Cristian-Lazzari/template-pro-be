@@ -3,6 +3,11 @@ $c1: #090333;
 $c2:#0eb792;
 $c3: #d8dde8;
 
+i{
+    font-size: inherit;
+}
+
+
 
 :root {
     --c1_op:#1e2d6472;
@@ -17,24 +22,123 @@ $c3: #d8dde8;
     --c3: #d8dde8;
 }
 
+@mixin flex-layout($display: flex, $direction: row, $align: null, $justify: null, $gap: null, $wrap: null) {
+    display: $display;
+
+    @if $direction != row {
+        flex-direction: $direction;
+    }
+
+    @if $align != null {
+        align-items: $align;
+    }
+
+    @if $justify != null {
+        justify-content: $justify;
+    }
+
+    @if $gap != null {
+        gap: $gap;
+    }
+
+    @if $wrap != null {
+        flex-wrap: $wrap;
+    }
+}
+
+@mixin grid-layout($gap: null, $columns: null, $align: null) {
+    display: grid;
+
+    @if $columns != null {
+        grid-template-columns: $columns;
+    }
+
+    @if $gap != null {
+        gap: $gap;
+    }
+
+    @if $align != null {
+        align-items: $align;
+    }
+}
+
+@mixin surface-card($radius: 22px, $background: rgba(216, 221, 232, 0.06), $border-color: rgba(216, 221, 232, 0.12), $shadow: null) {
+    border: 1px solid $border-color;
+    border-radius: $radius;
+    background: $background;
+
+    @if $shadow != null {
+        box-shadow: $shadow;
+    }
+}
+
+@mixin control-shell($min-height: 46px, $padding: 0 14px, $radius: 14px, $background: rgba(216, 221, 232, 0.08), $border-color: null, $color: null) {
+    @if $min-height != null {
+        min-height: $min-height;
+    }
+
+    @if $padding != null {
+        padding: $padding;
+    }
+
+    border-radius: $radius;
+    background: $background;
+
+    @if $border-color != null {
+        border: 1px solid $border-color;
+    } @else {
+        border: none;
+    }
+
+    @if $color != null {
+        color: $color;
+    }
+}
+
+@mixin interactive-transition($shadow: null) {
+    transition: transform .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+
+    @if $shadow != null {
+        box-shadow: $shadow;
+    }
+}
+
+@mixin hover-lift($background: null, $border-color: null, $color: null, $shadow: 0 12px 28px rgba(0, 0, 0, 0.16), $translate: -1px) {
+    transform: translateY($translate);
+
+    @if $shadow != null {
+        box-shadow: $shadow;
+    }
+
+    @if $background != null {
+        background: $background;
+    }
+
+    @if $border-color != null {
+        border-color: $border-color;
+    }
+
+    @if $color != null {
+        color: $color;
+    }
+}
+
+@mixin hidden-toggle() {
+    display: none;
+    height: 0;
+    width: 0;
+}
+
 i.bi{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
     line-height: 1;
     vertical-align: middle;
     color: inherit;
 }
 
-#dark{
-    display: none;
-    height: 0 ;
-    width: 0 ;
-}
+#dark,
 #dark_s{
-    display: none;
-    height: 0 ;
-    width: 0 ;
+    @include hidden-toggle();
 }
 
 
@@ -49,19 +153,16 @@ i.bi{
     --c3: #090333;
     --c2:#0eb792;
     --c1: #d8dde8;
-    #light{
-        display: none;
-        height: 0 ;
-        width: 0 ;
+
+    #light,
+    #light_s{
+        @include hidden-toggle();
     }
+
     #dark{
         display: block !important;
     }
-    #light_s{
-        display: none;
-        height: 0 ;
-        width: 0 ;
-    }
+
     #dark_s{
         display: block !important;
         height: auto !important;
@@ -114,6 +215,8 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 }
 
 .my_btn_1, .my_btn_2, .my_btn_3, .my_btn_4, .my_btn_5, .my_btn_6{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center, $gap: .5rem);
+    @include interactive-transition($shadow: none);
     text-decoration: none;
     font-weight: 600;
     text-align: center;
@@ -126,12 +229,6 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     line-height: 1.2;
     letter-spacing: .01em;
     text-shadow: none;
-    box-shadow: none;
-    transition: transform .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: .5rem;
     white-space: nowrap;
     backdrop-filter: blur(10px);
     a, button{
@@ -171,8 +268,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
     border-color: rgba(14, 183, 146, 0.28);
 }
 .my_btn_1:hover, .my_btn_2:hover, .my_btn_3:hover, .my_btn_4:hover, .my_btn_5:hover, .my_btn_6:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    @include hover-lift();
 }
 
 .my_btn_1:hover{
@@ -211,17 +307,14 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 .settings-page .btn:not(.btn-close),
 .modal-content .btn:not(.btn-close),
 .fixed-alert-res .btn:not(.btn-close){
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include interactive-transition($shadow: none);
     min-height: 44px;
     padding: .7rem 1rem;
     border-radius: 14px;
     border-width: 1px;
     font-weight: 600;
     line-height: 1.2;
-    box-shadow: none;
-    transition: transform .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
 }
 
 .dash_page .btn:not(.btn-close):hover,
@@ -229,8 +322,7 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
 .settings-page .btn:not(.btn-close):hover,
 .modal-content .btn:not(.btn-close):hover,
 .fixed-alert-res .btn:not(.btn-close):hover{
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    @include hover-lift();
 }
 
 .dash_page .btn.btn-outline-light,
@@ -310,6 +402,11 @@ body{
     overflow: auto;
     overflow: scroll !important;
 }
+
+body.modal-open{
+    overflow: hidden !important;
+    overscroll-behavior: none;
+}
 $svg_n: clamp(25px, 5vw, 30px);
 .admin-header{
     position: fixed;
@@ -344,17 +441,13 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .admin-nav__group{
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    @include flex-layout($align: center, $gap: 10px, $wrap: nowrap);
     min-width: 0;
-    flex-wrap: nowrap;
 }
 
 .admin-nav__link{
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
+    @include flex-layout($display: inline-flex, $align: center, $gap: 12px);
+    @include interactive-transition();
     min-height: 60px;
     padding: 0 18px;
     border-radius: 18px;
@@ -364,16 +457,12 @@ $svg_n: clamp(25px, 5vw, 30px);
     text-decoration: none;
     font-weight: 600;
     letter-spacing: .01em;
-    transition: transform .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
     flex: 0 0 auto;
     white-space: nowrap;
 }
 
 .admin-nav__link:hover{
-    transform: translateY(-1px);
-    background: rgba(216, 221, 232, 0.08);
-    border-color: rgba(216, 221, 232, 0.14);
-    color: var(--c3);
+    @include hover-lift($background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3), $shadow: null);
 }
 
 .admin-nav__link.is-active{
@@ -386,14 +475,10 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .admin-nav__icon{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include surface-card($radius: 14px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.12));
     width: 44px;
     height: 44px;
-    border-radius: 14px;
-    background: rgba(216, 221, 232, 0.08);
-    border: 1px solid rgba(216, 221, 232, 0.12);
     flex: 0 0 auto;
 }
 
@@ -488,10 +573,6 @@ $svg_n: clamp(25px, 5vw, 30px);
         font-size: 21px;
     }
 
-    .admin-nav__link--requests{
-        display: none;
-    }
-
     .admin-nav__link.is-active{
         flex: 1.2 1 0;
         justify-content: center;
@@ -569,10 +650,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-header__bar{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    @include flex-layout($align: center, $justify: space-between, $gap: 16px);
     padding: 18px 22px;
     border: 1px solid rgba(216, 221, 232, 0.14);
     border-radius: 24px;
@@ -582,9 +660,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-brand{
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    @include flex-layout($direction: column, $gap: 4px);
     text-decoration: none;
     color: var(--c3);
 
@@ -606,10 +682,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-nav{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    @include flex-layout($align: center, $gap: 10px, $wrap: wrap);
 
     a{
         padding: 10px 14px;
@@ -666,11 +739,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-actions{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 12px;
+    @include flex-layout($direction: column, $align: flex-start, $justify: flex-end, $gap: 12px);
     animation: public-fade-up .7s ease both;
 }
 
@@ -680,9 +749,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-button{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
     min-height: 50px;
     padding: 0 18px;
     border-radius: 16px;
@@ -708,17 +775,13 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-main{
-    display: grid;
-    gap: 22px;
+    @include grid-layout($gap: 22px);
     padding-bottom: 48px;
 }
 
 .public-panel,
 .public-card{
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    border-radius: 28px;
-    background: rgba(216, 221, 232, 0.06);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.16);
+    @include surface-card($radius: 28px, $shadow: 0 18px 48px rgba(0, 0, 0, 0.16));
 }
 
 .public-panel{
@@ -736,9 +799,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-panel__header{
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    @include flex-layout($direction: column, $gap: 8px);
     margin-bottom: 20px;
 
     h2{
@@ -748,9 +809,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-grid{
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+    @include grid-layout($gap: 20px, $columns: repeat(2, minmax(0, 1fr)));
 }
 
 .public-grid--home{
@@ -774,9 +833,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-title-row{
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
+    @include flex-layout($align: flex-start, $gap: 14px);
 }
 
 .public-title-row{
@@ -784,16 +841,12 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-icon-badge{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include surface-card($radius: 16px, $background: rgba(14, 183, 146, 0.14), $border-color: rgba(142, 246, 219, 0.18));
     width: 52px;
     height: 52px;
     flex: 0 0 52px;
-    border-radius: 16px;
     color: #8ef6db;
-    background: rgba(14, 183, 146, 0.14);
-    border: 1px solid rgba(142, 246, 219, 0.18);
 }
 
 .public-icon-badge--soft{
@@ -820,9 +873,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-onboarding{
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(280px, .95fr);
-    gap: 18px;
+    @include grid-layout($gap: 18px, $columns: minmax(0, 1.5fr) minmax(280px, .95fr));
     margin-bottom: 20px;
 }
 
@@ -830,9 +881,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .public-onboarding__checklist,
 .public-step-card,
 .public-note{
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    background: rgba(9, 3, 51, 0.44);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    @include surface-card($background: rgba(9, 3, 51, 0.44), $shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04));
 }
 
 .public-onboarding__intro,
@@ -848,8 +897,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-onboarding__tips{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
     margin-top: 16px;
 }
 
@@ -866,9 +914,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-step-grid{
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    @include grid-layout($gap: 16px, $columns: repeat(3, minmax(0, 1fr)));
 }
 
 .public-step-card{
@@ -883,8 +929,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-notes{
-    display: grid;
-    gap: 12px;
+    @include grid-layout($gap: 12px);
 
     p{
         margin: 0;
@@ -894,8 +939,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-timeline{
-    display: grid;
-    gap: 18px;
+    @include grid-layout($gap: 18px);
 }
 
 .public-timeline__item{
@@ -936,10 +980,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-breadcrumbs{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    @include flex-layout($align: center, $gap: 10px, $wrap: wrap);
     margin-bottom: 18px;
     color: rgba(216, 221, 232, 0.74);
 
@@ -966,9 +1007,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .doc-badge-row{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    @include flex-layout($gap: 10px, $wrap: wrap);
 }
 
 .doc-quick-actions,
@@ -976,8 +1015,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .doc-focus-grid,
 .doc-double-grid,
 .dashboard-preview-grid{
-    display: grid;
-    gap: 18px;
+    @include grid-layout($gap: 18px);
 }
 
 .dashboard-preview-grid,
@@ -987,8 +1025,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-preview-stack{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
 }
 
 .dashboard-status-meta{
@@ -999,7 +1036,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-field-list{
-    display: grid;
+    @include grid-layout();
 }
 
 .dashboard-field-list--stacked .dashboard-field-row{
@@ -1013,10 +1050,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-field-row{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
+    @include flex-layout($align: center, $justify: space-between, $gap: 14px);
     padding: 12px 0;
     border-bottom: 1px solid rgba(216, 221, 232, 0.08);
 
@@ -1057,8 +1091,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-mail-preview__body{
-    display: grid;
-    gap: 18px;
+    @include grid-layout($gap: 18px);
     padding: 24px;
 }
 
@@ -1093,8 +1126,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-mail-preview__content{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
 
     p{
         margin: 0;
@@ -1103,8 +1135,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-mail-preview__details{
-    display: grid;
-    gap: 12px;
+    @include grid-layout($gap: 12px);
 }
 
 .dashboard-mail-preview__detail{
@@ -1115,15 +1146,9 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-mail-preview__cta{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include control-shell($min-height: 48px, $padding: 0 20px, $radius: 999px, $background: #090333, $color: #ffffff);
     width: fit-content;
-    min-height: 48px;
-    padding: 0 20px;
-    border-radius: 999px;
-    background: #090333;
-    color: #ffffff;
     font-weight: 700;
 }
 
@@ -1148,14 +1173,6 @@ $svg_n: clamp(25px, 5vw, 30px);
     section:last-child{
         margin-bottom: 0;
     }
-}
-
-.dashboard-order-preview{
-    align-items: start;
-}
-
-.dashboard-order-preview > *{
-    min-width: 0;
 }
 
 .doc-route-grid,
@@ -1188,10 +1205,6 @@ $svg_n: clamp(25px, 5vw, 30px);
     grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
     gap: 22px;
     align-items: start;
-}
-
-.dashboard-order-panels{
-    width: 100%;
 }
 
 .doc-filters-preview{
@@ -1261,13 +1274,8 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .dashboard-modal-preview select{
+    @include control-shell($min-height: 46px, $padding: 0 12px, $radius: 12px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
     width: 100%;
-    min-height: 46px;
-    border: 1px solid rgba(216, 221, 232, 0.14);
-    border-radius: 12px;
-    background: rgba(216, 221, 232, 0.08);
-    color: var(--c3);
-    padding: 0 12px;
 }
 
 .order-detail-page{
@@ -1275,8 +1283,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail{
-    display: grid;
-    gap: 24px;
+    @include grid-layout($gap: 24px);
     padding: clamp(20px, 2.2vw, 30px);
     border-radius: 28px;
     border: 1px solid rgba(216, 221, 232, 0.12);
@@ -1306,14 +1313,11 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__header{
-    display: grid;
-    gap: 18px;
+    @include grid-layout($gap: 18px);
 }
 
 .order-detail__status{
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    @include flex-layout($display: inline-flex, $align: center, $gap: 10px);
     width: fit-content;
     padding: 10px 14px;
     border-radius: 999px;
@@ -1330,9 +1334,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__status-icon{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
 }
 
 .order-detail__status-icon svg{
@@ -1358,22 +1360,14 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__contacts{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    @include flex-layout($gap: 10px, $wrap: wrap);
 }
 
 .order-detail__contact{
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    @include flex-layout($display: inline-flex, $align: center, $gap: 10px);
+    @include control-shell($min-height: null, $padding: 10px 14px, $radius: 16px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.12), $color: var(--c3));
     min-width: 0;
-    padding: 10px 14px;
-    border-radius: 16px;
     text-decoration: none;
-    color: var(--c3);
-    background: rgba(216, 221, 232, 0.08);
-    border: 1px solid rgba(216, 221, 232, 0.12);
 }
 
 .order-detail__contact span{
@@ -1394,29 +1388,22 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__body{
-    display: grid;
-    gap: 18px;
+    @include grid-layout($gap: 18px);
 }
 
 .order-detail__summary,
 .order-detail__section,
 .order-detail__footer{
-    border: 1px solid rgba(216, 221, 232, 0.1);
-    background: rgba(9, 3, 51, 0.28);
-    border-radius: 22px;
+    @include surface-card($radius: 22px, $background: rgba(9, 3, 51, 0.28), $border-color: rgba(216, 221, 232, 0.1));
 }
 
 .order-detail__summary{
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: end;
+    @include grid-layout($gap: 16px, $columns: minmax(0, 1fr) auto, $align: end);
     padding: 18px 20px;
 }
 
 .order-detail__meta{
-    display: grid;
-    gap: 6px;
+    @include grid-layout($gap: 6px);
 }
 
 .order-detail__code,
@@ -1455,23 +1442,17 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__section-head h3{
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    @include flex-layout($align: center, $gap: 10px);
     margin: 0;
     font-size: 1rem;
     color: var(--c3);
 }
 
 .order-detail__section-icon{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include surface-card($radius: 10px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.12));
     width: 32px;
     height: 32px;
-    border-radius: 10px;
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    background: rgba(216, 221, 232, 0.05);
 }
 
 .order-detail__section-icon svg{
@@ -1486,23 +1467,17 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__items{
-    display: grid;
-    gap: 12px;
+    @include grid-layout($gap: 12px);
 }
 
 .order-detail__item{
-    display: grid;
-    gap: 12px;
+    @include grid-layout($gap: 12px);
+    @include surface-card($radius: 18px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.12));
     padding: 14px;
-    border-radius: 18px;
-    background: rgba(216, 221, 232, 0.05);
-    border: 1px solid rgba(216, 221, 232, 0.12);
 }
 
 .order-detail__item-top{
-    display: flex;
-    gap: 12px;
-    align-items: center;
+    @include flex-layout($align: center, $gap: 12px);
 }
 
 .order-detail__qty{
@@ -1523,13 +1498,11 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__detail-groups{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
 }
 
 .order-detail__detail-group{
-    display: grid;
-    gap: 8px;
+    @include grid-layout($gap: 8px);
 }
 
 .order-detail__detail-group > span{
@@ -1540,33 +1513,24 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__detail-values{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    @include flex-layout($gap: 8px, $wrap: wrap);
 }
 
 .order-detail__detail-values small{
-    display: inline-flex;
-    padding: 7px 10px;
-    border-radius: 999px;
-    background: rgba(9, 3, 51, 0.52);
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    color: var(--c3);
+    @include flex-layout($display: inline-flex);
+    @include control-shell($min-height: null, $padding: 7px 10px, $radius: 999px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12), $color: var(--c3));
     font-size: .84rem;
 }
 
 .order-detail__totals{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid rgba(216, 221, 232, 0.08);
 }
 
 .order-detail__total-row{
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
+    @include flex-layout($justify: space-between, $gap: 16px);
     color: rgba(216, 221, 232, 0.8);
 }
 
@@ -1596,15 +1560,12 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__footer{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
     padding: 16px 20px;
 }
 
 .order-detail__footer-row{
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
+    @include flex-layout($justify: space-between, $gap: 16px);
     font-family: monospace;
     font-size: .94rem;
     color: rgba(216, 221, 232, 0.74);
@@ -1616,9 +1577,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__actions{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    @include flex-layout($gap: 10px, $wrap: wrap);
 }
 
 .order-detail__actions > *{
@@ -1638,26 +1597,19 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .reservation-detail__guests{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
 }
 
 .reservation-detail__guest-list{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    @include flex-layout($gap: 12px, $wrap: wrap);
 }
 
 .reservation-detail__guest-chip,
 .reservation-detail__room{
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
+    @include flex-layout($display: inline-flex, $align: center, $gap: 12px);
+    @include surface-card($radius: 18px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.12));
     min-height: 68px;
     padding: 12px 14px;
-    border-radius: 18px;
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    background: rgba(216, 221, 232, 0.05);
     color: var(--c3);
 }
 
@@ -1666,14 +1618,10 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .reservation-detail__guest-icon{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include surface-card($radius: 14px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12));
     width: 42px;
     height: 42px;
-    border-radius: 14px;
-    background: rgba(9, 3, 51, 0.52);
-    border: 1px solid rgba(216, 221, 232, 0.12);
 }
 
 .reservation-detail__guest-icon svg{
@@ -1687,8 +1635,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .reservation-detail__guest-copy{
-    display: grid;
-    gap: 2px;
+    @include grid-layout($gap: 2px);
 }
 
 .reservation-detail__guest-copy strong{
@@ -1714,9 +1661,271 @@ $svg_n: clamp(25px, 5vw, 30px);
     text-align: right;
 }
 
+.menu-dashboard-page{
+    width: 100%;
+}
+
+.menu-dashboard{
+    width: 100%;
+}
+
+.menu-dashboard__hero{
+    gap: 20px;
+}
+
+.menu-dashboard__title{
+    @include flex-layout($display: inline-flex, $align: center, $gap: 12px);
+    margin: 0;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1;
+    font-weight: 900;
+    color: var(--c3);
+}
+
+.menu-dashboard__lead{
+    margin: 0;
+    max-width: 60ch;
+    color: rgba(216, 221, 232, 0.76);
+    line-height: 1.7;
+}
+
+.menu-dashboard__hero-actions{
+    @include flex-layout($justify: flex-end, $gap: 10px, $wrap: wrap);
+}
+
+.menu-dashboard__stat-grid{
+    @include grid-layout($gap: 14px, $columns: repeat(auto-fit, minmax(180px, 1fr)));
+}
+
+.menu-dashboard__stat-card{
+    @include grid-layout($gap: 10px);
+    @include surface-card($radius: 20px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.12));
+    min-height: 170px;
+    padding: 18px;
+    text-decoration: none;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.menu-dashboard__stat-card:hover{
+    transform: translateY(-2px);
+    border-color: rgba(14, 183, 146, 0.24);
+    background: rgba(14, 183, 146, 0.08);
+}
+
+.menu-dashboard__stat-label{
+    color: rgba(216, 221, 232, 0.7);
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.menu-dashboard__stat-card strong,
+.menu-dashboard__health-copy strong{
+    color: var(--c3);
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1;
+    font-weight: 900;
+}
+
+.menu-dashboard__stat-card small,
+.menu-dashboard__health-copy small{
+    color: rgba(216, 221, 232, 0.74);
+    line-height: 1.6;
+}
+
+.menu-dashboard__stat-link{
+    margin-top: auto;
+    color: rgba(142, 246, 219, 0.92);
+    font-size: .82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.menu-dashboard__health-grid{
+    @include grid-layout($gap: 14px, $columns: repeat(auto-fit, minmax(220px, 1fr)));
+}
+
+.menu-dashboard__health-card{
+    @include flex-layout($align: center, $justify: space-between, $gap: 16px);
+    @include surface-card($radius: 20px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.12));
+    padding: 18px;
+}
+
+.menu-dashboard__health-copy{
+    @include grid-layout($gap: 8px);
+}
+
+.menu-dashboard__promo-grid{
+    @include grid-layout($gap: 16px, $columns: repeat(auto-fit, minmax(280px, 1fr)));
+}
+
+.menu-dashboard__promo-card{
+    @include grid-layout($gap: 16px);
+    @include surface-card($radius: 22px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.12));
+    overflow: hidden;
+    padding: 18px;
+}
+
+.menu-dashboard__promo-card--menu{
+    background:
+        radial-gradient(circle at top right, rgba(14, 183, 146, 0.12), transparent 28%),
+        rgba(216, 221, 232, 0.05);
+}
+
+.menu-dashboard__promo-media{
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid rgba(216, 221, 232, 0.12);
+    background:
+        radial-gradient(circle at top left, rgba(14, 183, 146, 0.16), transparent 30%),
+        rgba(9, 3, 51, 0.48);
+}
+
+.menu-dashboard__promo-media img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.menu-dashboard__promo-banner{
+    @include flex-layout($align: center, $gap: 12px);
+    @include surface-card($radius: 18px, $background: rgba(9, 3, 51, 0.34), $border-color: rgba(216, 221, 232, 0.1));
+    padding: 14px 16px;
+}
+
+.menu-dashboard__promo-banner strong{
+    display: block;
+    color: var(--c3);
+    font-size: 1rem;
+}
+
+.menu-dashboard__banner-eyebrow{
+    display: block;
+    margin-bottom: 4px;
+    color: rgba(216, 221, 232, 0.68);
+    font-size: .76rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.menu-dashboard__promo-body{
+    @include grid-layout($gap: 14px);
+}
+
+.menu-dashboard__promo-top{
+    @include flex-layout($align: flex-start, $justify: space-between, $gap: 16px);
+}
+
+.menu-dashboard__promo-intro{
+    @include grid-layout($gap: 10px);
+    min-width: 0;
+}
+
+.menu-dashboard__promo-intro h4{
+    margin: 0;
+    color: var(--c3);
+    font-size: 1.18rem;
+    line-height: 1.3;
+}
+
+.menu-dashboard__chip-row,
+.menu-dashboard__pill-row{
+    @include flex-layout($gap: 8px, $wrap: wrap);
+}
+
+.menu-dashboard__chip{
+    @include flex-layout($display: inline-flex, $align: center);
+    @include control-shell($min-height: null, $padding: 6px 10px, $radius: 999px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12), $color: rgba(216, 221, 232, 0.9));
+    font-size: .76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.menu-dashboard__chip--accent{
+    background: rgba(14, 183, 146, 0.12);
+    border-color: rgba(14, 183, 146, 0.26);
+    color: rgba(142, 246, 219, 0.96);
+}
+
+.menu-dashboard__price-block{
+    @include grid-layout($gap: 4px);
+    justify-items: end;
+    flex: 0 0 auto;
+}
+
+.menu-dashboard__price-old{
+    color: rgba(216, 221, 232, 0.5);
+    font-family: monospace;
+    text-decoration: line-through;
+}
+
+.menu-dashboard__price{
+    color: var(--c3);
+    font-size: 1.25rem;
+    font-weight: 900;
+    font-family: monospace;
+}
+
+.menu-dashboard__copy{
+    margin: 0;
+    color: rgba(216, 221, 232, 0.84);
+    line-height: 1.7;
+}
+
+.menu-dashboard__detail-list,
+.menu-dashboard__choice-grid,
+.menu-dashboard__choice-group{
+    @include grid-layout($gap: 10px);
+}
+
+.menu-dashboard__detail-list > span,
+.menu-dashboard__choice-label{
+    color: rgba(216, 221, 232, 0.72);
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.menu-dashboard__pill-row small{
+    @include flex-layout($display: inline-flex);
+    @include control-shell($min-height: null, $padding: 7px 10px, $radius: 999px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12), $color: var(--c3));
+    font-size: .84rem;
+}
+
+.menu-dashboard__empty-state{
+    @include surface-card($radius: 20px, $background: rgba(216, 221, 232, 0.04), $border-color: rgba(216, 221, 232, 0.1));
+    padding: 18px;
+    color: rgba(216, 221, 232, 0.72);
+    text-align: center;
+}
+
+@media (max-width: 760px){
+    .menu-dashboard__hero{
+        grid-template-columns: 1fr;
+    }
+
+    .menu-dashboard__hero-actions{
+        justify-content: flex-start;
+    }
+
+    .menu-dashboard__promo-top,
+    .menu-dashboard__health-card{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .menu-dashboard__price-block{
+        justify-items: start;
+    }
+}
+
 .doc-action-strip{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
 }
 
 .doc-whatsapp{
@@ -1734,9 +1943,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .doc-whatsapp__top{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @include flex-layout($align: center, $justify: space-between);
     padding: 10px 14px;
     border-radius: 20px 20px 12px 12px;
     background: #111b21;
@@ -1786,27 +1993,18 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .doc-whatsapp__actions{
-    display: grid;
-    gap: 8px;
+    @include grid-layout($gap: 8px);
 }
 
 .doc-whatsapp__action{
+    @include control-shell($min-height: 44px, $padding: null, $radius: 14px, $background: #111b21, $border-color: rgba(37, 211, 102, 0.22), $color: #25d366);
     width: 100%;
-    min-height: 44px;
-    border-radius: 14px;
-    border: 1px solid rgba(37, 211, 102, 0.22);
-    background: #111b21;
-    color: #25d366;
     font-weight: 700;
 }
 
 .doc-whatsapp__action--ghost{
     color: #d1d7db;
     border-color: rgba(209, 215, 219, 0.18);
-}
-
-.doc-check-card{
-    max-width: 920px;
 }
 
 .doc-quick-actions{
@@ -1903,7 +2101,6 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 }
 
-.doc-record-list,
 .doc-faq-list{
     display: grid;
     gap: 14px;
@@ -2384,32 +2581,23 @@ $svg_n: clamp(25px, 5vw, 30px);
 .settings-page{
     max-width: 1240px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+    @include flex-layout($direction: column, $gap: 18px);
 }
 
 .settings-page__title{
     margin: 8px 0 0 !important;
     text-align: left !important;
-    display: flex;
-    align-items: center;
-    gap: .65rem;
+    @include flex-layout($align: center, $gap: .65rem);
 }
 
 .settings-overview{
-    display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .85fr);
-    gap: 16px;
+    @include grid-layout($gap: 16px, $columns: minmax(0, 1.35fr) minmax(280px, .85fr));
 }
 
 .settings-overview__intro,
 .settings-overview__aside,
 .settings-panel{
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    border-radius: 22px;
-    background: rgba(216, 221, 232, 0.06);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+    @include surface-card($radius: 22px, $shadow: 0 12px 32px rgba(0, 0, 0, 0.14));
 }
 
 .settings-overview__intro,
@@ -2418,8 +2606,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-overview__intro{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
     background:
         radial-gradient(circle at top right, rgba(52, 210, 175, 0.18), transparent 24%),
         linear-gradient(135deg, rgba(216, 221, 232, 0.11), rgba(14, 183, 146, 0.08));
@@ -2447,18 +2634,13 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-status-grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
-    gap: 10px;
+    @include grid-layout($gap: 10px, $columns: repeat(auto-fit, minmax(128px, 1fr)));
 }
 
 .settings-status-card{
-    display: grid;
-    gap: 8px;
+    @include grid-layout($gap: 8px);
+    @include surface-card($radius: 16px, $background: rgba(9, 3, 51, 0.4), $border-color: rgba(216, 221, 232, 0.1));
     padding: 12px;
-    border-radius: 16px;
-    border: 1px solid rgba(216, 221, 232, 0.1);
-    background: rgba(9, 3, 51, 0.4);
 
     span{
         font-size: $fs_xsm;
@@ -2469,10 +2651,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-card-head{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
+    @include flex-layout($align: flex-start, $justify: space-between, $gap: 10px);
     width: 100%;
 
     h4,
@@ -2482,13 +2661,8 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-state{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 30px;
-    padding: 0 .75rem;
-    border-radius: 999px;
-    border: 1px solid transparent;
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include control-shell($min-height: 30px, $padding: 0 .75rem, $radius: 999px, $background: transparent, $border-color: transparent);
     font-size: $fs_xsm;
     font-weight: 700;
     letter-spacing: .04em;
@@ -2520,8 +2694,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-overview__aside{
-    display: grid;
-    gap: 12px;
+    @include grid-layout($gap: 12px);
     padding: 14px;
     background:
         radial-gradient(circle at top left, rgba(14, 183, 146, 0.14), transparent 24%),
@@ -2550,12 +2723,9 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-theme-card{
-    display: grid;
-    gap: 8px;
+    @include grid-layout($gap: 8px);
+    @include surface-card($radius: 18px, $background: rgba(9, 3, 51, 0.44), $border-color: rgba(216, 221, 232, 0.12));
     padding: 14px;
-    border-radius: 18px;
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    background: rgba(9, 3, 51, 0.44);
 }
 
 .settings-theme-card__eyebrow,
@@ -2593,8 +2763,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-panel{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
     text-align: left;
 }
 
@@ -2605,8 +2774,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-panel__header{
-    display: grid;
-    gap: 6px;
+    @include grid-layout($gap: 6px);
 
     h2{
         margin: 0;
@@ -2628,23 +2796,15 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-page .setting > .set{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 14px;
-    align-items: stretch;
+    @include grid-layout($gap: 14px, $columns: repeat(auto-fit, minmax(240px, 1fr)), $align: stretch);
 }
 
 .settings-page .setting > .set > .set,
 .settings-page .setting > .set > .set-cont{
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    @include flex-layout($direction: column, $gap: 12px);
+    @include surface-card($radius: 18px, $background: rgba(9, 3, 51, 0.44), $border-color: rgba(216, 221, 232, 0.1), $shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04));
     width: 100%;
     padding: 14px;
-    border-radius: 18px;
-    border: 1px solid rgba(216, 221, 232, 0.1);
-    background: rgba(9, 3, 51, 0.44);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .settings-page .setting > .set > .my_btn_1.my_btn_2{
@@ -2663,9 +2823,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-page .setting .g_set{
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    @include flex-layout($direction: column, $align: flex-start, $gap: 10px);
 }
 
 .settings-page .setting h5{
@@ -2746,8 +2904,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-page .bottom-set .accordion{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
 }
 
 .settings-page .bottom-set .accordion-item{
@@ -2782,8 +2939,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-page .bottom-set section{
-    display: grid;
-    gap: 10px;
+    @include grid-layout($gap: 10px);
 }
 
 .settings-page .bottom-set .address span{
@@ -2796,9 +2952,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .settings-page .bottom-set .actions,
 .settings-form-actions{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    @include flex-layout($gap: 8px, $wrap: wrap);
 }
 
 .settings-page .bottom-set .actions{
@@ -2811,8 +2965,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-page .settings-basic-modal{
-    border: 1px solid rgba(216, 221, 232, 0.12);
-    border-radius: 20px;
+    @include surface-card($radius: 20px, $background: transparent, $border-color: rgba(216, 221, 232, 0.12));
     background:
         radial-gradient(circle at top right, rgba(14, 183, 146, 0.14), transparent 28%),
         rgba(9, 3, 51, 0.96);
@@ -2826,8 +2979,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 
     .modal-body{
-        display: grid;
-        gap: 10px;
+        @include grid-layout($gap: 10px);
         padding: 14px 16px;
     }
 
@@ -2844,7 +2996,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .settings-page .settings-advanced-modal{
-    border: 1px solid rgba(216, 221, 232, 0.12);
+    @include surface-card($radius: 20px, $background: transparent, $border-color: rgba(216, 221, 232, 0.12));
     background:
         radial-gradient(circle at top right, rgba(14, 183, 146, 0.18), transparent 24%),
         linear-gradient(145deg, rgba(16, 24, 48, 0.98), rgba(9, 3, 51, 0.98));
@@ -2965,23 +3117,16 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 }
 .top_line{
-    display: flex;
+    @include flex-layout($align: center, $justify: space-between);
     width: 100%;
-    justify-content: space-between;
-    align-items: center;
     position: absolute;
     top: 0;
     z-index: 100;
     .prev_btn, .post_btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        @include flex-layout($display: inline-flex, $align: center, $justify: center);
+        @include control-shell($min-height: null, $padding: 0, $radius: 14px, $background: rgba(9, 3, 51, 0.6), $border-color: rgba(216, 221, 232, 0.16));
         width: 42px;
         height: 42px;
-        background: rgba(9, 3, 51, 0.6);
-        border: 1px solid rgba(216, 221, 232, 0.16);
-        border-radius: 14px;
-        padding: 0;
         transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
         svg, .bi{
             color: var(--c3);
@@ -2990,31 +3135,23 @@ $svg_n: clamp(25px, 5vw, 30px);
         }
     }
     .prev_btn:hover, .post_btn:hover{
-        transform: translateY(-1px);
-        background: rgba(216, 221, 232, 0.08);
-        border-color: rgba(216, 221, 232, 0.24);
+        @include hover-lift($background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.24), $shadow: null);
     }
 }
 .top_stat{
     margin: 17px auto 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    @include flex-layout($direction: column, $align: center, $gap: 1rem);
     font-size: $fs_sm_1;
     font-weight: 600;
     //background-color: var(--c3);
     border-radius: 8px;
     padding: 1rem 0rem;
    // color: var(--c1);
-    flex-direction: column;
     width: 100%;
     .line{
         width: 100%;
-        display: flex;
+        @include flex-layout($align: center, $gap: .4em, $wrap: wrap);
         //justify-content: space-between;
-        align-items: center;
-        gap: .4em;
-        flex-wrap: wrap;
         h4{
             //flex: 1;
             font-weight: 300;
@@ -3024,15 +3161,11 @@ $svg_n: clamp(25px, 5vw, 30px);
 
         }
         .stat{
-            flex-direction: row;
+            @include flex-layout($direction: row, $align: center, $gap: .4rem, $wrap: nowrap);
             //background-color: var(--c3);
             //color: var(--c1);
-            align-items: center;
             padding: .3rem 1rem;
             border-radius: 5px;
-            gap: .4rem;
-            display: flex;
-            flex-wrap: nowrap;
         }
         .first{
             flex: 1;
@@ -3057,14 +3190,11 @@ $svg_n: clamp(25px, 5vw, 30px);
 .calendar{
     width: 100%;
     border-radius: 20px;
-    display: flex;
-    flex-direction: column;
+    @include flex-layout($direction: column);
     
     .c-name{
-        display: flex;
+        @include flex-layout($align: center, $justify: space-around);
         flex-grow: 1;
-        justify-content: space-around;
-        align-items: center;
         text-transform: capitalize;
         margin:  auto;
         padding: 1.3rem 0;
@@ -3966,6 +4096,11 @@ svg.to_see, .bi.to_see{
     --action-modal-soft: rgba(255, 193, 7, 0.12);
 }
 
+.dashboard-action-modal--mint{
+    --action-modal-accent: rgba(14, 183, 146, 0.95);
+    --action-modal-soft: rgba(14, 183, 146, 0.12);
+}
+
 .dashboard-action-modal--danger{
     --action-modal-accent: rgba(220, 53, 69, 0.95);
     --action-modal-soft: rgba(220, 53, 69, 0.12);
@@ -3979,16 +4114,12 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal .modal-header{
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+    @include flex-layout($align: flex-start, $justify: space-between, $gap: 16px);
     border-bottom: 1px solid rgba(216, 221, 232, 0.1);
 }
 
 .dashboard-action-modal .modal-body{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
 }
 
 .dashboard-action-modal .modal-title{
@@ -3998,8 +4129,30 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__heading{
-    display: grid;
-    gap: 8px;
+    @include grid-layout($gap: 8px);
+}
+
+.dashboard-action-modal__title-copy{
+    @include grid-layout($gap: 8px);
+}
+
+.dashboard-action-modal__title-row{
+    @include flex-layout($align: center, $gap: 12px, $wrap: wrap);
+}
+
+.dashboard-action-modal__title-icon{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include surface-card($radius: 16px, $background: linear-gradient(145deg, var(--action-modal-soft), rgba(216, 221, 232, 0.04)), $border-color: rgba(216, 221, 232, 0.12));
+    width: 44px;
+    height: 44px;
+    color: var(--action-modal-accent);
+    flex: 0 0 auto;
+}
+
+.dashboard-action-modal__title-icon .bi,
+.dashboard-action-modal__title-icon svg{
+    width: 20px;
+    height: 20px;
 }
 
 .dashboard-action-modal__eyebrow{
@@ -4034,12 +4187,9 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__summary{
-    display: grid;
-    gap: 4px;
+    @include grid-layout($gap: 4px);
+    @include surface-card($radius: 18px, $background: linear-gradient(180deg, var(--action-modal-soft), rgba(216, 221, 232, 0.03)), $border-color: rgba(216, 221, 232, 0.08));
     padding: 14px 16px;
-    border-radius: 18px;
-    border: 1px solid rgba(216, 221, 232, 0.08);
-    background: linear-gradient(180deg, var(--action-modal-soft), rgba(216, 221, 232, 0.03));
 }
 
 .dashboard-action-modal__summary-label{
@@ -4060,19 +4210,14 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__details{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 10px;
+    @include grid-layout($gap: 10px, $columns: repeat(auto-fit, minmax(170px, 1fr)));
 }
 
 .dashboard-action-modal__detail{
-    display: grid;
-    gap: 6px;
+    @include grid-layout($gap: 6px);
+    @include surface-card($radius: 16px, $background: rgba(216, 221, 232, 0.04), $border-color: rgba(216, 221, 232, 0.08));
     min-height: 88px;
     padding: 12px 14px;
-    border-radius: 16px;
-    border: 1px solid rgba(216, 221, 232, 0.08);
-    background: rgba(216, 221, 232, 0.04);
 }
 
 .dashboard-action-modal__detail span{
@@ -4090,13 +4235,11 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__content{
-    display: grid;
-    gap: 14px;
+    @include grid-layout($gap: 14px);
 }
 
 .dashboard-action-modal__field{
-    display: grid;
-    gap: 8px;
+    @include grid-layout($gap: 8px);
 }
 
 .dashboard-action-modal__field label{
@@ -4104,16 +4247,13 @@ svg.to_see, .bi.to_see{
     color: var(--c3);
 }
 
+.dashboard-action-modal__field input,
 .dashboard-action-modal__field select{
+    @include control-shell($min-height: 48px, $padding: 0 14px, $radius: 14px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
     width: 100%;
-    min-height: 48px;
-    border-radius: 14px;
-    border: 1px solid rgba(216, 221, 232, 0.14);
-    background: rgba(216, 221, 232, 0.08);
-    color: var(--c3);
-    padding: 0 14px;
 }
 
+.dashboard-action-modal__field input:focus,
 .dashboard-action-modal__field select:focus{
     outline: none;
     border-color: var(--action-modal-accent);
@@ -4131,9 +4271,7 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal .modal-footer{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    @include flex-layout($gap: 10px, $wrap: wrap);
     padding-top: 0;
     border-top: 0;
 }
@@ -4146,6 +4284,292 @@ svg.to_see, .bi.to_see{
 
 .dashboard-action-modal .modal-footer button{
     width: 100%;
+}
+
+// Merged customer profile question cards onto the action-modal detail surface.
+[data-question-item].dashboard-action-modal__detail{
+    min-height: 0;
+    padding: 16px;
+    gap: 14px;
+}
+
+// Merged customer list contact pills onto the existing order-detail contact shell.
+.customer-card__meta-row .order-detail__contact{
+    min-height: 34px;
+    max-width: 100%;
+    padding: 0 11px;
+}
+
+.customer-card__meta-row .order-detail__contact svg,
+.customer-card__meta-row .order-detail__contact i{
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+}
+
+.customer-card__meta-row .order-detail__contact span{
+    max-width: 100%;
+}
+
+.dashboard-availability-dialog{
+    max-width: min(1120px, calc(100% - 24px));
+    margin: 10px auto;
+}
+
+.dashboard-availability-form{
+    @include flex-layout();
+    width: 100%;
+    min-height: 0;
+}
+
+.dashboard-availability-modal{
+    @include flex-layout($direction: column);
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    overflow: hidden;
+}
+
+.dashboard-availability-modal .modal-body{
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 18px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 10px;
+}
+
+.dashboard-availability-layout{
+    @include grid-layout($gap: 16px);
+}
+
+.dashboard-availability-section{
+    @include grid-layout($gap: 14px);
+    @include surface-card($radius: 20px, $background: rgba(216, 221, 232, 0.04), $border-color: rgba(216, 221, 232, 0.1));
+    padding: 16px;
+}
+
+.dashboard-availability-section--days{
+    background: rgba(9, 3, 51, 0.16);
+}
+
+.dashboard-availability-section__head{
+    @include grid-layout($gap: 6px);
+}
+
+.dashboard-availability-section__head h2{
+    margin: 0;
+    font-size: clamp(20px, 2.1vw, 24px);
+}
+
+.dashboard-availability-section__head p{
+    margin: 0;
+    color: rgba(216, 221, 232, 0.76);
+    line-height: 1.5;
+}
+
+.dashboard-availability-fields{
+    @include grid-layout($gap: 12px, $columns: repeat(auto-fit, minmax(190px, 1fr)));
+}
+
+.dashboard-availability-field{
+    @include grid-layout($gap: 8px);
+    @include surface-card($radius: 16px, $background: rgba(9, 3, 51, 0.24), $border-color: rgba(216, 221, 232, 0.08));
+    padding: 12px 14px;
+}
+
+.dashboard-availability-field__head{
+    @include flex-layout($align: flex-start, $justify: space-between, $gap: 10px);
+}
+
+.dashboard-availability-field label{
+    font-weight: 600;
+    color: var(--c3);
+}
+
+.dashboard-availability-help-toggle{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include control-shell($min-height: 30px, $padding: 0, $radius: 999px, $background: rgba(14, 183, 146, 0.08), $border-color: rgba(14, 183, 146, 0.2), $color: rgba(142, 246, 219, 0.92));
+    width: 30px;
+    min-width: 30px;
+    cursor: pointer;
+    transition: transform .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+
+.dashboard-availability-help-toggle:hover{
+    @include hover-lift($background: rgba(14, 183, 146, 0.14), $border-color: rgba(142, 246, 219, 0.28), $color: rgba(142, 246, 219, 1), $shadow: null);
+}
+
+.dashboard-availability-help-toggle[aria-expanded="true"]{
+    background: rgba(14, 183, 146, 0.18);
+    border-color: rgba(142, 246, 219, 0.34);
+    color: rgba(142, 246, 219, 1);
+}
+
+.dashboard-availability-help-toggle .bi{
+    width: 16px;
+    height: 16px;
+}
+
+.dashboard-availability-field input{
+    @include control-shell($min-height: 46px, $padding: 0 14px, $radius: 14px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
+    width: 100%;
+}
+
+.dashboard-availability-field input::placeholder{
+    color: rgba(216, 221, 232, 0.48);
+}
+
+.dashboard-availability-field input:focus{
+    outline: none;
+    border-color: var(--action-modal-accent);
+    box-shadow: 0 0 0 3px var(--action-modal-soft);
+}
+
+.dashboard-availability-field__help{
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(14, 183, 146, 0.18);
+    background: rgba(14, 183, 146, 0.08);
+    color: rgba(216, 221, 232, 0.86);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.dashboard-availability-days{
+    @include grid-layout($gap: 8px);
+}
+
+.dashboard-availability-day-card{
+    @include grid-layout($gap: 12px);
+    padding: 12px 0;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid rgba(216, 221, 232, 0.08);
+    background: transparent;
+}
+
+.dashboard-availability-day-card:first-child{
+    padding-top: 0;
+}
+
+.dashboard-availability-day-card:last-child{
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.dashboard-availability-day-card__header{
+    @include flex-layout($align: center, $justify: space-between, $gap: 12px);
+}
+
+.dashboard-availability-day-card__copy{
+    @include grid-layout($gap: 4px);
+}
+
+.dashboard-availability-day-card__copy h3{
+    margin: 0;
+    text-transform: capitalize;
+    font-size: 1rem;
+}
+
+.dashboard-availability-day-card__copy p{
+    margin: 0;
+    color: rgba(216, 221, 232, 0.72);
+    font-size: 0.92rem;
+}
+
+.dashboard-availability-day-card__toggle{
+    @include flex-layout($display: inline-flex, $align: center, $gap: 8px);
+    @include control-shell($min-height: 38px, $padding: 0 14px, $radius: 999px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
+    font-weight: 700;
+    transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
+}
+
+.dashboard-availability-day-card__toggle:hover{
+    @include hover-lift($background: rgba(216, 221, 232, 0.12), $border-color: rgba(216, 221, 232, 0.2), $shadow: null);
+}
+
+.dashboard-availability-day-card__toggle .bi{
+    transition: transform .2s ease;
+}
+
+.dashboard-availability-day-card__toggle[aria-expanded="true"] .bi{
+    transform: rotate(180deg);
+}
+
+.dashboard-availability-slots{
+    @include grid-layout($gap: 0);
+}
+
+.dashboard-availability-slot{
+    @include grid-layout($gap: 8px, $columns: 74px minmax(0, 1fr), $align: center);
+    padding: 8px 0;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px dashed rgba(216, 221, 232, 0.08);
+    background: transparent;
+}
+
+.dashboard-availability-slot:last-child{
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.dashboard-availability-slot__time{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include control-shell($min-height: 36px, $padding: 0 10px, $radius: 12px, $background: rgba(216, 221, 232, 0.08), $color: var(--c3));
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+
+.dashboard-availability-slot__options{
+    @include flex-layout($gap: 6px, $wrap: wrap);
+}
+
+.dashboard-availability-slot__option{
+    @include flex-layout($display: inline-flex, $align: center, $gap: 8px);
+    @include control-shell($min-height: 36px, $padding: 0 10px, $radius: 12px, $background: rgba(216, 221, 232, 0.05), $border-color: rgba(216, 221, 232, 0.14), $color: rgba(216, 221, 232, 0.78));
+    @include interactive-transition();
+    cursor: pointer;
+}
+
+.dashboard-availability-slot__option:hover{
+    @include hover-lift($background: rgba(216, 221, 232, 0.1), $color: var(--c3), $shadow: null);
+}
+
+.dashboard-availability-slot__option-icon{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+}
+
+.dashboard-availability-slot__option-icon svg,
+.dashboard-availability-slot__option-icon .bi{
+    width: 18px;
+    height: 18px;
+}
+
+.dashboard-availability-slot__option-label{
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.dashboard-availability-slot__check:checked + .dashboard-availability-slot__option{
+    background: linear-gradient(145deg, rgba(216, 221, 232, 0.98), rgba(216, 221, 232, 0.9));
+    color: var(--c1);
+    border-color: rgba(216, 221, 232, 0.24);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+}
+
+.dashboard-availability-slot__check:checked + .dashboard-availability-slot__option .dashboard-availability-slot__option-icon{
+    color: var(--c1);
+}
+
+.dashboard-availability-feedback{
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px dashed rgba(220, 53, 69, 0.32);
+    background: rgba(220, 53, 69, 0.08);
 }
 
 @media (max-width: 720px){
@@ -4169,6 +4593,48 @@ svg.to_see, .bi.to_see{
 
     .dashboard-action-modal__details{
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-availability-dialog{
+        max-width: calc(100% - 12px);
+        margin: 6px auto;
+    }
+
+    .dashboard-availability-section{
+        padding: 14px;
+    }
+
+    .dashboard-availability-fields{
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-availability-day-card__header{
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dashboard-availability-day-card__toggle{
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-availability-slot{
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-availability-slot__time{
+        justify-self: flex-start;
+    }
+
+    .dashboard-availability-slot__option{
+        flex: 1 1 calc(50% - 8px);
+        justify-content: center;
+    }
+}
+
+@media (max-width: 380px){
+    .dashboard-availability-slot__option{
+        flex-basis: 100%;
     }
 }
 
@@ -5093,33 +5559,20 @@ section{
     }
     
     .split, .split-3{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
+        @include flex-layout($align: center, $justify: space-between, $gap: 1rem, $wrap: wrap);
         div{
             width: calc(50% - 1.2rem);
             p{
-                display: flex;
+                @include flex-layout($align: center, $justify: center, $gap: .5rem);
                 width: 100%;
-                justify-content: center;
-                align-items: center;
-                gap: .5rem;
-
             }
         }
         
     }
     .split-3{
-        flex-wrap: wrap;
         gap: .5rem;
-        justify-content: space-between;
         div{
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: .5rem;
+            @include flex-layout($direction: column, $justify: space-between, $gap: .5rem);
             width: auto;
             input, select{
                 flex-shrink: 1 !important;
@@ -5150,9 +5603,7 @@ section{
         font-size: clamp(16px, 2.7vw, 20px);
     }
     .desc{
-        display: flex;
-        flex-direction: column;
-        gap: .5rem;
+        @include flex-layout($direction: column, $gap: .5rem);
 
     }
 
@@ -5248,14 +5699,17 @@ section{
     .order-detail__contact{
         width: 100%;
     }
+
+    .menu-dashboard__promo-grid,
+    .menu-dashboard__health-grid,
+    .menu-dashboard__stat-grid{
+        grid-template-columns: 1fr;
+    }
 }
 //// uivers select
  .radio-inputs {
   position: relative;
-  display: flex;
-  justify-content: space-between;
-  gap: .2rem;
-  flex-wrap: wrap;
+  @include flex-layout($justify: space-between, $gap: .2rem, $wrap: wrap);
   border-radius: 10px;
   background-color: var(--c1);
   box-sizing: border-box;
@@ -5279,10 +5733,8 @@ section{
 }
 
 .radio-inputs .radio .name {
-  display: flex;
+  @include flex-layout($align: center, $justify: center);
   cursor: pointer;
-  align-items: center;
-  justify-content: center;
   border-radius:9px;
   border: none;
   color: var(--c3);
@@ -5375,9 +5827,7 @@ section{
 }
 
 .statistic_page{
-    display: flex;
-    flex-direction: column;
-    gap: .2rem;
+    @include flex-layout($direction: column, $gap: .2rem);
     text-align: center;
     h1{
         margin-bottom: 2rem;
@@ -5396,10 +5846,7 @@ section{
         background-color: var(--c3);
         border-radius: 20px;
 
-        display: flex;
-        flex-direction: column;
-        gap: .3rem;
-        justify-content: space-between;
+        @include flex-layout($direction: column, $justify: space-between, $gap: .3rem);
         .graph{
             max-height: 700px;
             margin-bottom: 2rem;
@@ -5411,9 +5858,7 @@ section{
             padding: .5rem;
             text-align: left;
 
-            display: flex;
-            align-items: center;
-            flex-direction: column;
+            @include flex-layout($direction: column, $align: center);
             position: relative;
             background-color: var(--c1); 
             .mytable{
@@ -5450,18 +5895,13 @@ section{
             background: linear-gradient(180deg, var(--c1_op) 2% , rgba(255, 255, 255, 0));
         }
         .int_stat{
-            display: flex;
-            flex-direction: column;
+            @include flex-layout($direction: column, $gap: .4rem, $wrap: wrap);
             // background-color: var(--c1);
             // color: var(--c3);
             //padding: .7rem !important;
             border-radius: 12px;
-            flex-wrap: wrap;
-            gap: .4rem;
             .line{
-                display: flex;
-                gap: 1rem;
-                flex-wrap: wrap;
+                @include flex-layout($gap: 1rem, $wrap: wrap);
             }
             .top_s{
                 flex: 1 0 !important;
@@ -5488,10 +5928,8 @@ section{
                 }
             }
             .st{
-                display: flex;
-                align-items: center;
+                @include flex-layout($align: center, $gap: .1rem);
                 //justify-content: space-between;
-                gap: .1rem;
                 font-size: $fs_sm_1;
                 
                 .count{
@@ -5547,17 +5985,14 @@ section{
     margin:  0 auto;
     padding: 1rem;
     .mail-list-check{
-        flex-direction: column;
+        @include flex-layout($direction: column);
         label{
-            display: flex;
-            justify-content: space-between;
+            @include flex-layout($justify: space-between);
             width: 100% !important;
         }
     }
     section{
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        @include flex-layout($direction: column, $gap: 1rem);
 
         margin: 3rem 0 8rem;
         h2{
@@ -5577,38 +6012,29 @@ section{
         font-size: $fs_lg;
     }
     .lists{
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
+        @include flex-layout($direction: column, $gap: 2rem);
         .list_wrap{
-            display: flex;
-            flex-direction: column;
+            @include flex-layout($direction: column, $gap: .7rem);
             padding: 1.3rem .8rem ;
             border-radius: 13px;
             background-color: var(--c3);
             color: var(--c1);
-            gap: .7rem;
             h3{
                 font-size: $fs_md;
             }
             .list{
-                display: flex;
-                flex-direction: column;
-                gap: .3rem;
+                @include flex-layout($direction: column, $gap: .3rem);
                 max-height: 30svh;
                 overflow-y: scroll;
                 border-radius: 12px;
                 //background-color: var(--c1_op);
                 .contact{
                     width: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
+                    @include flex-layout($align: center, $justify: space-between, $gap: 1rem);
                     max-width: 100%;
                     padding: .4rem .7rem;
                     border: 1px solid var(--c3);
                     background-color: var(--c1_op);
-                    gap: 1rem;
                     .mail{
                         
                         overflow: hidden;
@@ -5629,9 +6055,7 @@ section{
                 }
             }
             .act{
-                gap: 1rem;
-                display: flex;
-                justify-content: space-between;
+                @include flex-layout($justify: space-between, $gap: 1rem);
                 padding: 1rem;
     
             }
@@ -5639,17 +6063,11 @@ section{
     }
     .models{
         margin-top: 2rem;
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 2rem;
-        flex-wrap: wrap;
+        @include flex-layout($align: flex-start, $justify: flex-start, $gap: 2rem, $wrap: wrap);
         .model{
             max-width: 450px;
             flex: 1 0;
-            display: flex;
-            flex-direction: column;
-            gap: .2rem;
+            @include flex-layout($direction: column, $gap: .2rem);
             font-size: 14px;
             background-color: var(--c3);
             padding: .7rem;
@@ -5669,10 +6087,7 @@ section{
                 font-size: 22px;
             }
             .act{
-                display: flex;
-                align-items: flex-end;
-                justify-content: flex-end;
-                gap: .5rem;
+                @include flex-layout($align: flex-end, $justify: flex-end, $gap: .5rem);
                 form{
                     margin: 0 !important;
                 }
@@ -5690,9 +6105,7 @@ section{
             background-color: #09033300 !important;
             border: none !important;
             .list{
-                display: flex;
-                flex-direction: column;
-                gap: .3rem;
+                @include flex-layout($direction: column, $gap: .3rem);
                 max-height: 30svh;
                 overflow-y: scroll;
                 border-radius: 12px;
@@ -5704,10 +6117,7 @@ section{
                     background-color: var(--c3) !important;
                     padding: .6rem .8rem;
                     max-width: 100%;
-                    flex-wrap: wrap;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
+                    @include flex-layout($align: center, $justify: space-between, $wrap: wrap);
                     .btn-close{
 
                         font-size: $fs_xsm !important;
@@ -5717,10 +6127,7 @@ section{
                         overflow: hidden;
                         text-overflow: ellipsis;
                         max-width: 100%;
-                        gap: 1rem;
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
+                        @include flex-layout($align: center, $justify: space-between, $gap: 1rem);
                         max-width: 100%;
                         overflow: hidden;
                         padding: .4rem .7rem;
@@ -5861,17 +6268,20 @@ section{
             font-size: $fs_sm_2;
             margin: 0;
         }
+        .set_a,
+        .more_info{
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(216, 221, 232, 0.12);
+            background: rgba(9, 3, 51, 0.46);
+        }
         .top-set_a{
             display: grid;
             gap: 12px;
             margin-bottom: 12px;
             .set_a{
-                display: grid;
-                gap: 10px;
-                padding: 14px;
-                border-radius: 18px;
-                border: 1px solid rgba(216, 221, 232, 0.12);
-                background: rgba(9, 3, 51, 0.46);
                 .radio-inputs{
                     width: 100%;
                     max-width: none;
@@ -5935,12 +6345,6 @@ section{
             }
         }
         .more_info{
-            display: grid;
-            gap: 10px;
-            padding: 14px;
-            border-radius: 18px;
-            border: 1px solid rgba(216, 221, 232, 0.12);
-            background: rgba(9, 3, 51, 0.46);
             .method_cont{
                 display: flex;
                 gap: .45rem;
@@ -5964,11 +6368,6 @@ section{
         }
         .settings-card-head{
             align-items: center;
-        }
-        .settings-state--neutral{
-            color: rgba(216, 221, 232, 0.92);
-            background: rgba(216, 221, 232, 0.08);
-            border-color: rgba(216, 221, 232, 0.16);
         }
         .modal-footer{
             padding: 12px 0 0;
@@ -6001,145 +6400,5 @@ section{
                 align-items: flex-start;
             }
         }
-    }
-}
-.edit_modal{
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 1rem;
-    .top_day{
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between !important;
-        gap: .4rem;
-        h4{
-            margin: 0;
-            font-weight: 600;
-            text-transform: capitalize;
-            margin: 0 !important;
-        }
-    }
-    .modal_body{
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        h4{
-            width: 100%;
-        }
-
-        .scroller{
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: .4rem;
-            max-height: 30svh;
-            overflow: auto;
-            .center{
-                border-radius: 0!important;
-            }
-            .left{
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-            .right{
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
-
-            }
-            .time{
-                display: flex;
-                //gap: .1rem;
-                align-items: center;
-                background-color: var(--c1_op_8);
-                color: var(--c3);
-                padding: .4rem;
-                border-radius: 8px;
-                flex: 1 0 auto;
-                h5{
-                    width: 48px;
-                    text-align: center;
-                    //padding-inline: .4rem;
-                    margin: 0 5px 0 0  !important;
-                     user-select: none;
-                    /* Per compatibilità con browser più vecchi: */
-                    -webkit-user-select: none;  /* Safari */
-                    -moz-user-select: none;     /* Firefox */
-                    -ms-user-select: none;      /* Internet Explorer/Edge */
-                }
-                label{
-                    flex: 1;
-                    padding: .7rem;
-                }
-            }
-        }
-    }
-    
-    .inputs{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        .input_c{
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: .5rem;
-            width: auto;
-            input{
-                background-color: #09033300;
-                border-left: none;
-                border-right: none;
-                border-top: none;
-                border-bottom: 2px solid var(--c3);
-                color: var(--c3);
-                opacity: .5;
-                flex-grow: 1;
-                height: 40px;
-            }
-        }
-        input:focus{
-            outline: none;
-            opacity: 1;
-            transition: all .3s ease-in-out;
-        }
-        input:hover{
-            opacity: 1;
-            transition: all .3s ease-in-out;
-        }
-        
-    }
-    .iv2{
-        input{
-            border-color: var(--c1) !important;
-            color: var(--c1) !important;
-        }
-    }
-    .days, .day{
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-    .day{
-        display: flex;
-        justify-content: space-between;
-        flex-direction: row;
-        width: 100%;
-        .top_day, .btn_close{
-            background-color: var(--c1);
-            padding: .3em 1.4em;
-            text-transform: uppercase !important;
-            border-radius: 12px;
-            color: var(--c3_op_8);
-            font-weight: 800;
-            width: fit-content;
-        }
-        .btn_close{
-            opacity: .5;
-            padding: .3em 1em!important;
-        }
-
     }
 }

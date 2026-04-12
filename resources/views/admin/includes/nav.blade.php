@@ -63,7 +63,7 @@
         'label' => 'Impostazioni',
         'route' => route('admin.settings'),
         'icon' => 'gear-wide-connected',
-        'active' => request()->routeIs('admin.settings.*') || request()->routeIs('admin.profile.*'),
+        'active' => request()->routeIs('admin.settings') || request()->routeIs('admin.profile.*'),
     ];
 @endphp
 
@@ -74,7 +74,7 @@
                 <a href="{{ $item['route'] }}" class="admin-nav__link admin-nav__link--{{ $item['key'] }} {{ $item['active'] ? 'is-active' : '' }}" aria-current="{{ $item['active'] ? 'page' : 'false' }}">
                     <span class="admin-nav__icon">
                         @if ($item['key'] === 'menu')
-                            <i class="bi bi-fork-knife" style="font-size: 16px" aria-hidden="true"></i>
+                            <i class="bi bi-fork-knife" aria-hidden="true"></i>
                         @else
                             <x-icon :name="$item['icon']" />
                         @endif

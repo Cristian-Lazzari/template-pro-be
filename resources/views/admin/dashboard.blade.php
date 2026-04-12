@@ -35,22 +35,22 @@
 
 <div class="dash_page">
     <h1>
-        <i class="bi bi-calendar2-check-fill" style="font-size: 16px"></i>
+        <i class="bi bi-calendar2-check-fill"></i>
         {{__('admin.t_dashboard')}}
     </h1>
     <div class="top_action my-5">
 
         
         <button id="editToggle" class="my_btn_2 " data-bs-toggle="modal" data-bs-target="#staticBackdropav" >
-            <i class="bi bi-arrow-repeat" style="font-size: 16px"></i>
-            {{-- Reset disponibilità --}}
+            <i class="bi bi-arrow-repeat"></i>
+            Disponibilità
         </button>
         <button  type="button" class=" my_btn_1 btn_delete" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-            <i class="bi bi-ban" style="font-size: 16px"></i>
-            {{-- Blocca Giorni --}}
+            <i class="bi bi-ban"></i>
+            Blocca giorni
         </button>
         <a class="my_btn_3 ml-auto" href="{{ route('admin.reservations.index') }}">
-            <i class="bi bi-credit-card-2-front-fill" style="font-size: 16px"></i>
+            <i class="bi bi-credit-card-2-front-fill"></i>
             {{__('admin.Vedi_tutti')}}
         </a> 
     </div>
@@ -76,10 +76,10 @@
                 </div>
                 <div class="top_line">
                     <button class="prev_btn" type="button" data-bs-target="#calendar_1" data-bs-slide="prev">
-                        <i class="bi bi-caret-left-fill" style="font-size: 16px"></i>
+                        <i class="bi bi-caret-left-fill"></i>
                     </button>
                     <button class="post_btn" type="button" data-bs-target="#calendar_1" data-bs-slide="next">
-                        <i class="bi bi-caret-right-fill" style="font-size: 16px"></i>
+                        <i class="bi bi-caret-right-fill"></i>
                     </button>
                 </div>
                 <div class="carousel-inner">
@@ -91,12 +91,12 @@
                                     <div class="line">
                                         <h4>{{__('admin.Prenotazioni')}}</h4>
                                         <div class="stat first">
-                                            <i class="bi bi-card-heading" style="font-size: 16px"></i>
+                                            <i class="bi bi-card-heading"></i>
                                             <span>{{$m['n_res']}}</span>
                                         </div>
                                         
                                         <div class="stat">
-                                            <i class="bi bi-people-fill" style="font-size: 16px"></i>
+                                            <i class="bi bi-people-fill"></i>
                                             <span>{{$m['guests']}}</span>
                                         </div>
                                     </div>
@@ -105,11 +105,11 @@
                                     <div class="line">
                                         <h4>{{__('admin.Ordini')}}</h4>
                                         <div class="stat first">
-                                            <i class="bi bi-inboxes" style="font-size: 16px"></i>
+                                            <i class="bi bi-inboxes"></i>
                                             <span>{{$m['n_order']}}</span>
                                         </div>
                                         <div class="stat ">
-                                            <i class="bi bi-piggy-bank-fill" style="font-size: 16px"></i>
+                                            <i class="bi bi-piggy-bank-fill"></i>
                                             <span class="cash" ><strong>€</strong>{{$m['cash'] / 100}}</span>
                                         </div>
                                     </div>
@@ -133,12 +133,12 @@
                                             <p class="p_day">{{$d['day']}}</p>
                                             @if ($d['guests'] > 0)
                                                 <span class="bookings"> <strong> {{$d['guests']}} </strong>
-                                                    <i class="bi bi-person-lines-fill" style="font-size: 16px"></i>
+                                                    <i class="bi bi-person-lines-fill"></i>
                                                 </span>
                                             @endif
                                             @if ($d['n_order'] > 0)
                                                 <span class="bookings top"> <strong> {{$d['n_order']}} </strong>
-                                                    <i class="bi bi-inboxes" style="font-size: 16px"></i>
+                                                    <i class="bi bi-inboxes"></i>
                                                 </span>
                                             @endif
                                         </button>
@@ -164,80 +164,139 @@
 
 
     <div class="modal fade " id="staticBackdropav" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropavLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable large_m">
-            <form class="modal-content s_advanced edit_modal" action="{{ route('admin.dates.generate') }}" method="post">
+        <div class="modal-dialog modal-dialog-centered dashboard-availability-dialog">
+            <form class="w-100 dashboard-availability-form" action="{{ route('admin.dates.generate') }}" method="post">
                 @csrf
-                <h2>
-                    <i class="bi bi-sliders" style="font-size: 16px"></i> Modifica le disponibilità
-                </h2>
+                <x-dashboard.action-modal
+                    title-id="staticBackdropavLabel"
+                    class="dashboard-availability-modal"
+                    :title="__('admin.availability_modal_title')"
+                    :eyebrow="__('admin.availability_modal_eyebrow')"
+                    tone="mint"
+                    :description="__('admin.availability_modal_description')"
+                >
+                    <x-slot name="titleIcon">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </x-slot>
 
-                <div class="inputs iv2">
-                    <div class="input_c">
-                        <label for="delay_or">{{ __('admin.Latenza_ordini') }}</label>
-                        <input name="delay_or" id="delay_or" type="time" value="{{$property_adv['delay_or'] ?? ''}}">
-                        @error('delay_or') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c">
-                        <label for="delay_res">{{ __('admin.Latenza_prenotazioni') }}</label>
-                        <input name="delay_res" id="delay_res" type="time" value="{{$property_adv['delay_res'] ?? ''}}">
-                        @error('delay_res') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c">
-                        <label for="max_day_res">{{ __('admin.Latenza_prenotazioni_giorni') }}</label>
-                        <input name="max_day_res" id="max_day_res" type="number" min="1" value="{{$property_adv['max_day_res'] ?? ''}}">
-                        @error('max_day_res') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c">
-                        <label for="times_interval">{{ __('admin.Intervallo_minuti') }}</label>
-                        <input name="times_interval" id="times_interval" type="number" min="1" value="{{$property_adv['times_interval'] ?? ''}}">
-                        @error('times_interval') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c">
-                        <label for="times_start">{{ __('admin.Orario_inizio') }}</label>
-                        <input name="times_start" id="times_start" type="time" value="{{$property_adv['times_start'] ?? ''}}">
-                        @error('times_start') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c">
-                        <label for="times_end">{{ __('admin.Orario_fine') }}</label>
-                        <input name="times_end" id="times_end" type="time" value="{{$property_adv['times_end'] ?? ''}}">
-                        @error('times_end') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c @if(!(in_array($pack, [2,4]) && $double)) d-none @endif" >
-                        <label for="max_table_1">N° di posti per {{$property_adv['sala_1']}}</label>
-                        <input name="max_table_1" id="max_table_1" type="number" placeholder="N° di posti in {{$property_adv['sala_1']}} per fascia oraria" value="{{$property_adv['max_table_1'] ?? ''}}"> 
-                        @error('max_table_1') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c @if(!(in_array($pack, [2,4]) && $double)) d-none @endif" >
-                        <label for="max_table_2">N° di posti per {{$property_adv['sala_2']}}</label>
-                        <input name="max_table_2" id="max_table_2" type="number" placeholder="N° di posti in {{$property_adv['sala_2']}} per fascia oraria" value="{{$property_adv['max_table_2'] ?? ''}}"> 
-                        @error('max_table_2') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c @if(!(in_array($pack, [2,4]) && !$double)) d-none @endif" >
-                        <label for="max_table">{{ __('admin.N_di_posti') }}</label>
-                        <input name="max_table" id="max_table" type="number" placeholder="N° di posti per fascia oraria" value="{{$property_adv['max_table'] ?? ''}}"> 
-                        @error('max_table') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    
-                    <div class="input_c @if(!(in_array($pack, [3,4]))) d-none @endif" >
-                        <label for="max_asporto">{{ __('admin.N_di_ordini_dasporto') }}</label>
-                        <input name="max_asporto" id="max_asporto" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_asporto'] ?? ''}}"> 
-                        @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="input_c @if(!(in_array($pack, [3,4]))) d-none @endif" >
-                        <label for="max_domicilio">{{ __('admin.N_di_oridini_a_domicilio') }}</label>
-                        <input name="max_domicilio" id="max_domicilio" type="number" placeholder="N° di ordini per fascia oraria" value="{{$property_adv['max_domicilio'] ?? ''}}"> 
-                        @error('max_domicilio') <p class="error">{{ $message }}</p> @enderror
-                    </div>
-                </div>
+                    <div class="dashboard-availability-layout">
+                        <section class="dashboard-availability-section">
+                            <div class="dashboard-availability-section__head">
+                                <h2>{{ __('admin.availability_rules_title') }}</h2>
+                                <p>{{ __('admin.availability_rules_description') }}</p>
+                            </div>
 
-                <div class="days" id="availability-days"></div>
-                <p id="availability-slots-feedback" class="error m-2 d-none"></p>
-                @error('days_on') <p class="error m-2">{{ __('admin.seleziona_Attiva_nei_giorni_i_cui_sei_operativo') }}</p> @enderror
-                
-                <div class="modal-footer">
-                    <button type="button" class="my_btn_1 d " data-bs-dismiss="modal">{{ __('admin.Annulla') }}</button>
-                    <button type="submit" class="my_btn_1 add ">{{__('admin.Aggiorna')}}</button>
-                </div>
+                            <div class="dashboard-availability-fields">
+                                <div class="dashboard-availability-field">
+                                    <div class="dashboard-availability-field__head">
+                                        <label for="delay_or">{{ __('admin.Latenza_ordini') }}</label>
+                                        <button type="button" class="dashboard-availability-help-toggle" data-availability-help-toggle aria-expanded="false" aria-controls="delay_or_help">
+                                            <i class="bi bi-info-circle"></i>
+                                            <span class="visually-hidden">{{ __('admin.Info') }}</span>
+                                        </button>
+                                    </div>
+                                    <input name="delay_or" id="delay_or" type="time" value="{{$property_adv['delay_or'] ?? ''}}">
+                                    <p id="delay_or_help" class="dashboard-availability-field__help" hidden>{{ __('admin.availability_help_orders') }}</p>
+                                    @error('delay_or') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field">
+                                    <div class="dashboard-availability-field__head">
+                                        <label for="delay_res">{{ __('admin.Latenza_prenotazioni') }}</label>
+                                        <button type="button" class="dashboard-availability-help-toggle" data-availability-help-toggle aria-expanded="false" aria-controls="delay_res_help">
+                                            <i class="bi bi-info-circle"></i>
+                                            <span class="visually-hidden">{{ __('admin.Info') }}</span>
+                                        </button>
+                                    </div>
+                                    <input name="delay_res" id="delay_res" type="time" value="{{$property_adv['delay_res'] ?? ''}}">
+                                    <p id="delay_res_help" class="dashboard-availability-field__help" hidden>{{ __('admin.availability_help_reservations') }}</p>
+                                    @error('delay_res') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field">
+                                    <div class="dashboard-availability-field__head">
+                                        <label for="max_day_res">{{ __('admin.Latenza_prenotazioni_giorni') }}</label>
+                                        <button type="button" class="dashboard-availability-help-toggle" data-availability-help-toggle aria-expanded="false" aria-controls="max_day_res_help">
+                                            <i class="bi bi-info-circle"></i>
+                                            <span class="visually-hidden">{{ __('admin.Info') }}</span>
+                                        </button>
+                                    </div>
+                                    <input name="max_day_res" id="max_day_res" type="number" min="1" value="{{$property_adv['max_day_res'] ?? ''}}">
+                                    <p id="max_day_res_help" class="dashboard-availability-field__help" hidden>{{ __('admin.availability_help_days') }}</p>
+                                    @error('max_day_res') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="dashboard-availability-section">
+                            <div class="dashboard-availability-section__head">
+                                <h2>{{ __('admin.availability_capacity_title') }}</h2>
+                                <p>{{ __('admin.availability_capacity_description') }}</p>
+                            </div>
+
+                            <div class="dashboard-availability-fields">
+                                <div class="dashboard-availability-field @if(!(in_array($pack, [2,4]) && $double)) d-none @endif">
+                                    <label for="max_table_1">{{ __('admin.availability_seats_for_room', ['room' => $property_adv['sala_1']]) }}</label>
+                                    <input name="max_table_1" id="max_table_1" type="number" min="0" placeholder="{{ __('admin.availability_seats_per_slot') }}" value="{{$property_adv['max_table_1'] ?? ''}}">
+                                    @error('max_table_1') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field @if(!(in_array($pack, [2,4]) && $double)) d-none @endif">
+                                    <label for="max_table_2">{{ __('admin.availability_seats_for_room', ['room' => $property_adv['sala_2']]) }}</label>
+                                    <input name="max_table_2" id="max_table_2" type="number" min="0" placeholder="{{ __('admin.availability_seats_per_slot') }}" value="{{$property_adv['max_table_2'] ?? ''}}">
+                                    @error('max_table_2') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field @if(!(in_array($pack, [2,4]) && !$double)) d-none @endif">
+                                    <label for="max_table">{{ __('admin.N_di_posti') }}</label>
+                                    <input name="max_table" id="max_table" type="number" min="0" placeholder="{{ __('admin.availability_seats_per_slot') }}" value="{{$property_adv['max_table'] ?? ''}}">
+                                    @error('max_table') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field @if(!(in_array($pack, [3,4]))) d-none @endif">
+                                    <label for="max_asporto">{{ __('admin.N_di_ordini_dasporto') }}</label>
+                                    <input name="max_asporto" id="max_asporto" type="number" min="0" placeholder="{{ __('admin.availability_takeaway_orders_per_slot') }}" value="{{$property_adv['max_asporto'] ?? ''}}">
+                                    @error('max_asporto') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field @if(!(in_array($pack, [3,4]))) d-none @endif">
+                                    <label for="max_domicilio">{{ __('admin.N_di_oridini_a_domicilio') }}</label>
+                                    <input name="max_domicilio" id="max_domicilio" type="number" min="0" placeholder="{{ __('admin.availability_delivery_orders_per_slot') }}" value="{{$property_adv['max_domicilio'] ?? ''}}">
+                                    @error('max_domicilio') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="dashboard-availability-section dashboard-availability-section--days">
+                            <div class="dashboard-availability-section__head">
+                                <h2>{{ __('admin.availability_operating_week_title') }}</h2>
+                                <p>{{ __('admin.availability_operating_week_description') }}</p>
+                            </div>
+
+                            <div class="dashboard-availability-fields">
+                                <div class="dashboard-availability-field">
+                                    <label for="times_interval">{{ __('admin.Intervallo_minuti') }}</label>
+                                    <input name="times_interval" id="times_interval" type="number" min="1" value="{{$property_adv['times_interval'] ?? ''}}">
+                                    @error('times_interval') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field">
+                                    <label for="times_start">{{ __('admin.Orario_inizio') }}</label>
+                                    <input name="times_start" id="times_start" type="time" value="{{$property_adv['times_start'] ?? ''}}">
+                                    @error('times_start') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="dashboard-availability-field">
+                                    <label for="times_end">{{ __('admin.Orario_fine') }}</label>
+                                    <input name="times_end" id="times_end" type="time" value="{{$property_adv['times_end'] ?? ''}}">
+                                    @error('times_end') <p class="error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
+                            <div class="dashboard-availability-days" id="availability-days"></div>
+                            <p id="availability-slots-feedback" class="error dashboard-availability-feedback d-none"></p>
+                            @error('days_on') <p class="error dashboard-availability-feedback">{{ __('admin.seleziona_Attiva_nei_giorni_i_cui_sei_operativo') }}</p> @enderror
+                            <p class="dashboard-action-modal__hint">{{ __('admin.availability_regenerate_hint') }}</p>
+                        </section>
+                    </div>
+
+                    <x-slot name="footer">
+                        <button type="button" class="my_btn_2" data-bs-dismiss="modal">{{ __('admin.availability_close_without_saving') }}</button>
+                        <button type="submit" class="my_btn_3">{{ __('admin.availability_save') }}</button>
+                    </x-slot>
+                </x-dashboard.action-modal>
             </form>
         </div>
     </div>
@@ -260,10 +319,10 @@
                             </div>
                             <div class="top_line">
                                 <button class="prev_btn" type="button" data-bs-target="#c2" data-bs-slide="prev">
-                                    <i class="bi bi-caret-left-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-caret-left-fill"></i>
                                 </button>
                                 <button class="post_btn" type="button" data-bs-target="#c2" data-bs-slide="next">
-                                    <i class="bi bi-caret-right-fill" style="font-size: 16px"></i>
+                                    <i class="bi bi-caret-right-fill"></i>
                                 </button>
                             </div>
                             <div class="carousel-inner date_modal">
@@ -302,12 +361,12 @@
                                                         <p class="p_day">{{$d['day']}}</p>
                                                         @if ($d['guests'] > 0)
                                                             <span class="bookings"> <strong> {{$d['guests']}} </strong>
-                                                                <i class="bi bi-person-lines-fill" style="font-size: 16px"></i>
+                                                                <i class="bi bi-person-lines-fill"></i>
                                                             </span>
                                                         @endif
                                                         @if ($d['n_order'] > 0)
                                                             <span class="bookings top"> <strong> {{$d['n_order']}} </strong>
-                                                                <i class="bi bi-inboxes" style="font-size: 16px"></i>
+                                                                <i class="bi bi-inboxes"></i>
                                                             </span>
                                                         @endif
                                                     @if($d['status'] !== 0)
@@ -343,6 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const availabilityFeedback = document.getElementById("availability-slots-feedback");
     const availabilityForm = document.querySelector("#staticBackdropav form");
     const availabilitySubmitButton = availabilityForm?.querySelector('button[type="submit"]');
+    const availabilityModalElement = document.getElementById("staticBackdropav");
     const startInput = document.getElementById("times_start");
     const endInput = document.getElementById("times_end");
     const intervalInput = document.getElementById("times_interval");
@@ -352,6 +412,21 @@ document.addEventListener("DOMContentLoaded", () => {
         takeAway: @json(in_array($pack, [3, 4])),
         delivery: @json(in_array($pack, [3, 4])),
     };
+    const serviceLabels = {
+        table: @json(__('admin.availability_service_table')),
+        takeAway: @json(__('admin.Asporto')),
+        delivery: @json(__('admin.Domicilio')),
+    };
+    const availabilityTexts = {
+        configure: @json(__('admin.availability_configure')),
+        activeSlotSingular: @json(__('admin.availability_active_slot_singular')),
+        activeSlotPlural: @json(__('admin.availability_active_slot_plural')),
+        noActiveSlots: @json(__('admin.availability_no_active_slots')),
+        invalidSlots: @json(__('admin.availability_invalid_slots')),
+    };
+    const availabilityHelpButtons = availabilityForm
+        ? Array.from(availabilityForm.querySelectorAll('[data-availability-help-toggle]'))
+        : [];
     const dayNames = {
         1: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(0)->translatedFormat('l') }}",
         2: "{{ \Carbon\Carbon::create()->startOfWeek()->addDays(1)->translatedFormat('l') }}",
@@ -363,18 +438,18 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const timeServiceIcons = {
-        table: `<i class="bi bi-people" style="font-size: 16px"></i>`,
-        takeAway: `<i class="bi bi-bag" style="font-size: 16px"></i>`,
-        delivery: `<i class="bi bi-truck" style="font-size: 16px"></i>`,
+        table: `<i class="bi bi-people"></i>`,
+        takeAway: `<i class="bi bi-bag"></i>`,
+        delivery: `<i class="bi bi-truck"></i>`,
     };
 
     const detailIcons = {
         confirm: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi okk bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>`,
         warning: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi to_see bi-exclamation-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>`,
         null: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi null bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>`,
-        paid: `<i class="bi bi-credit-card-2-back" style="font-size: 16px"></i>`,
-        adult: `<i class="bi bi-person-standing" style="font-size: 16px"></i>`,
-        child: `<i class="bi bi-person-arms-up" style="font-size: 16px"></i>`,
+        paid: `<i class="bi bi-credit-card-2-back"></i>`,
+        adult: `<i class="bi bi-person-standing"></i>`,
+        child: `<i class="bi bi-person-arms-up"></i>`,
     };
 
     function normalizeWeekSet(weekSet) {
@@ -383,6 +458,27 @@ document.addEventListener("DOMContentLoaded", () => {
             normalized[day] = weekSet?.[day] ?? weekSet?.[String(day)] ?? {};
         }
         return normalized;
+    }
+
+    function setAvailabilityHelpState(button, expanded) {
+        const helpId = button.getAttribute('aria-controls');
+        const help = helpId ? document.getElementById(helpId) : null;
+
+        button.setAttribute('aria-expanded', String(expanded));
+        if (help) {
+            help.hidden = !expanded;
+        }
+    }
+
+    function collapseAvailabilityHelp(exceptHelpId = null) {
+        availabilityHelpButtons.forEach((button) => {
+            const helpId = button.getAttribute('aria-controls');
+            if (helpId === exceptHelpId) {
+                return;
+            }
+
+            setAvailabilityHelpState(button, false);
+        });
     }
 
     function collectWeekSelections() {
@@ -447,19 +543,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return slots;
     }
 
-    function buildServiceToggle(day, time, suffix, value, positionClass, icon, checked) {
+    function buildServiceToggle(day, time, suffix, value, serviceKey, icon, label, checked) {
         const safeTime = time.replace(':', '-');
         const inputId = `times_${day}_${safeTime}_${suffix}`;
 
         return `
-            <input type="checkbox" ${checked ? 'checked' : ''} class="btn-check" id="${inputId}" name="times_slot_[${day}][${time}][]" value="${value}">
-            <label class="btn btn-outline-light shadow-sm ${positionClass}" for="${inputId}">
-                ${icon}
+            <input type="checkbox" ${checked ? 'checked' : ''} class="btn-check dashboard-availability-slot__check" id="${inputId}" name="times_slot_[${day}][${time}][]" value="${value}">
+            <label class="dashboard-availability-slot__option dashboard-availability-slot__option--${serviceKey}" for="${inputId}">
+                <span class="dashboard-availability-slot__option-icon">${icon}</span>
+                <span class="dashboard-availability-slot__option-label">${label}</span>
             </label>
         `;
     }
 
-    function renderAvailabilityDays() {
+    function renderAvailabilityDays({ preserveCollapse = true } = {}) {
         if (!availabilityDaysContainer || !startInput || !endInput || !intervalInput) {
             return;
         }
@@ -469,9 +566,11 @@ document.addEventListener("DOMContentLoaded", () => {
             : normalizeWeekSet(initialWeekSet);
 
         const collapseState = {};
-        availabilityDaysContainer.querySelectorAll('.multi-collapse').forEach((collapse) => {
-            collapseState[collapse.dataset.day] = collapse.classList.contains('show');
-        });
+        if (preserveCollapse) {
+            availabilityDaysContainer.querySelectorAll('.multi-collapse').forEach((collapse) => {
+                collapseState[collapse.dataset.day] = collapse.classList.contains('show');
+            });
+        }
 
         const slots = buildTimeSlots(startInput.value, endInput.value, intervalInput.value);
         const isValid = slots.length > 0;
@@ -479,7 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
         availabilityFeedback.classList.toggle('d-none', isValid);
         availabilityFeedback.textContent = isValid
             ? ''
-            : "Inserisci un orario di inizio e fine valido con un intervallo maggiore di 0.";
+            : availabilityTexts.invalidSlots;
 
         if (availabilitySubmitButton) {
             availabilitySubmitButton.disabled = !isValid;
@@ -493,43 +592,59 @@ document.addEventListener("DOMContentLoaded", () => {
         let html = '';
         for (let day = 1; day <= 7; day += 1) {
             const daySelections = previousSelections[day] ?? {};
-            const hasSelections = Object.keys(daySelections).length > 0;
-            const showCollapse = collapseState[day] ?? hasSelections;
+            const activeSlots = Object.values(daySelections).filter((services) => Array.isArray(services) && services.length > 0).length;
+            const hasSelections = activeSlots > 0;
+            const showCollapse = preserveCollapse ? (collapseState[day] ?? false) : false;
+            const dayMeta = hasSelections
+                ? `${activeSlots} ${activeSlots === 1 ? availabilityTexts.activeSlotSingular : availabilityTexts.activeSlotPlural}`
+                : availabilityTexts.noActiveSlots;
 
             html += `
-                <input class="btn-check" style="visibility: hidden; position: absolute;" name="day[]" data-bs-toggle="collapse" data-bs-target="#multiCollapseExample${day}" aria-expanded="${showCollapse}" aria-controls="multiCollapseExample${day}" id="day_${day}" value="${day}">
-                <div class="day">
-                    <div class="top_day">${dayNames[day]}</div>
-                    <label for="day_${day}" class="btn_close">
-                        <i class="bi bi-arrow-bar-down" style="font-size: 16px"></i>
-                    </label>
-                </div>
-                <div class="collapse multi-collapse ${showCollapse ? 'show' : ''}" id="multiCollapseExample${day}" data-day="${day}">
-                    <div class="modal_body">
-                        <div class="scroller">
+                <div class="dashboard-availability-day-card ${showCollapse ? 'is-open' : ''}">
+                    <div class="dashboard-availability-day-card__header">
+                        <div class="dashboard-availability-day-card__copy">
+                            <h3>${dayNames[day]}</h3>
+                            <p>${dayMeta}</p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="dashboard-availability-day-card__toggle"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#multiCollapseExample${day}"
+                            aria-expanded="${showCollapse}"
+                            aria-controls="multiCollapseExample${day}"
+                        >
+                            <span>${availabilityTexts.configure}</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    <div class="collapse multi-collapse ${showCollapse ? 'show' : ''}" id="multiCollapseExample${day}" data-day="${day}" data-bs-parent="#availability-days">
+                        <div class="dashboard-availability-slots">
             `;
 
             slots.forEach((time) => {
                 const selectedServices = Array.isArray(daySelections[time]) ? daySelections[time].map(Number) : [];
-                html += `<div class="time"><h5 onclick="event.preventDefault()">${time}</h5>`;
+                html += `<div class="dashboard-availability-slot"><div class="dashboard-availability-slot__time">${time}</div><div class="dashboard-availability-slot__options">`;
 
                 if (enabledServices.table) {
-                    html += buildServiceToggle(day, time, 't', 1, 'left', timeServiceIcons.table, selectedServices.includes(1));
+                    html += buildServiceToggle(day, time, 't', 1, 'table', timeServiceIcons.table, serviceLabels.table, selectedServices.includes(1));
                 }
                 if (enabledServices.takeAway) {
-                    html += buildServiceToggle(day, time, 'a', 2, 'center', timeServiceIcons.takeAway, selectedServices.includes(2));
+                    html += buildServiceToggle(day, time, 'a', 2, 'takeAway', timeServiceIcons.takeAway, serviceLabels.takeAway, selectedServices.includes(2));
                 }
                 if (enabledServices.delivery) {
-                    html += buildServiceToggle(day, time, 'd', 3, 'right', timeServiceIcons.delivery, selectedServices.includes(3));
+                    html += buildServiceToggle(day, time, 'd', 3, 'delivery', timeServiceIcons.delivery, serviceLabels.delivery, selectedServices.includes(3));
                 }
 
-                html += `</div>`;
+                html += `</div></div>`;
             });
 
             html += `
-                        </div>
                     </div>
                 </div>
+            </div>
             `;
         }
 
@@ -574,7 +689,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (properties.includes(2)) html += timeServiceIcons.takeAway;
             if (properties.includes(3)) html += timeServiceIcons.delivery;
             html += `</p>
-                ${isBlocked ? `<button type="button" class="unblock-time-btn" data-date="${date}" data-time="${time}"><i class="bi bi-toggle-off" style="font-size: 16px"></i></button>` : (canBlock ? `<button type="button" class="block-time-btn" data-date="${date}" data-time="${time}"><i class="bi bi-toggle-on" style="font-size: 16px"></i></button>` : '')}
+                ${isBlocked ? `<button type="button" class="unblock-time-btn" data-date="${date}" data-time="${time}"><i class="bi bi-toggle-off"></i></button>` : (canBlock ? `<button type="button" class="block-time-btn" data-date="${date}" data-time="${time}"><i class="bi bi-toggle-on"></i></button>` : '')}
             </div><div class="time-content">`;
 
             if (res.length > 0) {
@@ -684,7 +799,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         unblockButton.className = 'unblock-time-btn';
                         unblockButton.dataset.date = date;
                         unblockButton.dataset.time = time;
-                        unblockButton.innerHTML = `<i class="bi bi-toggle-off" style="font-size: 16px"></i>`;
+                        unblockButton.innerHTML = `<i class="bi bi-toggle-off"></i>`;
                         timeHeader.appendChild(unblockButton);
                     } else {
                         timeItem.classList.remove('blocked');
@@ -696,7 +811,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         blockButton.className = 'block-time-btn';
                         blockButton.dataset.date = date;
                         blockButton.dataset.time = time;
-                        blockButton.innerHTML = `<i class="bi bi-toggle-on" style="font-size: 16px"></i>`;
+                        blockButton.innerHTML = `<i class="bi bi-toggle-on"></i>`;
                         timeHeader.appendChild(blockButton);
                     }
 
@@ -722,7 +837,31 @@ document.addEventListener("DOMContentLoaded", () => {
         input?.addEventListener('change', renderAvailabilityDays);
     });
 
-    renderAvailabilityDays();
+    availabilityHelpButtons.forEach((button) => {
+        setAvailabilityHelpState(button, false);
+
+        button.addEventListener('click', () => {
+            const helpId = button.getAttribute('aria-controls');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+            collapseAvailabilityHelp(isExpanded ? null : helpId);
+            setAvailabilityHelpState(button, !isExpanded);
+        });
+    });
+
+    availabilityModalElement?.addEventListener('show.bs.modal', () => {
+        collapseAvailabilityHelp();
+        renderAvailabilityDays({ preserveCollapse: false });
+        window.requestAnimationFrame(() => {
+            availabilityForm?.querySelector('.dashboard-action-modal .modal-body')?.scrollTo({ top: 0 });
+        });
+    });
+
+    availabilityModalElement?.addEventListener('hidden.bs.modal', () => {
+        collapseAvailabilityHelp();
+    });
+
+    renderAvailabilityDays({ preserveCollapse: false });
 
     dayButtons.forEach((button) => {
         button.addEventListener("click", () => renderDayDetails(button));

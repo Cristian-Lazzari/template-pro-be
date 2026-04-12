@@ -88,19 +88,19 @@
                                 <label class="radio">
                                     <input type="radio" disabled>
                                     <span class="name">
-                                        <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                        <i class="bi bi-x-circle-fill"></i>
                                     </span>
                                 </label>
                                 <label class="radio">
                                     <input type="radio" disabled>
                                     <span class="name">
-                                        <i class="bi bi-telephone-fill" style="font-size: 16px"></i>
+                                        <i class="bi bi-telephone-fill"></i>
                                     </span>
                                 </label>
                                 <label class="radio">
                                     <input type="radio" checked disabled>
                                     <span class="name">
-                                        <i class="bi bi-window-sidebar" style="font-size: 16px"></i>
+                                        <i class="bi bi-window-sidebar"></i>
                                     </span>
                                 </label>
                             </div>
@@ -119,19 +119,19 @@
                                 <label class="radio">
                                     <input type="radio" disabled>
                                     <span class="name">
-                                        <i class="bi bi-x-circle-fill" style="font-size: 16px"></i>
+                                        <i class="bi bi-x-circle-fill"></i>
                                     </span>
                                 </label>
                                 <label class="radio">
                                     <input type="radio" checked disabled>
                                     <span class="name">
-                                        <i class="bi bi-telephone-fill" style="font-size: 16px"></i>
+                                        <i class="bi bi-telephone-fill"></i>
                                     </span>
                                 </label>
                                 <label class="radio">
                                     <input type="radio" disabled>
                                     <span class="name">
-                                        <i class="bi bi-window-sidebar" style="font-size: 16px"></i>
+                                        <i class="bi bi-window-sidebar"></i>
                                     </span>
                                 </label>
                             </div>

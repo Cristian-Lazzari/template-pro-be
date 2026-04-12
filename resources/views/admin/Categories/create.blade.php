@@ -25,7 +25,7 @@
         <div class="split">
             <div>
                 <label class="label_c" for="name"> 
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
                 <p> <input value="{{ old('name') }}" type="text" name="name" id="name" placeholder="Inserisci il nome"> </p>
@@ -34,7 +34,7 @@
         </div>
         <p class="desc"> 
             <label class="label_c" for="description"> 
-                <i class="bi bi-type" style="font-size: 16px"></i>
+                <i class="bi bi-type"></i>
                   {{__('admin.Descrizione')}} 
             </label>
             <textarea name="description" id="description" cols="30" rows="10" >{{ old('description') }}</textarea>

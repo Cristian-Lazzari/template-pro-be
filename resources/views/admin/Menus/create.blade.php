@@ -14,7 +14,7 @@
         <div class="split">
             <div>
                 <label class="label_c" for="name"> 
-                    <i class="bi bi-type" style="font-size: 16px"></i>
+                    <i class="bi bi-type"></i>
                     {{__('admin.Nome')}}
                 </label>
                 <p><input  value="{{ old('name') }}"  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
@@ -22,7 +22,7 @@
             </div>
             <div class="price_input">
                 <label class="label_c" for="price">   
-                    <i class="bi bi-123" style="font-size: 16px"></i>
+                    <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
                 <p><span>€</span><input value="{{ old('price') }}" type="number" name="price" id="price" step="0.01" placeholder=" Inserisci il prezzo "></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
@@ -38,7 +38,7 @@
             </div>
             <div class="price_input">
                 <label class="label_c" for="old_price">   
-                    <i class="bi bi-123" style="font-size: 16px"></i>
+                    <i class="bi bi-123"></i>
                     {{__('admin.Prezzo_barrato')}}</label>
                 <p><span>€</span><input value="{{ old('old_price') }}" type="number" name="old_price" id="old_price" step="0.01" placeholder=" Inserisci il prezzo "></p>
                 @error('old_price') <p class="error">{{ $message }}</p> @enderror
@@ -48,14 +48,14 @@
             
             <div>
                 <label class="label_c" for="file-input">
-                    <i class="bi bi-file-earmark-image" style="font-size: 16px"></i>
+                    <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                 <p><input type="file" id="file-input" name="image" ></p>
                 @error('image') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="label_c" for="category_id">
-                    <i class="bi bi-view-list" style="font-size: 16px"></i>
+                    <i class="bi bi-view-list"></i>
                     {{__('admin.Categoria')}}</label>
                 <p>
                     <select name="category_id" id="category_id">
@@ -69,7 +69,7 @@
         </div>
         <p class="desc"> 
             <label class="label_c" for="description">
-            <i class="bi bi-body-text" style="font-size: 16px"></i> 
+            <i class="bi bi-body-text"></i> 
             {{__('admin.Descrizione')}}</label>   
             <textarea name="description" id="description" cols="30" rows="10" >@if(!isset($data)) {{ old('description') }} @else {{ $data['description'] }} @endif </textarea>
         </p>
@@ -95,7 +95,7 @@
 
     <section id="section_fix" class="cont_i d-none">
         <h2>
-            <i class="bi bi-ui-checks-grid" style="font-size: 16px"></i>{{ __('admin.Abbina_Prodotti') }}</h2>
+            <i class="bi bi-ui-checks-grid"></i>{{ __('admin.Abbina_Prodotti') }}</h2>
         <div class="check_c">
             
                 @foreach($products as $c)

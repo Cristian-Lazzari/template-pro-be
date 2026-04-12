@@ -33,7 +33,7 @@
  
 <div class="dash_page">
     <h1>
-        <i class="bi bi-images" style="font-size: 16px"></i>
+        <i class="bi bi-images"></i>
         Contenuti multimediali 
     </h1>
 
@@ -52,12 +52,12 @@
                 <input type="text" id="searchInput" class="search" placeholder="Cerca prodotto..." >
                 <button id="typeToggle" class="type">{{__('admin.Tutti')}}</button>
                 <button id="sortToggle" class="order">
-                    <i class="bi bi-sort-down-alt" style="font-size: 16px"></i>
+                    <i class="bi bi-sort-down-alt"></i>
                 </button>
             </div>
             <label for="f">
-                <i class="bi bi-funnel-fill" style="font-size: 16px"></i>
-                <i class="bi bi-funnel" style="font-size: 16px"></i>
+                <i class="bi bi-funnel-fill"></i>
+                <i class="bi bi-funnel"></i>
             </label>
         </div>
     </div>
@@ -243,8 +243,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentType = 'all';
     let sortMode = 'recent';
 
-    const iconRecent = `<i class="bi bi-sort-down-alt" style="font-size: 16px"></i>`;
-    const iconAlpha = `<i class="bi bi-sort-alpha-down" style="font-size: 16px"></i>`;
+    const iconRecent = `<i class="bi bi-sort-down-alt"></i>`;
+    const iconAlpha = `<i class="bi bi-sort-alpha-down"></i>`;
 
     function bindDynamicEvents() {
         postContainer.querySelectorAll('.preview-image').forEach(button => {
