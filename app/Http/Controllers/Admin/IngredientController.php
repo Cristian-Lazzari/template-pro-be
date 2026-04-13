@@ -186,6 +186,35 @@ class IngredientController extends Controller
         return to_route('admin.ingredients.index')->with('ingredient_success', $m);
  
     }
+
+    public function show($id)
+    {
+        $ingredient = Ingredient::query()
+            ->with(['translations', 'allergens.translations'])
+            ->findOrFail($id);
+
+        $enabledCategoryIds = collect(json_decode($ingredient->type ?? '[]', true) ?: [])
+            ->map(fn ($categoryId) => (int) $categoryId)
+            ->filter()
+            ->values();
+
+        $categories = $enabledCategoryIds->isEmpty()
+            ? collect()
+            : Category::query()
+                ->whereIn('id', $enabledCategoryIds)
+                ->get()
+                ->sortBy(fn ($category) => $enabledCategoryIds->search($category->id))
+                ->values();
+
+        $products = $ingredient->products()
+            ->with('category')
+            ->without(['directAllergens.translations', 'translations', 'ingredients.allergens'])
+            ->get()
+            ->sortBy(fn ($product) => mb_strtolower((string) $product->name))
+            ->values();
+
+        return view('admin.Ingredients.show', compact('ingredient', 'categories', 'products'));
+    }
     
     public function destroy(Ingredient $ingredient)
     {

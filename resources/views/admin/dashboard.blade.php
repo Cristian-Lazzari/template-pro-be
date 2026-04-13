@@ -5,20 +5,20 @@
     @php
         $data = session('success')
     @endphp
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show dashboard-home__flash" role="alert">
         {{ $data }} 
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 @if (count($notify))
-    <div id="alert-container" >
+    <div id="alert-container" class="dashboard-home__alert-stack">
         @foreach ($notify as $r)
             @if ($r['type'] == 'res')  
-                <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
+                <div class="alert alert-dismissible fade show fixed-alert-res dashboard-home__notify" role="alert">
                 <a href="{{ route('admin.reservations.show', $r['id']) }}" class="btn btn-dark-outline">{{ __('admin.Dettagli') }}</a> 
             @else    
-                <div class="alert alert-dismissible fade show fixed-alert-res" role="alert">
+                <div class="alert alert-dismissible fade show fixed-alert-res dashboard-home__notify" role="alert">
                 <a href="{{ route('admin.orders.show', $r['id']) }}" class="btn btn-dark-outline">{{ __('admin.Dettagli') }}</a> 
             @endif 
                 {{ $r['m'] }} 
@@ -33,28 +33,34 @@
     $weekSet = $property_adv['week_set'] ?? [1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => []];
 @endphp
 
-<div class="dash_page">
-    <h1>
-        <i class="bi bi-calendar2-check-fill"></i>
-        {{__('admin.t_dashboard')}}
-    </h1>
-    <div class="top_action my-5">
+<div class="dash_page dashboard-home">
+    <header class="dashboard-home__hero">
+        <div class="dashboard-home__hero-copy">
+            <p class="dashboard-home__eyebrow">Agenda operativa</p>
+            <h1>
+                <i class="bi bi-calendar2-check-fill"></i>
+                {{__('admin.t_dashboard')}}
+            </h1>
 
-        
-        <button id="editToggle" class="my_btn_2 " data-bs-toggle="modal" data-bs-target="#staticBackdropav" >
-            <i class="bi bi-arrow-repeat"></i>
-            Disponibilità
-        </button>
-        <button  type="button" class=" my_btn_1 btn_delete" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-            <i class="bi bi-ban"></i>
-            Blocca giorni
-        </button>
-        <a class="my_btn_3 ml-auto" href="{{ route('admin.reservations.index') }}">
-            <i class="bi bi-credit-card-2-front-fill"></i>
-            {{__('admin.Vedi_tutti')}}
-        </a> 
-    </div>
-    <div class="date">
+            <div class="top_action dashboard-home__actions my-4">
+                <button id="editToggle" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropav" >
+                    <i class="bi bi-arrow-repeat"></i>
+                    Disponibilità
+                </button>
+                <button  type="button" class="my_btn_1 btn_delete" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                    <i class="bi bi-ban"></i>
+                    Blocca giorni
+                </button>
+                <a class="my_btn_3" href="{{ route('admin.reservations.index') }}">
+                    <i class="bi bi-credit-card-2-front-fill"></i>
+                    {{__('admin.Vedi_tutti')}}
+                </a> 
+            </div>
+        </div>
+
+    </header>
+
+    <div class="date dashboard-home__calendar-shell">
         @if (count($calendar))
             @php 
                 $i = 0; 
@@ -62,7 +68,7 @@
                 $currentMonth = date("m");
                 $currentYear = date("Y");
             @endphp
-            <div id="calendar_1" class="carousel slide my_carousel">
+            <div id="calendar_1" class="carousel slide my_carousel dashboard-home__calendar">
                 <div class="carousel-indicators">
                     @foreach ($calendar as $m)
                         <button  type="button" data-bs-target="#calendar_1" data-bs-slide-to="{{$i}}"
@@ -86,7 +92,7 @@
                     @foreach ($calendar as $m)
                         <div class="carousel-item @if ($currentMonth == $m['month'] && $currentYear == $m['year']) active @endif">
                             <h2> {{ \Carbon\Carbon::create()->month($m['month'])->translatedFormat('F') }} - {{$m['year']}} </h2>
-                            <div class="top_stat">
+                            <div class="top_stat dashboard-home__stats">
                                 @if($m['n_res'])
                                     <div class="line">
                                         <h4>{{__('admin.Prenotazioni')}}</h4>
@@ -125,11 +131,14 @@
                                 </div>
                                 <div class="calendar_page">
                                     @foreach ($m['days'] as $d)
-                                        <button data-day='@json($d)'
-                                        class="day  
-                                        @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) current @endif 
-                                        @if(in_array($d['status'], [0,3])) day_off @endif " 
-                                        style="grid-column-start:{{$d['day_w'] }}">        
+                                        <button
+                                            type="button"
+                                            data-day='@json($d)'
+                                            class="day  
+                                            @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) current @endif 
+                                            @if(in_array($d['status'], [0,3])) day_off @endif "
+                                            style="grid-column-start:{{$d['day_w'] }}"
+                                        >        
                                             <p class="p_day">{{$d['day']}}</p>
                                             @if ($d['guests'] > 0)
                                                 <span class="bookings"> <strong> {{$d['guests']}} </strong>
@@ -159,7 +168,20 @@
         @endif
        
     </div>
-    <div id="day-details"></div>
+
+    @if (count($calendar))
+        <div id="day-details" class="day-details dashboard-home__details">
+            <div class="dashboard-home__details-placeholder">
+                <span class="dashboard-home__details-placeholder-icon">
+                    <i class="bi bi-calendar-week"></i>
+                </span>
+                <div>
+                    <strong>Seleziona un giorno</strong>
+                    <p>Apri il dettaglio operativo con ordini, prenotazioni e blocco rapido degli orari.</p>
+                </div>
+            </div>
+        </div>
+    @endif
     
 
 

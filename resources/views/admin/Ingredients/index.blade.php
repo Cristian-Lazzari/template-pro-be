@@ -25,84 +25,151 @@
 @endif
 
 
-<div class="dash_page">
-    <h1>{{__('admin.Ingredienti')}}</h1>
-    <div class="action-page">
-        <a class="my_btn_1 create w-auto" href="{{ route('admin.ingredients.create') }}">
-            <i class="bi bi-cloud-plus-fill" style="font-size: 20px"></i>
-            {{__('admin.Crea_nuovo')}}</a>
+<div class="dash_page catalog-index-page">
+    <h1><i class="bi bi-basket2-fill"></i>{{__('admin.Ingredienti')}}</h1>
+    <div class="action-page catalog-index-toolbar">
+        <div class="catalog-toolbar-search">
+            <i class="bi bi-search catalog-toolbar-search__icon"></i>
+            <input
+                class="catalog-toolbar-search__input"
+                type="search"
+                placeholder="{{ __('admin.Cerca_per_nome') }}"
+                aria-label="{{ __('admin.Cerca_per_nome') }}"
+                autocomplete="off"
+                data-catalog-search
+                data-catalog-empty="#ingredientsSearchEmpty"
+            >
+        </div>
+        <a class="catalog-action-btn catalog-action-btn--primary catalog-action-btn--with-label" href="{{ route('admin.ingredients.create') }}">
+            <i class="bi bi-cloud-plus-fill"></i>
+            {{__('admin.Crea_nuovo')}}
+        </a>
+    </div>
+    <div id="ingredientsSearchEmpty" class="catalog-search-empty d-none" role="status">
+        {{ __('admin.Nessun_risultato_ricerca') }}
     </div>
 
-
     @if (count($options))
-        <h2 class="my-4">{{ __('admin.Opzioni_extra_per_prodotti') }}</h2>
-        <div class="slim_cont">
-            @foreach ($options as $item)
-        
-                <div class="slim_ ">
-                    <section class="s1">
-            
-                        <h3><a href="{{ route('admin.ingredients.show', $item) }}">{{$item->name}}</a></h3>     
-                    </section>
-                    <section>
-                        <div class="price">€{{$item->price / 100}}</div>         
-                        <div class="actions">
-                            <a class="" href="{{ route('admin.ingredients.edit', $item) }}">
-                                <i style="vertical-align: sub; font-size: 20px" class="bi bi-pencil-square"></i>
-                            </a>
-                            <form action="{{ route('admin.ingredients.destroy', ['ingredient'=>$item]) }}" method="post" >
-                                @method('delete')
-                                @csrf
-                                <button class="s_d" type="submit">
-                                    <i style="vertical-align: sub; font-size: 20px" class="bi bi-x-circle"></i>
-                                </button>
-                            </form>
-                            
+        <div class="catalog-index-section">
+            <h2 class="catalog-index-section__title">{{ __('admin.Opzioni_extra_per_prodotti') }}</h2>
+            <div class="catalog-index-list">
+                @foreach ($options as $item)
+                    <div class="catalog-index-card" data-search-name="{{ mb_strtolower($item->name) }}">
+                        <div class="catalog-index-card__main">
+                            <div class="catalog-index-card__media" aria-hidden="true">
+                                <i class="bi bi-plus-circle-fill"></i>
+                            </div>
+                            <div class="catalog-index-card__content">
+                                <h3 class="catalog-index-card__title">
+                                    <a href="{{ route('admin.ingredients.show', $item) }}">{{$item->name}}</a>
+                                </h3>
+                            </div>
                         </div>
-                    </section>
+                        <div class="catalog-index-card__actions">
+                            <span class="catalog-index-price">€{{$item->price / 100}}</span>
+                            <a class="catalog-action-btn catalog-action-btn--neutral" href="{{ route('admin.ingredients.show', $item) }}" aria-label="{{ __('admin.Vedi') }} {{$item->name}}" title="{{ __('admin.Vedi') }}">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a class="catalog-action-btn catalog-action-btn--primary" href="{{ route('admin.ingredients.edit', $item) }}" aria-label="{{ __('admin.Modifica') }} {{$item->name}}" title="{{ __('admin.Modifica') }}">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <button type="button" class="catalog-action-btn catalog-action-btn--danger" data-bs-toggle="modal" data-bs-target="#ingredientDelete{{$item->id}}" aria-label="{{ __('admin.Elimina') }} {{$item->name}}" title="{{ __('admin.Elimina') }}">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="ingredientDelete{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ingredientDeleteLabel{{$item->id}}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+                            <div class="modal-content catalog-index-modal">
+                                <div class="modal-header">
+                                    <h1 class="fs-5" id="ingredientDeleteLabel{{$item->id}}">{{ __('admin.Confermi_di_voler_eliminare_') }}<strong>{{$item->name}}</strong>"?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body body catalog-index-modal__body">
+                                    <p>{{ __('admin.Delete_ingredient_info') }}</p>
+                                    <form action="{{ route('admin.ingredients.destroy', ['ingredient'=>$item]) }}" method="post" >
+                                        @method('delete')
+                                        @csrf
+                                        <button class="catalog-action-btn catalog-action-btn--danger catalog-action-btn--with-label w-100" type="submit">
+                                            <i class="bi bi-trash3"></i>
+                                            {{ __('admin.Elimina') }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <div class="catalog-index-section">
+        <h2 class="catalog-index-section__title">{{__('admin.Ingredienti')}}:</h2>
+        @if (count($ingredients) == 0)
+            <div class="alert alert-info catalog-index-empty">
+                {{__('admin.no_ing')}}
+            </div>
+        @endif
         
+        <div class="catalog-index-list">
+            @foreach ($ingredients as $item)
+                <div class="catalog-index-card" data-search-name="{{ mb_strtolower($item->name) }}">
+                    <div class="catalog-index-card__main">
+                        <div class="catalog-index-card__media" aria-hidden="true">
+                            @if (isset($item->icon))
+                                <img src="{{ asset('public/storage/' . $item->icon) }}" alt="{{$item->name}}">
+                            @else
+                                <i class="bi bi-basket2-fill"></i>
+                            @endif
+                        </div>
+                        <div class="catalog-index-card__content">
+                            <h3 class="catalog-index-card__title">
+                                <a href="{{ route('admin.ingredients.show', $item) }}">{{$item->name}}</a>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="catalog-index-card__actions">
+                        <span class="catalog-index-price">€{{$item->price / 100}}</span>
+                        <a class="catalog-action-btn catalog-action-btn--neutral" href="{{ route('admin.ingredients.show', $item) }}" aria-label="{{ __('admin.Vedi') }} {{$item->name}}" title="{{ __('admin.Vedi') }}">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a class="catalog-action-btn catalog-action-btn--primary" href="{{ route('admin.ingredients.edit', $item) }}" aria-label="{{ __('admin.Modifica') }} {{$item->name}}" title="{{ __('admin.Modifica') }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <button type="button" class="catalog-action-btn catalog-action-btn--danger" data-bs-toggle="modal" data-bs-target="#ingredientDeleteBase{{$item->id}}" aria-label="{{ __('admin.Elimina') }} {{$item->name}}" title="{{ __('admin.Elimina') }}">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="ingredientDeleteBase{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ingredientDeleteBaseLabel{{$item->id}}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
+                        <div class="modal-content catalog-index-modal">
+                            <div class="modal-header">
+                                <h1 class="fs-5" id="ingredientDeleteBaseLabel{{$item->id}}">{{ __('admin.Confermi_di_voler_eliminare_') }}<strong>{{$item->name}}</strong>"?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body body catalog-index-modal__body">
+                                <p>{{ __('admin.Delete_ingredient_info') }}</p>
+                                <form action="{{ route('admin.ingredients.destroy', ['ingredient'=>$item]) }}" method="post" >
+                                    @method('delete')
+                                    @csrf
+                                    <button class="catalog-action-btn catalog-action-btn--danger catalog-action-btn--with-label w-100" type="submit">
+                                        <i class="bi bi-trash3"></i>
+                                        {{ __('admin.Elimina') }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @endforeach
         </div>
-    @endif
-    <h2 class="my-4 mt-5">{{__('admin.Ingredienti')}}:</h2>
-    @if (count($ingredients) == 0)
-        <div class="alert alert-info">
-            {{__('admin.no_ing')}}
-        </div>
-    @endif
-    
-    <div class="slim_cont">
-        @foreach ($ingredients as $item)
-
-            <div class="slim_ ">
-                <section class="s1">
-
-                    @if (isset($item->icon))
-                        <img src="{{ asset('public/storage/' . $item->icon) }}" alt="{{$item->name}}">
-                    @endif 
-        
-                    <h3><a href="{{ route('admin.ingredients.show', $item) }}">{{$item->name}}</a></h3>     
-                </section>
-                <section>
-                    <div class="price">€{{$item->price / 100}}</div>         
-                    <div class="actions">
-                        <a class="" href="{{ route('admin.ingredients.edit', $item) }}">
-                            <i style="vertical-align: sub; font-size: 19px" class="bi bi-pencil-square"></i>
-                        </a>
-                        <form action="{{ route('admin.ingredients.destroy', ['ingredient'=>$item]) }}" method="post" >
-                            @method('delete')
-                            @csrf
-                            <button class="s_d" type="submit">
-                                <i style="vertical-align: sub; font-size: 19px" class="bi bi-x-circle"></i>
-                            </button>
-                        </form>
-                        
-                    </div>
-                </section>
-
-            </div>
-        @endforeach
     </div>
 </div>
+
+@include('admin.includes.catalog-search-script')
+
 @endsection

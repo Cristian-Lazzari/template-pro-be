@@ -22,6 +22,15 @@
         gap: 22px;
         width: 100%;
     }
+    .customer-page__toolbar-shell{
+        background:
+        radial-gradient(circle at top left, rgba(14, 183, 146, 0.2), transparent 22%),
+        radial-gradient(circle at 85% 25%, rgba(216, 221, 232, 0.12), transparent 24%),
+        linear-gradient(145deg, rgba(216, 221, 232, 0.1), rgba(216, 221, 232, 0.03)),
+        rgba(9, 3, 51, 0.84);
+        position: sticky;
+        top: 10px;
+    }
 
     .customer-page__hero,
     .customer-page__settings,
@@ -536,7 +545,6 @@
                     <p>
                         Qui vedi subito chi torna spesso, chi ha gia ordinato o prenotato
                         e chi merita un attenzione in piu dopo il servizio.
-                        Deve essere una pagina rapida, utile e facile da leggere anche nei momenti di corsa.
                     </p>
                 </div>
             </div>
@@ -558,33 +566,29 @@
             <article class="customer-page__summary-card">
                 <span>{{ __('admin.Clienti') }}</span>
                 <strong>{{ $stats['total'] }}</strong>
-                <small>Una rubrica unica con clienti registrati e ospiti.</small>
             </article>
 
             <article class="customer-page__summary-card">
                 <span>{{ __('admin.Con_ordini') }}</span>
                 <strong>{{ $stats['with_orders'] }}</strong>
-                <small>Persone che hanno gia acquistato online.</small>
             </article>
 
             <article class="customer-page__summary-card">
                 <span>{{ __('admin.Con_prenotazioni') }}</span>
                 <strong>{{ $stats['with_reservations'] }}</strong>
-                <small>Clienti che hanno gia prenotato un tavolo.</small>
             </article>
 
             <article class="customer-page__summary-card">
                 <span>{{ __('admin.Ordini_e_prenotazioni') }}</span>
                 <strong>{{ $stats['with_both'] }}</strong>
-                <small>Clienti che usano piu di un canale con il locale.</small>
             </article>
         </div>
     </section>
 
-    <form id="customerProfileSettings" class="order-detail order-detail--warning customer-page__settings" method="POST" action="{{ route('admin.customers.profile_settings') }}">
+    <form id="customerProfileSettings" class="" method="POST" action="{{ route('admin.customers.profile_settings') }}">
         @csrf
 
-        <div class="order-detail__summary">
+        <div class="order-detail__summary ">
             <div class="order-detail__meta">
                 <p class="order-detail__code">Profilazione cliente</p>
                 <p class="order-detail__time">Consensi e questionario</p>
@@ -596,11 +600,6 @@
             </div>
 
             <div class="customer-page__settings-toggle-shell">
-                <div class="customer-page__summary-side">
-                    <x-dashboard.state-pill tone="warning">Consensi</x-dashboard.state-pill>
-                    <x-dashboard.state-pill tone="neutral">Questionario</x-dashboard.state-pill>
-                </div>
-
                 <button
                     type="button"
                     class="customer-page__settings-toggle"
@@ -610,14 +609,14 @@
                     aria-expanded="{{ $profileSettingsExpanded ? 'true' : 'false' }}"
                     aria-controls="customerProfileSettingsContent"
                 >
-                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--closed">Apri sezione</span>
-                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--open">Chiudi sezione</span>
+                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--closed">Espandi</span>
+                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--open">Chiudi</span>
                     <i class="bi bi-chevron-down" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
 
-        <div id="customerProfileSettingsContent" class="collapse{{ $profileSettingsExpanded ? ' show' : '' }}">
+        <div id="customerProfileSettingsContent" class="mt-4 collapse{{ $profileSettingsExpanded ? ' show' : '' }}">
             <div class="customer-page__settings-body">
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
@@ -654,7 +653,7 @@
 
                     <div class="customer-page__actions" style="margin-bottom: 14px;">
                         <div class="customer-page__settings-copy">
-                            <p>Meglio poche domande chiare che un modulo lungo: il cliente compila piu volentieri e tu raccogli informazioni che poi userai davvero.</p>
+                            
                         </div>
 
                         <button type="button" class="customer-page__button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>
@@ -694,7 +693,6 @@
                 </section>
 
                 <div class="customer-page__actions">
-                    <p>Regola semplice: se un informazione non ti aiuta in sala, nelle prenotazioni o nel richiamo del cliente, meglio non chiederla.</p>
                     <button type="submit" class="customer-page__button">Salva configurazione</button>
                 </div>
             </div>
@@ -702,24 +700,6 @@
     </form>
 
     <section class="order-detail customer-page__toolbar-shell">
-        <div class="order-detail__summary">
-            <div class="order-detail__meta">
-                <p class="order-detail__code">Ricerca e filtro</p>
-                <p class="order-detail__time">Trova il cliente giusto in pochi secondi</p>
-                <p class="order-detail__date">
-                    Cerca una persona per nome, email o telefono.
-                    In pochi secondi puoi aprire la sua scheda, vedere se ordina, se prenota
-                    e capire da dove arriva il rapporto con il locale.
-                </p>
-            </div>
-
-            <div class="customer-page__toolbar-badges">
-                <x-dashboard.state-pill tone="neutral">Filtro live</x-dashboard.state-pill>
-                <x-dashboard.state-pill tone="warning">Storico unificato</x-dashboard.state-pill>
-            </div>
-        </div>
-
-        <section class="order-detail__section">
             <div class="customer-page__toolbar-grid">
                 <label class="customer-page__field">
                     <span>{{ __('admin.Cerca_cliente') }}</span>

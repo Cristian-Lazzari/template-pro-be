@@ -96,7 +96,8 @@
         } */
     </style>
 </head>
-<body class="loading">
+
+<body class="loading admin-shell admin-shell--wide">
 
     <span class="loader"></span>
 

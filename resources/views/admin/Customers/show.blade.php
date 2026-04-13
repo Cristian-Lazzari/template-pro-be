@@ -152,9 +152,9 @@
 
     $profileNotice = null;
     if (!$hasCustomerRecord) {
-        $profileNotice = 'Profilo costruito da ordini e prenotazioni legacy non ancora collegati a un record customers.';
+        $profileNotice = 'Profilo costruito da ordini e prenotazioni non ancora collegati a un account.';
     } elseif ($accountState === 'guest') {
-        $profileNotice = 'Il record cliente esiste gia, ma il profilo non e ancora stato completato dal cliente.';
+        $profileNotice = 'Il cliente esiste gia, ma il profilo non e ancora stato completato dal cliente.';
     }
 @endphp
 
@@ -355,11 +355,6 @@
                     <strong>{{ $accountLabels[$accountState] ?? ucfirst($accountState) }}</strong>
                 </div>
 
-                <div class="customer-detail__hero-title">
-                    <p class="order-detail__code">Scheda cliente</p>
-                    <p>Profilo cliente, consensi essenziali e storico unificato di ordini e prenotazioni nello stesso layout che usiamo per gli altri dettagli.</p>
-                </div>
-
                 @if ($profileNotice)
                     <div class="customer-detail__notice">
                         <strong>Attenzione profilo</strong>
@@ -455,8 +450,7 @@
             </div>
         </article>
 
-        <article class="order-detail">
-            <div class="order-detail__body">
+
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
@@ -480,8 +474,7 @@
                         @endforeach
                     </div>
                 </section>
-            </div>
-        </article>
+
     </div>
 
     @if (!empty($questionAnswers))
@@ -545,7 +538,6 @@
                                     </div>
 
                                     <div class="customer-detail__activity-footer">
-                                        <p>Ordine collegato al profilo per email o record cliente.</p>
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="order-detail__contact">
                                             <x-icon name="arrow-up-right-circle-fill" />
                                             <span>Apri ordine</span>
@@ -597,7 +589,6 @@
                                     </div>
 
                                     <div class="customer-detail__activity-footer">
-                                        <p>Prenotazione rintracciata dal profilo cliente o dalla mail storica.</p>
                                         <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="order-detail__contact">
                                             <x-icon name="arrow-up-right-circle-fill" />
                                             <span>Apri prenotazione</span>
