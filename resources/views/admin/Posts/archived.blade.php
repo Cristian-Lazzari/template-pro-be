@@ -82,12 +82,12 @@
                 <div class="price_btn"> 
                     @if ($item->link)
                         <a class="link" href="{{$item->link}}">
-                        <i class="bi bi-link-45deg" style="font-size: 20px"></i>
+                        <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
                         Link
                     </a>
                     @endif
                     <button type="button" class="action_menu action_menu_info" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
-                        <i class="bi bi-info-circle-fill" style="font-size: 20px"></i>
+                        <i class="bi bi-info-circle-fill" style="font-size: var(--fs-400)"></i>
                         Info
                     </button>
                     <!-- Modal -->
@@ -96,7 +96,7 @@
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <button type="button" class="btn_close" data-bs-dismiss="modal">
-                                        <i class="bi bi-x-circle-fill" style="font-size: 20px"></i>
+                                        <i class="bi bi-x-circle-fill" style="font-size: var(--fs-400)"></i>
                                         {{__('admin.Chiudi')}}
                                     </button>
                                     <div class="action_top">
@@ -107,7 +107,7 @@
                                             <input type="hidden" name="a" value="1">
                                             <input type="hidden" name="id" value="{{$item->id}}">
                                             <button class="edit" type="submit">
-                                                <i class="bi bi-cloud-plus-fill" style="font-size: 20px"></i>
+                                                <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
                                                 Ripristina
                                             </button>
                                         </form>
@@ -115,7 +115,7 @@
                                             @method('DELETE')
                                             @csrf
                                             <button class="edit btn_delete" type="submit">
-                                                <i class="bi bi-trash-fill" style="font-size: 20px"></i>
+                                                <i class="bi bi-trash-fill" style="font-size: var(--fs-400)"></i>
                                             </button>
                                         </form>
                                
@@ -127,7 +127,7 @@
                                     @if ($item->description)
                                         <section>
                                             <h4>
-                                                <i class="bi bi-card-text" style="font-size: 20px"></i>
+                                                <i class="bi bi-card-text" style="font-size: var(--fs-400)"></i>
                                                 {{__('admin.Descrizione')}}</h4>
                                             <p>{{$item->description}}</p>
                                         </section>
@@ -143,7 +143,7 @@
                                     @if ($item->link)
                                         <section>
                                             <h4>
-                                                <i class="bi bi-link-45deg" style="font-size: 20px"></i>
+                                                <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
                                                 Link</h4>
                                             <a href="{{$item->link}}">{{$item->link}}</a>
                                         </section>

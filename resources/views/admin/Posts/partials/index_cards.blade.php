@@ -18,13 +18,13 @@
         <div class="price_btn">
             @if ($item->link)
                 <a class="link" href="{{$item->link}}">
-                    <i class="bi bi-link-45deg" style="font-size: 20px"></i>
+                    <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
                     {{__('admin.Link')}}
                 </a>
             @endif
 
             <button type="button" class="action_menu action_menu_info js-open-post-info" data-bs-toggle="modal" data-bs-target="#postInfoModal" data-info-url="{{ route('admin.posts.quick-view', $item->id) }}">
-                <i class="bi bi-info-circle-fill" style="font-size: 20px"></i>
+                <i class="bi bi-info-circle-fill" style="font-size: var(--fs-400)"></i>
                 {{__('admin.Info')}}
             </button>
         </div>

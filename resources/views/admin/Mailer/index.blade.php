@@ -145,10 +145,10 @@
                     </div>
                     <div class="act">
                         <a class="my_btn_1" href="{{route('admin.mailer.edit_model',  $m)}}">
-                            <i style="vertical-align: sub; font-size: 19px" class="bi bi-pencil-square"></i>
+                            <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-pencil-square"></i>
                         </a>
                         <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{$m->id}}">
-                            <i style="vertical-align: sub; font-size: 19px" class="bi bi-x-circle"></i>
+                            <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-x-circle"></i>
                         </button>
                         
                     </div>

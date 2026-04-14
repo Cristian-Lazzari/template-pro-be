@@ -92,7 +92,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.4rem;
+        font-size: var(--fs-700);
         font-weight: 700;
     }
 
@@ -110,7 +110,7 @@
     .ingredient-detail__translation-item span,
     .ingredient-detail__product-meta span {
         color: rgba(216, 221, 232, 0.7);
-        font-size: .8rem;
+        font-size: var(--fs-200);
         letter-spacing: .06em;
         text-transform: uppercase;
     }

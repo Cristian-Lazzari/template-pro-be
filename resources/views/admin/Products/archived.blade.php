@@ -74,7 +74,7 @@ $domain = 'https://future-plus.it/allergens/';
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <button type="button" class="btn_close" data-bs-dismiss="modal">
-                                        <i class="bi bi-x-circle-fill" style="font-size: 20px"></i>
+                                        <i class="bi bi-x-circle-fill" style="font-size: var(--fs-400)"></i>
                                         {{__('admin.Chiudi')}}
                                     </button>
                                     <div class="action_top">
@@ -85,14 +85,14 @@ $domain = 'https://future-plus.it/allergens/';
                                             <input type="hidden" name="a" value="1">
                                             <input type="hidden" name="id" value="{{$item->id}}">
                                             <button class="edit" type="submit">
-                                                <i class="bi bi-cloud-plus-fill" style="font-size: 20px"></i>{{ __('admin.Ripristina') }}</button>
+                                                <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>{{ __('admin.Ripristina') }}</button>
                                         </form>                      
 
                                         <form action="{{ route('admin.products.destroy', $item) }}" method="POST">
                                             @method('DELETE')
                                             @csrf
                                             <button class="edit btn_delete" type="submit">
-                                                <i class="bi bi-trash-fill" style="font-size: 20px"></i>
+                                                <i class="bi bi-trash-fill" style="font-size: var(--fs-400)"></i>
                                             </button>
                                         </form>
                                

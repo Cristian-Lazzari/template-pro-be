@@ -49,7 +49,7 @@
 
         .error-code {
             margin: 0 0 12px;
-            font-size: clamp(3.6rem, 12vw, 6rem);
+            font-size: var(--fs-700);
             line-height: 0.95;
             font-weight: 800;
             letter-spacing: -0.06em;
@@ -58,7 +58,7 @@
         
         .error-title {
             margin: 0;
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-size: var(--fs-600);
             font-weight: 700;
             color: var(--error-accent);
         }
@@ -66,7 +66,7 @@
         .error-message {
             max-width: 46ch;
             margin: 16px auto 0;
-            font-size: 1rem;
+            font-size: var(--fs-200);
             line-height: 1.7;
             color: var(--error-muted);
         }

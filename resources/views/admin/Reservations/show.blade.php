@@ -146,12 +146,12 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <button type="button" class="btn_close" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle-fill" style="font-size: 20px"></i>
+                        <i class="bi bi-x-circle-fill" style="font-size: var(--fs-400)"></i>
                         {{__('admin.Chiudi')}}
                     </button>
                     <div class="action_top">
                         <a href="{{ route('admin.posts.edit', $item) }}" class="edit">
-                            <i style="vertical-align: sub; font-size: 20px" class="bi bi-pencil-square"></i>
+                            <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-pencil-square"></i>
                         </a>
                         
                         <form action="{{ route('admin.posts.status') }}" method="POST">
@@ -163,8 +163,8 @@
                             <button type="submit" class=" edit
                                 @if(!$item->visible) not @endif 
                                 visible">
-                                <i class="bi bi-eye-fill" style="font-size: 20px"></i>
-                                <i class="bi bi-eye-slash-fill" style="font-size: 20px"></i>
+                                <i class="bi bi-eye-fill" style="font-size: var(--fs-400)"></i>
+                                <i class="bi bi-eye-slash-fill" style="font-size: var(--fs-400)"></i>
                             </button>
                         </form>
                         <form action="{{ route('admin.posts.status') }}" method="POST">
@@ -174,7 +174,7 @@
                             <input type="hidden" name="a" value="1">
                             <input type="hidden" name="id" value="{{$item->id}}">
                             <button class="edit" type="submit">
-                                <i class="bi bi-trash-fill" style="font-size: 20px"></i>
+                                <i class="bi bi-trash-fill" style="font-size: var(--fs-400)"></i>
                             </button>
                         </form>
                 
@@ -186,7 +186,7 @@
                     @if ($item->description)
                         <section>
                             <h4>
-                                <i class="bi bi-card-text" style="font-size: 20px"></i>
+                                <i class="bi bi-card-text" style="font-size: var(--fs-400)"></i>
                                 {{__('admin.Descrizione')}}</h4>
                             <p>{{$item->description}}</p>
                         </section>
@@ -202,7 +202,7 @@
                     @if ($item->link)
                         <section>
                             <h4>
-                                <i class="bi bi-link-45deg" style="font-size: 20px"></i>
+                                <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
                                 Link</h4>
                             <a href="{{$item->link}}">{{$item->link}}</a>
                         </section>

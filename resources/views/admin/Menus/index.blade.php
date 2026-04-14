@@ -25,13 +25,13 @@
  
 <div class="dash_page">
     <h1>
-        <i class="bi bi-fork-knife" style="font-size: 24px"></i>
+        <i class="bi bi-fork-knife" style="font-size: var(--fs-500)"></i>
         Menu
     </h1>
     
     <div class="action-page">
         <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.menus.create') }}">
-            <i class="bi bi-cloud-plus-fill" style="font-size: 20px"></i>
+            <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
 
             {{__('admin.Crea_nuovo')}}
         </a>
@@ -83,11 +83,11 @@
                         @csrf
                         <input type="hidden" name="f" value="1">
                         <button class="my_btn_2 bg-danger" type="submit">
-                            <i style="vertical-align: sub; font-size: 20px" class="bi bi-x-circle"></i>
+                            <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-x-circle"></i>
                         </button>
                     </form>
                     <a class="my_btn_1 m" href="{{ route('admin.menus.edit', $item) }}">
-                        <i style="vertical-align: sub; font-size: 20px" class="bi bi-pencil-square"></i>
+                        <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-pencil-square"></i>
                     </a>
                 </div>
     
@@ -165,11 +165,11 @@
                         @csrf
                         <input type="hidden" name="f" value="1">
                         <button class="my_btn_2 bg-danger" type="submit">
-                            <i style="vertical-align: sub; font-size: 20px" class="bi bi-x-circle"></i>
+                            <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-x-circle"></i>
                         </button>
                     </form>
                     <a class="my_btn_1 m" href="{{ route('admin.menus.edit', $item) }}">
-                        <i style="vertical-align: sub; font-size: 20px" class="bi bi-pencil-square"></i>
+                        <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-pencil-square"></i>
                     </a>
                 </div>
     

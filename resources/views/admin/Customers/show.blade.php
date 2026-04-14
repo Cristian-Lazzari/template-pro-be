@@ -238,7 +238,7 @@
     .customer-detail__answer-label,
     .customer-detail__activity-label {
         color: rgba(216, 221, 232, 0.72);
-        font-size: .82rem;
+        font-size: var(--fs-200);
         letter-spacing: .06em;
         text-transform: uppercase;
     }
@@ -251,7 +251,7 @@
     }
 
     .customer-detail__stat-item strong {
-        font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+        font-size: var(--fs-500);
         line-height: 1.05;
     }
 
@@ -270,7 +270,7 @@
     }
 
     .customer-detail__info-value {
-        font-size: 1rem;
+        font-size: var(--fs-200);
         line-height: 1.45;
         overflow-wrap: anywhere;
         word-break: break-word;

@@ -27,15 +27,15 @@
     <div id="productsAsyncAlerts"></div>
 
     <h1>
-        <i class="bi bi-fork-knife" style="font-size: 24px"></i>
+        <i class="bi bi-fork-knife" style="font-size: var(--fs-500)"></i>
         {{ __('admin.Prodotti')}}</h1>
     
     <div class="action-page">
         <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.products.create') }}">
-            <i class="bi bi-cloud-plus-fill" style="font-size: 20px"></i>
+            <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
             {{__('admin.Crea_nuovo')}}</a>
         <a class="my_btn_2 btn_delete trash m-1 w-auto" href="{{ route('admin.products.archived') }}">
-            <i class="bi bi-trash-fill" style="font-size: 20px"></i>
+            <i class="bi bi-trash-fill" style="font-size: var(--fs-400)"></i>
             {{__('admin.Archivio')}}</a>
     </div>
     <div class="filters">

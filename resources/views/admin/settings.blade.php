@@ -634,7 +634,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
             <form action="{{ route('admin.settings.advanced')}}" method="POST" class="modal-content s_advanced settings-advanced-modal">
                 @csrf
                 <button type="button" class="btn_close" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle-fill" style="font-size: 20px"></i>
+                    <i class="bi bi-x-circle-fill" style="font-size: var(--fs-400)"></i>
                     {{__('admin.Chiudi')}}
                 </button>
                 <h2>
@@ -772,7 +772,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             </label>
                             <input class="btn-check" type="checkbox" name="method[]" id="m_7" value="7" @if (in_array(7, $adv['method'])) checked @endif>
                             <label class="btn btn-outline-dark" for="m_7">
-                                <i class="bi bi-cash-coin" style="font-size: 24px"></i>
+                                <i class="bi bi-cash-coin" style="font-size: var(--fs-500)"></i>
                             </label>
                         </div>
                     </div>

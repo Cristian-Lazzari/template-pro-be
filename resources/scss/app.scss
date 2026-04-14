@@ -20,6 +20,13 @@ i{
     --c1: #090333;
     --c2:#0eb792;
     --c3: #d8dde8;
+    --fs-100: clamp(14px, 0.86rem + 0.12vw, 15px);
+    --fs-200: clamp(16px, 0.98rem + 0.22vw, 18px);
+    --fs-300: clamp(18px, 1.08rem + 0.34vw, 20px);
+    --fs-400: clamp(20px, 1.18rem + 0.55vw, 24px);
+    --fs-500: clamp(24px, 1.42rem + 0.95vw, 30px);
+    --fs-600: clamp(28px, 1.72rem + 1.4vw, 38px);
+    --fs-700: clamp(32px, 2.05rem + 3vw, 64px);
 }
 
 @mixin flex-layout($display: flex, $direction: row, $align: null, $justify: null, $gap: null, $wrap: null) {
@@ -184,15 +191,21 @@ $c-update : var(--c3);
 }
 
 
-$fs_xsm: clamp(10px, 1.4vw, 12px);
-$fs_xsm_1: clamp(14px, 1.8vw, 16px);
-$fs_sm_1: clamp(16.1px, 2.1vw, 18px);
-$fs_sm: $fs_sm_1;
-$fs_sm_2: clamp(17px, 2.3vw, 20px);
-$fs_sm_3: clamp(18px, 2.4vw, 22px);
-$fs_md: clamp(20px, 3vw, 24px);
-$fs_lg: clamp(22px, 3.2vw, 35px);
-$fs_xlg: clamp(28px, 3.8vw, 39px);
+$fs_xsm: var(--fs-100);
+$fs_xsm_1: var(--fs-200);
+$fs_sm_1: var(--fs-200);
+$fs_sm: var(--fs-300);
+$fs_sm_2: var(--fs-400);
+$fs_sm_3: var(--fs-400);
+$fs_md: var(--fs-500);
+$fs_lg: var(--fs-600);
+$fs_xlg: var(--fs-700);
+
+input,
+select,
+textarea {
+    font-size: var(--fs-200);
+}
  
 .d-back-g{
     background-image: url(../../public/images/back.png);
@@ -367,14 +380,11 @@ $fs_xlg: clamp(28px, 3.8vw, 39px);
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
     }
 }
-.main-container-page{
-    padding: 28px 25px calc(132px + env(safe-area-inset-bottom));
-    max-width: 800px;
-    margin: 0 auto;
-}
+
 
 .admin-shell--wide{
     .main-container-page{
+        margin: 0 auto;
         width: 100%;
         max-width: 1350px;
         padding: clamp(28px, 3vw, 40px) clamp(18px, 2.8vw, 42px) calc(132px + env(safe-area-inset-bottom));
@@ -492,7 +502,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     flex: 0 0 auto;
 
     i{
-        font-size: 22px;
+        font-size: var(--fs-400);
         line-height: 1;
     }
 
@@ -505,7 +515,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .admin-nav__label{
     white-space: nowrap;
-    font-size: .96rem;
+    font-size: var(--fs-200);
 }
 
 @media (max-width: 1240px) {
@@ -575,7 +585,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 
     .admin-nav__icon i{
-        font-size: 21px;
+        font-size: var(--fs-400);
     }
 
     .admin-nav__link.is-active{
@@ -614,7 +624,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 
     .admin-nav__icon i{
-        font-size: 20px;
+        font-size: var(--fs-400);
     }
 
     .admin-nav__icon svg{
@@ -729,7 +739,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h1{
         margin: 12px 0 14px;
-        font-size: clamp(34px, 5.5vw, 64px);
+        font-size: var(--fs-700);
         line-height: 0.98;
         max-width: 12ch;
     }
@@ -809,7 +819,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h2{
         margin: 0;
-        font-size: clamp(24px, 3vw, 34px);
+        font-size: var(--fs-600);
     }
 }
 
@@ -827,7 +837,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h2{
         margin: 10px 0 12px;
-        font-size: clamp(24px, 3vw, 32px);
+        font-size: var(--fs-600);
     }
 
     p{
@@ -915,7 +925,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .public-onboarding__checklist h3,
 .public-step-card h3{
     margin: 0 0 10px;
-    font-size: 1.05rem;
+    font-size: var(--fs-300);
 }
 
 .public-step-grid{
@@ -980,7 +990,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .public-icon-badge i{
-    font-size: 1.35rem;
+    font-size: var(--fs-400);
     line-height: 1;
 }
 
@@ -1001,7 +1011,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h2{
         margin: 0;
-        font-size: clamp(28px, 3vw, 38px);
+        font-size: var(--fs-600);
     }
 
     p{
@@ -1036,7 +1046,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .dashboard-status-meta{
     margin: 0;
     line-height: 1.45;
-    font-size: .82rem;
+    font-size: var(--fs-200);
     color: rgba(216, 221, 232, 0.72);
 }
 
@@ -1067,7 +1077,7 @@ $svg_n: clamp(25px, 5vw, 30px);
         margin: 0;
         color: var(--c3);
         text-align: right;
-        font-size: .96rem;
+        font-size: var(--fs-200);
     }
 }
 
@@ -1092,7 +1102,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     padding: 16px 20px;
     background: #edf2f7;
     color: #50617c;
-    font-size: .95rem;
+    font-size: var(--fs-200);
 }
 
 .dashboard-mail-preview__body{
@@ -1107,7 +1117,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h3{
         margin: 0;
-        font-size: clamp(24px, 3vw, 32px);
+        font-size: var(--fs-600);
     }
 
     p{
@@ -1335,7 +1345,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .order-detail__status strong{
     color: var(--c3);
-    font-size: .8rem;
+    font-size: var(--fs-200);
 }
 
 .order-detail__status-icon{
@@ -1348,7 +1358,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__status-icon i{
-    font-size: 18px;
+    font-size: var(--fs-300);
     line-height: 1;
 }
 
@@ -1388,7 +1398,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .order-detail__contact i{
     flex: 0 0 auto;
-    font-size: 16px;
+    font-size: var(--fs-200);
     line-height: 1;
 }
 
@@ -1419,21 +1429,21 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__code{
-    font-size: .86rem;
+    font-size: var(--fs-200);
     letter-spacing: .08em;
     text-transform: uppercase;
 }
 
 .order-detail__time{
     margin: 0;
-    font-size: clamp(28px, 3vw, 38px);
+    font-size: var(--fs-600);
     line-height: 1;
     font-weight: 900;
     color: var(--c3);
 }
 
 .order-detail__customer{
-    font-size: clamp(22px, 2.2vw, 30px);
+    font-size: var(--fs-500);
     font-weight: 900;
     color: var(--c3);
     text-align: right;
@@ -1450,7 +1460,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .order-detail__section-head h3{
     @include flex-layout($align: center, $gap: 10px);
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--fs-200);
     color: var(--c3);
 }
 
@@ -1468,7 +1478,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__section-icon i{
-    font-size: 16px;
+    font-size: var(--fs-200);
     line-height: 1;
 }
 
@@ -1500,7 +1510,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .order-detail__item-name{
     color: var(--c3);
-    font-size: 1rem;
+    font-size: var(--fs-200);
 }
 
 .order-detail__detail-groups{
@@ -1513,7 +1523,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .order-detail__detail-group > span{
     color: rgba(216, 221, 232, 0.72);
-    font-size: .82rem;
+    font-size: var(--fs-200);
     text-transform: uppercase;
     letter-spacing: .06em;
 }
@@ -1525,7 +1535,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .order-detail__detail-values small{
     @include flex-layout($display: inline-flex);
     @include control-shell($min-height: null, $padding: 7px 10px, $radius: 999px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12), $color: var(--c3));
-    font-size: .84rem;
+    font-size: var(--fs-200);
 }
 
 .order-detail__totals{
@@ -1550,7 +1560,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .order-detail__total-row--grand strong{
-    font-size: clamp(22px, 2.4vw, 30px);
+    font-size: var(--fs-500);
     font-weight: 900;
 }
 
@@ -1573,7 +1583,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .order-detail__footer-row{
     @include flex-layout($justify: space-between, $gap: 16px);
     font-family: monospace;
-    font-size: .94rem;
+    font-size: var(--fs-200);
     color: rgba(216, 221, 232, 0.74);
 }
 
@@ -1636,7 +1646,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .reservation-detail__guest-icon i{
-    font-size: 20px;
+    font-size: var(--fs-400);
     line-height: 1;
 }
 
@@ -1645,14 +1655,14 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .reservation-detail__guest-copy strong{
-    font-size: 1.2rem;
+    font-size: var(--fs-400);
     line-height: 1;
 }
 
 .reservation-detail__guest-copy small,
 .reservation-detail__room-label{
     color: rgba(216, 221, 232, 0.72);
-    font-size: .8rem;
+    font-size: var(--fs-200);
     text-transform: uppercase;
     letter-spacing: .06em;
 }
@@ -1663,7 +1673,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 }
 
 .reservation-detail__room strong{
-    font-size: 1rem;
+    font-size: var(--fs-200);
     text-align: right;
 }
 
@@ -1685,7 +1695,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__title{
     @include flex-layout($display: inline-flex, $align: center, $gap: 12px);
     margin: 0;
-    font-size: clamp(32px, 4vw, 48px);
+    font-size: var(--fs-700);
     line-height: 1;
     font-weight: 900;
     color: var(--c3);
@@ -1723,7 +1733,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .menu-dashboard__stat-label{
     color: rgba(216, 221, 232, 0.7);
-    font-size: .78rem;
+    font-size: var(--fs-200);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -1732,7 +1742,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__stat-card strong,
 .menu-dashboard__health-copy strong{
     color: var(--c3);
-    font-size: clamp(28px, 3vw, 38px);
+    font-size: var(--fs-600);
     line-height: 1;
     font-weight: 900;
 }
@@ -1746,7 +1756,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__stat-link{
     margin-top: auto;
     color: rgba(142, 246, 219, 0.92);
-    font-size: .82rem;
+    font-size: var(--fs-200);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .06em;
@@ -1815,14 +1825,14 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__promo-banner strong{
     display: block;
     color: var(--c3);
-    font-size: 1rem;
+    font-size: var(--fs-200);
 }
 
 .menu-dashboard__banner-eyebrow{
     display: block;
     margin-bottom: 4px;
     color: rgba(216, 221, 232, 0.68);
-    font-size: .76rem;
+    font-size: var(--fs-200);
     text-transform: uppercase;
     letter-spacing: .08em;
 }
@@ -1843,7 +1853,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__promo-intro h4{
     margin: 0;
     color: var(--c3);
-    font-size: 1.18rem;
+    font-size: var(--fs-400);
     line-height: 1.3;
 }
 
@@ -1855,7 +1865,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__chip{
     @include flex-layout($display: inline-flex, $align: center);
     @include control-shell($min-height: null, $padding: 6px 10px, $radius: 999px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12), $color: rgba(216, 221, 232, 0.9));
-    font-size: .76rem;
+    font-size: var(--fs-200);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .06em;
@@ -1881,7 +1891,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
 .menu-dashboard__price{
     color: var(--c3);
-    font-size: 1.25rem;
+    font-size: var(--fs-400);
     font-weight: 900;
     font-family: monospace;
 }
@@ -1901,7 +1911,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__detail-list > span,
 .menu-dashboard__choice-label{
     color: rgba(216, 221, 232, 0.72);
-    font-size: .8rem;
+    font-size: var(--fs-200);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .06em;
@@ -1910,7 +1920,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .menu-dashboard__pill-row small{
     @include flex-layout($display: inline-flex);
     @include control-shell($min-height: null, $padding: 7px 10px, $radius: 999px, $background: rgba(9, 3, 51, 0.52), $border-color: rgba(216, 221, 232, 0.12), $color: var(--c3));
-    font-size: .84rem;
+    font-size: var(--fs-200);
 }
 
 .menu-dashboard__empty-state{
@@ -1964,7 +1974,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     border-radius: 20px 20px 12px 12px;
     background: #111b21;
     color: #e9edef;
-    font-size: .92rem;
+    font-size: var(--fs-200);
 }
 
 .doc-whatsapp__screen{
@@ -1984,7 +1994,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     padding: 12px 14px;
     border-radius: 18px;
     line-height: 1.55;
-    font-size: .93rem;
+    font-size: var(--fs-200);
 }
 
 .doc-whatsapp__bubble{
@@ -2033,7 +2043,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h3{
         margin: 0 0 8px;
-        font-size: 1.2rem;
+        font-size: var(--fs-400);
     }
 }
 
@@ -2053,7 +2063,7 @@ $svg_n: clamp(25px, 5vw, 30px);
     }
 
     .doc-topic-card h2{
-        font-size: 1.3rem;
+        font-size: var(--fs-400);
     }
 }
 
@@ -2064,7 +2074,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h2{
         margin: 8px 0 0;
-        font-size: clamp(22px, 2.5vw, 28px);
+        font-size: var(--fs-500);
     }
 
     p{
@@ -2113,7 +2123,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h3{
         margin: 0 0 6px;
-        font-size: 1.15rem;
+        font-size: var(--fs-400);
     }
 }
 
@@ -2139,7 +2149,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h3{
         margin: 0 0 8px;
-        font-size: 1.05rem;
+        font-size: var(--fs-300);
     }
 
     p{
@@ -2152,7 +2162,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 .doc-faq-item{
     h3{
         margin: 0 0 10px;
-        font-size: 1.05rem;
+        font-size: var(--fs-300);
     }
 
     p{
@@ -2461,7 +2471,7 @@ $svg_n: clamp(25px, 5vw, 30px);
         h4{
             color:var(--c1);
             button{
-                font-size: clamp(15px, 2.7vw, 17px);
+                font-size: var(--fs-200);
                 color:var(--c1);
             }
         }
@@ -2917,7 +2927,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h2{
         margin: 0;
-        font-size: clamp(26px, 3vw, 34px);
+        font-size: var(--fs-600);
         color: var(--c3);
         max-width: 14ch;
     }
@@ -3048,7 +3058,7 @@ $svg_n: clamp(25px, 5vw, 30px);
 
     h2{
         margin: 0;
-        font-size: clamp(24px, 3vw, 31px);
+        font-size: var(--fs-500);
         color: var(--c3);
     }
 
@@ -3550,7 +3560,7 @@ $svg_n: clamp(25px, 5vw, 30px);
                 box-shadow: inset 0 0 10px $c1;
                 border: 1px solid var(--c3_op_3) !important;
                 svg, .bi{
-                    font-size: 20px;
+                    font-size: var(--fs-400);
                     height:20px !important;
                     width:20px !important;
                 }
@@ -3580,7 +3590,7 @@ $svg_n: clamp(25px, 5vw, 30px);
             svg, .bi{
                 height: $fs_sm_3;
                 width: $fs_sm_3;
-                font-size: 20px !important;
+                font-size: var(--fs-400) !important;
                 fill: var(--c3);
                 color: var(--c3);
                 transition: all .2s ease-in-out;
@@ -3729,7 +3739,7 @@ svg.to_see, .bi.to_see{
                 svg, .bi{
                     padding: 5px;
                     border-radius: 3px;
-                    font-size: 16px;
+                    font-size: var(--fs-200);
                     background-color: var(--c3);
                     fill: var(--c1);
                     color: var(--c1);
@@ -4228,7 +4238,7 @@ svg.to_see, .bi.to_see{
 
 .dashboard-action-modal .modal-title{
     margin: 0;
-    font-size: clamp(24px, 2.6vw, 30px);
+    font-size: var(--fs-500);
     line-height: 1.15;
 }
 
@@ -4263,7 +4273,7 @@ svg.to_see, .bi.to_see{
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-size: 0.78rem;
+    font-size: var(--fs-200);
     font-weight: 700;
     color: var(--action-modal-accent);
 }
@@ -4271,7 +4281,7 @@ svg.to_see, .bi.to_see{
 .dashboard-action-modal__description{
     margin: 8px 0 0;
     color: rgba(216, 221, 232, 0.82);
-    font-size: 0.98rem;
+    font-size: var(--fs-200);
     line-height: 1.5;
     max-width: 62ch;
 }
@@ -4297,14 +4307,14 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__summary-label{
-    font-size: 0.76rem;
+    font-size: var(--fs-200);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: rgba(216, 221, 232, 0.62);
 }
 
 .dashboard-action-modal__summary strong{
-    font-size: 1.08rem;
+    font-size: var(--fs-300);
     color: var(--c3);
 }
 
@@ -4325,7 +4335,7 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__detail span{
-    font-size: 0.78rem;
+    font-size: var(--fs-200);
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: rgba(216, 221, 232, 0.62);
@@ -4333,7 +4343,7 @@ svg.to_see, .bi.to_see{
 
 .dashboard-action-modal__detail strong{
     display: block;
-    font-size: 1rem;
+    font-size: var(--fs-200);
     line-height: 1.35;
     color: var(--c3);
 }
@@ -4408,7 +4418,7 @@ svg.to_see, .bi.to_see{
 .customer-card__meta-row .order-detail__contact i{
     width: 14px;
     height: 14px;
-    font-size: 14px;
+    font-size: var(--fs-100);
 }
 
 .customer-card__meta-row .order-detail__contact span{
@@ -4462,7 +4472,7 @@ svg.to_see, .bi.to_see{
 
 .dashboard-availability-section__head h2{
     margin: 0;
-    font-size: clamp(20px, 2.1vw, 24px);
+    font-size: var(--fs-400);
 }
 
 .dashboard-availability-section__head p{
@@ -4536,7 +4546,7 @@ svg.to_see, .bi.to_see{
     border: 1px solid rgba(14, 183, 146, 0.18);
     background: rgba(14, 183, 146, 0.08);
     color: rgba(216, 221, 232, 0.86);
-    font-size: 0.9rem;
+    font-size: var(--fs-200);
     line-height: 1.5;
 }
 
@@ -4573,13 +4583,13 @@ svg.to_see, .bi.to_see{
 .dashboard-availability-day-card__copy h3{
     margin: 0;
     text-transform: capitalize;
-    font-size: 1rem;
+    font-size: var(--fs-200);
 }
 
 .dashboard-availability-day-card__copy p{
     margin: 0;
     color: rgba(216, 221, 232, 0.72);
-    font-size: 0.92rem;
+    font-size: var(--fs-200);
 }
 
 .dashboard-availability-day-card__toggle{
@@ -4624,7 +4634,7 @@ svg.to_see, .bi.to_see{
     @include control-shell($min-height: 36px, $padding: 0 10px, $radius: 12px, $background: rgba(216, 221, 232, 0.08), $color: var(--c3));
     font-family: monospace;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: var(--fs-200);
 }
 
 .dashboard-availability-slot__options{
@@ -4653,7 +4663,7 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-availability-slot__option-label{
-    font-size: 0.82rem;
+    font-size: var(--fs-200);
     font-weight: 600;
 }
 
@@ -4692,7 +4702,7 @@ svg.to_see, .bi.to_see{
     }
 
     .dashboard-action-modal .modal-title{
-        font-size: clamp(22px, 7vw, 26px);
+        font-size: var(--fs-500);
     }
 
     .dashboard-action-modal__details{
@@ -5173,7 +5183,7 @@ svg.to_see, .bi.to_see{
     a{
         color: var(--c3); 
         text-decoration: none;
-        font-size: clamp(13px, 2.2vw, 22px);
+        font-size: var(--fs-300);
         line-height: 70% !important;
         font-size: $fs_sm;
     }
@@ -5198,7 +5208,7 @@ svg.to_see, .bi.to_see{
         display: flex;
         gap: .4rem;
         .price{
-            font-size:clamp(17px, 3vw, 23px) ;
+            font-size: var(--fs-400);
             font-weight: bolder;
             //color: var(--c2);
             font-family: monospace; 
@@ -5278,7 +5288,7 @@ svg.to_see, .bi.to_see{
         padding: clamp(22px, 3vw, 30px);
         text-align: left !important;
         font-family: inherit;
-        font-size: clamp(2rem, 3.4vw, 3rem);
+        font-size: var(--fs-700);
         font-weight: 700;
         line-height: 1.05;
         letter-spacing: -0.03em;
@@ -5324,7 +5334,7 @@ svg.to_see, .bi.to_see{
     transform: translateY(-50%);
     color: var(--catalog-mint);
     pointer-events: none;
-    font-size: 1rem;
+    font-size: var(--fs-200);
 }
 
 .catalog-toolbar-search__input{
@@ -5351,7 +5361,7 @@ svg.to_see, .bi.to_see{
 .catalog-index-section__title{
     margin: 0 0 1rem;
     color: var(--c3);
-    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    font-size: var(--fs-400);
 }
 
 .catalog-index-list{
@@ -5400,7 +5410,7 @@ svg.to_see, .bi.to_see{
     }
 
     .bi{
-        font-size: 1.2rem;
+        font-size: var(--fs-400);
         line-height: 1;
     }
 }
@@ -5413,7 +5423,7 @@ svg.to_see, .bi.to_see{
 .catalog-index-card__title{
     margin: 0;
     color: var(--c3);
-    font-size: clamp(1rem, 1.3vw, 1.1rem);
+    font-size: var(--fs-200);
     line-height: 1.2;
 
     a{
@@ -5440,7 +5450,7 @@ svg.to_see, .bi.to_see{
     border: 1px solid rgba(216, 221, 232, 0.1);
     background: rgba(216, 221, 232, 0.06);
     color: var(--c3);
-    font-size: .85rem;
+    font-size: var(--fs-200);
     font-weight: 600;
 }
 
@@ -5468,7 +5478,7 @@ svg.to_see, .bi.to_see{
     cursor: pointer;
 
     .bi{
-        font-size: 1rem;
+        font-size: var(--fs-200);
         line-height: 1;
     }
 
@@ -5653,7 +5663,7 @@ svg.to_see, .bi.to_see{
     h2{
         font-weight: bolder;
         text-transform: capitalize;
-        font-size: clamp(20px, 4.5vw, 42px) !important;
+        font-size: var(--fs-700) !important;
     }
     .split_p{
         
@@ -5705,14 +5715,14 @@ svg.to_see, .bi.to_see{
             section{
                 margin-bottom: 10px;
                 h4{
-                    font-size: clamp(18px, 3.5vw, 30px) !important;
+                    font-size: var(--fs-500) !important;
                     font-weight: bold;
                     
                 }
                 p{
                     display: flex;
                     //text-transform: capitalize;
-                    font-size: clamp(15px, 2.5vw, 25px) !important;
+                    font-size: var(--fs-500) !important;
                 }
             }
         }
@@ -5756,7 +5766,7 @@ svg.to_see, .bi.to_see{
         }
     }
     .price{
-        font-size: clamp(20px, 3.4vw, 30px);
+        font-size: var(--fs-500);
         font-weight: bolder;
         align-self: flex-end;
     }
@@ -5785,13 +5795,13 @@ svg.to_see, .bi.to_see{
     padding: 2px;
     width: 100%; 
     text-align: center; 
-    font-size: 15px;
+    font-size: var(--fs-200);
     font-weight: 400;
     color: var(--c3_op_3);
 }
 #file-input::file-selector-button , 
 #file-input1::file-selector-button {
-    font-size: 14px;
+    font-size: var(--fs-100);
     font-weight: 700;
     border: none !important;
     background: var(--c3);
@@ -5842,7 +5852,7 @@ svg.to_see, .bi.to_see{
     input::placeholder {
         color: var(--c3_op_3); /* Cambia questo colore a tuo piacimento */
         text-align: center;
-        font-size: clamp(15px, 2vw, 16px);
+        font-size: var(--fs-200);
         font-weight: 400;
     }
     .label_c{
@@ -5861,7 +5871,7 @@ svg.to_see, .bi.to_see{
                 position: absolute;
                 left: 5%;
                 font-weight: 700;
-                font-size: 2rem;
+                font-size: var(--fs-700);
             }
         }
     }
@@ -5912,7 +5922,7 @@ svg.to_see, .bi.to_see{
                 padding: .2rem 1.2rem;
                 border-radius: 100px;
                 white-space: nowrap;
-                font-size: clamp(13px, 1.6vw, 14px) !important;
+                font-size: var(--fs-100) !important;
             }
             input[type="checkbox"]:checked + label{
                 border-color: var(--c2) !important;
@@ -5966,7 +5976,7 @@ svg.to_see, .bi.to_see{
             span{
                 background-color: rgba(255, 0, 0, 0.603);
                 color: white;
-                font-size: 18px;
+                font-size: var(--fs-300);
                 line-height: 100%;
                 text-align: center;
                 font-family: monospace;
@@ -6025,7 +6035,7 @@ section{
         background: rgba(255, 0, 0, 0);
         text-align: center;
         font-weight: 600;
-        font-size: clamp(16px, 2.5vw, 18px);
+        font-size: var(--fs-200);
     }
     input:focus, select:focus, input:hover, select:hover{
         border: 2px solid var(--c2);
@@ -6078,7 +6088,7 @@ section{
     }
     label{
         //text-transform: capitalize;
-        font-size: clamp(16px, 2.7vw, 20px);
+        font-size: var(--fs-300);
     }
     .desc{
         @include flex-layout($direction: column, $gap: .5rem);
@@ -6193,7 +6203,7 @@ section{
   box-sizing: border-box;
   //box-shadow: 0 0 2px 1px var(--c3_op);
   padding: 1px;
-  font-size: 14px;
+  font-size: var(--fs-100);
   svg, .bi{
     filter: drop-shadow(2px 2px 1px var(--c1));
     height: 22px;
@@ -6345,7 +6355,7 @@ section{
 
         strong{
             color: var(--c3);
-            font-size: 1.02rem;
+            font-size: var(--fs-200);
             line-height: 1.2;
         }
 
@@ -6353,7 +6363,7 @@ section{
             margin: 0;
             color: rgba(216, 221, 232, 0.68);
             line-height: 1.5;
-            font-size: .92rem;
+            font-size: var(--fs-200);
         }
     }
 
@@ -6370,7 +6380,7 @@ section{
 
         span{
             color: rgba(216, 221, 232, 0.66);
-            font-size: .8rem;
+            font-size: var(--fs-200);
             font-weight: 700;
             letter-spacing: .08em;
             text-transform: uppercase;
@@ -6380,7 +6390,7 @@ section{
             @include control-shell($min-height: 48px, $padding: 0 14px, $radius: 14px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
             width: 100%;
             appearance: none;
-            font-size: .96rem;
+            font-size: var(--fs-200);
         }
     }
 
@@ -6407,7 +6417,7 @@ section{
 
         strong{
             color: var(--c3);
-            font-size: clamp(28px, 3vw, 38px);
+            font-size: var(--fs-600);
             line-height: 1.05;
             font-weight: 900;
         }
@@ -6426,7 +6436,7 @@ section{
     }
 
     &__metric-card-title{
-        font-size: clamp(24px, 2.4vw, 32px) !important;
+        font-size: var(--fs-600) !important;
     }
 
     &__insight-card{
@@ -6504,7 +6514,7 @@ section{
 
         thead th{
             color: rgba(142, 246, 219, 0.92);
-            font-size: .78rem;
+            font-size: var(--fs-200);
             letter-spacing: .06em;
             text-transform: uppercase;
             border: 0;
@@ -6573,7 +6583,7 @@ section{
         h2{
             margin: 0 0 8px;
             color: var(--c3);
-            font-size: clamp(1.45rem, 2.2vw, 1.8rem);
+            font-size: var(--fs-500);
         }
 
         p{
@@ -6594,7 +6604,7 @@ section{
 
         svg,
         i{
-            font-size: 1.6rem;
+            font-size: var(--fs-500);
         }
     }
 }
@@ -6689,7 +6699,7 @@ section{
 
         &__floating-filter-copy{
             p{
-                font-size: .86rem;
+                font-size: var(--fs-200);
             }
         }
 
@@ -6717,7 +6727,7 @@ section{
             padding: 14px;
 
             strong{
-                font-size: clamp(22px, 9vw, 30px);
+                font-size: var(--fs-500);
             }
         }
 
@@ -6757,18 +6767,18 @@ section{
         }
 
         &__lead{
-            font-size: .94rem;
+            font-size: var(--fs-200);
         }
 
         &__period-control{
             span{
-                font-size: .74rem;
+                font-size: var(--fs-100);
             }
 
             select{
                 min-height: 42px;
                 padding: 0 12px;
-                font-size: .88rem;
+                font-size: var(--fs-200);
             }
         }
 
@@ -6820,7 +6830,7 @@ section{
             tbody td::before{
                 content: attr(data-label);
                 color: rgba(216, 221, 232, 0.62);
-                font-size: .72rem;
+                font-size: var(--fs-100);
                 font-weight: 700;
                 letter-spacing: .06em;
                 text-transform: uppercase;
@@ -6935,7 +6945,7 @@ section{
             max-width: 450px;
             flex: 1 0;
             @include flex-layout($direction: column, $gap: .2rem);
-            font-size: 14px;
+            font-size: var(--fs-100);
             background-color: var(--c3);
             padding: .7rem;
             border-radius: 12px;
@@ -6946,12 +6956,12 @@ section{
                 border-radius: 10px;
             }
             .ending{
-                font-size: 17px;
+                font-size: var(--fs-200);
                 text-align: center;
             }
             h1{
                 font-weight: 700;
-                font-size: 22px;
+                font-size: var(--fs-400);
             }
             .act{
                 @include flex-layout($align: flex-end, $justify: flex-end, $gap: .5rem);
@@ -7074,7 +7084,7 @@ section{
                     border-radius: 10px;
                 }
                 .extra-price::placeholder{
-                    font-size: 15px !important; 
+                    font-size: var(--fs-200) !important; 
                     color: var(--c1);
                 }
             }
@@ -7126,7 +7136,7 @@ section{
             display: flex;
             align-items: center;
             gap: .55rem;
-            font-size: clamp(24px, 3vw, 30px);
+            font-size: var(--fs-500);
             text-align: left;
             margin: 4px 0 12px;
         }
@@ -7316,7 +7326,7 @@ section{
             margin: 0;
             text-align: left;
             font-family: inherit;
-            font-size: clamp(2rem, 4vw, 3rem);
+            font-size: var(--fs-700);
             line-height: 1.05;
             display: flex;
             align-items: center;
@@ -7343,7 +7353,7 @@ section{
 
     &__eyebrow{
         margin: 0;
-        font-size: .86rem;
+        font-size: var(--fs-200);
         font-weight: 700;
         letter-spacing: .08em;
         text-transform: uppercase;
@@ -7355,7 +7365,7 @@ section{
         max-width: 68ch;
         color: rgba(216, 221, 232, 0.82);
         line-height: 1.65;
-        font-size: 1.06rem;
+        font-size: var(--fs-300);
     }
 
     &__actions{
@@ -7430,13 +7440,13 @@ section{
             }
 
             .bi{
-                font-size: 1rem;
+                font-size: var(--fs-200);
             }
         }
 
         .carousel-item h2{
             margin: 0;
-            font-size: clamp(1.85rem, 2.5vw, 2.25rem);
+            font-size: var(--fs-600);
             text-transform: capitalize;
             text-align: center;
         }
@@ -7461,7 +7471,7 @@ section{
                 grid-column: 1 / -1;
                 width: auto;
                 min-width: 0;
-                font-size: .98rem;
+                font-size: var(--fs-200);
                 letter-spacing: .08em;
                 text-transform: uppercase;
                 color: rgba(216, 221, 232, 0.66);
@@ -7480,7 +7490,7 @@ section{
             }
 
             span{
-                font-size: 1.12rem;
+                font-size: var(--fs-300);
                 font-weight: 800;
                 line-height: 1.1;
                 min-width: 0;
@@ -7514,7 +7524,7 @@ section{
         h4{
             margin: 0;
             padding: 0 0 6px;
-            font-size: .84rem;
+            font-size: var(--fs-200);
             letter-spacing: .08em;
             text-transform: uppercase;
             text-align: center;
@@ -7565,7 +7575,7 @@ section{
                 grid-row: 1;
                 align-self: start;
                 justify-self: start;
-                font-size: 1.08rem !important;
+                font-size: var(--fs-300) !important;
                 font-weight: 700;
                 padding-left: 12px;
             }
@@ -7581,7 +7591,7 @@ section{
                 border: 0;
                 background: transparent;
                 color: rgba(216, 221, 232, 0.9);
-                font-size: .72rem !important;
+                font-size: var(--fs-100) !important;
                 line-height: 1;
                 text-align: right;
                 white-space: nowrap;
@@ -7672,14 +7682,14 @@ section{
             width: 100%;
             margin: 0;
             gap: 10px;
-            font-size: 1.06rem;
+            font-size: var(--fs-300);
 
             strong{
                 @include control-shell($min-height: 38px, $padding: 0 12px, $radius: 12px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
                 display: inline-flex;
                 align-items: center;
                 font-family: monospace;
-                font-size: 1rem;
+                font-size: var(--fs-200);
             }
 
             .line{
@@ -7703,7 +7713,7 @@ section{
                     background: rgba(216, 221, 232, 0.08);
                     color: var(--c3);
                     fill: currentColor;
-                    font-size: 16px;
+                    font-size: var(--fs-200);
                 }
             }
         }
@@ -7773,12 +7783,12 @@ section{
                     padding: 0 10px;
                     border-radius: 999px;
                     border-width: 1px;
-                    font-size: .8rem !important;
+                    font-size: var(--fs-200) !important;
                     letter-spacing: .06em;
                 }
 
                 .name{
-                    font-size: 1.04rem;
+                    font-size: var(--fs-200);
                     line-height: 1.4;
                     text-transform: none;
                 }
@@ -7788,7 +7798,7 @@ section{
                 padding: 4px 9px;
                 border-radius: 999px;
                 background: rgba(9, 3, 51, 0.18);
-                font-size: .76rem;
+                font-size: var(--fs-200);
             }
         }
 
@@ -7803,7 +7813,7 @@ section{
         }
 
         .price{
-            font-size: 1rem;
+            font-size: var(--fs-200);
         }
     }
 
@@ -7815,14 +7825,14 @@ section{
         strong{
             display: block;
             margin-bottom: 4px;
-            font-size: 1.12rem;
+            font-size: var(--fs-300);
             color: var(--c3);
         }
 
         p{
             margin: 0;
             line-height: 1.6;
-            font-size: 1rem;
+            font-size: var(--fs-200);
         }
     }
 
@@ -7850,7 +7860,7 @@ section{
 
         h3{
             margin: 0;
-            font-size: clamp(1.55rem, 2.2vw, 1.9rem);
+            font-size: var(--fs-500);
             line-height: 1.2;
             text-transform: capitalize;
         }
@@ -7858,7 +7868,7 @@ section{
 
     &__detail-eyebrow{
         margin: 0;
-        font-size: .84rem;
+        font-size: var(--fs-200);
         font-weight: 700;
         letter-spacing: .08em;
         text-transform: uppercase;
@@ -7869,7 +7879,7 @@ section{
         @include control-shell($min-height: 34px, $padding: 0 12px, $radius: 999px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.12), $color: var(--c3));
         display: inline-flex;
         align-items: center;
-        font-size: .76rem;
+        font-size: var(--fs-200);
         font-weight: 700;
         letter-spacing: .08em;
         text-transform: uppercase;
@@ -7900,7 +7910,7 @@ section{
         border: 1px dashed rgba(216, 221, 232, 0.14);
         background: rgba(216, 221, 232, 0.03);
         color: rgba(216, 221, 232, 0.82);
-        font-size: 1rem;
+        font-size: var(--fs-200);
     }
 }
 
@@ -7940,7 +7950,7 @@ section{
         }
 
         &__hero h1{
-            font-size: clamp(1.7rem, 9vw, 2.3rem);
+            font-size: var(--fs-600);
         }
 
         &__actions > *{
@@ -8008,7 +8018,7 @@ section{
             }
 
             .carousel-item h2{
-                font-size: 1.55rem;
+                font-size: var(--fs-500);
                 line-height: 1.2;
                 margin-bottom: 2px;
             }
@@ -8019,11 +8029,11 @@ section{
         }
 
         &__intro{
-            font-size: 1rem;
+            font-size: var(--fs-200);
         }
 
         .c-name h4{
-            font-size: .72rem;
+            font-size: var(--fs-100);
         }
 
         .calendar_page{
@@ -8035,11 +8045,11 @@ section{
                 border-radius: 12px;
 
                 .bookings{
-                    font-size: .62rem !important;
+                    font-size: var(--fs-100) !important;
                 }
 
                 .p_day{
-                    font-size: .96rem !important;
+                    font-size: var(--fs-200) !important;
                 }
             }
         }
@@ -8056,11 +8066,11 @@ section{
                 grid-template-columns: auto minmax(0, 1fr) auto;
                 align-items: center;
                 gap: 8px;
-                font-size: 1rem;
+                font-size: var(--fs-200);
 
                 strong{
                     min-height: 34px;
-                    font-size: .92rem;
+                    font-size: var(--fs-200);
                 }
 
                 .prop{
@@ -8072,7 +8082,7 @@ section{
                     .bi,
                     svg{
                         padding: 6px;
-                        font-size: 14px;
+                        font-size: var(--fs-100);
                     }
                 }
 
@@ -8103,7 +8113,7 @@ section{
 
                     .name{
                         grid-column: 1 / -1;
-                        font-size: .98rem;
+                        font-size: var(--fs-200);
                     }
 
                     > .null,
@@ -8122,13 +8132,13 @@ section{
                     .id{
                         min-height: 28px;
                         padding: 0 8px;
-                        font-size: .72rem !important;
+                        font-size: var(--fs-100) !important;
                         grid-column: 1;
                     }
                 }
 
                 .status{
-                    font-size: .68rem;
+                    font-size: var(--fs-100);
                     padding: 3px 8px;
                     justify-self: start;
                 }
@@ -8137,7 +8147,7 @@ section{
             .res-item .guest,
             .order-item .price{
                 display: block;
-                font-size: .92rem;
+                font-size: var(--fs-200);
             }
 
             .cart{
@@ -8150,17 +8160,17 @@ section{
             gap: 12px;
 
             strong{
-                font-size: 1.02rem;
+                font-size: var(--fs-200);
             }
         }
 
         &__detail-copy h3{
-            font-size: 1.35rem;
+            font-size: var(--fs-400);
         }
 
         &__detail-state{
             min-height: 32px;
-            font-size: .72rem;
+            font-size: var(--fs-100);
         }
 
         &__stats{
@@ -8171,7 +8181,7 @@ section{
                 padding: 10px;
 
                 h4{
-                    font-size: .88rem;
+                    font-size: var(--fs-200);
                 }
             }
 
@@ -8180,7 +8190,7 @@ section{
                 padding: 0 10px;
 
                 span{
-                    font-size: 1rem;
+                    font-size: var(--fs-200);
                 }
             }
         }

@@ -59,12 +59,12 @@
     }
 
     .customer-page__hero-title h1 {
-        font-size: clamp(32px, 4vw, 48px);
+        font-size: var(--fs-700);
         line-height: 1.02;
     }
 
     .customer-card__title h2 {
-        font-size: clamp(18px, 1.8vw, 24px);
+        font-size: var(--fs-400);
         line-height: 1.08;
     }
 
@@ -112,7 +112,7 @@
     .customer-page__field > span,
     .question-item__field > span {
         display: block;
-        font-size: .78rem;
+        font-size: var(--fs-200);
         letter-spacing: .12em;
         text-transform: uppercase;
         color: rgba(216, 221, 232, 0.64);
@@ -123,7 +123,7 @@
         display: block;
         margin-top: 10px;
         color: var(--c3);
-        font-size: clamp(1.1rem, 2vw, 1.75rem);
+        font-size: var(--fs-400);
         line-height: 1.05;
     }
 
@@ -167,7 +167,7 @@
 
     .customer-page__button i,
     .customer-page__button--ghost i {
-        font-size: 16px;
+        font-size: var(--fs-200);
         line-height: 1;
     }
 
@@ -211,7 +211,7 @@
     }
 
     .customer-page__settings-toggle i {
-        font-size: 14px;
+        font-size: var(--fs-100);
         line-height: 1;
         transition: transform .18s ease;
     }
@@ -343,13 +343,13 @@
         gap: 8px;
         margin: 0;
         color: rgba(216, 221, 232, 0.74);
-        font-size: .95rem;
+        font-size: var(--fs-200);
         line-height: 1.5;
     }
 
     .customer-card__summary strong {
         color: var(--c3);
-        font-size: .98rem;
+        font-size: var(--fs-200);
         font-family: monospace;
     }
 
@@ -424,7 +424,7 @@
 
     .question-item__switch-copy strong {
         color: var(--c3);
-        font-size: .95rem;
+        font-size: var(--fs-200);
         line-height: 1.2;
     }
 
@@ -459,7 +459,7 @@
         display: block;
         margin-bottom: 8px;
         color: var(--c3);
-        font-size: 1.2rem;
+        font-size: var(--fs-400);
     }
 
     .customer-page__empty-icon {
@@ -481,7 +481,7 @@
     }
 
     .customer-page__empty-icon i {
-        font-size: 24px;
+        font-size: var(--fs-500);
         line-height: 1;
     }
 

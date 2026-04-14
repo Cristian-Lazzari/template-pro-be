@@ -18,7 +18,7 @@
         <div class="price_btn">
             <div class="price">€{{$item->price / 100}}</div>
             <button type="button" class="action_menu action_menu_info js-open-product-info" data-bs-toggle="modal" data-bs-target="#productInfoModal" data-info-url="{{ route('admin.products.quick-view', $item->id) }}">
-                <i class="bi bi-info-circle-fill" style="font-size: 20px"></i>{{ __('admin.Info') }}
+                <i class="bi bi-info-circle-fill" style="font-size: var(--fs-400)"></i>{{ __('admin.Info') }}
             </button>
         </div>
     </div>

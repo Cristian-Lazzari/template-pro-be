@@ -19,7 +19,7 @@
                 <div class="price_btn">
                     <div class="price">€14,00</div>
                     <button type="button" class="action_menu action_menu_info">
-                        <i class="bi bi-info-circle-fill" style="font-size: 20px"></i>Info
+                        <i class="bi bi-info-circle-fill" style="font-size: var(--fs-400)"></i>Info
                     </button>
                 </div>
             </div>

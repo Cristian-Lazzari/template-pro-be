@@ -39,10 +39,10 @@
 
     <div class="action-page">
         <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.posts.create') }}">
-            <i class="bi bi-cloud-plus-fill" style="font-size: 20px"></i>
+            <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
             {{__('admin.Crea_nuovo')}}</a>
         <a class="my_btn_2 btn_delete trash m-1 w-auto" href="{{ route('admin.posts.archived') }}">
-            <i class="bi bi-trash-fill" style="font-size: 20px"></i>
+            <i class="bi bi-trash-fill" style="font-size: var(--fs-400)"></i>
             {{__('admin.Archivio')}}</a>
     </div>
     <div class="filters">
@@ -95,9 +95,9 @@
 
     <div class="action-page mt-5">
         <button type="button" class="my_btn_3" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialStory">
-            <i class="bi bi-shuffle" style="font-size: 20px"></i>{{ __('admin.Ordina_Post_in_Storia') }}</button>
+            <i class="bi bi-shuffle" style="font-size: var(--fs-400)"></i>{{ __('admin.Ordina_Post_in_Storia') }}</button>
         <button type="button" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropspecialNews">
-            <i class="bi bi-shuffle" style="font-size: 20px"></i>{{ __('admin.Ordina_Post_in_News') }}</button>
+            <i class="bi bi-shuffle" style="font-size: var(--fs-400)"></i>{{ __('admin.Ordina_Post_in_News') }}</button>
     </div>
 </div>
 
