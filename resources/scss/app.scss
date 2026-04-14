@@ -149,39 +149,6 @@ i.bi{
 }
 
 
-[data-theme="dark"] {
-    --c3_op:#1e2d6485;
-    --c2_op:#10b7937b;
-    --c1_op:#d8dde880;
-    --c3_op_3:#1e2d6447;
-    --c1_op_3:#d8dde836;
-    --c1_op_8:#d8dde8d0;
-    --c3_op_8:#1e2d64d0;
-    --c3: #090333;
-    --c2:#0eb792;
-    --c1: #d8dde8;
-
-    #light,
-    #light_s{
-        @include hidden-toggle();
-    }
-
-    #dark{
-        display: block !important;
-    }
-
-    #dark_s{
-        display: block !important;
-        height: auto !important;
-        width: auto !important;
-    }
-    .title{
-        img{
-            filter: invert(1);
-        }
-    }
-    
-}
 $bg-p-p : var(--c3);
 $c-delete : var(--c2);
 $c-update : var(--c3);
