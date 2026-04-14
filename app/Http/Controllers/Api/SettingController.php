@@ -137,81 +137,77 @@ class SettingController extends Controller
                 ]);
                 return null;
             }
-            if ($this->isLastResponseWaWithin24Hours($p)) {
-    
-                $data = [
-                    'messaging_product' => 'whatsapp',
-                    "recipient_type" => "individual",
-                    'to' => $number,
-                    "type" => "text",
-                    "text" => [
-                        "body" => $m
+            $textPayload = [
+                'messaging_product' => 'whatsapp',
+                "recipient_type" => "individual",
+                'to' => $number,
+                "type" => "text",
+                "text" => [
+                    "body" => $m
+                ],
+                "context" => [
+                    "message_id" => $old_id
+                ],
+            ];
+
+            $templatePayload = [
+                'messaging_product' => 'whatsapp',
+                "recipient_type" => "individual",
+                'to' => $number,
+                
+                'type' => 'template',
+                'template' => [
+                    'name' => 'response_link',
+                    'language' => [
+                        'code' => 'it'
                     ],
-                    "context" => [
-                        "message_id" => $old_id
-                    ],
-                ];
-            } else {
-                $data = [
-                    'messaging_product' => 'whatsapp',
-                    "recipient_type" => "individual",
-                    'to' => $number,
-                    
-                    'type' => 'template',
-                    'template' => [
-                        'name' => 'response_link',
-                        'language' => [
-                            'code' => 'it'
-                        ],
-                        'components' => [
-                            [
-                                'type' => 'body',
-                                'parameters' => [
-                                    [
-                                        'type' => 'text',
-                                        'text' => $sub
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $word
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => 'cliente'
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $or_res->name . ' ' . $or_res->surname,
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $or_res->date_slot,
-                                    ],
-                                    [
-                                        'type' => 'text',
-                                        'text' => $link_id,
-                                    ],
-                                ]
+                    'components' => [
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => $sub
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $word
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => 'cliente'
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $or_res->name . ' ' . $or_res->surname,
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $or_res->date_slot,
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $link_id,
+                                ],
                             ]
                         ]
-                    ],
-                    "context" => [
-                        "message_id" => $old_id
-                    ],
-                ];
-            }
+                    ]
+                ],
+                "context" => [
+                    "message_id" => $old_id
+                ],
+            ];
     
             $url = 'https://graph.facebook.com/v24.0/' . config('configurazione.WA_ID') . '/messages';
-            
-            $response = Http::withHeaders([
-                'Authorization' => config('configurazione.WA_TO'),
-                'Content-Type' => 'application/json'
-            ])->post($url, $data);
-    
-            // Log della risposta ricevuta
-            Log::info("(SC) Risposta WhatsApp inviata con successo", ['response' => $response->json()]);
-    
-            return $response->json();
+
+            return $this->sendWhatsappContextMessageWithFallback(
+                $url,
+                (string) $number,
+                $textPayload,
+                $templatePayload,
+                $this->isLastResponseWaWithin24Hours($p),
+                '(SC)'
+            );
         } catch (Exception $e) {
             Log::error("(SC) Errore in message_default", [
                 'message' => $e->getMessage(),
@@ -220,6 +216,56 @@ class SettingController extends Controller
     
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+    protected function sendWhatsappContextMessageWithFallback(
+        string $url,
+        string $number,
+        array $textPayload,
+        array $templatePayload,
+        bool $preferText,
+        string $logPrefix
+    ) {
+        $attempts = $preferText
+            ? [
+                ['type' => 'text', 'payload' => $textPayload],
+                ['type' => 'template', 'payload' => $templatePayload],
+            ]
+            : [
+                ['type' => 'template', 'payload' => $templatePayload],
+                ['type' => 'text', 'payload' => $textPayload],
+            ];
+
+        foreach ($attempts as $index => $attempt) {
+            $response = Http::withHeaders([
+                'Authorization' => config('configurazione.WA_TO'),
+                'Content-Type' => 'application/json'
+            ])->post($url, $attempt['payload']);
+
+            if ($response->successful()) {
+                if ($index === 1) {
+                    Log::warning($logPrefix . ' Fallback WhatsApp riuscito', [
+                        'number' => $number,
+                        'final_type' => $attempt['type'],
+                    ]);
+                }
+
+                Log::info($logPrefix . ' Risposta WhatsApp inviata con successo', [
+                    'type' => $attempt['type'],
+                    'response' => $response->json(),
+                ]);
+
+                return $response->json();
+            }
+
+            Log::error($logPrefix . ' Invio WhatsApp fallito', [
+                'number' => $number,
+                'type' => $attempt['type'],
+                'status' => $response->status(),
+                'response' => $response->json(),
+            ]);
+        }
+
+        return null;
     }
     protected function isLastResponseWaWithin24Hours($p)
     {

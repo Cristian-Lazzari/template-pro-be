@@ -91,24 +91,34 @@ class ReservationController extends Controller
 
 
         $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1);
+        $property_adv = json_decode($adv_s->property, true) ?? [];
 
         $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
-        // Convertilo nel formato desiderato
+        $formattedDateSlot = $carbonDate->copy()->format('d/m/Y H:i');
         $f_date = $carbonDate->copy()->format('Y-m-d');
         $f_time = $carbonDate->copy()->format('H:i');
         $f_N = $carbonDate->copy()->format('N'); //giorno della settimana
         $av = 0;
-        
-        if($property_adv['week_set'][$f_N] !== [] && isset($property_adv['week_set'][$f_N][$f_time]) && in_array(1, $property_adv['week_set'][$f_N][$f_time]) && !isset($property_adv['day_off'][$f_date])){
-            if(!$adv_s['dt']){
-                $av = $property_adv['max_table'];
-            }elseif($adv_s['dt'] && $data['sala'] == 1){
-                $av = $property_adv['max_table_1'];
-            }elseif($adv_s['dt'] && $data['sala'] == 2){
-                $av = $property_adv['max_table_2'];
+
+        $weekSet = $property_adv['week_set'][$f_N] ?? [];
+        $isDayOff = in_array($f_date, $property_adv['day_off'] ?? [], true);
+        $isDoubleRoomEnabled = (bool) ($property_adv['dt'] ?? false);
+        $selectedSala = $isDoubleRoomEnabled ? (int) ($data['sala'] ?? 0) : null;
+
+        if (
+            $weekSet !== []
+            && isset($weekSet[$f_time])
+            && in_array(1, $weekSet[$f_time], true)
+            && !$isDayOff
+        ) {
+            if (!$isDoubleRoomEnabled) {
+                $av = (int) ($property_adv['max_table'] ?? 0);
+            } elseif ($selectedSala === 1) {
+                $av = (int) ($property_adv['max_table_1'] ?? 0);
+            } elseif ($selectedSala === 2) {
+                $av = (int) ($property_adv['max_table_2'] ?? 0);
             }
-        }else{
+        } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
@@ -116,7 +126,15 @@ class ReservationController extends Controller
             ]);
         }
 
-        $res_in_time = Reservation::where('date_slot', $data['date_slot'])->get();
+        $res_in_time = Reservation::query()
+            ->where('date_slot', $formattedDateSlot)
+            ->whereIn('status', $this->activeReservationStatuses());
+
+        if ($isDoubleRoomEnabled) {
+            $res_in_time->where('sala', (string) $selectedSala);
+        }
+
+        $res_in_time = $res_in_time->get();
 
         if(count($res_in_time)){
             foreach ($res_in_time as $r) {
@@ -154,7 +172,7 @@ class ReservationController extends Controller
         $newRes->surname = $data['surname'];
         $newRes->phone = $data['phone'];
         $newRes->email = $data['email'];
-        $newRes->date_slot = $carbonDate->copy()->format('d/m/Y H:i');
+        $newRes->date_slot = $formattedDateSlot;
         $newRes->n_person = json_encode([
             'adult' => $data['n_adult'],
             'child' => $data['n_child'],
@@ -162,8 +180,8 @@ class ReservationController extends Controller
         $newRes->message = $data['message'];
         $newRes->status = 2;
         $newRes->news_letter = $data['news_letter'];
-        if($property_adv['dt']){
-            $newRes->sala = $data['sala'];
+        if($isDoubleRoomEnabled){
+            $newRes->sala = $selectedSala;
         }
         
 
@@ -184,16 +202,14 @@ class ReservationController extends Controller
             $info .= $n_child . " bambini \n\n";
             $guest .= $n_child . " bambini ";
         }
-        if ($property_adv['dt'] && $newRes->sala ) {
+        if ($isDoubleRoomEnabled && $newRes->sala) {
+            $selectedRoomLabel = $newRes->sala == 1
+                ? ($property_adv['sala_1'] ?? 'Sala 1')
+                : ($property_adv['sala_2'] ?? 'Sala 2');
             $info .= " *_Sala prenota: ";
             $sala_mess .= "Sala prenota: *_";
-            if ($newRes->sala == 1) {
-                $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-                $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-            }else{
-                $info .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-                $sala_mess .= $newRes->sala ?  $property_adv['sala_1'] : $property_adv['sala_2'];
-            }
+            $info .= $selectedRoomLabel;
+            $sala_mess .= $selectedRoomLabel;
             $info .="_* \n\n ";
             $sala_mess .="_*";
         }
@@ -300,38 +316,24 @@ class ReservationController extends Controller
         foreach ($numbers_wa_set['numbers'] as $num) {
             $data_t['to'] = $num;
             $data_i['to'] = $num;
-            if($this->isLastResponseWaWithin24Hours($n)){
-                if($n == 1){
-                    $type_m_1 = 0;
-                }else{     
-                    $type_m_2 = 0;
-                }
-                $response = Http::withHeaders([
-                    'Authorization' => config('configurazione.WA_TO'),
-                    'Content-Type' => 'application/json'
-                ])->post($url, $data_i);
-                $m_id = $response->json()['messages'][0]['id'] ?? null;
-                if($m_id){
-                    array_push($messageId, $m_id);
-                }     
-            }else{
-                if($n == 1){
-                    $type_m_1 = 1;
-                }else{     
-                    $type_m_2 = 1;
-                }
-                $response = Http::withHeaders([
-                    'Authorization' => config('configurazione.WA_TO'),
-                    'Content-Type' => 'application/json'
-                ])->post($url, $data_t);
-                $m_id = $response->json()['messages'][0]['id'] ?? null;
-                if($m_id){
-                    array_push($messageId, $m_id);
-                }
+            $sentMessage = $this->sendWhatsappMessageWithFallback(
+                $url,
+                (string) $num,
+                $data_i,
+                $data_t,
+                $this->isLastResponseWaWithin24Hours($n)
+            );
+
+            if($n == 0){
+                $type_m_1 = $sentMessage['type_flag'];
+            }elseif($n == 1){
+                $type_m_2 = $sentMessage['type_flag'];
             }
+
+            $messageId[$n] = $sentMessage['message_id'];
             $n ++;
         }
-        
+
         $newRes->whatsapp_message_id = json_encode($messageId);
         $newRes->update();
         
@@ -417,6 +419,11 @@ class ReservationController extends Controller
     
         $i = 1;
         foreach ($mex as $id) {
+            if (!$id) {
+                $i++;
+                continue;
+            }
+
             DB::connection('dynamic')
             ->table('messages')
             ->insert(
@@ -433,6 +440,77 @@ class ReservationController extends Controller
         return [$source, $mex];
         
     }
+
+    protected function activeReservationStatuses(): array
+    {
+        return [1, 2, 3, 5];
+    }
+
+    protected function sendWhatsappMessageWithFallback(
+        string $url,
+        string $number,
+        array $interactivePayload,
+        array $templatePayload,
+        bool $preferInteractive
+    ): array {
+        $attempts = $preferInteractive
+            ? [
+                ['type' => 'interactive', 'payload' => $interactivePayload, 'type_flag' => 0],
+                ['type' => 'template', 'payload' => $templatePayload, 'type_flag' => 1],
+            ]
+            : [
+                ['type' => 'template', 'payload' => $templatePayload, 'type_flag' => 1],
+                ['type' => 'interactive', 'payload' => $interactivePayload, 'type_flag' => 0],
+            ];
+
+        foreach ($attempts as $index => $attempt) {
+            $response = Http::withHeaders([
+                'Authorization' => config('configurazione.WA_TO'),
+                'Content-Type' => 'application/json'
+            ])->post($url, $attempt['payload']);
+
+            $messageId = $this->extractWhatsappMessageId($response, $number, $attempt['type']);
+
+            if ($messageId) {
+                if ($index === 1) {
+                    Log::warning('(ReservationController) Fallback WhatsApp riuscito', [
+                        'number' => $number,
+                        'final_type' => $attempt['type'],
+                    ]);
+                }
+
+                return [
+                    'message_id' => $messageId,
+                    'type_flag' => $attempt['type_flag'],
+                ];
+            }
+        }
+
+        return [
+            'message_id' => null,
+            'type_flag' => $preferInteractive ? 0 : 1,
+        ];
+    }
+
+    protected function extractWhatsappMessageId($response, string $number, string $type): ?string
+    {
+        $payload = $response->json();
+        $messageId = $payload['messages'][0]['id'] ?? null;
+
+        if (!$response->successful() || !$messageId) {
+            Log::error('(ReservationController) Invio WhatsApp fallito', [
+                'number' => $number,
+                'type' => $type,
+                'status' => $response->status(),
+                'response' => $payload,
+            ]);
+
+            return null;
+        }
+
+        return $messageId;
+    }
+
     protected function send_mail($newRes, $lang, $defaultLang){
         try{
             // Ottieni le impostazioni di contatto

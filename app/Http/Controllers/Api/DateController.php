@@ -57,7 +57,7 @@ class DateController extends Controller
                     DB::raw("DATE_FORMAT(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), '%H:%i') AS time")
                 )
                 ->whereRaw("STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i') >= ?", [$now])
-                ->where('status', '!=', 4) // 👈 controllo aggiunto
+                ->whereNotIn('status', [0, 4, 6])
                 ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
                 ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->get();

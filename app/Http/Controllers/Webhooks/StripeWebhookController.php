@@ -288,35 +288,21 @@ class StripeWebhookController extends Controller
         foreach ($numbers as $num) {
             $data_t['to'] = $num;
             $data_i['to'] = $num;
-            if($this->isLastResponseWaWithin24Hours($n)){
-                if($n == 0){
-                    $type_m_1 = 0;
-                }else{
-                    $type_m_2 = 0;
-                }
-                $response = Http::withHeaders([
-                    'Authorization' => config('configurazione.WA_TO'),
-                    'Content-Type' => 'application/json'
-                ])->post($url, $data_i);
-                $m_id = $this->extractWhatsappMessageId($response, $num, 'interactive');
-                if($m_id){
-                    array_push($messageId, $m_id);
-                }
+            $sentMessage = $this->sendWhatsappMessageWithFallback(
+                $url,
+                (string) $num,
+                $data_i,
+                $data_t,
+                $this->isLastResponseWaWithin24Hours($n)
+            );
+
+            if($n == 0){
+                $type_m_1 = $sentMessage['type_flag'];
             }else{
-                if($n == 0){
-                    $type_m_1 = 1;
-                }else{
-                    $type_m_2 = 1;
-                }
-                $response = Http::withHeaders([
-                    'Authorization' => config('configurazione.WA_TO'),
-                    'Content-Type' => 'application/json'
-                ])->post($url, $data_t);
-                $m_id = $this->extractWhatsappMessageId($response, $num, 'template');
-                if($m_id){
-                    array_push($messageId, $m_id);
-                }
+                $type_m_2 = $sentMessage['type_flag'];
             }
+
+            $messageId[$n] = $sentMessage['message_id'];
             $n ++;
         }
         
@@ -390,6 +376,11 @@ class StripeWebhookController extends Controller
     
         $i = 1;
         foreach ($mex as $id) {
+            if (!$id) {
+                $i++;
+                continue;
+            }
+
             DB::connection('dynamic')
             ->table('messages')
             ->insert(
@@ -405,6 +396,52 @@ class StripeWebhookController extends Controller
         }
         return $source;
         
+    }
+
+    protected function sendWhatsappMessageWithFallback(
+        string $url,
+        string $number,
+        array $interactivePayload,
+        array $templatePayload,
+        bool $preferInteractive
+    ): array {
+        $attempts = $preferInteractive
+            ? [
+                ['type' => 'interactive', 'payload' => $interactivePayload, 'type_flag' => 0],
+                ['type' => 'template', 'payload' => $templatePayload, 'type_flag' => 1],
+            ]
+            : [
+                ['type' => 'template', 'payload' => $templatePayload, 'type_flag' => 1],
+                ['type' => 'interactive', 'payload' => $interactivePayload, 'type_flag' => 0],
+            ];
+
+        foreach ($attempts as $index => $attempt) {
+            $response = Http::withHeaders([
+                'Authorization' => config('configurazione.WA_TO'),
+                'Content-Type' => 'application/json'
+            ])->post($url, $attempt['payload']);
+
+            $messageId = $this->extractWhatsappMessageId($response, $number, $attempt['type']);
+
+            if ($messageId) {
+                if ($index === 1) {
+                    Log::warning('(StripeWebhookController) Fallback WhatsApp riuscito', [
+                        'number' => $number,
+                        'final_type' => $attempt['type'],
+                    ]);
+                }
+
+                return [
+                    'message_id' => $messageId,
+                    'type_flag' => $attempt['type_flag'],
+                ];
+            }
+        }
+
+        return [
+            'message_id' => null,
+            'type_flag' => $preferInteractive ? 0 : 1,
+        ];
     }
 
     protected function extractWhatsappMessageId($response, $number, $type)
