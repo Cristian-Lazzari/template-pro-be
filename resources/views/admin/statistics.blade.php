@@ -27,7 +27,7 @@
             </div>
 
             <h1 class="menu-dashboard__title">
-                <x-icon name="bar-chart-line-fill" />
+
                 Statistiche
             </h1>
 

@@ -34,140 +34,142 @@
 @endphp
 
 <div class="dash_page dashboard-home">
-    <header class="dashboard-home__hero">
-        <div class="dashboard-home__hero-copy">
-            <p class="dashboard-home__eyebrow">Agenda operativa</p>
-            <h1>
-                <i class="bi bi-calendar2-check-fill"></i>
-                {{__('admin.t_dashboard')}}
-            </h1>
-
-            <div class="top_action dashboard-home__actions my-4">
-                <button id="editToggle" class="my_btn_2" data-bs-toggle="modal" data-bs-target="#staticBackdropav" >
-                    <i class="bi bi-arrow-repeat"></i>
-                    Disponibilità
-                </button>
-                <button  type="button" class="my_btn_1 btn_delete" data-bs-toggle="modal" data-bs-target="#exampleModal1">
-                    <i class="bi bi-ban"></i>
-                    Blocca giorni
-                </button>
-                <a class="my_btn_3" href="{{ route('admin.reservations.index') }}">
-                    <i class="bi bi-credit-card-2-front-fill"></i>
-                    {{__('admin.Vedi_tutti')}}
-                </a> 
+    <header class="menu-dashboard__hero order-detail__summary">
+        <div class="order-detail__meta">
+            <div class="order-detail__status">
+                <span class="order-detail__status-icon order-detail__status-icon--active">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                </span>
+                <strong>Agenda operativa</strong>
             </div>
+
+            <h1 class="menu-dashboard__title">{{ __('admin.t_dashboard') }}</h1>
         </div>
 
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <button id="editToggle" type="button" class="order-detail__contact" data-bs-toggle="modal" data-bs-target="#staticBackdropav">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Disponibilità</span>
+            </button>
+            <button type="button" class="order-detail__contact" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                <i class="bi bi-ban"></i>
+                <span>Blocca giorni</span>
+            </button>
+            <a href="{{ route('admin.reservations.index') }}" class="order-detail__contact">
+                <i class="bi bi-inboxes-fill"></i>
+                <span>Richieste</span>
+            </a>
+        </div>
     </header>
 
-    <div class="date dashboard-home__calendar-shell">
-        @if (count($calendar))
-            @php 
-                $i = 0; 
-                $currentDay = date("d");
-                $currentMonth = date("m");
-                $currentYear = date("Y");
-            @endphp
-            <div id="calendar_1" class="carousel slide my_carousel dashboard-home__calendar">
-                <div class="carousel-indicators">
-                    @foreach ($calendar as $m)
-                        <button  type="button" data-bs-target="#calendar_1" data-bs-slide-to="{{$i}}"
-                        @if ($currentMonth == $m['month'] && $currentYear == $m['year'])
-                            class="active" aria-current="true" 
-                        @endif
-                        aria-label="{{ 'Slide ' . $i }}"></button>
-                        @php $i ++ @endphp
-                    @endforeach
-                    @php $i = 0; @endphp
-                </div>
-                <div class="top_line">
-                    <button class="prev_btn" type="button" data-bs-target="#calendar_1" data-bs-slide="prev">
-                        <i class="bi bi-caret-left-fill"></i>
-                    </button>
-                    <button class="post_btn" type="button" data-bs-target="#calendar_1" data-bs-slide="next">
-                        <i class="bi bi-caret-right-fill"></i>
-                    </button>
-                </div>
-                <div class="carousel-inner">
-                    @foreach ($calendar as $m)
-                        <div class="carousel-item @if ($currentMonth == $m['month'] && $currentYear == $m['year']) active @endif">
-                            <h2> {{ \Carbon\Carbon::create()->month($m['month'])->translatedFormat('F') }} - {{$m['year']}} </h2>
-                            <div class="top_stat dashboard-home__stats">
-                                @if($m['n_res'])
-                                    <div class="line">
-                                        <h4>{{__('admin.Prenotazioni')}}</h4>
-                                        <div class="stat first">
-                                            <i class="bi bi-card-heading"></i>
-                                            <span>{{$m['n_res']}}</span>
-                                        </div>
-                                        
-                                        <div class="stat">
-                                            <i class="bi bi-people-fill"></i>
-                                            <span>{{$m['guests']}}</span>
-                                        </div>
+
+    @if (count($calendar))
+        @php 
+            $i = 0; 
+            $currentDay = date("d");
+            $currentMonth = date("m");
+            $currentYear = date("Y");
+        @endphp
+        <div id="calendar_1" class="carousel slide my_carousel dashboard-home__calendar mt-4">
+            <div class="carousel-indicators">
+                @foreach ($calendar as $m)
+                    <button  type="button" data-bs-target="#calendar_1" data-bs-slide-to="{{$i}}"
+                    @if ($currentMonth == $m['month'] && $currentYear == $m['year'])
+                        class="active" aria-current="true" 
+                    @endif
+                    aria-label="{{ 'Slide ' . $i }}"></button>
+                    @php $i ++ @endphp
+                @endforeach
+                @php $i = 0; @endphp
+            </div>
+            <div class="top_line">
+                <button class="prev_btn" type="button" data-bs-target="#calendar_1" data-bs-slide="prev">
+                    <i class="bi bi-caret-left-fill"></i>
+                </button>
+                <button class="post_btn" type="button" data-bs-target="#calendar_1" data-bs-slide="next">
+                    <i class="bi bi-caret-right-fill"></i>
+                </button>
+            </div>
+            <div class="carousel-inner">
+                @foreach ($calendar as $m)
+                    <div class="carousel-item @if ($currentMonth == $m['month'] && $currentYear == $m['year']) active @endif">
+                        <h2> {{ \Carbon\Carbon::create()->month($m['month'])->translatedFormat('F') }} {{$m['year']}} </h2>
+                        <div class="top_stat dashboard-home__stats">
+                            @if($m['n_res'])
+                                <div class="line">
+                                    <h4>{{__('admin.Prenotazioni')}}</h4>
+                                    <div class="stat first">
+                                        <i class="bi bi-card-heading"></i>
+                                        <span>{{$m['n_res']}}</span>
                                     </div>
-                                @endif
-                                @if($m['n_order'])
-                                    <div class="line">
-                                        <h4>{{__('admin.Ordini')}}</h4>
-                                        <div class="stat first">
-                                            <i class="bi bi-inboxes"></i>
-                                            <span>{{$m['n_order']}}</span>
-                                        </div>
-                                        <div class="stat ">
-                                            <i class="bi bi-piggy-bank-fill"></i>
-                                            <span class="cash" ><strong>€</strong>{{$m['cash'] / 100}}</span>
-                                        </div>
+                                    
+                                    <div class="stat">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span>{{$m['guests']}}</span>
                                     </div>
-                                @endif
+                                </div>
+                            @endif
+                            @if($m['n_order'])
+                                <div class="line">
+                                    <h4>{{__('admin.Ordini')}}</h4>
+                                    <div class="stat first">
+                                        <i class="bi bi-inboxes"></i>
+                                        <span>{{$m['n_order']}}</span>
+                                    </div>
+                                    <div class="stat ">
+                                        <i class="bi bi-piggy-bank-fill"></i>
+                                        <span class="cash" ><strong>€</strong>{{$m['cash'] / 100}}</span>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="calendar">
+                            <div class="c-name">
+
+                                @for ($i = 1; $i <= 7; $i++)
+                                    <h4>{{ Str::substr(\Carbon\Carbon::create()->startOfWeek()->addDays($i-1)->translatedFormat('D'),0,2) }}</h4>
+                                @endfor
+
                             </div>
-                            <div class="calendar">
-                                <div class="c-name">
+                            <div class="calendar_page">
+                                @foreach ($m['days'] as $d)
+                                    <button
+                                        type="button"
+                                        data-day='@json($d)'
+                                        class="day  
+                                        @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) current @endif 
+                                        @if(in_array($d['status'], [0,3])) day_off @endif "
+                                        style="grid-column-start:{{$d['day_w'] }}"
+                                    >        
+                                        <p class="p_day">{{$d['day']}}</p>
+                                        @if ($d['guests'] > 0)
+                                            <span class="bookings"> <strong> {{$d['guests']}} </strong>
+                                                <i class="bi bi-person-lines-fill"></i>
+                                            </span>
+                                        @endif
+                                        @if ($d['n_order'] > 0)
+                                            <span class="bookings top"> <strong> {{$d['n_order']}} </strong>
+                                                <i class="bi bi-inboxes"></i>
+                                            </span>
+                                        @endif
+                                    </button>
+                                @endforeach
 
-                                    @for ($i = 1; $i <= 7; $i++)
-                                        <h4>{{ Str::substr(\Carbon\Carbon::create()->startOfWeek()->addDays($i-1)->translatedFormat('D'),0,2) }}</h4>
-                                    @endfor
-
-                                </div>
-                                <div class="calendar_page">
-                                    @foreach ($m['days'] as $d)
-                                        <button
-                                            type="button"
-                                            data-day='@json($d)'
-                                            class="day  
-                                            @if($currentMonth == $m['month'] && $currentYear == $m['year'] && $currentDay == $d['day']) current @endif 
-                                            @if(in_array($d['status'], [0,3])) day_off @endif "
-                                            style="grid-column-start:{{$d['day_w'] }}"
-                                        >        
-                                            <p class="p_day">{{$d['day']}}</p>
-                                            @if ($d['guests'] > 0)
-                                                <span class="bookings"> <strong> {{$d['guests']}} </strong>
-                                                    <i class="bi bi-person-lines-fill"></i>
-                                                </span>
-                                            @endif
-                                            @if ($d['n_order'] > 0)
-                                                <span class="bookings top"> <strong> {{$d['n_order']}} </strong>
-                                                    <i class="bi bi-inboxes"></i>
-                                                </span>
-                                            @endif
-                                        </button>
-                                    @endforeach
-
-                                </div>
                             </div>
                         </div>
-                        @php $i ++ @endphp
-                    @endforeach
-                </div>
-                
+                    </div>
+                    @php $i ++ @endphp
+                @endforeach
             </div>
-        @elseif(config('configurazione.subscription') == 1)
-            <div class="date-off d-back-g">
-                <a href="https://future-plus.it/#pacchetti">{{__('admin.up_sell')}}</a>
-            </div>
-        @endif
+            
+        </div>
+    @elseif(config('configurazione.subscription') == 1)
+        <div class="date-off d-back-g">
+            <a href="https://future-plus.it/#pacchetti">{{__('admin.up_sell')}}</a>
+        </div>
+    @endif
        
-    </div>
+
 
     @if (count($calendar))
         <div id="day-details" class="day-details dashboard-home__details">
@@ -176,8 +178,8 @@
                     <i class="bi bi-calendar-week"></i>
                 </span>
                 <div>
-                    <strong>Seleziona un giorno</strong>
-                    <p>Apri il dettaglio operativo con ordini, prenotazioni e blocco rapido degli orari.</p>
+                    <strong>Seleziona un giorno per vedere i relativi orari </strong>
+                    {{-- <p>Apri il dettaglio operativo con ordini, prenotazioni e blocco rapido degli orari.</p> --}}
                 </div>
             </div>
         </div>
@@ -723,7 +725,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     html += `<a href="${reservationLink}" class="res-item ${getStatusClass(reservationStatus)}">
                         <div class="top">
-                            <div class="id">R${reservation.id ?? ''}</div>
+
                             ${[0, 6].includes(reservationStatus) ? detailIcons.null : ''}
                             ${[2, 3].includes(reservationStatus) ? detailIcons.warning : ''}
                             ${[1, 4, 5].includes(reservationStatus) ? detailIcons.confirm : ''}
@@ -746,7 +748,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     html += `<a href="${orderLink}" class="order-item ${getStatusClass(orderStatus)}">
                         <div class="top">
-                            <div class="id">O${order.id ?? ''}</div>
+                            
                             ${[0, 6].includes(orderStatus) ? detailIcons.null : ''}
                             ${[2, 3].includes(orderStatus) ? detailIcons.warning : ''}
                             ${[1, 4, 5].includes(orderStatus) ? detailIcons.confirm : ''}
