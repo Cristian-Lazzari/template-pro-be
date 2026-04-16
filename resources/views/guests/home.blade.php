@@ -40,7 +40,7 @@
             <h2>Accessi diretti alle guide operative</h2>
         </div>
 
-        <div class="doc-topic-grid doc-topic-grid--compact">
+        <div class="doc-topic-grid doc-topic-grid--compact doc-topic-grid--home">
             @foreach (array_slice($docPages, 0, 4) as $page)
                 @include('guests.partials.doc-topic-card', ['page' => $page])
             @endforeach

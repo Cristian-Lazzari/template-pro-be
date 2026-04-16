@@ -2044,14 +2044,17 @@ button.order-detail__contact{
     display: grid;
     gap: 18px;
     height: 100%;
+    min-width: 0;
 
     h2{
         margin: 8px 0 0;
         font-size: var(--fs-500);
+        overflow-wrap: anywhere;
     }
 
     p{
         margin: 0;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -2059,6 +2062,10 @@ button.order-detail__contact{
     display: flex;
     align-items: flex-start;
     gap: 14px;
+}
+
+.doc-topic-card__top > div{
+    min-width: 0;
 }
 
 .doc-topic-card__list{
@@ -2073,6 +2080,7 @@ button.order-detail__contact{
         padding-left: 22px;
         color: rgba(216, 221, 232, 0.92);
         line-height: 1.55;
+        overflow-wrap: anywhere;
     }
 
     li::before{
@@ -2085,6 +2093,22 @@ button.order-detail__contact{
         border-radius: 999px;
         background: #8cf3d7;
     }
+}
+
+.doc-topic-grid--home{
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+}
+
+.doc-topic-grid--home .doc-badge-row > *{
+    max-width: 100%;
+}
+
+.doc-topic-grid--home .settings-state{
+    max-width: 100%;
+    min-height: auto;
+    padding: .45rem .75rem;
+    white-space: normal;
+    text-align: center;
 }
 
 .doc-focus-grid{
