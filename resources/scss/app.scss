@@ -4718,6 +4718,9 @@ svg.to_see, .bi.to_see{
 }
 
 @media (max-width: 380px){
+    .day-details{
+        padding: 8px !important;
+    }
     .dashboard-availability-slot__option{
         flex-basis: 100%;
     }
@@ -7549,7 +7552,7 @@ section{
                 align-self: start;
                 justify-self: start;
                 font-size: var(--fs-300) !important;
-                font-weight: 700;
+                font-weight: 600;
                 padding-left: 12px;
             }
 
@@ -7955,7 +7958,7 @@ section{
             .time-item,
             .order-item,
             .res-item{
-                padding: 10px;
+                padding: 8px;
             }
         }
     }
@@ -8008,15 +8011,28 @@ section{
 
             .day{
                 min-height: 76px;
-                padding: 8px;
+                padding: 5px;
                 border-radius: 12px;
 
                 .bookings{
-                    font-size: var(--fs-100) !important;
+                    font-size:calc( var(--fs-100) - 1px) !important;
+                    i{
+                        font-size:calc( var(--fs-100) - 2px) !important;
+
+                    }
                 }
 
                 .p_day{
+                    padding-left: auto !important;
+                    text-align: end;
                     font-size: var(--fs-200) !important;
+                }
+                &:not(.day_off)::after{
+
+                    top: 4px;
+                    left: 4px;
+                    width: 3px;
+                    height: 4px;
                 }
             }
         }
