@@ -273,9 +273,18 @@ return new class extends Migration
         $driver = DB::getDriverName();
 
         if ($driver === 'mysql') {
-            $row = DB::selectOne(sprintf("SHOW COLUMNS FROM `%s` LIKE ?", $table), [$column]);
+            $row = DB::table('information_schema.columns')
+                ->select(['data_type', 'column_type'])
+                ->where('table_schema', DB::getDatabaseName())
+                ->where('table_name', $table)
+                ->where('column_name', $column)
+                ->first();
 
-            return is_object($row) ? strtolower((string) ($row->Type ?? '')) : null;
+            if (!$row) {
+                return null;
+            }
+
+            return strtolower((string) ($row->column_type ?? $row->data_type ?? ''));
         }
 
         if ($driver === 'sqlite') {
