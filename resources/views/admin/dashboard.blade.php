@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="stat ">
                                         <i class="bi bi-piggy-bank-fill"></i>
-                                        <span class="cash" ><strong>€</strong>{{$m['cash'] / 100}}</span>
+                                        <span class="cash">{{ \App\Support\Currency::formatCents($m['cash']) }}</span>
                                     </div>
                                 </div>
                             @endif
@@ -690,6 +690,15 @@ document.addEventListener("DOMContentLoaded", () => {
         return statusMap[parsedStatus] ?? 'to_see';
     }
 
+    const appCurrency = @json($appCurrency);
+    const currencyFormatter = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: appCurrency.code,
+        minimumFractionDigits: Number(appCurrency.decimals ?? 2),
+        maximumFractionDigits: Number(appCurrency.decimals ?? 2),
+    });
+    const formatCents = (value) => currencyFormatter.format(value || 0);
+
     function renderDayDetails(button) {
         document.querySelectorAll(".day.day-active").forEach((dayButton) => dayButton.classList.remove("day-active"));
         button.classList.add("day-active");
@@ -754,15 +763,15 @@ document.addEventListener("DOMContentLoaded", () => {
                             ${[1, 4, 5].includes(orderStatus) ? detailIcons.confirm : ''}
                             <div class="name">${order.name + ' ' + order.surname}</div>
                             ${[3, 5, 6].includes(orderStatus) ? `<div class="${orderStatus === 6 ? 'refound' : 'paid'} status">${detailIcons.paid} ${paidLabel}</div>` : ''}
-                            <div class="price">€${order.tot_price / 100}</div>
+                            <div class="price">${formatCents(order.tot_price)}</div>
                         </div>
                         <div class="cart">`;
 
                     order.products.forEach((product) => {
-                        html += `<div class="item_cart"><div class="name">${product.pivot?.quantity ?? 1}* ${product.name}</div><div class="price">€${product.price / 100}</div></div>`;
+                        html += `<div class="item_cart"><div class="name">${product.pivot?.quantity ?? 1}* ${product.name}</div><div class="price">${formatCents(product.price)}</div></div>`;
                     });
                     order.menus.forEach((menu) => {
-                        html += `<div class="item_cart"><div class="name">${menu.pivot?.quantity ?? 1}* ${menu.name}</div><div class="price">€${menu.price / 100}</div></div>`;
+                        html += `<div class="item_cart"><div class="name">${menu.pivot?.quantity ?? 1}* ${menu.name}</div><div class="price">${formatCents(menu.price)}</div></div>`;
                     });
 
                     html += `</div></a>`;

@@ -2,6 +2,10 @@
 
 @section('contents')
     
+@php
+    $moneyInputStep = \App\Support\Currency::inputStep();
+@endphp
+
 @if (session('ingredient_success'))
     @php
         $data = session('ingredient_success')
@@ -44,7 +48,7 @@
                     <label class="label_c" for="price">   
                         <i class="bi bi-123"></i>
                         {{__('admin.Prezzo')}}</label>
-                    <p><input @if(!isset($data)) value="{{  $product->price / 100 }}" @else value="{{ $data['price'] / 100}}" @endif  step="0.01" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>€</span></p>
+                    <p><input @if(!isset($data)) value="{{ old('price', \App\Support\Currency::formatForInput($product->price)) }}" @else value="{{ \App\Support\Currency::formatForInput($data['price']) }}" @endif  step="{{ $moneyInputStep }}" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>{{ $appCurrency['symbol'] }}</span></p>
                     @error('price') <p class="error">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -150,7 +154,7 @@
                     <label class="label_c" for="old_price">
                         <i class="bi bi-123"></i>
                         {{__('admin.Prezzo_barrato')}}</label>
-                    <p><span>€</span><input @if($product->old_price) value="{{  $product->old_price / 100 }}" @else value="{{ old('old_price')}}" @endif  step="0.01" type="number" name="old_price" id="old_price" placeholder=" Inserisci il prezzo barrato"></p>
+                    <p><span>{{ $appCurrency['symbol'] }}</span><input @if(!is_null($product->old_price) && $product->old_price !== 0.0) value="{{ old('old_price', \App\Support\Currency::formatForInput($product->old_price)) }}" @else value="{{ old('old_price')}}" @endif  step="{{ $moneyInputStep }}" type="number" name="old_price" id="old_price" placeholder=" Inserisci il prezzo barrato"></p>
                 </div>
             </div>
         </section>
@@ -219,7 +223,7 @@
                                 <label class="label_c" for="price_ing">
                                     <i class="bi bi-123"></i>
                                     {{__('admin.Prezzo')}}</label>
-                                <p><span>€</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing"  step="0.01" placeholder=" Inserisci il prezzo "></p>
+                                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing"  step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "></p>
                                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
                             </div>
                         </div>

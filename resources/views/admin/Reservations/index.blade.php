@@ -109,7 +109,7 @@
                         </div>
                     @endif
                     @if (isset($res->tot_price))
-                        <div class="price">€{{$res->tot_price / 100}}</div>
+                        <div class="price">{{ \App\Support\Currency::formatCents($res->tot_price) }}</div>
                     @endif
 
                     

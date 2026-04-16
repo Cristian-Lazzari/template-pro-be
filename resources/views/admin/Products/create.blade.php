@@ -2,6 +2,10 @@
 
 @section('contents')
     
+@php
+    $moneyInputStep = \App\Support\Currency::inputStep();
+@endphp
+
 @if (session('ingredient_success'))
     @php
         $data = session('ingredient_success')
@@ -32,7 +36,7 @@
                 <label class="label_c" for="price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p><input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" step="0.01" placeholder=" Inserisci il prezzo "><span>€</span></p> 
+                <p><input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "><span>{{ $appCurrency['symbol'] }}</span></p> 
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -135,7 +139,7 @@
                             <label class="label_c" for="price_ing">
                                 <i class="bi bi-123"></i>
                                 {{__('admin.Prezzo')}}</label>
-                            <p><span>€</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" Inserisci il prezzo "></p>
+                            <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" step="{{ $moneyInputStep }}" id="price_ing" placeholder=" Inserisci il prezzo "></p>
                             @error('price_ing') <p class="error">{{ $message }}</p> @enderror
                         </div>
                     </div>

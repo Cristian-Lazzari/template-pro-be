@@ -33,13 +33,13 @@
                                             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
                                         </svg>
                                         <div class="name">Chiara Riva</div>
-                                        <div class="price">€31,50</div>
+                                        <div class="price">{{ $appCurrency['symbol'] }}31,50</div>
                                     </div>
 
                                     <div class="cart">
                                         <div class="item_cart">
                                             <div class="name">2* Burger classico</div>
-                                            <div class="price">€24,00</div>
+                                            <div class="price">{{ $appCurrency['symbol'] }}24,00</div>
                                         </div>
                                     </div>
                                 </a>
@@ -141,7 +141,7 @@
                                 <i class="bi bi-credit-card-2-back"></i>
                                 Pagato
                             </div>
-                            <div class="price">€46</div>
+                            <div class="price">{{ $appCurrency['symbol'] }}46</div>
                             <button type="button" class="action_menu">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
@@ -264,17 +264,17 @@
                                             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
                                         </svg>
                                         <div class="name">Chiara Riva</div>
-                                        <div class="price">€31,50</div>
+                                        <div class="price">{{ $appCurrency['symbol'] }}31,50</div>
                                     </div>
 
                                     <div class="cart">
                                         <div class="item_cart">
                                             <div class="name">2* Burger classico</div>
-                                            <div class="price">€24,00</div>
+                                            <div class="price">{{ $appCurrency['symbol'] }}24,00</div>
                                         </div>
                                         <div class="item_cart">
                                             <div class="name">Consegna</div>
-                                            <div class="price">€2,50</div>
+                                            <div class="price">{{ $appCurrency['symbol'] }}2,50</div>
                                         </div>
                                     </div>
                                 </a>

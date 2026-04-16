@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductTranslation;
 use App\Models\Setting;
 use App\Services\GoogleTranslateService;
+use App\Support\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -271,11 +272,11 @@ class ProductController extends Controller
             $ingredient_allergens = $data['allergens_ing'] ?? [];
             $type_ing = $data['type_ing'] ?? [];
 
-            $price = (float) str_replace(',', '.', $data['price_ing']);
+            $price = Currency::parseInput($data['price_ing']);
 
             $new_ing = new Ingredient();
             $new_ing->option = 0;
-            $new_ing->price = $price * 100;
+            $new_ing->price = $price;
             $new_ing->type = json_encode($type_ing);
 
             if (!empty($data['image_ing'])) {
@@ -316,7 +317,7 @@ class ProductController extends Controller
         
         $product = new Product();
         
-        $price = (float) str_replace(',', '.', $data['price']);
+        $price = Currency::parseInput($data['price']);
 
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
@@ -324,11 +325,13 @@ class ProductController extends Controller
         } 
         $product->category_id   = $data['category_id'];
 
-        $product->price         = $price * 100;       
+        $product->price         = $price;
 
 
         $product->promotion   = isset($data['promotion']) ? true : false;
-        $product->old_price   = isset($data['old_price']) ? (float) str_replace(',', '.', $data['old_price']) * 100 : null;
+        $product->old_price   = filled($data['old_price'] ?? null)
+            ? Currency::parseInput($data['old_price'])
+            : null;
         
         if($pack > 2){
             $product->tag_set       = $data['tag_set'];
@@ -424,11 +427,11 @@ class ProductController extends Controller
             $ingredient_allergens = $data['allergens_ing'] ?? [];
             $type_ing = $data['type_ing'] ?? [];
 
-            $price = (float) str_replace(',', '.', $data['price_ing']);
+            $price = Currency::parseInput($data['price_ing']);
 
             $new_ing = new Ingredient();
             $new_ing->option = 0;
-            $new_ing->price = $price * 100;
+            $new_ing->price = $price;
             $new_ing->type = json_encode($type_ing);
 
             if (!empty($data['image_ing'])) {
@@ -466,8 +469,10 @@ class ProductController extends Controller
 
         $request->validate($this->validationsFalse1);
 
-        $price = (float) str_replace(',', '.', $data['price']);
-        $oldprice = (float) str_replace(',', '.', $data['old_price']);
+        $price = Currency::parseInput($data['price']);
+        $oldprice = filled($data['old_price'] ?? null)
+            ? Currency::parseInput($data['old_price'])
+            : null;
 
         if (isset($data['image'])) {
             $imagePath = Storage::put('public/uploads', $data['image']);
@@ -483,9 +488,9 @@ class ProductController extends Controller
         } 
         
         $product->category_id   = $data['category_id'];
-        $product->price         = $price * 100;       
+        $product->price         = $price;
         $product->promotion   = isset($data['promotion']) ? true : false;
-        $product->old_price   = $oldprice * 100;
+        $product->old_price   = $oldprice;
         
         if($pack > 2){
             $product->tag_set       = $data['tag_set'];

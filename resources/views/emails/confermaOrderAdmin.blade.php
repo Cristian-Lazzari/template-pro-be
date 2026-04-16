@@ -63,7 +63,7 @@
                             @if ($i->pivot->quantity > 1)
                                 <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                             @endif
-                            <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
+                            <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;">{{ \App\Support\Currency::formatCents($i->price) }}</span>
                         </div>
                         @if($i->fixed_menu == '2')
                         <br>
@@ -90,7 +90,7 @@
                                                 {{$c->name}} ({{$c->category->name}})
                                             </span>
                                             @if ($c->pivot->extra_price)   
-                                                <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$c->pivot->extra_price / 100}}</strong>
+                                                <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ {{ \App\Support\Currency::formatCents($c->pivot->extra_price) }}</strong>
                                             @endif    
                                         </div>
                                     </div>
@@ -128,7 +128,7 @@
                             @if ($i->pivot->quantity > 1)
                                 <span style="color: #f4f4f4; font-size: 18px; font-weight: bold;">* {{$i->pivot->quantity}}</span>
                             @endif
-                            <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;"> € {{$i->price / 100 }}</span>
+                            <span style="color: #f4f4f4; font-size: 15px;  margin-left: auto;">{{ \App\Support\Currency::formatCents($i->price) }}</span>
                         </div>
                         @if (count($i->r_option) || count($i->r_add) || count($arrD))
                         <br>
@@ -143,7 +143,7 @@
                                                     {{$a->name}}
                                                 </span>
                                                 @if ($a->price)   
-                                                    <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$a->price / 100}}</strong>
+                                                    <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ {{ \App\Support\Currency::formatCents($a->price) }}</strong>
                                                 @endif    
                                             </div>
                                         @endforeach
@@ -159,7 +159,7 @@
                                                 {{$a->name}}
                                             </span>
                                             @if ($a->price)   
-                                                <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ €{{$a->price / 100}}</strong>
+                                                <strong style="color: #f4f4f4; font-size: 13px;  margin-left: auto;">+ {{ \App\Support\Currency::formatCents($a->price) }}</strong>
                                             @endif    
                                         </div>
                                     @endforeach
@@ -192,7 +192,7 @@
                     <span style="color: #04001d; opacity: .8; font-size: 16px; font-family: monospace">
                         {{__('admin.Costo_della_consegna_a_domicilio')}}:
                     </span>
-                        <strong style="color: #04001d; opacity: .8; font-size: 15px;  margin-left: auto; font-family: monospace">+ €{{$content_mail['delivery_cost'] / 100}}</strong>
+                        <strong style="color: #04001d; opacity: .8; font-size: 15px;  margin-left: auto; font-family: monospace">+ {{ \App\Support\Currency::formatCents($content_mail['delivery_cost']) }}</strong>
                     </div>
                 @endif    
                 {{-- <p style="color: #04001d; font-size: 16px; margin: 10px 0;">{{ __('admin.Limporto_verra_pagato_al_momento_della_consegna') }}</p> --}}
@@ -200,7 +200,7 @@
             <!-- Totale carrello -->
             <div style="color: #04001d; font-size: 22px; margin: 15px 0; display:flex;">
                 <h5 style="color: #04001d; font-size: 22px;">{{__('admin.Totale_carrello')}}: </h5>
-                <h5 style="margin-left: auto; color: #04001d; font-size: 20px; font-family: monospace;">€{{$content_mail['total_price'] / 100}}</h5>
+                <h5 style="margin-left: auto; color: #04001d; font-size: 20px; font-family: monospace;">{{ \App\Support\Currency::formatCents($content_mail['total_price']) }}</h5>
             </div>
             
                 <p style="color: #04001d; font-size: 16px; margin: 10px 0;"> {{__('admin.modalita_consegna_asporto', ['name'=>config('configurazione.APP_NAME')])}}</p>

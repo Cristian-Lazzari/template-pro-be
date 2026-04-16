@@ -10,7 +10,7 @@
     $imageUrl = $ingredient->icon ? \Illuminate\Support\Facades\Storage::url($ingredient->icon) : null;
     $detailTone = $ingredient->option ? 'warning' : 'active';
     $detailLabel = $ingredient->option ? 'Opzione' : 'Ingrediente';
-    $priceLabel = '€' . number_format(($ingredient->price ?? 0) / 100, 2, ',', '.');
+    $priceLabel = \App\Support\Currency::formatCents($ingredient->price ?? 0);
     $translations = $ingredient->translations->sortBy('lang')->values();
     $initial = mb_strtoupper(mb_substr((string) $ingredient->name, 0, 1)) ?: 'I';
 

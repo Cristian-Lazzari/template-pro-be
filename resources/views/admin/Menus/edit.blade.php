@@ -2,6 +2,9 @@
 
 @section('contents')
     
+@php
+    $moneyInputStep = \App\Support\Currency::inputStep();
+@endphp
 
  
 <form class="creation"  action="{{ route('admin.menus.update', $menu) }}"  enctype="multipart/form-data"  method="POST">
@@ -25,7 +28,7 @@
                 <label class="label_c" for="price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p><input value="{{old('price', $menu->price) / 100 }}" step="0.01" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>€</span></p>
+                <p><input value="{{ old('price', \App\Support\Currency::formatForInput($menu->price)) }}" step="{{ $moneyInputStep }}" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>{{ $appCurrency['symbol'] }}</span></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -41,7 +44,7 @@
                 <label class="label_c" for="old_price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo_barrato')}}</label>
-                <p><span>€</span><input value="{{old('old_price', $menu->old_price / 100 )}}" type="number" name="old_price" id="old_price" step="0.01" placeholder=" Inserisci il prezzo "></p>
+                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('old_price', \App\Support\Currency::formatForInput($menu->old_price)) }}" type="number" name="old_price" id="old_price" step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "></p>
                 @error('old_price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -192,8 +195,8 @@
             if (!productLabel.querySelector(`input[name="choice[${fieldIndex}][products][${productId}][extra_price]"]`)) {
                 const priceInput = document.createElement("input");
                 priceInput.type = "number";
-                priceInput.step = "0.01";
-                priceInput.placeholder = "+ €";
+                priceInput.step = "{{ $moneyInputStep }}";
+                priceInput.placeholder = "+ {{ $appCurrency['symbol'] }}";
                 priceInput.name = `choice[${fieldIndex}][products][${productId}][extra_price]`;
                 priceInput.classList.add("extra-price");
                 priceInput.style.marginLeft = "10px"; // Spaziatura per leggibilità

@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
 
             $table->string      ('name', 100);
-            $table->bigInteger  ('price');
+            $table->decimal     ('price', 12, 2);
             $table->text        ('type'); //indica se deve essere possibile aggiungierlo in una o piu categorie
             $table->text        ('allergens')->nullable() ;
             $table->string      ('icon')->nullable();

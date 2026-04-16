@@ -65,7 +65,7 @@ $domain = 'https://future-plus.it/allergens/';
                     <div class="cat">{{$item->category->name}}</div>
                 </div>
                 <div class="price_btn">
-                    <div class="price">€{{$item->price / 100}}</div>
+                    <div class="price">{{ \App\Support\Currency::formatCents($item->price) }}</div>
                     <button type="button" class="action_menu action_menu_info" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
                         <i class="bi bi-info-circle-fill"></i>{{ __('admin.Info') }}</button>
                     <!-- Modal -->
@@ -122,7 +122,7 @@ $domain = 'https://future-plus.it/allergens/';
                                         </section>
                                     @endif
         
-                                    <div class="price">€{{$item->price / 100}}</div>
+                                    <div class="price">{{ \App\Support\Currency::formatCents($item->price) }}</div>
         
                                      <div class="allergens">
                                      

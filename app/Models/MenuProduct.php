@@ -12,6 +12,10 @@ class MenuProduct extends Pivot
     use HasTranslations;
 
     protected $table = 'menu_product';
+
+    protected $casts = [
+        'extra_price' => 'float',
+    ];
     
     protected $fillable = [
         'product_id',

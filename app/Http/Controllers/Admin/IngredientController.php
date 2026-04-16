@@ -9,6 +9,7 @@ use App\Models\Ingredient;
 use App\Models\IngredientTranslation;
 use App\Models\Setting;
 use App\Services\GoogleTranslateService;
+use App\Support\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -62,9 +63,7 @@ class IngredientController extends Controller
         $request->validate($this->validations_ingredient);
 
         // normalizza prezzo
-        $price = str_replace(',', '.', $data['price_ing']);
-        $price = preg_replace('/[^0-9.]/', '', $price);
-        $price = (float) $price;
+        $price = Currency::parseInput($data['price_ing']);
 
         // dati opzionali
         $ingredient_allergens = $data['allergens_ing'] ?? [];
@@ -73,7 +72,7 @@ class IngredientController extends Controller
         $ingredient = new Ingredient();
         // $ingredient->name = $data['name_ing'];
         $ingredient->option = !empty($data['option_ing']);
-        $ingredient->price = (int) round($price * 100);
+        $ingredient->price = $price;
         $ingredient->type = json_encode($type_ing);
 
         // upload immagine
@@ -124,9 +123,7 @@ class IngredientController extends Controller
         $request->validate($this->validations_ingredient1);
 
         // normalizza prezzo
-        $price = str_replace(',', '.', $data['price_ing']);
-        $price = preg_replace('/[^0-9.]/', '', $price);
-        $price = (float) $price;
+        $price = Currency::parseInput($data['price_ing']);
 
         // dati opzionali
         $ingredient_allergens = $data['allergens_ing'] ?? [];
@@ -136,7 +133,7 @@ class IngredientController extends Controller
 
 
         $ingredient->option = !empty($data['option_ing']);
-        $ingredient->price = (int) round($price * 100);
+        $ingredient->price = $price;
         $ingredient->type = json_encode($type_ing);
 
         // upload immagine

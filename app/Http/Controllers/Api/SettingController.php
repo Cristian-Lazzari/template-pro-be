@@ -13,6 +13,7 @@ use App\Models\Reservation;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use App\Support\Currency;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -92,6 +93,7 @@ class SettingController extends Controller
             'position'  => $settings['Posizione']->property,
             'contacts'  => $settings['Contatti']->property,
             'ferie'     => $settings['Periodo di Ferie'],
+            'currency'  => Currency::definition(),
 
             'double_t'         => $property_adv['dt'] == '0' ? false : true,
             'typeOfOrdering'   => $property_adv['too'] == '0' ? false : true,

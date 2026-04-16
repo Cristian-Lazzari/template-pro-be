@@ -8,6 +8,7 @@ use App\Models\Ingredient;
 use App\Models\IngredientTranslation;
 use App\Models\Product;
 use App\Models\ProductTranslation;
+use App\Support\Currency;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -69,7 +70,7 @@ class Ecce35MenuSeeder extends Seeder
         $product = new Product();
 
         $product->category_id = $category->id;
-        $product->price = $data['price'];
+        $product->price = Currency::fromMinorUnits($data['price'], 2);
         $product->old_price = null;
         $product->slot_plate = 1;
         $product->type_plate = 1;

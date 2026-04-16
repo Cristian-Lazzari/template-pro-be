@@ -60,7 +60,7 @@
     </section>
 @endif
 
-<div class="price">€{{$product->price / 100}}</div>
+<div class="price">{{ \App\Support\Currency::formatCents($product->price) }}</div>
 
 <div class="allergens">
     @foreach ($product->allergens as $i)

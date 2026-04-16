@@ -56,7 +56,7 @@
         @endif
 
         @if (!is_null($priceCents))
-            <div class="price">€{{ number_format($priceCents / 100, 2, ',', '.') }}</div>
+            <div class="price">{{ \App\Support\Currency::formatCents($priceCents) }}</div>
         @endif
     </div>
 </div>

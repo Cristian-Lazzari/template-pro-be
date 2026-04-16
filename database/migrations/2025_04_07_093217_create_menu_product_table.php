@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
 
             $table->string('label')->nullable();
-            $table->Integer('extra_price')->default(0);
+            $table->decimal('extra_price', 12, 2)->default(0);
 
             $table->foreign('menu_id')->references('id')->on('menus');
             $table->foreign('product_id')->references('id')->on('products');

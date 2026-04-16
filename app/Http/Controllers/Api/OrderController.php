@@ -14,6 +14,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
+use App\Support\Currency;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -171,6 +172,8 @@ class OrderController extends Controller
                     }
                 }
             }
+
+            $total_price = Currency::roundAmount($total_price);
             
     
             $newOrder = new Order();
@@ -194,18 +197,18 @@ class OrderController extends Controller
                 $setting = Setting::where('name', 'Possibilità di consegna a domicilio')->first();
                 $setting_1 = Setting::where('name', 'Comuni per il domicilio')->first();
                 $shipping_cost = json_decode($setting->property, 1);
-                $tot_delivery_cost += $shipping_cost['delivery_cost'];
+                $tot_delivery_cost = Currency::roundAmount($tot_delivery_cost + ($shipping_cost['delivery_cost'] ?? 0));
                 $comuni = json_decode($setting_1->property, 1);
                 foreach ($comuni as $c) {
                     if($c['cap'] == $data['cap']){
-                        $total_price +=$c['price'];
-                        $tot_delivery_cost +=$c['price'];
+                        $total_price = Currency::roundAmount($total_price + ($c['price'] ?? 0));
+                        $tot_delivery_cost = Currency::roundAmount($tot_delivery_cost + ($c['price'] ?? 0));
                     }
                 }
 
-                $newOrder->tot_price = $total_price + $shipping_cost['delivery_cost'];
+                $newOrder->tot_price = Currency::roundAmount($total_price + ($shipping_cost['delivery_cost'] ?? 0));
             }else{
-                $newOrder->tot_price = $total_price;
+                $newOrder->tot_price = Currency::roundAmount($total_price);
             }
             $newOrder->save();
 

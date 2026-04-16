@@ -10,13 +10,14 @@ use App\Models\MenuProductTranslation;
 use App\Models\MenuTranslation;
 use App\Models\Setting;
 use App\Services\GoogleTranslateService;
+use App\Support\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
     private $validation = [
-        'name'          => 'required|string|min:1|max:150|unique:menus,name',
+        'name'          => 'required|string|min:1|max:150|unique:menu_translations,name',
         'price'         => 'required',
         'image'         => 'nullable|image',
     ];
@@ -68,17 +69,11 @@ class MenuController extends Controller
             $imagePath = Storage::put('public/uploads', $data['image']);
             $menu->image = $imagePath;
         } 
-        $prezzo_stringa = str_replace(',', '.', $data['price']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-        $menu->price         = intval(round($prezzo_float * 100));  
+        $menu->price = Currency::parseInput($data['price']);
         if($data['old_price'] == null){
             $data['old_price'] = 0;
         }
-        $prezzo_stringa = str_replace(',', '.', $data['old_price']);
-        $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa);
-        $prezzo_float = floatval($prezzo_stringa);
-        $menu->old_price         = intval(round($prezzo_float * 100));  
+        $menu->old_price = Currency::parseInput($data['old_price']);
 
         $menu->category_id   = $data['category_id'];
         $menu->promo         = $data['promo'] ?? 0;
@@ -97,15 +92,14 @@ class MenuController extends Controller
                     if($prod['extra_price'] == null){
                         $prod['extra_price'] = 0;
                     }
-                    $p_stringa = preg_replace('/[^0-9.]/', '', str_replace(',', '.', $prod['extra_price'] ? $prod['extra_price'] : 0));
-                    $p = intval(round(floatval($p_stringa) * 100));
+                    $p = Currency::parseInput($prod['extra_price'] ? $prod['extra_price'] : 0);
                     $f_product = [
                         'id' => $prod['id'],
                         'label' => $c['label'],
                         'extra_price' => $p
                     ];     
                     $pivot = MenuProduct::create([
-                        'menu_id' => $$menu->id,
+                        'menu_id' => $menu->id,
                         'product_id' => $f_product['id'],
                         'extra_price' => $f_product['extra_price'] ?? null
                     ]);
@@ -185,12 +179,12 @@ class MenuController extends Controller
             }
             $menu->image = $imagePath;
         }
-        $prezzo_stringa = str_replace(',', '.', $data['price']); $prezzo_stringa = preg_replace('/[^0-9.]/', '', $prezzo_stringa); $prezzo_float = floatval($prezzo_stringa);
-        $menu->price         = intval(round($prezzo_float * 100));  
+        $menu->price = Currency::parseInput($data['price']);
+        $menu->old_price = filled($data['old_price'] ?? null)
+            ? Currency::parseInput($data['old_price'])
+            : 0;
         $menu->category_id   = $data['category_id'];
-        $menu->name          = $data['name'];
         $menu->promo         = $data['promo'] ??  0;
-        $menu->description   = $data['description'];
         
         $menu->update();
 
@@ -217,7 +211,7 @@ class MenuController extends Controller
                     [   'menu_id' => $menu->id, 'lang' => $lang   ],
                     [
                         'name' => $n_trans ? $translator->translate($data['name'], $lang) : $v['name'],
-                        'description' => $n_trans ? $translator->translate($data['description'], $lang) : $v['description'],
+                        'description' => $d_trans ? $translator->translate($data['description'], $lang) : $v['description'],
                     ]
                 );
                 

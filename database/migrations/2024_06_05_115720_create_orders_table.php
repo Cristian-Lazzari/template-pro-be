@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('comune', 30)->nullable();
             $table->string('whatsapp_message_id')->nullable();
             
-            $table->bigInteger('tot_price');
+            $table->decimal('tot_price', 12, 2);
             $table->string('message', 500)->nullable();
             
             $table->boolean('news_letter');

@@ -17,6 +17,11 @@ class Product extends Model
 
     use HasTranslations;
 
+    protected $casts = [
+        'price' => 'float',
+        'old_price' => 'float',
+    ];
+
     protected $appends = ['allergens', 'name', 'description'];
 
     protected $with = ['directAllergens.translations', 'translations', 'ingredients.allergens'];

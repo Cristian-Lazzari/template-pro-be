@@ -2,7 +2,7 @@
 
 @section('contents')
 @php
-    $formatCurrency = static fn ($value) => '€' . number_format((float) $value, 2, ',', '.');
+    $formatCurrency = static fn ($value) => \App\Support\Currency::formatAmount($value);
     $initialOrderConfirmRate = $summary['order_count'] > 0
         ? round(($summary['confirmed_orders'] / $summary['order_count']) * 100)
         : 0;
@@ -147,7 +147,7 @@
                     </strong>
                     <p data-stat-field="bestRevenueMeta">
                         @if (!empty($bestRevenueDay['date'] ?? null))
-                            {{ $formatCurrency(($bestRevenueDay['confirmed_revenue_cents'] ?? 0) / 100) }} confermati
+                            {{ $formatCurrency($bestRevenueDay['confirmed_revenue_cents'] ?? 0) }} confermati
                         @else
                             Nessun ricavo registrato
                         @endif
@@ -291,6 +291,7 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                const appCurrency = @json($appCurrency);
                 const payload = @json($statisticsPayload);
                 const periodSelect = document.querySelector('[data-stat-period]');
                 const tableBody = document.querySelector('[data-stat-products-table]');
@@ -306,7 +307,9 @@
                 });
                 const currencyFormatter = new Intl.NumberFormat('it-IT', {
                     style: 'currency',
-                    currency: 'EUR',
+                    currency: appCurrency.code,
+                    minimumFractionDigits: Number(appCurrency.decimals ?? 2),
+                    maximumFractionDigits: Number(appCurrency.decimals ?? 2),
                 });
                 const shortDateFormatter = new Intl.DateTimeFormat('it-IT', {
                     day: '2-digit',
@@ -330,7 +333,7 @@
                 };
                 const formatShortDate = (value) => shortDateFormatter.format(parseDate(value));
                 const formatLongDate = (value) => longDateFormatter.format(parseDate(value));
-                const money = (value) => currencyFormatter.format((value || 0) / 100);
+                const money = (value) => currencyFormatter.format(value || 0);
                 const percent = (value) => `${percentFormatter.format(value || 0)}%`;
                 const setField = (key, value) => {
                     document.querySelectorAll(`[data-stat-field="${key}"]`).forEach((element) => {
@@ -677,7 +680,7 @@
                     setField('orderConfirmRate', percent(summary.orderConfirmRate));
                     setField('orderConfirmMeta', `${numberFormatter.format(summary.cancelledOrders)} annullati nel periodo`);
                     setField('confirmedRevenue', money(summary.confirmedRevenueCents));
-                    setField('revenueMeta', `Ticket medio ${currencyFormatter.format(summary.averageTicketCents / 100)}`);
+                    setField('revenueMeta', `Ticket medio ${currencyFormatter.format(summary.averageTicketCents || 0)}`);
                     setField('reservationsCount', numberFormatter.format(summary.reservationsCount));
                     setField('reservationsMeta', `${numberFormatter.format(summary.confirmedReservations)} confermate, ${numberFormatter.format(summary.cancelledReservations)} annullate`);
                     setField('guestsCount', numberFormatter.format(summary.guestsCount));
@@ -746,7 +749,7 @@
                     charts.revenue.data.datasets = [
                         {
                             label: 'Ricavi confermati',
-                            data: revenueSeries.map((row) => row.confirmed_revenue_cents / 100),
+                            data: revenueSeries.map((row) => row.confirmed_revenue_cents || 0),
                             borderColor: '#8ef6db',
                             backgroundColor: 'rgba(142, 246, 219, 0.16)',
                             fill: true,
@@ -754,7 +757,7 @@
                         },
                         {
                             label: 'Pagati online',
-                            data: revenueSeries.map((row) => row.paid_revenue_cents / 100),
+                            data: revenueSeries.map((row) => row.paid_revenue_cents || 0),
                             borderColor: '#7cc7ff',
                             backgroundColor: 'rgba(124, 199, 255, 0.12)',
                             fill: false,
@@ -762,7 +765,7 @@
                         },
                         {
                             label: 'Alla consegna',
-                            data: revenueSeries.map((row) => row.cod_revenue_cents / 100),
+                            data: revenueSeries.map((row) => row.cod_revenue_cents || 0),
                             borderColor: '#ffd37a',
                             backgroundColor: 'rgba(255, 211, 122, 0.12)',
                             fill: false,
@@ -770,7 +773,7 @@
                         },
                         {
                             label: 'Annullati',
-                            data: revenueSeries.map((row) => row.cancelled_revenue_cents / 100),
+                            data: revenueSeries.map((row) => row.cancelled_revenue_cents || 0),
                             borderColor: '#ff9f9f',
                             backgroundColor: 'rgba(255, 159, 159, 0.12)',
                             fill: false,

@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreign     ('category_id')->references('id')->on('categories'); 
 
             $table->string      ('name', 100);
-            $table->bigInteger  ('price')->default(0);
-            $table->bigInteger  ('old_price')->nullable();
+            $table->decimal     ('price', 12, 2)->default(0);
+            $table->decimal     ('old_price', 12, 2)->nullable();
             $table->string      ('image')->nullable();
             $table->text        ('description')->nullable(); 
             

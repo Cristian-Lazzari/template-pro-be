@@ -8,6 +8,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Support\Currency;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
@@ -28,7 +29,7 @@ class SettingController extends Controller
                 'comune' => $request->comune,
                 'provincia' => $request->provincia,
                 'cap' => $request->cap,
-                'price' => $request->price * 100,
+                'price' => Currency::parseInput($request->price),
             ];
             $isnew = true;
             foreach ($setting['property']  as $k) {
@@ -162,15 +163,15 @@ class SettingController extends Controller
         $setting['Prenotazione Asporti']->status = $request->asporto_status;
         $prop_apsorto = [
             'pay' => intval($request->asporto_pay),
-            'min_price' => $request->min_price_a * 100,
+            'min_price' => Currency::parseInput($request->min_price_a),
         ];
         if ($property_adv['services'] > 2) {
             $setting['Comuni per il domicilio']->property = json_encode($setting['Comuni per il domicilio']->property);
             $setting['Possibilità di consegna a domicilio']->status = $request->domicilio_status;
             $prop_domicilio = [
                 'pay' => intval($request->domicilio_pay),
-                'min_price' => $request->min_price_d * 100,
-                'delivery_cost' => $request->delivery_cost * 100,
+                'min_price' => Currency::parseInput($request->min_price_d),
+                'delivery_cost' => Currency::parseInput($request->delivery_cost),
             ];
             $setting['Possibilità di consegna a domicilio']->property = json_encode($prop_domicilio);
             $setting['Possibilità di consegna a domicilio']->save();
@@ -195,6 +196,18 @@ class SettingController extends Controller
         ];
         $setting['Lingua']->property = json_encode($propertyArray);
         $setting['Lingua']->save();
+
+        $currency = Currency::normalize($request->input('currency_code'));
+        $currencySetting = $setting['Valuta'] ?? Setting::query()->firstOrCreate(
+            ['name' => 'Valuta'],
+            [
+                'status' => 1,
+                'property' => json_encode(Currency::defaultDefinition()),
+            ]
+        );
+        $currencySetting->status = 1;
+        $currencySetting->property = json_encode($currency);
+        $currencySetting->save();
 
 
         $giorni_attivita = [

@@ -149,6 +149,16 @@ class SettingsTableSeeder extends Seeder
                 ]
             ],
             [
+                'name' => 'Valuta',
+                'status' => 1,
+                'property' => [
+                    'code' => 'EUR',
+                    'symbol' => '€',
+                    'label' => 'Euro',
+                    'decimals' => 2,
+                ]
+            ],
+            [
                 'name' => 'customer_profile',
                 'status' => 1,
                 'property' => [

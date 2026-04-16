@@ -90,6 +90,10 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                     <span>Lingua</span>
                     <strong class="settings-state settings-state--neutral">{{ $defaultLang }}</strong>
                 </article>
+                <article class="settings-status-card">
+                    <span>Valuta</span>
+                    <strong class="settings-state settings-state--neutral">{{ $activeCurrency['code'] }}</strong>
+                </article>
             </div>
         </div>
 
@@ -161,6 +165,23 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                             
                         </select>
                     </div> --}}
+                </div>
+                <div class="g_set">
+                    <div class="settings-card-head">
+                        <h5>Valuta prezzi</h5>
+                        <span class="settings-state settings-state--neutral">{{ $activeCurrency['code'] }}</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-group-text" for="currency_code">Valuta</label>
+                        <select class="form-select" id="currency_code" name="currency_code">
+                            @foreach ($supportedCurrencies as $currency)
+                                <option value="{{ $currency['code'] }}" @selected($activeCurrency['code'] === $currency['code'])>
+                                    {{ $currency['label'] }} ({{ $currency['code'] }} - {{ $currency['symbol'] }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <p class="settings-theme-card__note mt-3">Aggiorna la valuta usata per scrivere i prezzi e per i pagamenti online. I valori salvati non vengono convertiti automaticamente.</p>
                 </div>
             </div>
             @php
@@ -260,7 +281,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                     <div class="g_set">  
                         <div class="input-group ">
                             <label class="input-group-text">{{__('admin.Prezzo_minimo')}}</label>
-                            <input type="number" class="form-control"  name="min_price_a" value="{{$asporto_p['min_price'] / 100}}">
+                            <input type="number" class="form-control"  name="min_price_a" step="{{ \App\Support\Currency::inputStep() }}" value="{{ \App\Support\Currency::formatForInput($asporto_p['min_price'] ?? 0) }}">
                         </div>
                     </div>
                     @endif
@@ -318,11 +339,11 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                     @endif
                     <div class="input-group ">
                         <label class="input-group-text" id="basic-addon1">{{__('admin.Prezzo_minimo')}}</label>
-                        <input type="number" class="form-control"  name="min_price_d" value="{{$domicilio_p['min_price'] / 100}}">
+                        <input type="number" class="form-control"  name="min_price_d" step="{{ \App\Support\Currency::inputStep() }}" value="{{ \App\Support\Currency::formatForInput($domicilio_p['min_price'] ?? 0) }}">
                     </div>
                     <div class="input-group ">
                         <label class="input-group-text" id="basic-addon1">{{__('admin.Prezzo_consegna')}}</label>
-                        <input type="number" class="form-control"  name="delivery_cost" value="{{$domicilio_p['delivery_cost'] / 100}}">
+                        <input type="number" class="form-control"  name="delivery_cost" step="{{ \App\Support\Currency::inputStep() }}" value="{{ \App\Support\Currency::formatForInput($domicilio_p['delivery_cost'] ?? 0) }}">
                     </div>
                 </div>
             </div>
@@ -571,7 +592,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                                         ({{$i['provincia']}})
                                         {{$i['comune']}} -
                                         {{$i['cap']}} -
-                                        {{$i['price'] ? '€' . ($i['price'] / 100) : ''}}
+                                        {{ $i['price'] ? \App\Support\Currency::formatCents($i['price']) : '' }}
                                     </span>    
                                 @endforeach
                             </div>   
@@ -857,7 +878,7 @@ $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
                         </div>
                         <div class="dashboard-action-modal__field">
                             <label for="price">{{__('admin.Costo_extra_consegna')}}</label>
-                            <input name="price" id="price" type="number" step="0.01" placeholder="€ extra">
+                            <input name="price" id="price" type="number" step="{{ \App\Support\Currency::inputStep() }}" placeholder="{{ $appCurrency['symbol'] }} extra">
                         </div>
 
                         <x-slot name="footer">

@@ -100,7 +100,7 @@
         ],
         [
             'label' => 'Speso online',
-            'value' => 'EUR ' . number_format(($stats['total_spent_cents'] ?? 0) / 100, 2, ',', '.'),
+            'value' => \App\Support\Currency::formatCents($stats['total_spent_cents'] ?? 0),
             'helper' => 'totale ordini non annullati',
         ],
     ];
@@ -533,7 +533,7 @@
 
                                     <div class="order-detail__detail-values">
                                         <small>{{ !empty($order->comune) ? 'Domicilio' : 'Asporto' }}</small>
-                                        <small>EUR {{ number_format(($order->tot_price ?? 0) / 100, 2, ',', '.') }}</small>
+                                        <small>{{ \App\Support\Currency::formatCents($order->tot_price ?? 0) }}</small>
                                         <small>Marketing storico: {{ $order->news_letter ? 'si' : 'no' }}</small>
                                     </div>
 

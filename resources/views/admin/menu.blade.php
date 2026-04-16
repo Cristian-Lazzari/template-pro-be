@@ -3,7 +3,7 @@
 @section('contents')
 @php
     $fallbackImage = asset('public/favicon.png');
-    $formatPrice = static fn ($value) => number_format(((int) $value) / 100, 2, ',', '.');
+    $formatPrice = static fn ($value) => \App\Support\Currency::formatCents($value);
     $statPercent = static fn ($value, $total) => $total > 0 ? round((((int) $value) / ((int) $total)) * 100) : 0;
 
     $productTotal = (int) ($stat['products']['tot'] ?? 0);
@@ -171,7 +171,7 @@
                                 </div>
 
                                 <div class="menu-dashboard__price-block">
-                                    <span class="menu-dashboard__price">€{{ $formatPrice($product->price) }}</span>
+                                    <span class="menu-dashboard__price">{{ $formatPrice($product->price) }}</span>
                                 </div>
                             </div>
 
@@ -248,10 +248,10 @@
 
                                 <div class="menu-dashboard__price-block">
                                     @if ($menu->old_price)
-                                        <span class="menu-dashboard__price-old">€{{ $formatPrice($menu->old_price) }}</span>
+                                        <span class="menu-dashboard__price-old">{{ $formatPrice($menu->old_price) }}</span>
                                     @endif
 
-                                    <span class="menu-dashboard__price">€{{ $formatPrice($menu->price) }}</span>
+                                    <span class="menu-dashboard__price">{{ $formatPrice($menu->price) }}</span>
                                 </div>
                             </div>
 
@@ -270,7 +270,7 @@
                                                     <small>
                                                         {{ $choiceProduct->name }}
                                                         @if ($choiceProduct->pivot->extra_price)
-                                                            (+ €{{ $formatPrice($choiceProduct->pivot->extra_price) }})
+                                                            (+ {{ $formatPrice($choiceProduct->pivot->extra_price) }})
                                                         @endif
                                                     </small>
                                                 @endforeach

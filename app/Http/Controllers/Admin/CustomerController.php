@@ -327,7 +327,7 @@ class CustomerController extends Controller
             'orders_count' => $orders->count(),
             'reservations_count' => $reservations->count(),
             'interactions_count' => $orders->count() + $reservations->count(),
-            'total_spent_cents' => (int) $orders
+            'total_spent_cents' => (float) $orders
                 ->whereNotIn('status', [0, 6])
                 ->sum('tot_price'),
             'latest_activity_at' => $latestActivity,

@@ -15,6 +15,7 @@ use App\Models\Post;
 use App\Models\Product;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Support\Currency;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -75,11 +76,11 @@ class PageController extends Controller
                     'total_orders' => (int) $row->total_orders,
                     'confirmed_orders' => (int) $row->confirmed_orders,
                     'cancelled_orders' => (int) $row->cancelled_orders,
-                    'total_revenue_cents' => (int) $row->total_revenue_cents,
-                    'confirmed_revenue_cents' => (int) $row->confirmed_revenue_cents,
-                    'paid_revenue_cents' => (int) $row->paid_revenue_cents,
-                    'cod_revenue_cents' => (int) $row->cod_revenue_cents,
-                    'cancelled_revenue_cents' => (int) $row->cancelled_revenue_cents,
+                    'total_revenue_cents' => (float) $row->total_revenue_cents,
+                    'confirmed_revenue_cents' => (float) $row->confirmed_revenue_cents,
+                    'paid_revenue_cents' => (float) $row->paid_revenue_cents,
+                    'cod_revenue_cents' => (float) $row->cod_revenue_cents,
+                    'cancelled_revenue_cents' => (float) $row->cancelled_revenue_cents,
                 ];
             })
             ->values();
@@ -157,8 +158,10 @@ class PageController extends Controller
             'confirmed_reservations' => (int) $reservationsDaily->sum('confirmed_reservations'),
             'cancelled_reservations' => (int) $reservationsDaily->sum('cancelled_reservations'),
             'guests' => $guestsCount,
-            'confirmed_revenue' => round($ordersDaily->sum('confirmed_revenue_cents') / 100, 2),
-            'average_ticket' => $orderCount > 0 ? round(($ordersDaily->sum('confirmed_revenue_cents') / 100) / $orderCount, 2) : 0,
+            'confirmed_revenue' => Currency::roundAmount($ordersDaily->sum('confirmed_revenue_cents')),
+            'average_ticket' => $orderCount > 0
+                ? Currency::roundAmount($ordersDaily->sum('confirmed_revenue_cents') / $orderCount)
+                : 0,
             'average_guests' => $reservationCount > 0 ? round($guestsCount / $reservationCount, 1) : 0,
             'top_product' => $topProduct,
             'best_revenue_day' => $bestRevenueDay,
@@ -381,7 +384,10 @@ class PageController extends Controller
     }
     public function settings(){
         $setting = Setting::all()->keyBy('name');
-        return view('admin.settings', compact('setting'));
+        $supportedCurrencies = Currency::supported();
+        $activeCurrency = Currency::definition();
+
+        return view('admin.settings', compact('setting', 'supportedCurrencies', 'activeCurrency'));
     }
     public function menu(){
         

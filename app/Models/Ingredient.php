@@ -14,6 +14,10 @@ class Ingredient extends Model
 
     use HasTranslations;
 
+    protected $casts = [
+        'price' => 'float',
+    ];
+
     protected $appends  = ['name'];
     protected $with     = ['translations'];
     

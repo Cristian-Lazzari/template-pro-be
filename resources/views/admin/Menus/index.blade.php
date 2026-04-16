@@ -72,9 +72,9 @@
                     @endif
                     <div class="prices">
                         @if ($item->old_price)
-                        <h5 class="old_price">€{{$item->old_price / 100}}</h5>
+                        <h5 class="old_price">{{ \App\Support\Currency::formatCents($item->old_price) }}</h5>
                         @endif
-                        <h5 class="price">€{{$item->price / 100}}</h5>
+                        <h5 class="price">{{ \App\Support\Currency::formatCents($item->price) }}</h5>
                     </div>
                 </div>
                 <div class="actions menus-actions">
@@ -139,7 +139,7 @@
                                                 @endif
                                                 <span class="name">{{$p->name}}</span>
                                                 @if ($p->pivot->extra_price)
-                                                    <span class="ext_p">+ € {{$p->pivot->extra_price / 100}}</span>
+                                                    <span class="ext_p">+ {{ \App\Support\Currency::formatCents($p->pivot->extra_price) }}</span>
                                                 @endif
                                                 <span class="cat">{{$p->category->name}}</span>
                                             </div>
@@ -154,9 +154,9 @@
                     @endif
                     <div class="prices">
                         @if ($item->old_price)
-                        <h5 class="old_price">€{{$item->old_price / 100}}</h5>
+                        <h5 class="old_price">{{ \App\Support\Currency::formatCents($item->old_price) }}</h5>
                         @endif
-                        <h5 class="price">€{{$item->price / 100}}</h5>
+                        <h5 class="price">{{ \App\Support\Currency::formatCents($item->price) }}</h5>
                     </div>
                 </div>
                 <div class="actions menus-actions">

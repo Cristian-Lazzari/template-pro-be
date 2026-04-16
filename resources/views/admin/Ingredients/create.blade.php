@@ -5,6 +5,7 @@
 @php
   //se impostato a true gli ordini vengono presi in base ai pezzi altrimenti in base al numero di ordini
 $domain = 'https://future-plus.it/allergens/';
+$moneyInputStep = \App\Support\Currency::inputStep();
  
 @endphp
 
@@ -29,7 +30,7 @@ $domain = 'https://future-plus.it/allergens/';
                 <label class="label_c" for="price_ing">
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p>€<input value="{{ old('price_ing') }}" type="number" name="price_ing" step="0.01" id="price_ing" placeholder=" Inserisci il prezzo "></p>
+                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" step="{{ $moneyInputStep }}" id="price_ing" placeholder=" Inserisci il prezzo "></p>
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>

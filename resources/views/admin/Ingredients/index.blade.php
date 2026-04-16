@@ -66,7 +66,7 @@
                             </div>
                         </div>
                         <div class="catalog-index-card__actions">
-                            <span class="catalog-index-price">€{{$item->price / 100}}</span>
+                            <span class="catalog-index-price">{{ \App\Support\Currency::formatCents($item->price) }}</span>
                             <a class="catalog-action-btn catalog-action-btn--neutral" href="{{ route('admin.ingredients.show', $item) }}" aria-label="{{ __('admin.Vedi') }} {{$item->name}}" title="{{ __('admin.Vedi') }}">
                                 <i class="bi bi-eye"></i>
                             </a>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div class="catalog-index-card__actions">
-                        <span class="catalog-index-price">€{{$item->price / 100}}</span>
+                        <span class="catalog-index-price">{{ \App\Support\Currency::formatCents($item->price) }}</span>
                         <a class="catalog-action-btn catalog-action-btn--neutral" href="{{ route('admin.ingredients.show', $item) }}" aria-label="{{ __('admin.Vedi') }} {{$item->name}}" title="{{ __('admin.Vedi') }}">
                             <i class="bi bi-eye"></i>
                         </a>

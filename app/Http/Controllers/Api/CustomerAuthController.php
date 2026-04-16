@@ -228,7 +228,7 @@ class CustomerAuthController extends Controller
             'summary' => [
                 'orders_count' => $orders->count(),
                 'reservations_count' => $reservations->count(),
-                'total_spent_cents' => (int) $customer->orders()
+                'total_spent_cents' => (float) $customer->orders()
                     ->whereNotIn('status', [0, 6])
                     ->sum('tot_price'),
             ],
@@ -309,7 +309,7 @@ class CustomerAuthController extends Controller
             'date_slot' => $order->date_slot,
             'activity_at' => $this->toHistoryTimestamp($order->date_slot, $order->created_at),
             'status' => $this->orderStatusPayload((int) $order->status),
-            'total_price_cents' => (int) $order->tot_price,
+            'total_price_cents' => (float) $order->tot_price,
             'is_delivery' => filled($order->comune),
             'delivery_address' => $this->formatDeliveryAddress($order),
             'message' => $order->message,

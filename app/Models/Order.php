@@ -12,6 +12,10 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'tot_price' => 'float',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

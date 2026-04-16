@@ -16,6 +16,11 @@ class Menu extends Model
 
     use HasTranslations;
 
+    protected $casts = [
+        'price' => 'float',
+        'old_price' => 'float',
+    ];
+
     protected $appends = ['name', 'description'];
 
     protected $with = ['translations'];

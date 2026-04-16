@@ -137,14 +137,14 @@
                     @if ($deliveryCost)
                         <div class="order-detail__total-row">
                             <span>Costo di consegna</span>
-                            <strong>€{{ $deliveryCost }}</strong>
+                            <strong>{{ $deliveryCost }}</strong>
                         </div>
                     @endif
 
                     @if ($total)
                         <div class="order-detail__total-row order-detail__total-row--grand">
                             <span>Totale</span>
-                            <strong>€{{ $total }}</strong>
+                            <strong>{{ $total }}</strong>
                         </div>
                     @endif
                 </div>

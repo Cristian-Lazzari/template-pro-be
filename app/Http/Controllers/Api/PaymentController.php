@@ -8,6 +8,7 @@ use App\Models\Setting;
 use Stripe\PaymentIntent;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
+use App\Support\Currency;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -21,16 +22,17 @@ class PaymentController extends Controller
         $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
 
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
+        $currency = Currency::stripeCode();
  
         $line_items = [];
         foreach ($menus as $menu) {
             $line_items[] = [
                 'price_data' => [
-                    'currency' => 'eur',
+                    'currency' => $currency,
                     'product_data' => [
                         'name' => $menu->name,
                     ],
-                    'unit_amount' => $menu->price, 
+                    'unit_amount' => Currency::toMinorUnits($menu->price),
                 ],
                 'quantity' => $menu->pivot->quantity,
             ];
@@ -42,11 +44,11 @@ class PaymentController extends Controller
                         if ($p->id == $value) {
                             $line_items[] = [
                                 'price_data' => [
-                                    'currency' => 'eur',
+                                    'currency' => $currency,
                                     'product_data' => [
                                         'name' => $p->name,
                                     ],
-                                    'unit_amount' =>  $p->pivot->extra_price ? $p->pivot->extra_price : 0, 
+                                    'unit_amount' => Currency::toMinorUnits($p->pivot->extra_price ? $p->pivot->extra_price : 0),
                                 ],
                                 'quantity' => $menu->pivot->quantity,
                             ];
@@ -61,11 +63,11 @@ class PaymentController extends Controller
             //return [$orderProduct->quantity, $orderProduct->price];
             $line_items[] = [
                 'price_data' => [
-                    'currency' => 'eur',
+                    'currency' => $currency,
                     'product_data' => [
                         'name' => $orderProduct->name,
                     ],
-                    'unit_amount' => $orderProduct->price, // Prezzo totale del prodotto senza gli extra
+                    'unit_amount' => Currency::toMinorUnits($orderProduct->price),
                 ],
                 'quantity' => $orderProduct->pivot->quantity,
             ];
@@ -84,11 +86,11 @@ class PaymentController extends Controller
                     if ($ingredient) {
                         $line_items[] = [
                             'price_data' => [
-                                'currency' => 'eur',
+                                'currency' => $currency,
                                 'product_data' => [
                                     'name' => $ingredient_name . '(EXTRA)',
                                 ],
-                                'unit_amount' => $ingredient->price, 
+                                'unit_amount' => Currency::toMinorUnits($ingredient->price),
                             ],
                             'quantity' => $orderProduct->pivot->quantity,
                         ];
@@ -104,11 +106,11 @@ class PaymentController extends Controller
                     if ($option) {
                         $line_items[] = [
                             'price_data' => [
-                                'currency' => 'eur',
+                                'currency' => $currency,
                                 'product_data' => [
                                     'name' => $option_name . '(EXTRA)',
                                 ],
-                                'unit_amount' => $option->price, 
+                                'unit_amount' => Currency::toMinorUnits($option->price),
                             ],
                             'quantity' => $orderProduct->pivot->quantity,
                         ];
@@ -125,7 +127,7 @@ class PaymentController extends Controller
                     if ($option) {
                         $line_items[] = [
                             'price_data' => [
-                                'currency' => 'eur',
+                                'currency' => $currency,
                                 'product_data' => [
                                     'name' => $option_name . '(RIMOSSO)',
                                 ],
@@ -141,11 +143,11 @@ class PaymentController extends Controller
         if($delivery){
             $line_items[] = [
                 'price_data' => [
-                    'currency' => 'eur',
+                    'currency' => $currency,
                     'product_data' => [
                         'name' => 'Spese di spedizione',
                     ],
-                    'unit_amount' => $delivery, // Costo di spedizione in centesimi
+                    'unit_amount' => Currency::toMinorUnits($delivery),
                 ],
                 'quantity' => 1,
             ];

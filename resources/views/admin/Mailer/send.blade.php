@@ -78,7 +78,7 @@
                         <img src="{{ asset('public/storage/' . $m->img_1) }}" alt="">
                         @endif
                         
-                        <span>€</span>     
+                        <span>{{ $appCurrency['symbol'] }}</span>     
                     </div>
                 @endforeach
             </div>
@@ -173,4 +173,3 @@
         background-color: rgba(255, 0, 0, 0) !important;
     }
 </style>
-

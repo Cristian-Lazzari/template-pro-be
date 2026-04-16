@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\Currency;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrapFive();
+
+        view()->composer('*', function ($view) {
+            $view->with('appCurrency', Currency::definition());
+        });
     }
 }
