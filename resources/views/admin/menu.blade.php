@@ -163,7 +163,7 @@
                             <div class="menu-dashboard__promo-top">
                                 <div class="menu-dashboard__promo-intro">
                                     <div class="menu-dashboard__chip-row">
-                                        <span class="menu-dashboard__chip">{{ optional($product->category)->name ?? __('admin.Prodotti') }}</span>
+                                        <strong class="">{{ optional($product->category)->name ?? __('admin.Prodotti') }}</strong>
                                         <span class="menu-dashboard__chip menu-dashboard__chip--accent">Promo</span>
                                     </div>
 
