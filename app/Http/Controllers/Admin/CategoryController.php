@@ -76,11 +76,21 @@ class CategoryController extends Controller
     
     public function neworder(Request $request)
     {
-        $ids = $request->input('new_order');
+        $ids = array_values(array_filter((array) $request->input('new_order')));
+
+        if ($ids === []) {
+            return to_route('admin.categories.index')->with('category_success', 'Nessun elemento da riordinare');
+        }
+
         $invertito = array_reverse($ids);
         $s= 0;
         foreach ($invertito as $id) {
-            $category = Category::where('id', $id)->first();
+            $category = Category::find($id);
+
+            if (!$category) {
+                continue;
+            }
+
             $category->updated_at = now()->addSeconds($s); // Aggiunge 5 secondi
 
             $category->update(); 
@@ -95,11 +105,21 @@ class CategoryController extends Controller
     
     public function new_order_products(Request $request)
     {
-        $ids = $request->input('new_order_p');
+        $ids = array_values(array_filter((array) $request->input('new_order_p')));
+
+        if ($ids === []) {
+            return to_route('admin.categories.index')->with('category_success', 'Nessun elemento da riordinare');
+        }
+
         //$invertito = array_reverse($ids);
         $s= 0;
         foreach ($ids as $id) {
-            $prod = Product::where('id', $id)->first();
+            $prod = Product::find($id);
+
+            if (!$prod) {
+                continue;
+            }
+
             $prod->created_at = now()->addSeconds($s); // Aggiunge 5 secondi
 
             $prod->update(); 

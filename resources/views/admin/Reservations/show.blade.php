@@ -50,8 +50,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <x-dashboard.action-modal
                 title-id="confirmModalLabel"
-                title="Conferma prenotazione"
-                eyebrow="Conferma"
+                eyebrow="Conferma prenotazione"
                 tone="success"
                 entity-label="{{ __('admin.Prenotazione_di') }}"
                 :subject="$reservation->name"
@@ -98,8 +97,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <x-dashboard.action-modal
                 title-id="cancelModalLabel"
-                title="Annulla prenotazione"
-                eyebrow="Annulla"
+                eyebrow="Annulla prenotazione"
                 tone="danger"
                 entity-label="{{ __('admin.Prenotazione_di') }}"
                 :subject="$reservation->name"

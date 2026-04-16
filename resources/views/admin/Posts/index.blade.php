@@ -104,131 +104,64 @@
 
 
     <!-- Modal ORDINA LE CATEGORIE -->
-<div class="modal fade" id="staticBackdropspecialNews" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="#staticBackdropspecialNews" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h1 class=" fs-5" id="staticBackdropspecialNews">{{ __('admin.Riordina_i_tuoi_Post_in_News_Noviteventi') }}</h1>
-            <button type="button" class="btn-close" data-bs-target="#staticBackdropspecialNews" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body body">
-                <form action="{{ route('admin.posts.neworder') }}" method="post" >
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="text-center">{{ __('admin.Post_in_News') }}</h4>
-                            <ul id="newsA" class="list-group mylist">
-                                @foreach($news as $oggetto)
-                                    <li class="list-group-item list_n" data-id="{{ $oggetto['id'] }}">
-                                        <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->title }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    
-                    
-                        <div class="col-md-6">
-                            <h4 class="text-center">{{ __('admin.Ordine_corretto') }}</h4>
-                            <ul id="newsB" class="list-group mylist list_n">
-                                <!-- Lista vuota inizialmente -->
-                            </ul>
-                        </div>
-                    </div>
-                    <button  id="btnConfermaN" class="d-none my_btn_5 w-100" type="submit">{{ __('admin.Modifica') }}</button>
-                </form>
-            </div>
-            
-        </div>
+<div class="modal fade" id="staticBackdropspecialNews" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropspecialNews" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered my_modal_dialog catalog-reorder-dialog">
+        <form action="{{ route('admin.posts.neworder') }}" method="post" class="w-100">
+            @csrf
+            <x-dashboard.action-modal
+                title-id="staticBackdropspecialNews"
+                title="{{ __('admin.Riordina_i_tuoi_Post_in_News_Noviteventi') }}"
+                eyebrow="News"
+                tone="warning"
+            >
+                <x-dashboard.reorder-list
+                    :items="$news"
+                    input-name="new_order[]"
+                    label-field="title"
+                    item-label="post news"
+                />
+
+                <x-slot name="footer">
+                    <button class="catalog-action-btn catalog-action-btn--primary catalog-action-btn--with-label" type="submit">
+                        <i class="bi bi-check2-circle"></i>
+                        {{ __('admin.Modifica_ordine') }}
+                    </button>
+                </x-slot>
+            </x-dashboard.action-modal>
+        </form>
     </div>
 </div>
-<div class="modal fade" id="staticBackdropspecialStory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="#staticBackdropspecialStory" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered my_modal_dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h1 class=" fs-5" id="staticBackdropspecialStory">{{ __('admin.Riordina_i_tuoi_Post_in_Storia_Chi_siamo') }}</h1>
-            <button type="button" class="btn-close" data-bs-target="#staticBackdropspecial" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body body">
-                <form action="{{ route('admin.categories.neworder') }}" method="post" >
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="text-center">{{ __('admin.Post_in_story') }}</h4>
-                            <ul id="storyA" class="list-group mylist">
-                                @foreach($story as $oggetto)
-                                    <li class="list-group-item list_s" data-id="{{ $oggetto['id'] }}">
-                                        <input value="{{$oggetto->id}}" type="hidden" name="new_order[]"> {{ $oggetto->title }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    
-                    
-                        <div class="col-md-6">
-                            <h4 class="text-center">{{ __('admin.Ordine_corretto') }}</h4>
-                            <ul id="storyB" class="list-group mylist list_s">
-                                <!-- Lista vuota inizialmente -->
-                            </ul>
-                        </div>
-                    </div>
-                    <button  id="btnConfermaS" class="d-none my_btn_5 w-100" type="submit">{{ __('admin.Modifica') }}</button>
-                </form>
-            </div>
-            
-        </div>
+<div class="modal fade" id="staticBackdropspecialStory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropspecialStory" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered my_modal_dialog catalog-reorder-dialog">
+        <form action="{{ route('admin.posts.neworder') }}" method="post" class="w-100">
+            @csrf
+            <x-dashboard.action-modal
+                title-id="staticBackdropspecialStory"
+                title="{{ __('admin.Riordina_i_tuoi_Post_in_Storia_Chi_siamo') }}"
+                eyebrow="Story"
+                tone="warning"
+            >
+                <x-dashboard.reorder-list
+                    :items="$story"
+                    input-name="new_order[]"
+                    label-field="title"
+                    item-label="post story"
+                />
+
+                <x-slot name="footer">
+                    <button class="catalog-action-btn catalog-action-btn--primary catalog-action-btn--with-label" type="submit">
+                        <i class="bi bi-check2-circle"></i>
+                        {{ __('admin.Modifica_ordine') }}
+                    </button>
+                </x-slot>
+            </x-dashboard.action-modal>
+        </form>
     </div>
 </div>
 
 
 <script defer>
 document.addEventListener("DOMContentLoaded", function () {
-
-    let storyA = document.getElementById("storyA");
-    let storyB = document.getElementById("storyB");
-    let newsA = document.getElementById("newsA");
-    let newsB = document.getElementById("newsB");
-    let btnConfermaS = document.getElementById("btnConfermaS");
-    let btnConfermaN = document.getElementById("btnConfermaN");
-
-    function spostaElemento(elemento, destinazione, list) {
-        destinazione.appendChild(elemento);
-        controllaBottone(list);
-    }
-
-    function controllaBottone(list) {
-        // Mostra il bottone solo se listaB è vuota
-        if(list == 'story'){
-            if (storyA.children.length === 0) {
-                btnConfermaS.classList.remove("d-none");
-            } else {
-                btnConfermaS.classList.add("d-none");
-            }
-        }else{
-            if (newsA.children.length === 0) {
-                btnConfermaN.classList.remove("d-none");
-            } else {
-                btnConfermaN.classList.add("d-none");
-            }
-        }
-    }
-    document.body.addEventListener("click", function (e) {
-        if (e.target.classList.contains("list_s")) {
-            const elemento = e.target;
-            if (elemento.parentElement.id === "storyA") {
-                spostaElemento(elemento, storyB, 'story');
-            } else {
-                spostaElemento(elemento, storyA, 'story');
-            }
-            
-        }else if(e.target.classList.contains("list_n")){
-            const elemento = e.target;
-            if (elemento.parentElement.id === "newsA") {
-                spostaElemento(elemento, newsB, 'news');
-            } else {
-                spostaElemento(elemento, newsA, 'news');
-            }
-        }
-    });
 
     const searchInput = document.getElementById('searchInput');
     const typeToggle = document.getElementById('typeToggle');

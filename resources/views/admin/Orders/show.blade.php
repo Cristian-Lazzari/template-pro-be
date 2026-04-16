@@ -145,13 +145,11 @@
             <input value="{{$order->id}}" type="hidden" name="id">
             <x-dashboard.action-modal
                 title-id="changeModalLabel"
-                title="{{ __('admin.Conferma_e_posticipa_questo_ordine') }}"
-                eyebrow="Posticipa"
+                eyebrow="{{ __('admin.Conferma_e_posticipa_questo_ordine') }}"
                 tone="warning"
                 entity-label="{{ __('admin.Ordine_di') }}"
                 :subject="$order->name"
                 :date-slot="$order->date_slot"
-                description="Aggiorni l orario e confermi l ordine nello stesso passaggio."
             >
                 <x-slot name="details">
                     <div class="dashboard-action-modal__detail">
@@ -207,13 +205,11 @@
     <div class="modal-dialog modal-dialog-centered">
         <x-dashboard.action-modal
             title-id="confirmModalLabel"
-            title="Conferma ordine"
-            eyebrow="Conferma"
+            eyebrow="Conferma ordine"
             tone="success"
             entity-label="{{ __('admin.Ordine_di') }}"
             :subject="$order->name"
             :date-slot="$order->date_slot"
-            description="Usa questa azione quando orario, servizio e totale sono corretti."
         >
             <x-slot name="details">
                 <div class="dashboard-action-modal__detail">
@@ -247,8 +243,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <x-dashboard.action-modal
             title-id="cancelModalLabel"
-            title="{{ $cancelButtonLabel }}"
-            eyebrow="Annulla"
+            eyebrow="{{ $cancelButtonLabel }}"
             tone="danger"
             entity-label="{{ __('admin.Ordine_di') }}"
             :subject="$order->name"
@@ -267,7 +262,7 @@
                 </div>
             </x-slot>
 
-            <p class="dashboard-action-modal__hint">Procedi solo dopo un ultimo controllo su orario, servizio e pagamento.</p>
+            <p class="dashboard-action-modal__hint">Procedi solo dopo un ultimo controllo su giorno, orario e ordine.</p>
 
             <x-slot name="footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">

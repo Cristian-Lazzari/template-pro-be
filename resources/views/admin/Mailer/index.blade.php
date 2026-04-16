@@ -156,20 +156,25 @@
                   <!-- Modal -->
                 <div class="modal fade" id="staticBackdrop{{$m->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop{{$m->id}}Label" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered creation">
-                        <form action="{{ route('admin.models.delete', $m['id']) }}" class="creation modal-content" method="post" >
+                        <form action="{{ route('admin.models.delete', $m['id']) }}" class="w-100" method="post" >
                             @method('delete')
                             @csrf
-                            <section>
-                                <div class="split">
-                                    <h1 class="modal-title fs-2" id="staticBackdrop{{$m->id}}Label">{{ __('admin.Sicuro_di_voler_eliminare_il_modello') }}</h1>
-                                    <button type="button" class="btn-close my_btn_2" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <p>Il modello: " {{$m->name}}" non potrà piu essere recuperato una volta eliminato.</p>
-                                <button class="my_btn_2" type="submit">
-                                    Eliminina definitivamente
-                                </button>
-                            </section>
+                            <x-dashboard.action-modal
+                                title-id="staticBackdrop{{$m->id}}Label"
+                                title="{{ __('admin.Sicuro_di_voler_eliminare_il_modello') }}"
+                                eyebrow="Template"
+                                tone="danger"
+                                :subject="$m->name"
+                                description="Una volta eliminato, questo modello non potra piu essere recuperato."
+                            >
+                                <p class="dashboard-action-modal__hint">Verifica il nome prima di procedere: anche le campagne future non potranno piu riutilizzare questo template.</p>
 
+                                <x-slot name="footer">
+                                    <button class="my_btn_2" type="submit">
+                                        Elimina definitivamente
+                                    </button>
+                                </x-slot>
+                            </x-dashboard.action-modal>
                         </form>
                     </div>
                 </div>
@@ -183,15 +188,15 @@
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog creation">
 
-            <form class="creation modal-content"  action="{{ route('admin.mailer.extra_list') }}" method="POST">
+            <form class="w-100"  action="{{ route('admin.mailer.extra_list') }}" method="POST">
                 @csrf
-                <section >
-
-                    <div class="split">
-                        <h1 class="modal-title fs-2" id="staticBackdropLabel">{{ __('admin.Aggiorna_manualmente_la_lista') }}</h1>
-                        <button type="button" class="btn-close my_btn_2" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
+                <x-dashboard.action-modal
+                    title-id="staticBackdropLabel"
+                    title="{{ __('admin.Aggiorna_manualmente_la_lista') }}"
+                    eyebrow="Contatti extra"
+                    tone="mint"
+                    description="Aggiungi o rimuovi destinatari manuali prima della prossima campagna."
+                >
                     <div class="list" id="emailList">
                         @foreach ($extra_mail_list as $i)
                             <div class="wrapper">
@@ -203,21 +208,20 @@
                             </div>
                         @endforeach
                     </div>
+
                     <div class="split">
-                        <div>
-                            <label class="label_c" for="sender">{{ __('admin.Mail_e_Nome_') }}</label>   
+                        <div class="w-100">
+                            <label class="label_c" for="emailInput">{{ __('admin.Mail_e_Nome_') }}</label>   
                             <input value="{{ old('name') }}" type="text"  id="emailInput" class="w-100" placeholder="email@mail.it nome, email1@mail.it nome2, ">
-                                @error('name') <p class="error">{{ $message }}</p> @enderror
-            
+                            @error('name') <p class="error">{{ $message }}</p> @enderror
                         </div>
                         <div class="my_btn_3" id="addEmailsButton">{{ __('admin.Aggiungi') }}</div>
                     </div>
-    
-                </section>
-                <section>
-                    <button type="sumbit" class="my_btn_5">{{ __('admin.Aggiorna_lista') }}</button>
-                </section>
 
+                    <x-slot name="footer">
+                        <button type="submit" class="my_btn_5">{{ __('admin.Aggiorna_lista') }}</button>
+                    </x-slot>
+                </x-dashboard.action-modal>
             </form>
         </div>
     </div>
@@ -361,9 +365,3 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 });
 </script>
-<style>
-    .modal-header h1{
-        color: black
-    }
-
-</style>

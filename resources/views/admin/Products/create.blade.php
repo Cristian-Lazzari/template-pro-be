@@ -114,15 +114,15 @@
   
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content my_bg_6">
-            <div class="modal-header">
-                <h2>{{ __('admin.Crea_e_aggiungi_Ingredienti_mancanti') }}</h2>
-                <button type="button" class="btn-close my_btn_2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <x-dashboard.action-modal
+                title-id="staticBackdropLabel"
+                title="{{ __('admin.Crea_e_aggiungi_Ingredienti_mancanti') }}"
+                eyebrow="Ingrediente rapido"
+                tone="mint"
+                description="Compila solo i campi essenziali e aggiungi subito il nuovo ingrediente al prodotto che stai creando."
+            >
                 <section class="more_i">
-                    
                     <div class="split">
                         <div>
                             <label class="label_c" for="name_ing">
@@ -150,17 +150,14 @@
                         <label class="label_c" for="type">
                             <i class="bi bi-ui-checks-grid"></i>{{ __('admin.Categorie_abbinate') }}</label>
                         <p>
-                            
                             @foreach ($categories as $c)
-                            
-                            <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
-                            <label class="btn btn-outline-light" for="a{{ $c->id }}">{{ $c['name'] }}</label>
+                                <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
+                                <label class="btn btn-outline-light" for="a{{ $c->id }}">{{ $c['name'] }}</label>
                             @endforeach
-                            
                         </p>
                         @error('type_ing') <p class="error">{{ $message }}</p> @enderror
                     </div>
-                    
+
                     <div class="check_c">
                         <label class="label_c" for="type">
                             <i class="bi bi-ui-checks-grid"></i>
@@ -181,12 +178,12 @@
                             @endforeach
                         </p>
                     </div>
-                        <input type="submit" class="btn-check" id="newi" name="newi" value="1">
-                        <label class="my_btn_2 m-auto" for="newi">{{ __('admin.Crea_Ingrediente') }}</label>
                 </section>
-            </div>
-            
-        </div>
+
+                <x-slot name="footer">
+                    <button class="my_btn_2" type="submit" name="newi" value="1">{{ __('admin.Crea_Ingrediente') }}</button>
+                </x-slot>
+            </x-dashboard.action-modal>
         </div>
     </div>
     <section class="cont_i">

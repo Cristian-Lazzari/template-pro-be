@@ -1,5 +1,5 @@
 @props([
-    'title',
+    'title' => null,
     'titleId' => null,
     'eyebrow' => null,
     'description' => null,
@@ -15,12 +15,14 @@
     $hasFooter = isset($footer) && trim((string) $footer) !== '';
     $hasContent = trim((string) $slot) !== '';
     $hasTitleIcon = isset($titleIcon) && trim((string) $titleIcon) !== '';
+    $resolvedTitle = $title ?: $eyebrow;
+    $showEyebrow = $eyebrow && $title;
 @endphp
 
 <div {{ $attributes->class(['modal-content mymodal_make_res dashboard-action-modal', 'dashboard-action-modal--' . $tone]) }}>
     <div class="modal-header">
         <div class="dashboard-action-modal__heading">
-            @if ($eyebrow)
+            @if ($showEyebrow)
                 <p class="dashboard-action-modal__eyebrow">{{ $eyebrow }}</p>
             @endif
 
@@ -32,7 +34,9 @@
                         </span>
                     @endif
 
-                    <h1 @if ($titleId) id="{{ $titleId }}" @endif class="modal-title">{{ $title }}</h1>
+                    @if ($resolvedTitle)
+                        <h2 @if ($titleId) id="{{ $titleId }}" @endif class="modal-title">{{ $resolvedTitle }}</h2>
+                    @endif
                 </div>
 
                 @if ($description)

@@ -147,11 +147,21 @@ class PostController extends Controller
 
     public function neworder(Request $request)
     {
-        $ids = $request->input('new_order');
+        $ids = array_values(array_filter((array) $request->input('new_order')));
+
+        if ($ids === []) {
+            return to_route('admin.posts.index')->with('order_success', 'Nessun elemento da riordinare');
+        }
+
         $invertito = array_reverse($ids);
         $s= 0;
         foreach ($invertito as $id) {
-            $post = Post::where('id', $id)->first();
+            $post = Post::find($id);
+
+            if (!$post) {
+                continue;
+            }
+
             $post->order = $s; 
             $post->update(); 
             $s++;

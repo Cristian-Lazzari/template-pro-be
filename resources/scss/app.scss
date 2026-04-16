@@ -4215,10 +4215,12 @@ svg.to_see, .bi.to_see{
 
 .dashboard-action-modal__heading{
     @include grid-layout($gap: 8px);
+    min-width: 0;
 }
 
 .dashboard-action-modal__title-copy{
     @include grid-layout($gap: 8px);
+    min-width: 0;
 }
 
 .dashboard-action-modal__title-row{
@@ -4333,16 +4335,24 @@ svg.to_see, .bi.to_see{
 }
 
 .dashboard-action-modal__field input,
-.dashboard-action-modal__field select{
+.dashboard-action-modal__field select,
+.dashboard-action-modal__field textarea{
     @include control-shell($min-height: 48px, $padding: 0 14px, $radius: 14px, $background: rgba(216, 221, 232, 0.08), $border-color: rgba(216, 221, 232, 0.14), $color: var(--c3));
     width: 100%;
 }
 
 .dashboard-action-modal__field input:focus,
-.dashboard-action-modal__field select:focus{
+.dashboard-action-modal__field select:focus,
+.dashboard-action-modal__field textarea:focus{
     outline: none;
     border-color: var(--action-modal-accent);
     box-shadow: 0 0 0 3px var(--action-modal-soft);
+}
+
+.dashboard-action-modal__field textarea{
+    min-height: 132px;
+    padding: 12px 14px;
+    resize: vertical;
 }
 
 .dashboard-action-modal__hint{
@@ -4721,8 +4731,62 @@ svg.to_see, .bi.to_see{
     .day-details{
         padding: 8px !important;
     }
+
+    .dashboard-action-modal .modal-header{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-action-modal__close{
+        align-self: flex-end;
+    }
+
+    .dashboard-action-modal__title-row{
+        align-items: flex-start;
+    }
+
+    .dashboard-action-modal .modal-title,
+    .dashboard-action-modal__description,
+    .dashboard-availability-section__head h2,
+    .dashboard-availability-section__head p,
+    .dashboard-availability-field label,
+    .dashboard-availability-field__help,
+    .dashboard-availability-day-card__copy h3,
+    .dashboard-availability-day-card__copy p,
+    .dashboard-action-modal__hint{
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-action-modal .modal-footer > *,
+    .dashboard-action-modal .modal-footer form,
+    .dashboard-action-modal .modal-footer button{
+        flex-basis: 100%;
+    }
+
+    .dashboard-availability-modal .modal-body{
+        padding-right: 0;
+    }
+
+    .dashboard-availability-section{
+        padding: 12px;
+    }
+
+    .dashboard-availability-field{
+        padding: 10px 12px;
+    }
+
+    .dashboard-availability-field__head{
+        align-items: flex-start;
+    }
+
+    .dashboard-availability-slot__time{
+        width: 100%;
+        justify-content: center;
+    }
+
     .dashboard-availability-slot__option{
         flex-basis: 100%;
+        min-width: 0;
     }
 }
 
@@ -5591,6 +5655,136 @@ svg.to_see, .bi.to_see{
     }
 }
 
+.catalog-reorder{
+    display: block;
+}
+
+.catalog-reorder-dialog{
+    max-width: min(700px, calc(100vw - 1.5rem));
+}
+
+.catalog-reorder__list{
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: .35rem;
+    max-height: min(58vh, 540px);
+    overflow: auto;
+    border-radius: 20px;
+    border: 1px solid rgba(216, 221, 232, 0.12);
+    background: rgba(216, 221, 232, 0.05);
+}
+
+.catalog-reorder__item,
+.catalog-reorder__placeholder{
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: .85rem;
+    min-height: 68px;
+    margin: 0;
+    padding: .9rem 1rem;
+    border-radius: 16px !important;
+}
+
+.catalog-reorder__item{
+    border: 1px solid rgba(216, 221, 232, 0.12) !important;
+    background:
+        linear-gradient(145deg, rgba(216, 221, 232, 0.12), rgba(216, 221, 232, 0.04)),
+        rgba(9, 3, 51, 0.46) !important;
+    color: var(--c3) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.catalog-reorder__copy{
+    min-width: 0;
+
+    strong{
+        display: block;
+        font-size: var(--fs-200);
+        line-height: 1.3;
+        word-break: break-word;
+    }
+}
+
+.catalog-reorder__position{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: rgba(14, 183, 146, 0.14);
+    color: var(--c2);
+    font-size: var(--fs-100);
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.catalog-reorder__handle{
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(216, 221, 232, 0.12);
+    background: rgba(216, 221, 232, 0.06);
+    color: var(--c3);
+    cursor: grab;
+    touch-action: none;
+    @include interactive-transition($shadow: none);
+
+    &:hover{
+        background: rgba(14, 183, 146, 0.12);
+        border-color: rgba(14, 183, 146, 0.22);
+        color: var(--c2);
+    }
+
+    &:focus-visible{
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(14, 183, 146, 0.18);
+    }
+
+    &:active{
+        cursor: grabbing;
+        transform: scale(.98);
+    }
+
+    .bi{
+        font-size: var(--fs-300);
+        line-height: 1;
+    }
+}
+
+.catalog-reorder__placeholder{
+    border: 1px dashed rgba(14, 183, 146, 0.36) !important;
+    background: rgba(14, 183, 146, 0.08) !important;
+}
+
+.catalog-reorder__item--origin-hidden{
+    display: none !important;
+}
+
+.catalog-reorder__item--dragging{
+    position: fixed !important;
+    margin: 0;
+    z-index: 1085;
+    pointer-events: none;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+    transform: rotate(1deg);
+}
+
+.catalog-reorder__empty{
+    padding: 1rem;
+    border-radius: 16px !important;
+    border: 1px dashed rgba(216, 221, 232, 0.18) !important;
+    background: rgba(216, 221, 232, 0.04) !important;
+    color: rgba(216, 221, 232, 0.74) !important;
+    text-align: center;
+}
+
+body.reorder-dragging-active{
+    user-select: none;
+}
+
 @media (max-width: 767px){
     .catalog-index-card{
         align-items: flex-start;
@@ -5611,6 +5805,12 @@ svg.to_see, .bi.to_see{
 
     .catalog-action-btn--with-label{
         width: 100%;
+    }
+
+    .catalog-reorder__item,
+    .catalog-reorder__placeholder{
+        padding: .85rem;
+        gap: .7rem;
     }
 }
 
@@ -7068,6 +7268,97 @@ section{
     }
 }
 
+// Keep dashboard action modals visually aligned even inside legacy wrappers.
+.my_modal_dialog .dashboard-action-modal,
+.creation .dashboard-action-modal{
+    background-color: rgba(9, 3, 51, 0.88) !important;
+    border: 1px solid rgba(216, 221, 232, 0.12) !important;
+    color: var(--c3) !important;
+}
+
+.dashboard-action-modal .btn.btn-light{
+    background: rgba(14, 183, 146, 0.16) !important;
+    color: var(--c3) !important;
+    border-color: rgba(14, 183, 146, 0.28) !important;
+}
+
+.dashboard-action-modal input[type="file"]::file-selector-button{
+    border: 1px solid rgba(14, 183, 146, 0.22);
+    background: rgba(14, 183, 146, 0.16);
+    color: var(--c3);
+}
+
+.dashboard-action-modal input[type="file"]::file-selector-button:hover{
+    background: rgba(14, 183, 146, 0.24);
+    color: var(--c3);
+}
+
+.dashboard-action-modal .check_c{
+    border-color: rgba(216, 221, 232, 0.12);
+    background: rgba(9, 3, 51, 0.18);
+}
+
+.dashboard-action-modal .check_c:hover{
+    border-color: rgba(14, 183, 146, 0.28);
+    box-shadow: 0 0 0 1px rgba(14, 183, 146, 0.18), 0 18px 28px rgba(0, 0, 0, 0.16);
+}
+
+.dashboard-action-modal .check_c .p label,
+.dashboard-action-modal .check_c p label{
+    background: rgba(216, 221, 232, 0.04);
+    border-color: rgba(216, 221, 232, 0.16);
+    color: var(--c3);
+}
+
+.dashboard-action-modal .check_c .p input[type="checkbox"]:checked + label,
+.dashboard-action-modal .check_c p input[type="checkbox"]:checked + label{
+    border-color: rgba(14, 183, 146, 0.32) !important;
+    background: rgba(14, 183, 146, 0.16) !important;
+    color: var(--c3) !important;
+}
+
+.dashboard-action-modal .check_c .p .btn_special,
+.dashboard-action-modal .check_c p .btn_special{
+    border-color: rgba(255, 193, 7, 0.32);
+    background: rgba(255, 193, 7, 0.12) !important;
+    color: var(--c3) !important;
+}
+
+.dashboard-action-modal .check_c .p input[type="checkbox"]:checked + .btn_special,
+.dashboard-action-modal .check_c p input[type="checkbox"]:checked + .btn_special{
+    border-color: rgba(255, 193, 7, 0.34) !important;
+    background: rgba(255, 193, 7, 0.18) !important;
+    color: var(--c3) !important;
+}
+
+.dashboard-action-modal .list{
+    @include grid-layout($gap: 10px);
+    max-height: 30svh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.dashboard-action-modal .list .wrapper{
+    @include flex-layout($align: center, $justify: space-between, $gap: 12px, $wrap: wrap);
+    border-radius: 16px;
+    border: 1px solid rgba(216, 221, 232, 0.12);
+    background: rgba(216, 221, 232, 0.05) !important;
+    color: var(--c3) !important;
+    padding: .75rem .9rem;
+}
+
+.dashboard-action-modal .list .wrapper .contact{
+    @include flex-layout($align: center, $justify: space-between, $gap: 1rem, $wrap: wrap);
+    max-width: 100%;
+    padding: 0;
+    color: inherit !important;
+}
+
+.dashboard-action-modal .list .wrapper .contact .name,
+.dashboard-action-modal .list .wrapper .contact .mail{
+    color: inherit;
+}
+
 //setting avanzate
 .large_m::-webkit-scrollbar {
   display: none !important;  /* Chrome, Safari, Opera */
@@ -8176,6 +8467,150 @@ section{
                     font-size: var(--fs-200);
                 }
             }
+        }
+    }
+}
+
+@media (max-width: 380px) {
+    .dashboard-home{
+        &__hero{
+            gap: 12px;
+
+            h1{
+                font-size: var(--fs-500);
+                line-height: 1.08;
+            }
+        }
+
+        &__hero.order-detail__summary{
+            padding: 12px;
+        }
+
+        &__hero-actions{
+            width: 100%;
+            gap: 8px;
+
+            .order-detail__contact{
+                align-items: flex-start;
+                padding: 10px 12px;
+            }
+
+            .order-detail__contact span{
+                white-space: normal;
+                overflow: visible;
+                text-overflow: initial;
+                line-height: 1.25;
+            }
+        }
+
+        &__calendar{
+            gap: 8px;
+
+            .carousel-indicators{
+                flex-wrap: wrap;
+                row-gap: 6px;
+
+                button{
+                    width: 9px;
+                    height: 9px;
+                }
+            }
+
+            .top_line{
+                gap: 8px;
+            }
+
+            .prev_btn,
+            .post_btn{
+                width: 38px;
+                min-width: 38px;
+                min-height: 38px;
+            }
+
+            .carousel-item h2{
+                font-size: var(--fs-400);
+            }
+        }
+
+        &__stats{
+            margin: 12px 0 14px;
+        }
+
+        &__details{
+            padding: 12px;
+        }
+
+        &__details-placeholder{
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__detail-copy h3,
+        &__detail-state{
+            overflow-wrap: anywhere;
+        }
+
+        .c-name{
+            gap: 4px;
+
+            h4{
+                letter-spacing: .04em;
+            }
+        }
+
+        .calendar_page{
+            gap: 3px;
+
+            .day{
+                min-height: 68px;
+                padding: 4px;
+                border-radius: 10px;
+
+                .p_day{
+                    font-size: var(--fs-100) !important;
+                    padding-left: 0 !important;
+                }
+
+                .bookings{
+                    gap: 2px;
+                    max-width: 100%;
+                    font-size: 11px !important;
+                }
+            }
+        }
+
+        .carousel-indicators{
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 100%;
+
+            button{
+                width: 14px !important;
+                min-width: 14px;
+                height: 5px !important;
+            }
+        }
+    }
+
+    .mymodal_calendar{
+        max-width: calc(100% - 8px) !important;
+    }
+
+    .mymodal_make_res{
+        border-radius: 16px;
+
+        .modal-body{
+            gap: 1rem;
+            padding: 12px;
+        }
+
+        .modal-body .actions{
+            margin-top: 1rem;
+        }
+
+        .modal-body .actions > *{
+            width: 100%;
         }
     }
 }

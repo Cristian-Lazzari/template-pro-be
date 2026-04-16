@@ -93,24 +93,27 @@
             <!-- Modal ELINIMAZIONE -->
             <div class="modal fade" id="staticBackdrop{{$item->id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel{{$item->id}}" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered my_modal_dialog">
-                <div class="modal-content catalog-index-modal">
-                    <div class="modal-header">
-                    <h1 class="fs-5" id="staticBackdropLabel{{$item->id}}">{{ __('admin.Confermi_di_voler_eliminare_') }}<strong>{{$item->name}}</strong>"?</h1>
-                    <button data-bs-target="#staticBackdrop{{$item->id}}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body body catalog-index-modal__body">
-                        <p>{{ __('admin.Eiminando_questo_allergene_i_prodotti_ad_esso_abbianati_non_lo_mostreranno_pi') }}</p>
-                        <form action="{{ route('admin.allergens.destroy', ['allergen'=>$item]) }}" method="post" >
-                            @method('delete')
-                            @csrf
-                            <button class="catalog-action-btn catalog-action-btn--danger catalog-action-btn--with-label w-100" type="submit">
-                                <i class="bi bi-trash3"></i>
-                                {{ __('admin.Elimina') }}
-                            </button>
-                        </form>
-                    </div>
-                    
-                </div>
+                    <form action="{{ route('admin.allergens.destroy', ['allergen'=>$item]) }}" method="post" class="w-100">
+                        @method('delete')
+                        @csrf
+                        <x-dashboard.action-modal
+                            title-id="staticBackdropLabel{{$item->id}}"
+                            title="{{ __('admin.Conferma_eliminazione') }}"
+                            eyebrow="{{ __('admin.Elimina') }}"
+                            tone="danger"
+                            :subject="$item->name"
+                            description="{{ __('admin.Eiminando_questo_allergene_i_prodotti_ad_esso_abbianati_non_lo_mostreranno_pi') }}"
+                        >
+                            <p class="dashboard-action-modal__hint">{{ __('admin.Eiminando_questo_allergene_i_prodotti_ad_esso_abbianati_non_lo_mostreranno_pi') }}</p>
+
+                            <x-slot name="footer">
+                                <button class="catalog-action-btn catalog-action-btn--danger catalog-action-btn--with-label" type="submit">
+                                    <i class="bi bi-trash3"></i>
+                                    {{ __('admin.Elimina') }}
+                                </button>
+                            </x-slot>
+                        </x-dashboard.action-modal>
+                    </form>
                 </div>
             </div>
 

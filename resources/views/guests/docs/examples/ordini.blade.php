@@ -455,7 +455,6 @@
             <x-dashboard.action-modal
                 preview
                 class="dashboard-modal-preview"
-                title="Conferma ordine"
                 eyebrow="Conferma"
                 tone="success"
                 entity-label="Ordine di"
@@ -485,8 +484,7 @@
             <x-dashboard.action-modal
                 preview
                 class="dashboard-modal-preview"
-                title="Rimborsa e Annulla"
-                eyebrow="Annulla"
+                eyebrow="Rimborsa e Annulla"
                 tone="danger"
                 entity-label="Ordine di"
                 subject="Luca"
@@ -526,8 +524,7 @@
             <x-dashboard.action-modal
                 preview
                 class="dashboard-modal-preview"
-                title="Conferma e posticipa questo ordine"
-                eyebrow="Posticipa"
+                eyebrow="Conferma e posticipa questo ordine"
                 tone="warning"
                 entity-label="Ordine di"
                 subject="Luca"
