@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Services\FailureAlertService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -45,6 +48,38 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (Throwable $e, Request $request) {
+            $routeName = $request->route()?->getName();
+            $path = trim($request->path(), '/');
+
+            $flow = match (true) {
+                $routeName === 'api.orders.store',
+                $path === 'api/orders' => 'order',
+                $routeName === 'api.reservations.store',
+                $path === 'api/reservations' => 'reservation',
+                default => null,
+            };
+
+            if ($flow === null || $request->attributes->get('failure_alert_sent')) {
+                return null;
+            }
+
+            $details = [];
+
+            if ($e instanceof ValidationException) {
+                $details['validation_errors'] = $e->errors();
+            }
+
+            app(FailureAlertService::class)->notify($flow, $request, [
+                'error_type' => $e instanceof ValidationException ? 'validation_failure' : 'unhandled_exception',
+                'message' => $e->getMessage(),
+                'status' => $e instanceof ValidationException ? 422 : 500,
+                'details' => $details,
+            ], $e);
+
+            return null;
         });
     }
 }

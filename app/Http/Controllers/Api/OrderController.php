@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Services\FailureAlertService;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
 use App\Support\Currency;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -63,38 +65,54 @@ class OrderController extends Controller
             $data['email'] = Customer::normalizeEmail((string) $data['email']);
         }
 
-        validator($data, $this->validations)->validate();
-
         $customerAuthPayload = null;
 
-        if (!$authenticatedCustomer) {
-            $verifiedSessionToken = $this->verifiedCheckoutSessionService->extractTokenFromRequest($request);
+        try {
+            validator($data, $this->validations)->validate();
 
-            if (!$this->verifiedCheckoutSessionService->isValidForEmail($verifiedSessionToken, $data['email'])) {
-                throw ValidationException::withMessages([
-                    'email' => [Lang::get('customer.messages.checkout_verification_required', [], $lang)],
+            if (!$authenticatedCustomer) {
+                $verifiedSessionToken = $this->verifiedCheckoutSessionService->extractTokenFromRequest($request);
+
+                if (!$this->verifiedCheckoutSessionService->isValidForEmail($verifiedSessionToken, $data['email'])) {
+                    throw ValidationException::withMessages([
+                        'email' => [Lang::get('customer.messages.checkout_verification_required', [], $lang)],
+                    ]);
+                }
+
+                $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
+                    'name' => $data['name'] ?? null,
+                    'surname' => $data['surname'] ?? null,
+                    'phone' => $data['phone'] ?? null,
+                ], $request->boolean('news_letter'));
+
+                if ($request->boolean('save_details')) {
+                    $customerAuthPayload = [
+                        'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
+                        'customer' => $this->customerPayload($authenticatedCustomer),
+                    ];
+                }
+            } else {
+                $authenticatedCustomer = $this->customerAccessService->syncCustomerProfile($authenticatedCustomer, [
+                    'name' => $data['name'] ?? null,
+                    'surname' => $data['surname'] ?? null,
+                    'phone' => $data['phone'] ?? null,
                 ]);
             }
+        } catch (ValidationException $e) {
+            $this->sendFailureAlert($request, [
+                'error_type' => 'validation_failure',
+                'message' => $e->getMessage(),
+                'status' => 422,
+                'details' => [
+                    'validation_errors' => $e->errors(),
+                    'payment_requested' => (bool) ($data['paying'] ?? false),
+                ],
+            ], $e);
 
-            $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
-                'name' => $data['name'] ?? null,
-                'surname' => $data['surname'] ?? null,
-                'phone' => $data['phone'] ?? null,
-            ], $request->boolean('news_letter'));
-
-            if ($request->boolean('save_details')) {
-                $customerAuthPayload = [
-                    'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
-                    'customer' => $this->customerPayload($authenticatedCustomer),
-                ];
-            }
-        } else {
-            $authenticatedCustomer = $this->customerAccessService->syncCustomerProfile($authenticatedCustomer, [
-                'name' => $data['name'] ?? null,
-                'surname' => $data['surname'] ?? null,
-                'phone' => $data['phone'] ?? null,
-            ]);
+            throw $e;
         }
+
+        $newOrder = null;
 
         try {       
             // return response()->json($cart);
@@ -117,10 +135,19 @@ class OrderController extends Controller
                     $av = $property_adv['max_asporto'];
                 }
             }else{
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine'
-                ]);
+                return $this->orderFailureResponse(
+                    $request,
+                    'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine',
+                    [],
+                    [
+                        'error_type' => 'availability_changed',
+                        'details' => [
+                            'step' => 'initial_availability_check',
+                            'date_slot' => $data['date_slot'] ?? null,
+                            'service_key' => $check_key,
+                        ],
+                    ]
+                );
             }
 
             $res_in_time = Order::where('date_slot', $data['date_slot'])->get();
@@ -129,20 +156,38 @@ class OrderController extends Controller
                 foreach ($res_in_time as $r) {
                     $av --;
                     if($av < 0){
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine'
-                        ]);
+                        return $this->orderFailureResponse(
+                            $request,
+                            'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine',
+                            [],
+                            [
+                                'error_type' => 'availability_changed',
+                                'details' => [
+                                    'step' => 'existing_orders_capacity_check',
+                                    'date_slot' => $data['date_slot'] ?? null,
+                                    'service_key' => $check_key,
+                                ],
+                            ]
+                        );
                     }
                 }
             }
 
             $av --;
             if($av < 0){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine'
-                ]);
+                return $this->orderFailureResponse(
+                    $request,
+                    'Sembra che le disponibilità siano cambiate mentre procedevi con l\'ordine',
+                    [],
+                    [
+                        'error_type' => 'availability_changed',
+                        'details' => [
+                            'step' => 'final_capacity_check',
+                            'date_slot' => $data['date_slot'] ?? null,
+                            'service_key' => $check_key,
+                        ],
+                    ]
+                );
             }
           
             $cart = $data['cart'];
@@ -588,9 +633,22 @@ class OrderController extends Controller
 
 
         } catch (QueryException $e) {
+            $message = 'Errore del database: ' . $e->getMessage();
+            $this->sendFailureAlert($request, [
+                'error_type' => 'database_error',
+                'message' => $message,
+                'status' => 200,
+                'details' => [
+                    'payment_requested' => (bool) ($data['paying'] ?? false),
+                ],
+                'resource' => [
+                    'order_id' => $newOrder?->id,
+                ],
+            ], $e);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Errore del database: ' . $e->getMessage(),
+                'message' => $message,
             ]);
         } catch (Exception $e) {
             $trace = $e->getTrace();
@@ -599,6 +657,19 @@ class OrderController extends Controller
                 'error' => 'Si è verificato un errore durante l\'elaborazione della richiesta: ' . $e->getMessage(),
 
             ];
+
+            $this->sendFailureAlert($request, [
+                'error_type' => 'order_exception',
+                'message' => $errorInfo['error'],
+                'status' => 500,
+                'details' => [
+                    'payment_requested' => (bool) ($data['paying'] ?? false),
+                    'trace_preview' => array_slice($trace, 0, 5),
+                ],
+                'resource' => [
+                    'order_id' => $newOrder?->id,
+                ],
+            ], $e);
 
             return response()->json($errorInfo, 500);
         }
@@ -620,6 +691,25 @@ class OrderController extends Controller
     private function customerPayload(Customer $customer): array
     {
         return $customer->toApiPayload();
+    }
+
+    private function orderFailureResponse(Request $request, string $message, array $response = [], array $context = [], int $status = 200)
+    {
+        $this->sendFailureAlert($request, array_merge([
+            'error_type' => 'order_failure',
+            'message' => $message,
+            'status' => $status,
+        ], $context));
+
+        return response()->json(array_merge([
+            'success' => false,
+            'message' => $message,
+        ], $response), $status);
+    }
+
+    private function sendFailureAlert(Request $request, array $context, ?Throwable $exception = null): void
+    {
+        app(FailureAlertService::class)->notify('order', $request, $context, $exception);
     }
 
     protected function save_message($data_am1){

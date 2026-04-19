@@ -7,6 +7,7 @@ use App\Mail\confermaOrdineAdmin;
 use App\Models\Customer;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Services\FailureAlertService;
 use App\Support\AvailabilityWeekSet;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class ReservationController extends Controller
 {
@@ -58,136 +60,166 @@ class ReservationController extends Controller
             $data['email'] = Customer::normalizeEmail((string) $data['email']);
         }
 
-        validator($data, $this->validations)->validate();
         $customerAuthPayload = null;
+        $newRes = null;
 
-        if (!$authenticatedCustomer) {
-            $verifiedSessionToken = $this->verifiedCheckoutSessionService->extractTokenFromRequest($request);
+        try {
+            validator($data, $this->validations)->validate();
 
-            if (!$this->verifiedCheckoutSessionService->isValidForEmail($verifiedSessionToken, $data['email'])) {
-                throw ValidationException::withMessages([
-                    'email' => [Lang::get('customer.messages.checkout_verification_required', [], $lang)],
+            if (!$authenticatedCustomer) {
+                $verifiedSessionToken = $this->verifiedCheckoutSessionService->extractTokenFromRequest($request);
+
+                if (!$this->verifiedCheckoutSessionService->isValidForEmail($verifiedSessionToken, $data['email'])) {
+                    throw ValidationException::withMessages([
+                        'email' => [Lang::get('customer.messages.checkout_verification_required', [], $lang)],
+                    ]);
+                }
+
+                $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
+                    'name' => $data['name'] ?? null,
+                    'surname' => $data['surname'] ?? null,
+                    'phone' => $data['phone'] ?? null,
+                ], $request->boolean('news_letter'));
+
+                if ($request->boolean('save_details')) {
+                    $customerAuthPayload = [
+                        'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
+                        'customer' => $this->customerPayload($authenticatedCustomer),
+                    ];
+                }
+            } else {
+                $authenticatedCustomer = $this->customerAccessService->syncCustomerProfile($authenticatedCustomer, [
+                    'name' => $data['name'] ?? null,
+                    'surname' => $data['surname'] ?? null,
+                    'phone' => $data['phone'] ?? null,
                 ]);
             }
 
-            $authenticatedCustomer = $this->customerAccessService->findOrCreateForVerifiedCheckout($data['email'], [
-                'name' => $data['name'] ?? null,
-                'surname' => $data['surname'] ?? null,
-                'phone' => $data['phone'] ?? null,
-            ], $request->boolean('news_letter'));
 
-            if ($request->boolean('save_details')) {
-                $customerAuthPayload = [
-                    'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
-                    'customer' => $this->customerPayload($authenticatedCustomer),
-                ];
+            $adv_s = Setting::where('name', 'advanced')->first();
+            $property_adv = json_decode($adv_s->property, true) ?? [];
+            $property_adv['week_set'] = AvailabilityWeekSet::normalize($property_adv['week_set'] ?? []);
+
+            $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
+            $formattedDateSlot = $carbonDate->copy()->format('d/m/Y H:i');
+            $f_date = $carbonDate->copy()->format('Y-m-d');
+            $f_time = $carbonDate->copy()->format('H:i');
+            $f_N = $carbonDate->copy()->format('N'); //giorno della settimana
+            $av = 0;
+
+            $weekSet = $property_adv['week_set'][$f_N] ?? [];
+            $isDayOff = in_array($f_date, $property_adv['day_off'] ?? [], true);
+            $isDoubleRoomEnabled = (bool) ($property_adv['dt'] ?? false);
+            $selectedSala = $isDoubleRoomEnabled ? (int) ($data['sala'] ?? 0) : null;
+
+            if (
+                $weekSet !== []
+                && isset($weekSet[$f_time])
+                && in_array(1, $weekSet[$f_time], true)
+                && !$isDayOff
+            ) {
+                if (!$isDoubleRoomEnabled) {
+                    $av = (int) ($property_adv['max_table'] ?? 0);
+                } elseif ($selectedSala === 1) {
+                    $av = (int) ($property_adv['max_table_1'] ?? 0);
+                } elseif ($selectedSala === 2) {
+                    $av = (int) ($property_adv['max_table_2'] ?? 0);
+                }
+            } else {
+                return $this->reservationFailureResponse(
+                    $request,
+                    'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
+                    ['r' => '56'],
+                    [
+                        'error_type' => 'availability_changed',
+                        'details' => [
+                            'step' => 'initial_availability_check',
+                            'reason_code' => '56',
+                            'date_slot' => $data['date_slot'] ?? null,
+                            'selected_room' => $selectedSala,
+                        ],
+                    ]
+                );
             }
-        } else {
-            $authenticatedCustomer = $this->customerAccessService->syncCustomerProfile($authenticatedCustomer, [
-                'name' => $data['name'] ?? null,
-                'surname' => $data['surname'] ?? null,
-                'phone' => $data['phone'] ?? null,
-            ]);
-        }
 
+            $res_in_time = Reservation::query()
+                ->where('date_slot', $formattedDateSlot)
+                ->whereIn('status', $this->activeReservationStatuses());
 
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, true) ?? [];
-        $property_adv['week_set'] = AvailabilityWeekSet::normalize($property_adv['week_set'] ?? []);
-
-        $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
-        $formattedDateSlot = $carbonDate->copy()->format('d/m/Y H:i');
-        $f_date = $carbonDate->copy()->format('Y-m-d');
-        $f_time = $carbonDate->copy()->format('H:i');
-        $f_N = $carbonDate->copy()->format('N'); //giorno della settimana
-        $av = 0;
-
-        $weekSet = $property_adv['week_set'][$f_N] ?? [];
-        $isDayOff = in_array($f_date, $property_adv['day_off'] ?? [], true);
-        $isDoubleRoomEnabled = (bool) ($property_adv['dt'] ?? false);
-        $selectedSala = $isDoubleRoomEnabled ? (int) ($data['sala'] ?? 0) : null;
-
-        if (
-            $weekSet !== []
-            && isset($weekSet[$f_time])
-            && in_array(1, $weekSet[$f_time], true)
-            && !$isDayOff
-        ) {
-            if (!$isDoubleRoomEnabled) {
-                $av = (int) ($property_adv['max_table'] ?? 0);
-            } elseif ($selectedSala === 1) {
-                $av = (int) ($property_adv['max_table_1'] ?? 0);
-            } elseif ($selectedSala === 2) {
-                $av = (int) ($property_adv['max_table_2'] ?? 0);
+            if ($isDoubleRoomEnabled) {
+                $res_in_time->where('sala', (string) $selectedSala);
             }
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
-                'r' => '56'
-            ]);
-        }
 
-        $res_in_time = Reservation::query()
-            ->where('date_slot', $formattedDateSlot)
-            ->whereIn('status', $this->activeReservationStatuses());
+            $res_in_time = $res_in_time->get();
 
-        if ($isDoubleRoomEnabled) {
-            $res_in_time->where('sala', (string) $selectedSala);
-        }
-
-        $res_in_time = $res_in_time->get();
-
-        if(count($res_in_time)){
-            foreach ($res_in_time as $r) {
-                $p_ = json_decode($r->n_person, 1);
-                $n_adult = $p_['adult'] ?? 0;
-                $n_child = $p_['child'] ?? 0;
-                $tot_p = $n_adult + $n_child;
-                $av -= $tot_p;
-                if($av < 0){
-                    return response()->json([
-                'success' => false,
-                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
-                'r' => '73'
-            ]);
+            if(count($res_in_time)){
+                foreach ($res_in_time as $r) {
+                    $p_ = json_decode($r->n_person, 1);
+                    $n_adult = $p_['adult'] ?? 0;
+                    $n_child = $p_['child'] ?? 0;
+                    $tot_p = $n_adult + $n_child;
+                    $av -= $tot_p;
+                    if($av < 0){
+                        return $this->reservationFailureResponse(
+                            $request,
+                            'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
+                            ['r' => '73'],
+                            [
+                                'error_type' => 'availability_changed',
+                                'details' => [
+                                    'step' => 'existing_reservations_capacity_check',
+                                    'reason_code' => '73',
+                                    'date_slot' => $data['date_slot'] ?? null,
+                                    'selected_room' => $selectedSala,
+                                ],
+                            ]
+                        );
+                    }
                 }
             }
-        }
-        $n_adult = intval($data['n_adult']);
-        $n_child = intval($data['n_child']);
-        $tot_p = $n_adult + $n_child;
-        $av -= $tot_p;
-        if($av < 0){
-            return response()->json([
-                'success' => false,
-                'message' => 'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
-                'r' => '86'
-            ]);
-        }
+            $n_adult = intval($data['n_adult']);
+            $n_child = intval($data['n_child']);
+            $tot_p = $n_adult + $n_child;
+            $av -= $tot_p;
+            if($av < 0){
+                return $this->reservationFailureResponse(
+                    $request,
+                    'Sembra che le disponibilità siano cambiate mentre procedevi con la prenotazione',
+                    ['r' => '86'],
+                    [
+                        'error_type' => 'availability_changed',
+                        'details' => [
+                            'step' => 'final_capacity_check',
+                            'reason_code' => '86',
+                            'date_slot' => $data['date_slot'] ?? null,
+                            'selected_room' => $selectedSala,
+                        ],
+                    ]
+                );
+            }
 
-    
-        // Crea la nuova prenotazione
-        $newRes = new Reservation();
-        $newRes->customer_id = $authenticatedCustomer?->id;
-        $newRes->name = $data['name'];
-        $newRes->surname = $data['surname'];
-        $newRes->phone = $data['phone'];
-        $newRes->email = $data['email'];
-        $newRes->date_slot = $formattedDateSlot;
-        $newRes->n_person = json_encode([
-            'adult' => $data['n_adult'],
-            'child' => $data['n_child'],
-        ]);
-        $newRes->message = $data['message'];
-        $newRes->status = 2;
-        $newRes->news_letter = $data['news_letter'];
-        if($isDoubleRoomEnabled){
-            $newRes->sala = $selectedSala;
-        }
         
+            // Crea la nuova prenotazione
+            $newRes = new Reservation();
+            $newRes->customer_id = $authenticatedCustomer?->id;
+            $newRes->name = $data['name'];
+            $newRes->surname = $data['surname'];
+            $newRes->phone = $data['phone'];
+            $newRes->email = $data['email'];
+            $newRes->date_slot = $formattedDateSlot;
+            $newRes->n_person = json_encode([
+                'adult' => $data['n_adult'],
+                'child' => $data['n_child'],
+            ]);
+            $newRes->message = $data['message'];
+            $newRes->status = 2;
+            $newRes->news_letter = $data['news_letter'];
+            if($isDoubleRoomEnabled){
+                $newRes->sala = $selectedSala;
+            }
+            
 
-        $newRes->save();
+            $newRes->save();
 
 
 
@@ -347,13 +379,39 @@ class ReservationController extends Controller
             'type_2' => $type_m_2,
             'source' => config('configurazione.db'),
         ]);
-        return response()->json([
-            'success' => true,
-            'message' => 'Successo',
-            //'data' => $mx,
-            'customer' => $authenticatedCustomer ? $this->customerPayload($authenticatedCustomer) : null,
-            'customer_auth' => $customerAuthPayload,
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Successo',
+                //'data' => $mx,
+                'customer' => $authenticatedCustomer ? $this->customerPayload($authenticatedCustomer) : null,
+                'customer_auth' => $customerAuthPayload,
+            ]);
+        } catch (ValidationException $e) {
+            $this->sendFailureAlert($request, [
+                'error_type' => 'validation_failure',
+                'message' => $e->getMessage(),
+                'status' => 422,
+                'details' => [
+                    'validation_errors' => $e->errors(),
+                ],
+                'resource' => [
+                    'reservation_id' => $newRes?->id,
+                ],
+            ], $e);
+
+            throw $e;
+        } catch (Throwable $e) {
+            $this->sendFailureAlert($request, [
+                'error_type' => 'reservation_exception',
+                'message' => $e->getMessage(),
+                'status' => 500,
+                'resource' => [
+                    'reservation_id' => $newRes?->id,
+                ],
+            ], $e);
+
+            throw $e;
+        }
     }
 
     private function preferredCheckoutValue($incoming, $fallback)
@@ -372,6 +430,25 @@ class ReservationController extends Controller
     private function customerPayload(Customer $customer): array
     {
         return $customer->toApiPayload();
+    }
+
+    private function reservationFailureResponse(Request $request, string $message, array $response = [], array $context = [], int $status = 200)
+    {
+        $this->sendFailureAlert($request, array_merge([
+            'error_type' => 'reservation_failure',
+            'message' => $message,
+            'status' => $status,
+        ], $context));
+
+        return response()->json(array_merge([
+            'success' => false,
+            'message' => $message,
+        ], $response), $status);
+    }
+
+    private function sendFailureAlert(Request $request, array $context, ?Throwable $exception = null): void
+    {
+        app(FailureAlertService::class)->notify('reservation', $request, $context, $exception);
     }
 
     protected function save_message($data_am1){

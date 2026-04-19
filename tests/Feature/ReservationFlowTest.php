@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Api\ReservationController as ApiReservationController;
+use App\Mail\FailureAlertMail;
 use App\Models\Reservation;
 use App\Models\Setting;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
@@ -11,6 +12,7 @@ use Database\Seeders\SettingsTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ReservationFlowTest extends TestCase
@@ -61,6 +63,36 @@ class ReservationFlowTest extends TestCase
             ]);
 
         $this->assertDatabaseCount('reservations', 0);
+    }
+
+    public function test_reservation_store_sends_failure_alert_when_slot_is_not_available(): void
+    {
+        Http::fake();
+        Mail::fake();
+
+        $slot = Carbon::now()->addDays(7)->setTime(20, 0)->startOfMinute();
+        $this->configureReservationSlot($slot, [
+            'day_off' => [$slot->format('Y-m-d')],
+            'max_table' => 6,
+        ]);
+
+        $response = $this->postJson('/api/reservations', $this->reservationPayload($slot, [
+            'email' => 'alert-reservation@example.com',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'success' => false,
+                'r' => '56',
+            ]);
+
+        Mail::assertSent(FailureAlertMail::class, function (FailureAlertMail $mail) {
+            return $mail->hasTo('info@future-plus.it')
+                && $mail->alert['flow'] === 'reservation'
+                && $mail->alert['error']['type'] === 'availability_changed'
+                && ($mail->alert['customer']['email'] ?? null) === 'alert-reservation@example.com';
+        });
     }
 
     public function test_reservation_store_counts_existing_reservations_for_the_same_slot(): void

@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Ingredient;
+use App\Services\FailureAlertService;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use Illuminate\Database\QueryException;
@@ -57,7 +58,7 @@ class StripeWebhookController extends Controller
                 return $this->handleCheckoutSessionCompleted($session);
             } elseif ($event->type == 'payment_intent.payment_failed') {
                 $paymentIntent = $event->data->object; // contiene i dettagli del pagamento
-                return $this->handlePaymentIntentFailed($paymentIntent);
+                return $this->handlePaymentIntentFailed($paymentIntent, $request);
             }
 
             return response()->json(['status' => 'ignored'], 200);
@@ -561,12 +562,36 @@ class StripeWebhookController extends Controller
         $mailAdmin = new confermaOrdineAdmin($bodymail);
         Mail::to($order->email)->send($mailAdmin);
     }
-    protected function handlePaymentIntentFailed($paymentIntent){
+    protected function handlePaymentIntentFailed($paymentIntent, Request $request){
         // Recupera l'ID dell'ordine dai metadata
-        $orderId = $paymentIntent->metadata->order_id; // Assicurati che l'ID sia correttamente passato nei metadata
+        $orderId = $paymentIntent->metadata->order_id ?? null; // Assicurati che l'ID sia correttamente passato nei metadata
     
         // Trova l'ordine e, se esiste, eliminalo
-        $order = Order::where('id', $orderId)->first();
+        $order = $orderId ? Order::where('id', $orderId)->first() : null;
+
+        app(FailureAlertService::class)->notify('order_payment', $request, [
+            'error_type' => 'stripe_payment_failed',
+            'message' => $paymentIntent->last_payment_error->message ?? 'Pagamento Stripe fallito',
+            'status' => 200,
+            'slot' => $order?->date_slot,
+            'customer' => [
+                'name' => $order?->name,
+                'surname' => $order?->surname,
+                'email' => $order?->email,
+                'phone' => $order?->phone,
+            ],
+            'details' => [
+                'order_id' => $orderId,
+                'payment_intent_id' => $paymentIntent->id ?? null,
+                'payment_status' => $paymentIntent->status ?? null,
+                'failure_code' => $paymentIntent->last_payment_error->code ?? null,
+                'failure_type' => $paymentIntent->last_payment_error->type ?? null,
+                'decline_code' => $paymentIntent->last_payment_error->decline_code ?? null,
+            ],
+            'resource' => [
+                'order_id' => $orderId,
+            ],
+        ]);
     
         if ($order) {
             $order->delete();
