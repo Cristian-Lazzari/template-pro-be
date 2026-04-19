@@ -7,6 +7,7 @@ use App\Mail\confermaOrdineAdmin;
 use App\Models\Customer;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Support\AvailabilityWeekSet;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
 use Carbon\Carbon;
@@ -92,6 +93,7 @@ class ReservationController extends Controller
 
         $adv_s = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, true) ?? [];
+        $property_adv['week_set'] = AvailabilityWeekSet::normalize($property_adv['week_set'] ?? []);
 
         $carbonDate = Carbon::createFromFormat('Y-m-d H:i', $data['date_slot']);
         $formattedDateSlot = $carbonDate->copy()->format('d/m/Y H:i');

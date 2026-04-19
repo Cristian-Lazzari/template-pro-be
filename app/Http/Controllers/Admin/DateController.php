@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\Setting;
+use App\Support\AvailabilityWeekSet;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -43,7 +44,7 @@ class DateController extends Controller
         }
         ksort($times_slot);
 
-        $adv['week_set'] = $times_slot;
+        $adv['week_set'] = AvailabilityWeekSet::normalize($times_slot);
 
         if(isset($data['max_table'])){
             $adv['max_table'] = $data['max_table'];

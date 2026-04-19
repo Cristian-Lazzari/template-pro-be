@@ -103,6 +103,43 @@ class ReservationFlowTest extends TestCase
         $this->assertDatabaseCount('reservations', 1);
     }
 
+    public function test_reservation_store_accepts_slots_saved_as_string_service_ids(): void
+    {
+        Http::fake([
+            'https://graph.facebook.com/*' => Http::response([
+                'messages' => [
+                    ['id' => 'wamid.string-slot.1'],
+                ],
+            ], 200),
+        ]);
+
+        $slot = Carbon::now()->addDays(9)->setTime(19, 0)->startOfMinute();
+        $this->configureReservationSlot($slot, [
+            'max_table' => 6,
+        ]);
+
+        $setting = Setting::query()->where('name', 'advanced')->firstOrFail();
+        $property = json_decode($setting->property, true);
+        $dayOfWeek = (int) $slot->format('N');
+        $property['week_set'][$dayOfWeek][$slot->format('H:i')] = ['1'];
+
+        $setting->update([
+            'property' => json_encode($property),
+        ]);
+
+        $response = $this->postJson('/api/reservations', $this->reservationPayload($slot, [
+            'email' => 'string-slot@example.com',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+            ]);
+
+        $this->assertDatabaseCount('reservations', 1);
+    }
+
     public function test_reservation_store_uses_room_specific_capacity_when_double_room_is_enabled(): void
     {
         Http::fake([
