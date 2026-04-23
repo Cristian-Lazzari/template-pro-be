@@ -31,16 +31,11 @@ class Menu extends Model
     public function orders(){
         return $this->belongsToMany(Order::class);
     }
-    // public function products(){
-    //     return $this->belongsToMany(Product::class)
-    //     ->withPivot('label', )
-    // }
-    
     public function products()
     {
         return $this->belongsToMany(Product::class, 'menu_product')
             ->using(MenuProduct::class)
-            ->withPivot('id', 'extra_price', 'label')
+            ->withPivot('id', 'extra_price')
             ->withTimestamps()
             ->orderBy('created_at', 'asc'); // <- fondamentale!
     }

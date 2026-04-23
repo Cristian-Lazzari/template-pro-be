@@ -13,6 +13,8 @@ class MenuProduct extends Pivot
 
     protected $table = 'menu_product';
 
+    public $incrementing = true;
+
     protected $casts = [
         'extra_price' => 'float',
     ];
@@ -20,7 +22,6 @@ class MenuProduct extends Pivot
     protected $fillable = [
         'product_id',
         'menu_id',
-        'label',
         'extra_price',
     ];
         
