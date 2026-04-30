@@ -3,6 +3,21 @@
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
+if (isset($_GET['codex_php_check'])) {
+    header('Content-Type: text/plain; charset=UTF-8');
+
+    echo 'FILE='.__FILE__.PHP_EOL;
+    echo 'PHP_VERSION='.PHP_VERSION.PHP_EOL;
+    echo 'PHP_VERSION_ID='.PHP_VERSION_ID.PHP_EOL;
+    echo 'PHP_SAPI='.PHP_SAPI.PHP_EOL;
+    echo 'PHP_BINARY='.PHP_BINARY.PHP_EOL;
+    echo 'PHP_INI='.(php_ini_loaded_file() ?: 'none').PHP_EOL;
+    echo 'DOCUMENT_ROOT='.($_SERVER['DOCUMENT_ROOT'] ?? 'none').PHP_EOL;
+    echo 'SCRIPT_FILENAME='.($_SERVER['SCRIPT_FILENAME'] ?? 'none').PHP_EOL;
+
+    exit;
+}
+
 define('LARAVEL_START', microtime(true));
 
 /*
@@ -53,5 +68,4 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
-
 
