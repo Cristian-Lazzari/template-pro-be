@@ -1,7 +1,7 @@
 <section class="public-panel public-panel--soft">
     <div class="public-panel__header">
         <p class="public-panel__eyebrow">Blocchi reali del dashboard</p>
-        <h2>Comunicazioni costruite su liste contatti e modelli email del pannello Mailer</h2>
+        <h2>Comunicazioni costruite su profili cliente e modelli email gestiti dalla pagina clienti</h2>
     </div>
 
     <div class="email-m dashboard-mailer-preview">
@@ -51,7 +51,7 @@
                     <h1>Brunch della domenica</h1>
                     <div class="corpo">
                         <p>Menu dedicato, tavoli limitati e prenotazione consigliata.</p>
-                        <p>Il contenuto resta leggibile direttamente dalla card del pannello Mailer.</p>
+                        <p>Il contenuto resta leggibile direttamente dalla card dei modelli mail.</p>
                     </div>
                     <p class="ending">Disponibile questa settimana fino a esaurimento posti.</p>
                     <div class="sender" style="color: #04001d">
@@ -67,7 +67,7 @@
 <section class="public-panel">
     <div class="public-panel__header">
         <p class="public-panel__eyebrow">Anteprima riusabile</p>
-        <h2>Email marketing su pattern condiviso pronto per altre pagine interne</h2>
+        <h2>Modelli email su pattern condiviso pronto per altre pagine interne</h2>
     </div>
 
     <x-dashboard.mail-preview
@@ -75,7 +75,7 @@
         subject="Brunch speciale di domenica"
         sender="Trattoria Centro"
         headline="Domenica torna il brunch della casa"
-        subheadline="Template marketing del pannello Mailer"
+        subheadline="Template mail collegato alla pagina clienti"
         greeting="Ciao,"
         intro="Questa anteprima riprende la struttura dei modelli mail e usa un componente condiviso invece di un layout solo documentazione."
         :items="[
@@ -84,6 +84,6 @@
             'Mittente: Trattoria Centro',
         ]"
         cta="Prenota il tuo tavolo"
-        footer="Il contenuto finale resta gestito dal sistema Mailer e dai template HTML reali."
+        footer="Il contenuto finale resta gestito dai template HTML reali e dalla sezione clienti."
     />
 </section>

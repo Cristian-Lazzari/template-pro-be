@@ -45,19 +45,11 @@ Route::middleware(['auth', 'verified'])
         Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
         Route::post('/customers/profile-settings', [CustomerController::class, 'updateProfileSettings'])->name('customers.profile_settings');
 
-        Route::get('/mailer/index',         [MailerController::class, 'mailer'])->name('mailer.index');
-        Route::get('/mailer/send_mail',     [MailerController::class, 'send_mail'])->name('mailer.send_mail');
-        
-        Route::post('/mailer/send_m',       [MailerController::class, 'send_m'])->name('mailer.send_m');
-        Route::post('/mailer/extra_list',   [MailerController::class, 'extra_list'])->name('mailer.extra_list');
-        
-        Route::get('/mailer/create_model',  [MailerController::class, 'create_model'])->name('mailer.create_model');
-        Route::post('/mailer/create_m',     [MailerController::class, 'create_m'])->name('mailer.create_m');
-
-        Route::get('/mailer/edit_model/{id}',   [MailerController::class, 'edit_model'])->name('mailer.edit_model');
-
-        Route::post('/mailer/update_model',     [MailerController::class, 'update_model'])->name('mailer.update_model');
-        Route::delete('/models/{id}',           [MailerController::class, 'delete'])->name('models.delete');
+        Route::get('/customers/mail-models/create', [MailerController::class, 'createModel'])->name('customers.mail_models.create');
+        Route::post('/customers/mail-models', [MailerController::class, 'storeModel'])->name('customers.mail_models.store');
+        Route::get('/customers/mail-models/{id}/edit', [MailerController::class, 'editModel'])->name('customers.mail_models.edit');
+        Route::post('/customers/mail-models/update', [MailerController::class, 'updateModel'])->name('customers.mail_models.update');
+        Route::delete('/customers/mail-models/{id}', [MailerController::class, 'deleteModel'])->name('customers.mail_models.delete');
 
         // Rotte setting
 

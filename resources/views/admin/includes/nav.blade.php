@@ -40,16 +40,6 @@
         ];
     }
 
-    if (config('configurazione.subscription') > 2) {
-        $navItems[] = [
-            'key' => 'mailer',
-            'label' => 'Mailer',
-            'route' => route('admin.mailer.index'),
-            'icon' => 'envelope-arrow-up',
-            'active' => request()->routeIs('admin.mailer.*') || request()->routeIs('admin.models.delete'),
-        ];
-    }
-
     $navItems[] = [
         'key' => 'customers',
         'label' => 'Clienti',

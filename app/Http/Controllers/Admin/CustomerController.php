@@ -4,152 +4,67 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\Model as MailModel;
 use App\Models\Order;
 use App\Models\Reservation;
+use App\Services\Crm\CustomerSegmentService;
 use App\Services\CustomerAuth\CustomerProfileSettingsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class CustomerController extends Controller
 {
     public function __construct(
         private CustomerProfileSettingsService $customerProfileSettingsService,
-    ) {
-    }
+    ) {}
 
-    public function index()
+    public function index(Request $request, CustomerSegmentService $customerSegmentService)
     {
-        $linkedStats = $this->linkedStatsByCustomerId();
+        $filters = [
+            'search' => trim((string) $request->query('search', '')),
+            'type' => trim((string) $request->query('type', 'all')),
+            'segment' => trim((string) $request->query('segment', '')),
+        ];
 
-        $registeredCustomers = Customer::query()
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function ($customer) use ($linkedStats) {
-                $stats = $linkedStats->get($customer->id);
+        if (! in_array($filters['type'], ['all', 'orders', 'reservations', 'both'], true)) {
+            $filters['type'] = 'all';
+        }
 
-                $customer->orders_count = (int) ($stats->orders_count ?? 0);
-                $customer->reservations_count = (int) ($stats->reservations_count ?? 0);
-                $customer->interactions_count = (int) ($stats->interactions_count ?? 0);
-                $customer->last_source = $stats->last_source ?? null;
-                $customer->last_source_id = isset($stats->last_source_id) ? (int) $stats->last_source_id : null;
-                $customer->last_activity_at = isset($stats->last_activity_at)
-                    ? Carbon::parse($stats->last_activity_at)
-                    : ($customer->created_at ? Carbon::parse($customer->created_at) : null);
-                $customer->is_registered = $customer->isRegistered();
-                $customer->account_state = $customer->isRegistered() ? 'registered' : 'guest';
-                $customer->marketing_state = $customer->marketingState();
-                $customer->detail_url = route('admin.customers.show', $customer);
-
-                $customer->search_text = mb_strtolower(trim(implode(' ', array_filter([
-                    $customer->name,
-                    $customer->surname,
-                    $customer->email,
-                    $customer->phone,
-                ]))));
-
-                return $customer;
-            });
-
-        $orderEvents = Order::query()
-            ->selectRaw("
-                LOWER(TRIM(email)) as email_key,
-                LOWER(TRIM(name)) as name_key,
-                LOWER(TRIM(surname)) as surname_key,
-                TRIM(email) as email,
-                TRIM(name) as name,
-                TRIM(surname) as surname,
-                NULLIF(TRIM(phone), '') as phone,
-                news_letter,
-                COALESCE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), created_at) as activity_at,
-                'order' as source,
-                id as source_id
-            ")
-            ->whereNotNull('email')
-            ->whereRaw("TRIM(email) <> ''")
-            ->whereNull('customer_id');
-
-        $reservationEvents = Reservation::query()
-            ->selectRaw("
-                LOWER(TRIM(email)) as email_key,
-                LOWER(TRIM(name)) as name_key,
-                LOWER(TRIM(surname)) as surname_key,
-                TRIM(email) as email,
-                TRIM(name) as name,
-                TRIM(surname) as surname,
-                NULLIF(TRIM(phone), '') as phone,
-                news_letter,
-                COALESCE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), created_at) as activity_at,
-                'reservation' as source,
-                id as source_id
-            ")
-            ->whereNotNull('email')
-            ->whereRaw("TRIM(email) <> ''")
-            ->whereNull('customer_id');
-
-        $guestCustomers = DB::query()
-            ->fromSub($orderEvents->unionAll($reservationEvents), 'customer_events')
-            ->selectRaw("
-                SUBSTRING_INDEX(GROUP_CONCAT(email ORDER BY activity_at DESC SEPARATOR '||'), '||', 1) as email,
-                SUBSTRING_INDEX(GROUP_CONCAT(name ORDER BY activity_at DESC SEPARATOR '||'), '||', 1) as name,
-                SUBSTRING_INDEX(GROUP_CONCAT(surname ORDER BY activity_at DESC SEPARATOR '||'), '||', 1) as surname,
-                SUBSTRING_INDEX(GROUP_CONCAT(phone ORDER BY activity_at DESC SEPARATOR '||'), '||', 1) as phone,
-                SUM(CASE WHEN source = 'order' THEN 1 ELSE 0 END) as orders_count,
-                SUM(CASE WHEN source = 'reservation' THEN 1 ELSE 0 END) as reservations_count,
-                MAX(CASE WHEN news_letter = 1 THEN 1 ELSE 0 END) as marketing_opt_in,
-                COUNT(*) as interactions_count,
-                MAX(activity_at) as last_activity_at,
-                SUBSTRING_INDEX(GROUP_CONCAT(source ORDER BY activity_at DESC SEPARATOR ','), ',', 1) as last_source,
-                SUBSTRING_INDEX(GROUP_CONCAT(source_id ORDER BY activity_at DESC SEPARATOR ','), ',', 1) as last_source_id
-            ")
-            ->groupBy('email_key', 'name_key', 'surname_key')
-            ->orderByDesc('last_activity_at')
-            ->get()
-            ->map(function ($customer) {
-                $customer->orders_count = (int) $customer->orders_count;
-                $customer->reservations_count = (int) $customer->reservations_count;
-                $customer->interactions_count = (int) $customer->interactions_count;
-                $customer->last_source_id = $customer->last_source_id ? (int) $customer->last_source_id : null;
-                $customer->last_activity_at = $customer->last_activity_at
-                    ? Carbon::parse($customer->last_activity_at)
-                    : null;
-                $customer->is_registered = false;
-                $customer->account_state = 'guest';
-                $customer->marketing_state = ((int) ($customer->marketing_opt_in ?? 0)) === 1
-                    ? 'soft_marketing'
-                    : 'no_marketing';
-                $customer->detail_url = route('admin.customers.show_guest', ['email' => $customer->email]);
-
-                $customer->search_text = mb_strtolower(trim(implode(' ', array_filter([
-                    $customer->name,
-                    $customer->surname,
-                    $customer->email,
-                    $customer->phone,
-                ]))));
-
-                return $customer;
-            })
-            ->values();
-
-        $customers = $registeredCustomers
-            ->concat($guestCustomers)
-            ->sortByDesc(function ($customer) {
-                return $customer->last_activity_at?->timestamp ?? 0;
-            })
-            ->values();
+        $allCustomers = $customerSegmentService->buildBaseCustomerQuery();
+        $filteredCustomers = $filters['segment'] !== ''
+            ? $customerSegmentService->getCustomersForSegment($filters['segment'], $filters)
+            : $customerSegmentService->buildBaseCustomerQuery($filters);
+        $customers = $this->paginateCustomers($filteredCustomers, $request);
 
         $stats = [
-            'total' => $customers->count(),
-            'with_orders' => $customers->where('orders_count', '>', 0)->count(),
-            'with_reservations' => $customers->where('reservations_count', '>', 0)->count(),
-            'with_both' => $customers->filter(function ($customer) {
+            'total' => $allCustomers->count(),
+            'with_orders' => $allCustomers->where('orders_count', '>', 0)->count(),
+            'with_reservations' => $allCustomers->where('reservations_count', '>', 0)->count(),
+            'with_both' => $allCustomers->filter(function ($customer) {
                 return $customer->orders_count > 0 && $customer->reservations_count > 0;
             })->count(),
         ];
 
         $profileSettings = $this->customerProfileSettingsService->get();
+        $mailModels = MailModel::query()
+            ->orderByDesc('id')
+            ->get();
+        $segmentOptions = $customerSegmentService->getSegments();
 
-        return view('admin.Customers.index', compact('customers', 'stats', 'profileSettings'));
+        if ($request->ajax()) {
+            return response()->view('admin.Customers.partials.results', compact('customers'));
+        }
+
+        return view('admin.Customers.index', compact(
+            'customers',
+            'stats',
+            'profileSettings',
+            'mailModels',
+            'segmentOptions',
+            'filters',
+        ));
     }
 
     public function show(Customer $customer)
@@ -183,7 +98,7 @@ class CustomerController extends Controller
     public function updateProfileSettings(Request $request)
     {
         $questions = $request->input('questions', []);
-        if (!is_array($questions)) {
+        if (! is_array($questions)) {
             $questions = [];
         }
 
@@ -198,40 +113,21 @@ class CustomerController extends Controller
             ->with('success', 'Profilo cliente aggiornato correttamente.');
     }
 
-    private function linkedStatsByCustomerId()
+    private function paginateCustomers(Collection $customers, Request $request): LengthAwarePaginator
     {
-        $linkedOrderEvents = Order::query()
-            ->selectRaw("
-                customer_id,
-                COALESCE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), created_at) as activity_at,
-                'order' as source,
-                id as source_id
-            ")
-            ->whereNotNull('customer_id');
+        $perPage = max(1, (int) config('crm.customer_list_per_page', 15));
+        $total = $customers->count();
+        $lastPage = max(1, (int) ceil($total / $perPage));
+        $page = min(max(1, (int) $request->query('page', 1)), $lastPage);
+        $items = $customers->forPage($page, $perPage)->values();
 
-        $linkedReservationEvents = Reservation::query()
-            ->selectRaw("
-                customer_id,
-                COALESCE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i'), created_at) as activity_at,
-                'reservation' as source,
-                id as source_id
-            ")
-            ->whereNotNull('customer_id');
-
-        return DB::query()
-            ->fromSub($linkedOrderEvents->unionAll($linkedReservationEvents), 'customer_events')
-            ->selectRaw("
-                customer_id,
-                SUM(CASE WHEN source = 'order' THEN 1 ELSE 0 END) as orders_count,
-                SUM(CASE WHEN source = 'reservation' THEN 1 ELSE 0 END) as reservations_count,
-                COUNT(*) as interactions_count,
-                MAX(activity_at) as last_activity_at,
-                SUBSTRING_INDEX(GROUP_CONCAT(source ORDER BY activity_at DESC SEPARATOR ','), ',', 1) as last_source,
-                SUBSTRING_INDEX(GROUP_CONCAT(source_id ORDER BY activity_at DESC SEPARATOR ','), ',', 1) as last_source_id
-            ")
-            ->groupBy('customer_id')
-            ->get()
-            ->keyBy('customer_id');
+        return (new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $page,
+            ['path' => route('admin.customers.index')]
+        ))->appends($request->query());
     }
 
     private function buildCustomerShowPayload(?Customer $customer, ?string $email = null): array
@@ -246,6 +142,7 @@ class CustomerController extends Controller
                 if ($customer) {
                     $query->where('customer_id', $customer->id)
                         ->orWhereRaw('LOWER(TRIM(email)) = ?', [$normalizedEmail]);
+
                     return;
                 }
 
@@ -263,6 +160,7 @@ class CustomerController extends Controller
                 if ($customer) {
                     $query->where('customer_id', $customer->id)
                         ->orWhereRaw('LOWER(TRIM(email)) = ?', [$normalizedEmail]);
+
                     return;
                 }
 
@@ -286,7 +184,7 @@ class CustomerController extends Controller
         if ($customer) {
             foreach (($profileSettings['questions'] ?? []) as $question) {
                 $key = $question['key'] ?? null;
-                if (!$key) {
+                if (! $key) {
                     continue;
                 }
 

@@ -2,18 +2,10 @@
 
 @section('contents')
 @php
-    $accountLabels = [
-        'guest' => 'Ospite',
-        'registered' => 'Registrato',
-    ];
-
-    $marketingLabels = [
-        'no_marketing' => 'No marketing',
-        'soft_marketing' => 'Soft marketing',
-        'full' => 'Full marketing',
-    ];
-
     $profileSettingsExpanded = session()->hasOldInput();
+    $filters = $filters ?? ['search' => '', 'type' => 'all', 'segment' => ''];
+    $selectedType = $filters['type'] ?? 'all';
+    $selectedSegment = $filters['segment'] ?? '';
 @endphp
 
 <style>
@@ -32,9 +24,11 @@
         top: 10px;
     }
 
+    .customer-page__alerts,
     .customer-page__hero,
     .customer-page__settings,
     .customer-page__toolbar-shell,
+    .customer-page__mail-models,
     .customer-page__empty,
     .customer-card {
         width: 100%;
@@ -84,6 +78,7 @@
     .customer-page__summary-grid,
     .customer-page__field-grid,
     .customer-page__toolbar-grid,
+    .customer-page__mail-model-grid,
     .customer-page__list,
     .question-list {
         display: grid;
@@ -246,13 +241,47 @@
     }
 
     .customer-page__toolbar-grid {
-        grid-template-columns: minmax(0, 1.6fr) minmax(240px, .7fr);
+        grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(220px, .7fr));
+        gap: 10px;
+        align-items: center;
     }
 
     .customer-page__field,
-    .question-item__field {
+    .question-item__field,
+    .customer-page__filter {
         display: grid;
         gap: 10px;
+    }
+
+    .customer-page__toolbar-form {
+        display: grid;
+        gap: 0;
+    }
+
+    .customer-page__filter {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: 0;
+        min-height: 44px;
+        padding: 0 10px 0 0;
+        border-radius: 14px;
+        border: 1px solid rgba(216, 221, 232, 0.16);
+        background: rgba(9, 3, 51, 0.56);
+        overflow: hidden;
+    }
+
+    .customer-page__filter-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        color: rgba(216, 221, 232, 0.72);
+    }
+
+    .customer-page__filter-icon i {
+        font-size: var(--fs-200);
+        line-height: 1;
     }
 
     .customer-page__field input,
@@ -268,12 +297,37 @@
         color: var(--c3);
     }
 
+    .customer-page__filter input,
+    .customer-page__filter select {
+        width: 100%;
+        min-height: 42px;
+        padding: 0 12px 0 0;
+        border: 0;
+        background: transparent;
+        color: var(--c3);
+        box-shadow: none;
+    }
+
+    .customer-page__filter select {
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .customer-page__filter input:focus,
+    .customer-page__filter select:focus {
+        outline: none;
+    }
+
     .customer-page__field textarea {
         min-height: 120px;
         resize: vertical;
     }
 
     .customer-page__field input::placeholder {
+        color: rgba(216, 221, 232, 0.48);
+    }
+
+    .customer-page__filter input::placeholder {
         color: rgba(216, 221, 232, 0.48);
     }
 
@@ -293,6 +347,112 @@
     .customer-page__actions {
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
+    }
+
+    .customer-page__alerts {
+        display: grid;
+        gap: 12px;
+    }
+
+    .customer-page__alert {
+        margin: 0;
+        border-radius: 18px;
+        border: 1px solid rgba(14, 183, 146, 0.28);
+        background: rgba(14, 183, 146, 0.12);
+        color: var(--c3);
+    }
+
+    .customer-page__mail-model-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .customer-page__mail-model {
+        display: grid;
+        gap: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.05);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .customer-page__mail-model-head,
+    .customer-page__mail-model-copy,
+    .customer-page__mail-model-body,
+    .customer-page__mail-model-footer,
+    .customer-page__mail-model-actions {
+        display: grid;
+        gap: 10px;
+    }
+
+    .customer-page__mail-model-title {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .customer-page__mail-model-title h3,
+    .customer-page__mail-model-body h4 {
+        margin: 0;
+        color: var(--c3);
+    }
+
+    .customer-page__mail-model-title h3 {
+        font-size: var(--fs-400);
+        line-height: 1.15;
+    }
+
+    .customer-page__mail-model-body h4 {
+        font-size: var(--fs-500);
+        line-height: 1.1;
+    }
+
+    .customer-page__mail-model-meta,
+    .customer-page__mail-model-body p,
+    .customer-page__mail-model-footer p {
+        margin: 0;
+        color: rgba(216, 221, 232, 0.78);
+        line-height: 1.65;
+    }
+
+    .customer-page__mail-model-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.06);
+        color: rgba(216, 221, 232, 0.88);
+        font-size: var(--fs-200);
+        font-weight: 700;
+    }
+
+    .customer-page__mail-model-images {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .customer-page__mail-model-image {
+        width: 100%;
+        min-height: 160px;
+        object-fit: cover;
+        border-radius: 16px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.36);
+    }
+
+    .customer-page__mail-model-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .customer-page__mail-model-actions form,
+    .customer-page__mail-model-actions button {
+        width: 100%;
     }
 
 
@@ -351,6 +511,27 @@
         color: var(--c3);
         font-size: var(--fs-200);
         font-family: monospace;
+    }
+
+    .customer-card__metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .customer-card__score {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.06);
+        color: var(--c3);
+        font-size: var(--fs-200);
+        font-weight: 700;
     }
 
     .customer-card__action {
@@ -485,9 +666,28 @@
         line-height: 1;
     }
 
+    .customer-page__pagination {
+        margin-top: 18px;
+    }
+
+    .customer-page__pagination nav {
+        display: flex;
+        justify-content: center;
+    }
+
+    .customer-page__pagination .pagination {
+        margin-bottom: 0;
+    }
+
+    .customer-page__toolbar-shell.is-loading {
+        opacity: .78;
+        transition: opacity .18s ease;
+    }
+
     @media (max-width: 1120px) {
         .customer-page__field-grid,
         .customer-page__toolbar-grid,
+        .customer-page__mail-model-grid,
         .customer-page__actions {
             grid-template-columns: 1fr;
         }
@@ -502,12 +702,14 @@
     @media (max-width: 720px) {
         .customer-page__summary-grid,
         .customer-page__list,
+        .customer-page__mail-model-images,
         .question-item__fields,
         .question-item__footer {
             grid-template-columns: 1fr;
         }
 
         .customer-card__compact,
+        .customer-page__mail-model-actions,
         .customer-page__actions {
             grid-template-columns: 1fr;
         }
@@ -530,6 +732,12 @@
 </style>
 
 <div class="dash_page customer-page customer-page--detail">
+    @if (session('success'))
+        <div class="alert alert-success customer-page__alert" role="status">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <section class="order-detail order-detail--active customer-page__hero">
         <header class="order-detail__header">
             <div class="customer-page__hero-copy">
@@ -553,6 +761,11 @@
                 <a href="#customerProfileSettings" class="order-detail__contact">
                     <x-icon name="sliders" />
                     <span>Configura profilo cliente</span>
+                </a>
+
+                <a href="#customerMailModels" class="order-detail__contact">
+                    <x-icon name="envelope-paper-fill" />
+                    <span>Apri modelli mail</span>
                 </a>
 
                 <a href="#customerList" class="order-detail__contact">
@@ -699,119 +912,180 @@
         </div>
     </form>
 
+    <section id="customerMailModels" class="order-detail customer-page__mail-models">
+        <div class="order-detail__body">
+            <section class="order-detail__section">
+                <div class="order-detail__section-head">
+                    <h3>
+                        <span class="order-detail__section-icon">
+                            <x-icon name="envelope-paper-fill" />
+                        </span>
+                        Modelli mail
+                    </h3>
+
+                    <a class="customer-page__button" href="{{ route('admin.customers.mail_models.create') }}">
+                        <x-icon name="plus-circle-fill" />
+                        <span>Nuovo modello</span>
+                    </a>
+                </div>
+
+                <div class="customer-page__actions" style="margin-bottom: 14px;">
+                    <div class="customer-page__settings-copy">
+                        <p>
+                            I template restano disponibili qui dentro, insieme ai profili cliente.
+                            La parte email marketing e le campagne separate non sono piu esposte nel pannello.
+                        </p>
+                    </div>
+                </div>
+
+                @if ($mailModels->isNotEmpty())
+                    <div class="customer-page__mail-model-grid">
+                        @foreach ($mailModels as $mailModel)
+                            @php
+                                $bodyParts = array_values(array_filter(
+                                    explode('/*/', (string) $mailModel->body),
+                                    fn ($part) => trim($part) !== ''
+                                ));
+                            @endphp
+
+                            <article class="customer-page__mail-model">
+                                <div class="customer-page__mail-model-head">
+                                    <div class="customer-page__mail-model-title">
+                                        <h3>{{ $mailModel->name }}</h3>
+                                        <span class="customer-page__mail-model-label">{{ $mailModel->sender }}</span>
+                                    </div>
+
+                                    <p class="customer-page__mail-model-meta">
+                                        <strong>Oggetto:</strong> {{ $mailModel->object }}
+                                    </p>
+                                </div>
+
+                                <div class="customer-page__mail-model-body">
+                                    <h4>{{ $mailModel->heading }}</h4>
+
+                                    @foreach ($bodyParts as $part)
+                                        <p>{!! nl2br(e(str_replace('\n', "\n", $part))) !!}</p>
+                                    @endforeach
+                                </div>
+
+                                @if ($mailModel->img_1 || $mailModel->img_2)
+                                    <div class="customer-page__mail-model-images">
+                                        @if ($mailModel->img_1)
+                                            <img class="customer-page__mail-model-image" src="{{ asset('public/storage/' . $mailModel->img_1) }}" alt="{{ $mailModel->name }} immagine 1">
+                                        @endif
+
+                                        @if ($mailModel->img_2)
+                                            <img class="customer-page__mail-model-image" src="{{ asset('public/storage/' . $mailModel->img_2) }}" alt="{{ $mailModel->name }} immagine 2">
+                                        @endif
+                                    </div>
+                                @endif
+
+                                <div class="customer-page__mail-model-footer">
+                                    <p>{!! nl2br(e(str_replace('\n', "\n", $mailModel->ending))) !!}</p>
+                                </div>
+
+                                <div class="customer-page__mail-model-actions">
+                                    <a class="customer-page__button--ghost" href="{{ route('admin.customers.mail_models.edit', $mailModel->id) }}">
+                                        <x-icon name="pencil-square" />
+                                        <span>Modifica</span>
+                                    </a>
+
+                                    <button type="button" class="customer-page__button--ghost" data-bs-toggle="modal" data-bs-target="#deleteMailModel{{ $mailModel->id }}">
+                                        <x-icon name="trash3-fill" />
+                                        <span>Elimina</span>
+                                    </button>
+                                </div>
+                            </article>
+
+                            <div class="modal fade" id="deleteMailModel{{ $mailModel->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteMailModel{{ $mailModel->id }}Label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered creation">
+                                    <form action="{{ route('admin.customers.mail_models.delete', $mailModel->id) }}" class="w-100" method="post">
+                                        @method('delete')
+                                        @csrf
+                                        <x-dashboard.action-modal
+                                            title-id="deleteMailModel{{ $mailModel->id }}Label"
+                                            title="Sicuro di voler eliminare il modello?"
+                                            eyebrow="Template mail"
+                                            tone="danger"
+                                            :subject="$mailModel->name"
+                                            description="Una volta eliminato, questo modello non potra piu essere recuperato."
+                                        >
+                                            <p class="dashboard-action-modal__hint">Controlla il nome del template prima di confermare.</p>
+
+                                            <x-slot name="footer">
+                                                <button class="my_btn_2" type="submit">
+                                                    Elimina definitivamente
+                                                </button>
+                                            </x-slot>
+                                        </x-dashboard.action-modal>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="customer-page__empty">
+                        <div>
+                            <span class="customer-page__empty-icon" aria-hidden="true">
+                                <x-icon name="envelope-paper-fill" />
+                            </span>
+                            <strong>Nessun modello mail disponibile</strong>
+                            <p>Crea il primo template direttamente da questa pagina clienti.</p>
+                        </div>
+                    </div>
+                @endif
+            </section>
+        </div>
+    </section>
+
     <section class="order-detail customer-page__toolbar-shell">
+        <form id="customerToolbarForm" class="customer-page__toolbar-form" method="GET" action="{{ route('admin.customers.index') }}">
             <div class="customer-page__toolbar-grid">
-                <label class="customer-page__field">
-                    <span>{{ __('admin.Cerca_cliente') }}</span>
-                    <input id="customerSearch" type="text" placeholder="{{ __('admin.Cerca_cliente') }}">
+                <label class="customer-page__filter">
+                    <span class="customer-page__filter-icon" aria-hidden="true">
+                        <x-icon name="search" />
+                    </span>
+                    <input
+                        id="customerSearch"
+                        name="search"
+                        type="text"
+                        value="{{ $filters['search'] }}"
+                        aria-label="{{ __('admin.Cerca_cliente') }}"
+                        placeholder="{{ __('admin.Cerca_cliente') }}"
+                    >
                 </label>
 
-                <label class="customer-page__field">
-                    <span>Vista rapida</span>
-                    <select id="customerType">
-                        <option value="all">{{ __('admin.Tutti') }}</option>
-                        <option value="orders">{{ __('admin.Con_ordini') }}</option>
-                        <option value="reservations">{{ __('admin.Con_prenotazioni') }}</option>
-                        <option value="both">{{ __('admin.Ordini_e_prenotazioni') }}</option>
+                <label class="customer-page__filter">
+                    <span class="customer-page__filter-icon" aria-hidden="true">
+                        <x-icon name="funnel-fill" />
+                    </span>
+                    <select id="customerType" name="type" aria-label="Vista rapida">
+                        <option value="all" @selected($selectedType === 'all')>{{ __('admin.Tutti') }}</option>
+                        <option value="orders" @selected($selectedType === 'orders')>{{ __('admin.Con_ordini') }}</option>
+                        <option value="reservations" @selected($selectedType === 'reservations')>{{ __('admin.Con_prenotazioni') }}</option>
+                        <option value="both" @selected($selectedType === 'both')>{{ __('admin.Ordini_e_prenotazioni') }}</option>
+                    </select>
+                </label>
+
+                <label class="customer-page__filter">
+                    <span class="customer-page__filter-icon" aria-hidden="true">
+                        <x-icon name="bullseye" />
+                    </span>
+                    <select id="customerSegment" name="segment" aria-label="Segmento CRM">
+                        <option value="">Tutti i segmenti</option>
+                        @foreach ($segmentOptions as $segmentKey => $segment)
+                            <option value="{{ $segmentKey }}" @selected($selectedSegment === $segmentKey)>
+                                {{ $segment['label'] }}
+                            </option>
+                        @endforeach
                     </select>
                 </label>
             </div>
-        </section>
+        </form>
     </section>
 
-    <div id="customerList" class="customer-page__list">
-        @foreach ($customers as $customer)
-            @php
-                $displayName = trim(($customer->name ?? '') . ' ' . ($customer->surname ?? '')) ?: $customer->email;
-                $accountTone = $customer->account_state === 'registered' ? 'active' : 'warning';
-                $marketingTone = match ($customer->marketing_state) {
-                    'full' => 'active',
-                    'soft_marketing' => 'warning',
-                    default => 'off',
-                };
-                $marketingLabel = $marketingLabels[$customer->marketing_state] ?? ucfirst((string) $customer->marketing_state);
-            @endphp
-
-            <article
-                class="order-detail order-detail--{{ $accountTone }} customer-card"
-                data-customer-card
-                data-search="{{ $customer->search_text }}"
-                data-has-orders="{{ $customer->orders_count > 0 ? 1 : 0 }}"
-                data-has-reservations="{{ $customer->reservations_count > 0 ? 1 : 0 }}"
-            >
-                <header class="order-detail__header">
-                    <div class="customer-card__identity">
-                        <div class="order-detail__status">
-                            <span class="order-detail__status-icon order-detail__status-icon--{{ $accountTone }}">
-                                @if ($customer->account_state === 'registered')
-                                    <x-icon name="person-check-fill" />
-                                @else
-                                    <x-icon name="person-fill" />
-                                @endif
-                            </span>
-                            <strong>{{ $accountLabels[$customer->account_state] ?? ucfirst((string) $customer->account_state) }}</strong>
-                        </div>
-
-                        <div class="customer-card__title">
-                            <h2>{{ $displayName }}</h2>
-                            <p>
-                                Ultimo movimento:
-                                {{ $customer->last_activity_at ? $customer->last_activity_at->format('d/m/Y H:i') : '-' }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="customer-card__pill-row">
-                        <x-dashboard.state-pill :tone="$marketingTone">{{ $marketingLabel }}</x-dashboard.state-pill>
-                    </div>
-                </header>
-
-                <div class="customer-card__compact">
-                    <div class="customer-card__details">
-                        <div class="customer-card__meta-row">
-                            <a href="mailto:{{ $customer->email }}" class="order-detail__contact">
-                                <x-icon name="envelope-arrow-up-fill" />
-                                <span>{{ $customer->email }}</span>
-                            </a>
-
-                            @if ($customer->phone)
-                                <a href="tel:{{ $customer->phone }}" class="order-detail__contact">
-                                    <x-icon name="telephone-outbound-fill" />
-                                    <span>{{ $customer->phone }}</span>
-                                </a>
-                            @endif
-                        </div>
-
-                        <p class="customer-card__summary">
-                            <strong>{{ $customer->orders_count }}</strong> ordini
-                            <span aria-hidden="true">•</span>
-                            <strong>{{ $customer->reservations_count }}</strong> prenotazioni
-                            <span aria-hidden="true">•</span>
-                            <strong>{{ $customer->interactions_count }}</strong> interazioni
-                        </p>
-                    </div>
-
-                    @if ($customer->detail_url)
-                        <div class="customer-card__action">
-                            <a class="customer-page__button" href="{{ $customer->detail_url }}">
-                                <x-icon name="arrow-up-right-circle-fill" />
-                                <span>Apri</span>
-                            </a>
-                        </div>
-                    @endif
-                </div>
-            </article>
-        @endforeach
-    </div>
-
-    <div id="customerEmpty" class="order-detail customer-page__empty" @if($customers->isNotEmpty()) hidden @endif>
-        <div>
-            <span class="customer-page__empty-icon" aria-hidden="true">
-                <x-icon name="search" />
-            </span>
-            <strong>{{ __('admin.Nessun_cliente_trovato') }}</strong>
-            <p>Prova con un altro nome oppure allarga il filtro per vedere piu clienti.</p>
-        </div>
+    <div id="customerResults">
+        @include('admin.Customers.partials.results', ['customers' => $customers])
     </div>
 </div>
 @endsection
@@ -819,15 +1093,19 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const toolbarShell = document.querySelector('.customer-page__toolbar-shell');
+        const toolbarForm = document.getElementById('customerToolbarForm');
         const searchInput = document.getElementById('customerSearch');
         const typeSelect = document.getElementById('customerType');
-        const cards = Array.from(document.querySelectorAll('[data-customer-card]'));
-        const emptyState = document.getElementById('customerEmpty');
+        const segmentSelect = document.getElementById('customerSegment');
+        const resultsContainer = document.getElementById('customerResults');
         const questionList = document.getElementById('customerQuestionList');
         const addQuestionButton = document.getElementById('addCustomerQuestion');
         const profileSettingsToggle = document.getElementById('customerProfileSettingsToggle');
         const profileSettingsCollapse = document.getElementById('customerProfileSettingsContent');
         const profileSettingsAnchors = Array.from(document.querySelectorAll('[href="#customerProfileSettings"]'));
+        let filterTimeout = null;
+        let activeRequest = null;
 
         function questionIndex() {
             return questionList.querySelectorAll('[data-question-item]').length;
@@ -901,40 +1179,89 @@
             openProfileSettings();
         }
 
-        function renderCustomers() {
-            const search = (searchInput.value || '').trim().toLowerCase();
-            const type = typeSelect.value;
-            let visibleCount = 0;
+        function buildToolbarUrl(pageUrl) {
+            const url = new URL(pageUrl || toolbarForm.action, window.location.origin);
+            const search = (searchInput.value || '').trim();
+            const type = typeSelect.value || 'all';
+            const segment = segmentSelect.value || '';
 
-            cards.forEach((card) => {
-                const text = card.dataset.search || '';
-                const hasOrders = card.dataset.hasOrders === '1';
-                const hasReservations = card.dataset.hasReservations === '1';
+            url.searchParams.delete('page');
+            search ? url.searchParams.set('search', search) : url.searchParams.delete('search');
+            type !== 'all' ? url.searchParams.set('type', type) : url.searchParams.delete('type');
+            segment !== '' ? url.searchParams.set('segment', segment) : url.searchParams.delete('segment');
 
-                let typeMatch = true;
-                if (type === 'orders') {
-                    typeMatch = hasOrders;
-                } else if (type === 'reservations') {
-                    typeMatch = hasReservations;
-                } else if (type === 'both') {
-                    typeMatch = hasOrders && hasReservations;
-                }
-
-                const searchMatch = search === '' || text.includes(search);
-                const visible = typeMatch && searchMatch;
-
-                card.hidden = !visible;
-                if (visible) {
-                    visibleCount++;
-                }
-            });
-
-            emptyState.hidden = visibleCount > 0;
+            return url;
         }
 
-        searchInput.addEventListener('input', renderCustomers);
-        typeSelect.addEventListener('change', renderCustomers);
-        renderCustomers();
+        async function fetchCustomers(pageUrl) {
+            const url = buildToolbarUrl(pageUrl);
+
+            if (pageUrl) {
+                const requestedPage = new URL(pageUrl, window.location.origin).searchParams.get('page');
+                if (requestedPage) {
+                    url.searchParams.set('page', requestedPage);
+                }
+            }
+
+            if (activeRequest) {
+                activeRequest.abort();
+            }
+
+            activeRequest = new AbortController();
+            toolbarShell?.classList.add('is-loading');
+
+            try {
+                const response = await fetch(url.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: activeRequest.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Unable to load customers');
+                }
+
+                resultsContainer.innerHTML = await response.text();
+                history.replaceState({}, '', url.toString());
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    window.location.assign(url.toString());
+                }
+            } finally {
+                toolbarShell?.classList.remove('is-loading');
+            }
+        }
+
+        function queueCustomerFetch() {
+            window.clearTimeout(filterTimeout);
+            filterTimeout = window.setTimeout(function () {
+                fetchCustomers();
+            }, 180);
+        }
+
+        toolbarForm?.addEventListener('submit', function (event) {
+            event.preventDefault();
+            fetchCustomers();
+        });
+
+        searchInput?.addEventListener('input', queueCustomerFetch);
+        typeSelect?.addEventListener('change', function () {
+            fetchCustomers();
+        });
+        segmentSelect?.addEventListener('change', function () {
+            fetchCustomers();
+        });
+
+        resultsContainer?.addEventListener('click', function (event) {
+            const paginationLink = event.target.closest('.pagination a');
+            if (!paginationLink) {
+                return;
+            }
+
+            event.preventDefault();
+            fetchCustomers(paginationLink.href);
+        });
     });
 </script>
 @endsection
