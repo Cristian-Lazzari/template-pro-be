@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\IngredientController;
+use App\Http\Controllers\Api\MarketingTrackingController;
 use App\Http\Controllers\Api\ReservationController;
 
 
@@ -21,6 +22,9 @@ Route::get('setting',           [SettingController::class, 'index'])->name('api.
 Route::get('menus',             [ProductController::class, 'menuFissi'])->name('api.products.menuFissi');
 Route::get('products',          [ProductController::class, 'index'])->name('api.products.index');
 Route::get('promoHome',         [ProductController::class, 'promoHome'])->name('api.promoHome.index');
+
+Route::get('marketing/open/{token}', [MarketingTrackingController::class, 'open'])->name('api.marketing.open');
+Route::get('marketing/click/{token}', [MarketingTrackingController::class, 'click'])->name('api.marketing.click');
 
 Route::get('categories',        [CategoryController::class, 'index'])->name('api.categories.index');
 Route::get('getIngredient',     [IngredientController::class, 'getIngredient'])->name('api.ingredient.getIngredient');

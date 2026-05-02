@@ -49,6 +49,14 @@
     ];
 
     $navItems[] = [
+        'key' => 'marketing',
+        'label' => 'Marketing',
+        'route' => route('admin.campaigns.index'),
+        'icon' => 'megaphone-fill',
+        'active' => request()->routeIs('admin.promotions.*') || request()->routeIs('admin.campaigns.*') || request()->routeIs('admin.automations.*'),
+    ];
+
+    $navItems[] = [
         'key' => 'settings',
         'label' => 'Impostazioni',
         'route' => route('admin.settings'),

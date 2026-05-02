@@ -1,9 +1,6 @@
 @extends('layouts.base')
 
 @section('contents')
-<a onclick="history.back()" class="btn btn-outline-light my-5">
-    <x-icon name="arrow-90deg-left" />
-</a>
 
 @php
     $customerDisplayName = trim(($customer->name ?? '') . ' ' . ($customer->surname ?? '')) ?: $customer->email;
@@ -340,6 +337,18 @@
     }
 </style>
 
+@include('admin.Marketing.partials.breadcrumbs', [
+    'items' => [
+        ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+        ['label' => 'Clienti', 'url' => route('admin.customers.index')],
+        ['label' => $customerDisplayName],
+    ],
+])
+
+<a onclick="history.back()" class="btn btn-outline-light my-4">
+    <x-icon name="arrow-90deg-left" />
+</a>
+
 <div class="customer-detail-page">
     <article class="order-detail order-detail--{{ $pageTone }}">
         <header class="order-detail__header">
@@ -363,23 +372,36 @@
                 @endif
             </div>
 
-            @if (!empty($customer->email) || !empty($customer->phone))
-                <div class="order-detail__contacts">
-                    @if (!empty($customer->email))
-                        <a href="mailto:{{ $customer->email }}" class="order-detail__contact">
-                            <x-icon name="envelope-arrow-up-fill" />
-                            <span>{{ $customer->email }}</span>
-                        </a>
-                    @endif
+            <div class="order-detail__contacts">
+                @if (!empty($customer->email))
+                    <a href="mailto:{{ $customer->email }}" class="order-detail__contact">
+                        <x-icon name="envelope-arrow-up-fill" />
+                        <span>{{ $customer->email }}</span>
+                    </a>
+                @endif
 
-                    @if (!empty($customer->phone))
-                        <a href="tel:{{ preg_replace('/\s+/', '', $customer->phone) }}" class="order-detail__contact">
-                            <x-icon name="telephone-outbound-fill" />
-                            <span>{{ $customer->phone }}</span>
-                        </a>
-                    @endif
-                </div>
-            @endif
+                @if (!empty($customer->phone))
+                    <a href="tel:{{ preg_replace('/\s+/', '', $customer->phone) }}" class="order-detail__contact">
+                        <x-icon name="telephone-outbound-fill" />
+                        <span>{{ $customer->phone }}</span>
+                    </a>
+                @endif
+
+                <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
+                    <x-icon name="envelope-paper-fill" />
+                    <span>Campagne marketing</span>
+                </a>
+
+                <a href="{{ route('admin.automations.index') }}" class="order-detail__contact">
+                    <x-icon name="lightning-charge-fill" />
+                    <span>Automazioni marketing</span>
+                </a>
+
+                <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
+                    <x-icon name="megaphone-fill" />
+                    <span>Promozioni</span>
+                </a>
+            </div>
         </header>
 
         <div class="order-detail__body">

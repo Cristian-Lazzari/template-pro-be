@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AllergenController;
+use App\Http\Controllers\Admin\AutomationController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DateController;
@@ -11,13 +13,13 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Guests\PageController as GuestsPageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Webhooks\StripeWebhookController;
-use App\Http\Controllers\Webhooks\WaController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -82,6 +84,28 @@ Route::middleware(['auth', 'verified'])
         Route::get('posts/{post}/quick-view', [PostController::class, 'quickView'])->name('posts.quick-view');
         Route::post('posts/filter',   [PostController::class, 'filter'])->name('posts.filter');
         Route::post('posts/status',   [PostController::class, 'status'])->name('posts.status');
+
+        // Rotte promotion marketing
+
+        Route::post('promotions/{promotion}/publish', [PromotionController::class, 'publish'])->name('promotions.publish');
+        Route::post('promotions/{promotion}/pause',   [PromotionController::class, 'pause'])->name('promotions.pause');
+        Route::post('promotions/{promotion}/archive', [PromotionController::class, 'archive'])->name('promotions.archive');
+
+        // Rotte campaign marketing
+
+        Route::post('campaigns/{campaign}/activate', [CampaignController::class, 'activate'])->name('campaigns.activate');
+        Route::post('campaigns/{campaign}/pause',    [CampaignController::class, 'pause'])->name('campaigns.pause');
+        Route::post('campaigns/{campaign}/archive',  [CampaignController::class, 'archive'])->name('campaigns.archive');
+        Route::post('campaigns/{campaign}/preview-audience', [CampaignController::class, 'previewAudience'])->name('campaigns.preview-audience');
+        Route::post('campaigns/{campaign}/prepare-assignments', [CampaignController::class, 'prepareAssignments'])->name('campaigns.prepare-assignments');
+
+        // Rotte automation marketing
+
+        Route::post('automations/{automation}/activate', [AutomationController::class, 'activate'])->name('automations.activate');
+        Route::post('automations/{automation}/pause',    [AutomationController::class, 'pause'])->name('automations.pause');
+        Route::post('automations/{automation}/archive',  [AutomationController::class, 'archive'])->name('automations.archive');
+        Route::post('automations/{automation}/preview-audience', [AutomationController::class, 'previewAudience'])->name('automations.preview-audience');
+        Route::post('automations/{automation}/prepare-assignments', [AutomationController::class, 'prepareAssignments'])->name('automations.prepare-assignments');
         
         // Rotte Date 
         
@@ -95,11 +119,14 @@ Route::middleware(['auth', 'verified'])
         Route::post('reservations/filter', [ReservationController::class, 'filter'])->name('reservations.filter');
         //resource
         Route::resource('allergens',     AllergenController::class);
+        Route::resource('automations',   AutomationController::class)->except(['destroy']);
         Route::resource('menus',         MenuController::class);
         Route::resource('settings',      SettingController::class);
+        Route::resource('campaigns',     CampaignController::class)->except(['destroy']);
         Route::resource('dates',         DateController::class);
         Route::resource('orders',        OrderController::class);
         Route::resource('products',      ProductController::class);
+        Route::resource('promotions',    PromotionController::class)->except(['destroy']);
         Route::resource('posts',         PostController::class);
         Route::resource('reservations',  ReservationController::class);
         Route::resource('ingredients',   IngredientController::class);
@@ -127,6 +154,5 @@ Route::middleware('auth')
 require __DIR__ . '/auth.php';
 
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWebhook']);
-Route::post('/webhook/wa', [WaController::class, 'handle'])->middleware('apikey');
 
 //Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);

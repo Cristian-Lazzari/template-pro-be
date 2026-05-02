@@ -13,4 +13,9 @@ class Reservation extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function customerPromotions()
+    {
+        return $this->hasMany(CustomerPromotion::class);
+    }
 }

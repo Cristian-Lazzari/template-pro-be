@@ -2,7 +2,21 @@
 
 @section('contents')
 
-<a class="my_btn_5 ml-auto" href="{{ route('admin.customers.index') }}#customerMailModels"> Indietro </a>
+@include('admin.Marketing.partials.breadcrumbs', [
+    'items' => [
+        ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+        ['label' => 'Clienti', 'url' => route('admin.customers.index')],
+        ['label' => 'Modelli mail', 'url' => route('admin.customers.index') . '#customerMailModels'],
+        ['label' => $model->name],
+    ],
+])
+
+<div class="d-flex flex-wrap gap-2 my-4">
+    <a class="my_btn_5 w-auto" href="{{ route('admin.customers.index') }}#customerMailModels"> Indietro </a>
+    <a class="my_btn_1 w-auto" href="{{ route('admin.campaigns.index') }}"> Campagne </a>
+    <a class="my_btn_1 w-auto" href="{{ route('admin.automations.index') }}"> Automazioni </a>
+</div>
+
 <h2 class="my-4">Modifica il modello "{{ $model->name }}"</h2>
 
 <form class="creation" action="{{ route('admin.customers.mail_models.update') }}" enctype="multipart/form-data" method="POST">

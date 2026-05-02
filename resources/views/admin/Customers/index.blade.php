@@ -738,6 +738,13 @@
         </div>
     @endif
 
+    @include('admin.Marketing.partials.breadcrumbs', [
+        'items' => [
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Clienti'],
+        ],
+    ])
+
     <section class="order-detail order-detail--active customer-page__hero">
         <header class="order-detail__header">
             <div class="customer-page__hero-copy">
@@ -766,6 +773,21 @@
                 <a href="#customerMailModels" class="order-detail__contact">
                     <x-icon name="envelope-paper-fill" />
                     <span>Apri modelli mail</span>
+                </a>
+
+                <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
+                    <x-icon name="envelope-paper-fill" />
+                    <span>Campagne marketing</span>
+                </a>
+
+                <a href="{{ route('admin.automations.index') }}" class="order-detail__contact">
+                    <x-icon name="lightning-charge-fill" />
+                    <span>Automazioni marketing</span>
+                </a>
+
+                <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
+                    <x-icon name="megaphone-fill" />
+                    <span>Promozioni</span>
                 </a>
 
                 <a href="#customerList" class="order-detail__contact">
@@ -933,9 +955,24 @@
                     <div class="customer-page__settings-copy">
                         <p>
                             I template restano disponibili qui dentro, insieme ai profili cliente.
-                            La parte email marketing e le campagne separate non sono piu esposte nel pannello.
+                            Le nuove aree marketing usano questi modelli dentro campagne e automazioni.
                         </p>
                     </div>
+
+                    <a class="customer-page__button--ghost" href="{{ route('admin.campaigns.index') }}">
+                        <x-icon name="envelope-paper-fill" />
+                        <span>Apri campagne</span>
+                    </a>
+
+                    <a class="customer-page__button--ghost" href="{{ route('admin.automations.index') }}">
+                        <x-icon name="lightning-charge-fill" />
+                        <span>Apri automazioni</span>
+                    </a>
+
+                    <a class="customer-page__button--ghost" href="{{ route('admin.promotions.index') }}">
+                        <x-icon name="megaphone-fill" />
+                        <span>Apri promozioni</span>
+                    </a>
                 </div>
 
                 @if ($mailModels->isNotEmpty())
