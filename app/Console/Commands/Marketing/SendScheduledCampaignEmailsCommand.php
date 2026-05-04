@@ -14,13 +14,15 @@ class SendScheduledCampaignEmailsCommand extends Command
 {
     protected $signature = 'marketing:send-scheduled-campaign-emails';
 
-    protected $description = 'Dispatch queued marketing emails for active scheduled campaigns.';
+    protected $description = 'Dispatch queued marketing emails for scheduled marketing campaigns.';
 
     public function handle(CampaignAssignmentService $assignmentService): int
     {
         $now = now();
+        $this->normalizeLegacySentCampaigns();
+
         $campaigns = Campaign::query()
-            ->where('status', 'active')
+            ->whereIn('status', ['scheduled', 'running', 'active'])
             ->whereNotNull('scheduled_at')
             ->where('scheduled_at', '<=', $now)
             ->whereNull('sent_at')
@@ -28,30 +30,71 @@ class SendScheduledCampaignEmailsCommand extends Command
             ->limit(20)
             ->get();
 
+        Log::info('Scheduled marketing campaign email command started.', [
+            'now' => $now->toDateTimeString(),
+            'queue_connection' => config('queue.default'),
+            'campaigns_found' => $campaigns->count(),
+        ]);
+
         foreach ($campaigns as $campaign) {
+            Log::info('Processing scheduled marketing campaign.', [
+                'campaign_id' => $campaign->getKey(),
+                'status' => $campaign->status,
+                'scheduled_at' => optional($campaign->scheduled_at)->toDateTimeString(),
+                'sent_at' => optional($campaign->sent_at)->toDateTimeString(),
+            ]);
+
             $this->completeCampaignIfFullySent($campaign);
 
-            if ($campaign->fresh()?->status === 'sent') {
+            if (in_array($campaign->fresh()?->status, ['completed', 'sent'], true)) {
+                Log::info('Scheduled marketing campaign skipped because it is already fully sent.', [
+                    'campaign_id' => $campaign->getKey(),
+                ]);
+
                 continue;
             }
 
             if ($this->dispatchAlreadyRunning($campaign, $now)) {
+                Log::info('Scheduled marketing campaign skipped because dispatch is already running.', [
+                    'campaign_id' => $campaign->getKey(),
+                ]);
+
                 continue;
             }
 
             $this->markDispatchStarted($campaign, $now);
 
             if (! $campaign->customerPromotions()->exists()) {
-                $assignmentService->assign($campaign, 500, false);
+                $assignmentResult = $assignmentService->assign($campaign, 500, false);
+
+                Log::info('Scheduled marketing campaign assignments prepared before dispatch.', [
+                    'campaign_id' => $campaign->getKey(),
+                    'assigned_count' => $assignmentResult['assigned_count'] ?? null,
+                    'already_assigned_count' => $assignmentResult['already_assigned_count'] ?? null,
+                    'skipped_count' => $assignmentResult['skipped_count'] ?? null,
+                    'errors_count' => $assignmentResult['errors_count'] ?? null,
+                ]);
+
                 $campaign->refresh();
             }
 
-            $pending = $this->pendingCustomerPromotions($campaign)
-                ->limit($this->batchLimit($campaign))
+            $pendingQuery = $this->pendingCustomerPromotions($campaign, $now);
+            $pendingCount = (clone $pendingQuery)->count();
+            $batchLimit = $this->batchLimit($campaign);
+            $pending = $pendingQuery
+                ->limit($batchLimit)
                 ->get();
 
             $delaySeconds = $this->delaySeconds($campaign);
             $dispatchedCount = 0;
+
+            Log::info('Scheduled marketing campaign pending emails resolved.', [
+                'campaign_id' => $campaign->getKey(),
+                'pending_count' => $pendingCount,
+                'batch_limit' => $batchLimit,
+                'dispatching_count' => $pending->count(),
+                'delay_seconds' => $delaySeconds,
+            ]);
 
             foreach ($pending as $index => $customerPromotion) {
                 $delay = $index * $delaySeconds;
@@ -61,11 +104,22 @@ class SendScheduledCampaignEmailsCommand extends Command
                 SendMarketingCustomerPromotionEmailJob::dispatch($customerPromotion->getKey())
                     ->delay($now->copy()->addSeconds($delay));
 
+                Log::info('Scheduled marketing email job dispatched.', [
+                    'campaign_id' => $campaign->getKey(),
+                    'customer_promotion_id' => $customerPromotion->getKey(),
+                    'delay_seconds' => $delay,
+                ]);
+
                 $dispatchedCount++;
             }
 
-            $this->markDispatchCompleted($campaign, $now, $dispatchedCount);
+            $this->markDispatchBatchFinished($campaign, $now, $dispatchedCount);
             $this->completeCampaignIfFullySent($campaign);
+
+            Log::info('Scheduled marketing campaign dispatch completed.', [
+                'campaign_id' => $campaign->getKey(),
+                'dispatched_count' => $dispatchedCount,
+            ]);
 
             $this->info("Campaign {$campaign->getKey()}: dispatched {$dispatchedCount} marketing email jobs.");
         }
@@ -73,14 +127,19 @@ class SendScheduledCampaignEmailsCommand extends Command
         return self::SUCCESS;
     }
 
-    private function pendingCustomerPromotions(Campaign $campaign)
+    private function pendingCustomerPromotions(Campaign $campaign, Carbon $now)
     {
+        $retryQueuedBefore = $now->copy()->subMinutes(15)->toDateTimeString();
+
         return CustomerPromotion::query()
             ->where('campaign_id', $campaign->getKey())
             ->whereNull('automation_id')
             ->whereNull('email_sent_at')
             ->whereNull('promo_used')
-            ->whereNull('metadata->queued_for_send_at')
+            ->where(function ($query) use ($retryQueuedBefore) {
+                $query->whereNull('metadata->queued_for_send_at')
+                    ->orWhere('metadata->queued_for_send_at', '<=', $retryQueuedBefore);
+            })
             ->whereHas('customer')
             ->whereHas('promotion')
             ->orderBy('id');
@@ -125,18 +184,27 @@ class SendScheduledCampaignEmailsCommand extends Command
     private function markDispatchStarted(Campaign $campaign, Carbon $now): void
     {
         $metadata = is_array($campaign->metadata) ? $campaign->metadata : [];
-        $metadata['dispatch_started_at'] = $now->toDateTimeString();
-        unset($metadata['dispatch_completed_at']);
 
-        $campaign->forceFill(['metadata' => $metadata])->save();
+        if (! data_get($metadata, 'dispatch_started_at')) {
+            $metadata['dispatch_started_at'] = $now->toDateTimeString();
+        }
+
+        if (in_array($campaign->status, ['scheduled', 'active'], true)) {
+            unset($metadata['dispatch_completed_at']);
+        }
+
+        $campaign->forceFill([
+            'status' => 'running',
+            'metadata' => $metadata,
+        ])->save();
     }
 
-    private function markDispatchCompleted(Campaign $campaign, Carbon $now, int $dispatchedCount): void
+    private function markDispatchBatchFinished(Campaign $campaign, Carbon $now, int $dispatchedCount): void
     {
         $campaign->refresh();
 
         $metadata = is_array($campaign->metadata) ? $campaign->metadata : [];
-        $metadata['dispatch_completed_at'] = $now->toDateTimeString();
+        $metadata['last_dispatch_batch_at'] = $now->toDateTimeString();
         $metadata['dispatch_count'] = (int) ($metadata['dispatch_count'] ?? 0) + $dispatchedCount;
 
         $campaign->forceFill(['metadata' => $metadata])->save();
@@ -155,27 +223,59 @@ class SendScheduledCampaignEmailsCommand extends Command
     {
         $campaign->refresh();
 
-        if ($campaign->sent_at !== null || ! $campaign->customerPromotions()->exists()) {
+        if ($campaign->status === 'sent') {
+            $campaign->forceFill(['status' => 'completed'])->save();
+
+            return true;
+        }
+
+        if ($campaign->sent_at !== null && $campaign->status !== 'completed') {
+            $campaign->forceFill(['status' => 'completed'])->save();
+
+            return true;
+        }
+
+        $totalEmails = $campaign->customerPromotions()->count();
+
+        if ($totalEmails === 0) {
             return false;
         }
 
-        $hasPendingEmails = $campaign->customerPromotions()
-            ->whereNull('email_sent_at')
-            ->exists();
+        $sentEmails = $campaign->customerPromotions()
+            ->whereNotNull('email_sent_at')
+            ->count();
 
-        if ($hasPendingEmails) {
+        if ($sentEmails < $totalEmails) {
             return false;
         }
 
         $metadata = is_array($campaign->metadata) ? $campaign->metadata : [];
+        $metadata['dispatch_completed_at'] = now()->toDateTimeString();
         $metadata['send_completed_at'] = now()->toDateTimeString();
 
         $campaign->forceFill([
-            'status' => 'sent',
+            'status' => 'completed',
             'sent_at' => now(),
             'metadata' => $metadata,
         ])->save();
 
+        Log::info('Scheduled marketing campaign marked as sent.', [
+            'campaign_id' => $campaign->getKey(),
+        ]);
+
         return true;
+    }
+
+    private function normalizeLegacySentCampaigns(): void
+    {
+        $updated = Campaign::query()
+            ->where('status', 'sent')
+            ->update(['status' => 'completed']);
+
+        if ($updated > 0) {
+            Log::info('Legacy sent marketing campaigns normalized to completed.', [
+                'updated_count' => $updated,
+            ]);
+        }
     }
 }

@@ -15,15 +15,25 @@
 @endif
 
 @php
-    $tone = match ($campaign->status) {
-        'active', 'sent' => 'active',
+    $normalizedStatus = $sendProgress['status'] ?? match ($campaign->status) {
+        'active' => 'scheduled',
+        'sent' => 'completed',
+        default => $campaign->status,
+    };
+    $statusLabel = $statuses[$normalizedStatus] ?? ($statuses[$campaign->status] ?? $campaign->status);
+    $progressPercentage = min(100, max(0, (float) ($sendProgress['percentage'] ?? 0)));
+    $tone = match ($normalizedStatus) {
+        'completed' => 'active',
         'archived' => 'off',
         default => 'warning',
     };
 
-    $icon = match ($tone) {
-        'active' => 'bi-check-circle-fill',
-        'off' => 'bi-x-circle-fill',
+    $icon = match ($normalizedStatus) {
+        'completed' => 'bi-check-circle-fill',
+        'scheduled' => 'bi-calendar-check-fill',
+        'running' => 'bi-play-circle-fill',
+        'paused' => 'bi-pause-circle-fill',
+        'archived' => 'bi-x-circle-fill',
         default => 'bi-exclamation-circle-fill',
     };
 
@@ -31,13 +41,7 @@
     $modelName = $campaign->model?->name ?? '-';
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();
-    $scheduleState = 'Nessuna programmazione';
-
-    if ($campaign->scheduled_at) {
-        $scheduleState = $campaign->scheduled_at->isFuture()
-            ? 'Invio programmato'
-            : 'Pronta per il prossimo scheduler';
-    }
+    $scheduleState = $sendProgress['message'] ?? 'Nessuna programmazione';
 @endphp
 
 <div class="dash_page">
@@ -60,8 +64,8 @@
                         <i class="bi {{ $icon }}"></i>
                     </span>
                     @include('admin.Marketing.partials.status-pill', [
-                        'status' => $campaign->status,
-                        'label' => $statuses[$campaign->status] ?? $campaign->status,
+                        'status' => $normalizedStatus,
+                        'label' => $statusLabel,
                     ])
                 </div>
 
@@ -70,7 +74,7 @@
                         <i class="bi bi-arrow-left"></i>
                         <span>Lista</span>
                     </a>
-                    @if ($campaign->status !== 'sent')
+                    @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
                         <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
                             <i class="bi bi-pencil-square"></i>
                             <span>Modifica</span>
@@ -101,6 +105,57 @@
                     <div class="order-detail__section-head">
                         <h3>
                             <span class="order-detail__section-icon">
+                                <i class="bi bi-activity"></i>
+                            </span>
+                            Stato invio
+                        </h3>
+                    </div>
+
+                    <div class="marketing-detail__grid">
+                        <article class="marketing-detail__fact">
+                            <span>Stato</span>
+                            <strong>{{ $statusLabel }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Programmata</span>
+                            <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Email totali</span>
+                            <strong>{{ $sendProgress['total'] ?? 0 }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Inviate</span>
+                            <strong>{{ $sendProgress['sent'] ?? 0 }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>In attesa</span>
+                            <strong>{{ $sendProgress['pending'] ?? 0 }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Avanzamento</span>
+                            <strong>{{ $progressPercentage }}%</strong>
+                        </article>
+                    </div>
+
+                    <div class="marketing-detail__empty mt-3">
+                        <strong>{{ $scheduleState }}</strong>
+                        <div class="marketing-detail__progress" aria-label="Avanzamento invio campagna">
+                            <div class="marketing-detail__progress-track">
+                                <div class="marketing-detail__progress-bar" style="width: {{ $progressPercentage }}%"></div>
+                            </div>
+                            <div class="marketing-detail__progress-meta">
+                                <span>{{ $sendProgress['sent'] ?? 0 }} di {{ $sendProgress['total'] ?? 0 }} email inviate</span>
+                                <span>{{ $progressPercentage }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="order-detail__section">
+                    <div class="order-detail__section-head">
+                        <h3>
+                            <span class="order-detail__section-icon">
                                 <i class="bi bi-info-circle-fill"></i>
                             </span>
                             Dettaglio campagna
@@ -110,7 +165,7 @@
                     <div class="marketing-detail__grid">
                         <article class="marketing-detail__fact">
                             <span>Status</span>
-                            <strong>{{ $statuses[$campaign->status] ?? $campaign->status }}</strong>
+                            <strong>{{ $statusLabel }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
                             <span>Segmento</span>
@@ -208,17 +263,17 @@
                     </div>
 
                     <div class="marketing-detail__actions">
-                        @if (in_array($campaign->status, ['draft', 'paused'], true))
+                        @if (in_array($normalizedStatus, ['draft', 'paused'], true))
                             <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact" type="submit">
                                     <i class="bi bi-check2-circle"></i>
-                                    <span>Conferma/programma campagna</span>
+                                    <span>Programma campagna</span>
                                 </button>
                             </form>
                         @endif
 
-                        @if ($campaign->status === 'active')
+                        @if (in_array($normalizedStatus, ['scheduled', 'running'], true))
                             <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
@@ -228,7 +283,7 @@
                             </form>
                         @endif
 
-                        @if (in_array($campaign->status, ['active', 'paused'], true))
+                        @if (in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true))
                             <form action="{{ route('admin.campaigns.draft', $campaign) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
@@ -238,7 +293,7 @@
                             </form>
                         @endif
 
-                        @if (! in_array($campaign->status, ['sent', 'archived'], true))
+                        @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
                             <form action="{{ route('admin.campaigns.preview-audience', $campaign) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact" type="submit">
@@ -246,7 +301,9 @@
                                     <span>Preview audience</span>
                                 </button>
                             </form>
+                        @endif
 
+                        @if (in_array($normalizedStatus, ['draft', 'scheduled', 'paused'], true))
                             <form action="{{ route('admin.campaigns.prepare-assignments', $campaign) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
@@ -256,7 +313,7 @@
                             </form>
                         @endif
 
-                        @if (in_array($campaign->status, ['active', 'paused', 'draft', 'sent'], true))
+                        @if (in_array($normalizedStatus, ['scheduled', 'running', 'paused', 'draft', 'completed'], true))
                             <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
@@ -273,7 +330,7 @@
                         $audiencePreview = session('audience_preview');
                         $assignableCount = $audiencePreview['assignable_count'] ?? $audiencePreview['assigned_count'] ?? 0;
                         $previewMetrics = [
-                            ['label' => 'Status campagna', 'value' => $statuses[$campaign->status] ?? $campaign->status],
+                            ['label' => 'Status campagna', 'value' => $statusLabel],
                             ['label' => 'Programmazione', 'value' => $campaign->scheduled_at?->format('d/m/Y H:i') ?? 'Mancante'],
                             ['label' => 'Invio', 'value' => $scheduleState],
                             ['label' => 'Assegnabile', 'value' => ($audiencePreview['can_assign'] ?? false) ? 'Si' : 'No'],

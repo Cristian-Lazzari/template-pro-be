@@ -125,10 +125,6 @@ class CampaignAssignmentService
             }
         }
 
-        if (! $dryRun && $result['assigned_count'] > 0 && $campaign->status === 'draft') {
-            $campaign->update(['status' => 'active']);
-        }
-
         return $result;
     }
 
@@ -143,8 +139,8 @@ class CampaignAssignmentService
             return 'Campaign must be persisted before assignment.';
         }
 
-        if (! in_array($campaign->status, ['draft', 'active'], true)) {
-            return 'Campaign status must be draft or active.';
+        if (! in_array($campaign->status, ['draft', 'scheduled', 'running', 'active'], true)) {
+            return 'Campaign status must be draft, scheduled or running.';
         }
 
         if (! $campaign->promotions()->exists()) {

@@ -9,6 +9,8 @@
 @endif
 
 <div class="dash_page">
+    @include('admin.Marketing.partials.show-style')
+
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
@@ -52,6 +54,17 @@
         @if ($campaigns->count() > 0)
             <div class="menu-dashboard__promo-grid">
                 @foreach ($campaigns as $campaign)
+                    @php
+                        $normalizedStatus = match ($campaign->status) {
+                            'active' => 'scheduled',
+                            'sent' => 'completed',
+                            default => $campaign->status,
+                        };
+                        $statusLabel = $statuses[$normalizedStatus] ?? ($statuses[$campaign->status] ?? $campaign->status);
+                        $totalAssignments = (int) ($campaign->customer_promotions_count ?? 0);
+                        $sentAssignments = (int) ($campaign->sent_customer_promotions_count ?? 0);
+                        $progressPercentage = $totalAssignments > 0 ? round(($sentAssignments / $totalAssignments) * 100, 2) : 0;
+                    @endphp
                     <article class="menu-dashboard__promo-card">
                         <div class="menu-dashboard__promo-banner">
                             <span class="order-detail__section-icon">
@@ -60,8 +73,8 @@
                             <div>
                                 <span class="menu-dashboard__banner-eyebrow">Campagna</span>
                                 @include('admin.Marketing.partials.status-pill', [
-                                    'status' => $campaign->status,
-                                    'label' => $statuses[$campaign->status] ?? $campaign->status,
+                                    'status' => $normalizedStatus,
+                                    'label' => $statusLabel,
                                 ])
                             </div>
                         </div>
@@ -99,7 +112,17 @@
                                 <span>Operativita</span>
                                 <div class="menu-dashboard__pill-row">
                                     <small>Programmata: {{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</small>
-                                    <small>{{ $campaign->total_sent }} invii</small>
+                                    <small>{{ $sentAssignments }}/{{ $totalAssignments }} invii</small>
+                                </div>
+                            </div>
+
+                            <div class="marketing-detail__progress" aria-label="Avanzamento invii campagna">
+                                <div class="marketing-detail__progress-track">
+                                    <div class="marketing-detail__progress-bar" style="width: {{ $progressPercentage }}%"></div>
+                                </div>
+                                <div class="marketing-detail__progress-meta">
+                                    <span>{{ $statusLabel }}</span>
+                                    <span>{{ $progressPercentage }}%</span>
                                 </div>
                             </div>
 
@@ -112,16 +135,16 @@
                                     <i class="bi bi-pencil-square"></i>
                                     <span>Modifica</span>
                                 </a>
-                                @if (in_array($campaign->status, ['draft', 'paused'], true))
+                                @if (in_array($normalizedStatus, ['draft', 'paused'], true))
                                     <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST" style="margin: 0;">
                                         @csrf
                                         <button class="order-detail__contact" type="submit">
                                             <i class="bi bi-check2-circle"></i>
-                                            <span>Conferma</span>
+                                            <span>Programma</span>
                                         </button>
                                     </form>
                                 @endif
-                                @if ($campaign->status === 'active')
+                                @if (in_array($normalizedStatus, ['scheduled', 'running'], true))
                                     <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST" style="margin: 0;">
                                         @csrf
                                         <button class="order-detail__contact" type="submit">
@@ -130,7 +153,7 @@
                                         </button>
                                     </form>
                                 @endif
-                                @if (in_array($campaign->status, ['active', 'paused', 'draft', 'sent'], true))
+                                @if (in_array($normalizedStatus, ['scheduled', 'running', 'paused', 'draft', 'completed'], true))
                                     <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST" style="margin: 0;">
                                         @csrf
                                         <button class="order-detail__contact" type="submit">

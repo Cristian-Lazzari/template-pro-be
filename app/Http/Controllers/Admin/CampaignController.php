@@ -10,6 +10,7 @@ use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAssignmentService;
 use App\Services\Marketing\MarketingReportService;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -17,10 +18,13 @@ class CampaignController extends Controller
 {
     private const STATUSES = [
         'draft' => 'Bozza',
-        'active' => 'Attiva',
+        'scheduled' => 'Programmata',
+        'running' => 'In esecuzione',
+        'completed' => 'Completata',
         'paused' => 'In pausa',
         'archived' => 'Archiviata',
-        'sent' => 'Inviata',
+        'active' => 'Programmata',
+        'sent' => 'Completata',
     ];
 
     private const SEGMENTS = [
@@ -35,6 +39,12 @@ class CampaignController extends Controller
     {
         $campaigns = Campaign::query()
             ->with(['model', 'promotions'])
+            ->withCount([
+                'customerPromotions',
+                'customerPromotions as sent_customer_promotions_count' => function ($query) {
+                    $query->whereNotNull('email_sent_at');
+                },
+            ])
             ->orderBy('updated_at', 'desc')
             ->simplePaginate(40);
 
@@ -73,6 +83,7 @@ class CampaignController extends Controller
     {
         $campaign->load(['model', 'promotions']);
         $report = $reportService->forCampaign($campaign);
+        $sendProgress = $this->sendProgress($campaign, $report);
         $customerPromotions = $campaign->customerPromotions()
             ->with(['customer', 'promotion'])
             ->latest('created_at')
@@ -81,6 +92,7 @@ class CampaignController extends Controller
         return view('admin.Campaigns.show', [
             'campaign' => $campaign,
             'report' => $report,
+            'sendProgress' => $sendProgress,
             'customerPromotions' => $customerPromotions,
             'statuses' => self::STATUSES,
             'segments' => self::SEGMENTS,
@@ -99,9 +111,9 @@ class CampaignController extends Controller
 
     public function update(UpdateCampaignRequest $request, Campaign $campaign, CampaignAssignmentService $assignmentService)
     {
-        if ($campaign->status === 'sent') {
+        if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()
-                ->withErrors(['status' => 'Una campagna inviata puo essere solo consultata o archiviata.'])
+                ->withErrors(['status' => 'Una campagna completata puo essere solo consultata o archiviata.'])
                 ->withInput();
         }
 
@@ -116,13 +128,13 @@ class CampaignController extends Controller
 
     public function activate(Campaign $campaign, CampaignAssignmentService $assignmentService)
     {
-        if ($campaign->status === 'sent') {
+        if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()->withErrors([
-                'status' => 'Una campagna inviata puo essere solo archiviata.',
+                'status' => 'Una campagna completata puo essere solo archiviata.',
             ]);
         }
 
-        $campaign->update(['status' => 'active']);
+        $campaign->update(['status' => 'scheduled']);
         $campaign->refresh();
 
         $result = $assignmentService->assign($campaign, 500, false);
@@ -188,7 +200,7 @@ class CampaignController extends Controller
 
     private function statusFromSubmitAction(Request $request): string
     {
-        return $request->input('submit_action') === 'activate' ? 'active' : 'draft';
+        return $request->input('submit_action') === 'activate' ? 'scheduled' : 'draft';
     }
 
     private function redirectAfterFormSave(
@@ -246,14 +258,74 @@ class CampaignController extends Controller
 
     private function updateStatus(Campaign $campaign, string $status, string $message)
     {
-        if ($campaign->status === 'sent' && $status !== 'archived') {
+        if (in_array($campaign->status, ['completed', 'sent'], true) && $status !== 'archived') {
             return back()->withErrors([
-                'status' => 'Una campagna inviata puo essere solo archiviata.',
+                'status' => 'Una campagna completata puo essere solo archiviata.',
             ]);
         }
 
         $campaign->update(['status' => $status]);
 
         return back()->with('success', $message);
+    }
+
+    private function sendProgress(Campaign $campaign, array $report): array
+    {
+        $status = $this->normalizedStatus($campaign->status);
+        $total = (int) ($report['involved_count'] ?? 0);
+        $sent = (int) ($report['sent_count'] ?? 0);
+        $pending = max(0, $total - $sent);
+        $percentage = $total > 0 ? round(($sent / $total) * 100, 2) : 0.0;
+
+        return [
+            'status' => $status,
+            'label' => self::STATUSES[$status] ?? $status,
+            'total' => $total,
+            'sent' => $sent,
+            'pending' => $pending,
+            'percentage' => $percentage,
+            'message' => $this->sendProgressMessage($campaign, $status, $sent, $total),
+        ];
+    }
+
+    private function normalizedStatus(?string $status): string
+    {
+        return match ($status) {
+            'active' => 'scheduled',
+            'sent' => 'completed',
+            default => $status ?: 'draft',
+        };
+    }
+
+    private function sendProgressMessage(Campaign $campaign, string $status, int $sent, int $total): string
+    {
+        return match ($status) {
+            'draft' => 'Bozza: completa la campagna e programmala per preparare le assegnazioni.',
+            'scheduled' => $this->scheduledProgressMessage($campaign),
+            'running' => "In esecuzione: {$sent} di {$total} email inviate.",
+            'completed' => "Completata: {$sent} di {$total} email inviate.",
+            'paused' => 'In pausa: la campagna e sospesa e non inviera nuove email.',
+            'archived' => 'Archiviata.',
+            default => self::STATUSES[$status] ?? $status,
+        };
+    }
+
+    private function scheduledProgressMessage(Campaign $campaign): string
+    {
+        if (! $campaign->scheduled_at) {
+            return 'Programmazione mancante: imposta data e ora per consentire allo scheduler di partire.';
+        }
+
+        if ($campaign->scheduled_at->isFuture()) {
+            return 'Programmata: invio tra circa ' . $campaign->scheduled_at->diffForHumans(
+                now(),
+                [
+                    'parts' => 2,
+                    'syntax' => CarbonInterface::DIFF_ABSOLUTE,
+                ]
+            ) . '.';
+        }
+
+        return 'Programmata: pronta per l’invio al prossimo scheduler.';
     }
 }

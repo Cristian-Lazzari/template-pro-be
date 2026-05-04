@@ -152,6 +152,37 @@
         margin-top: 16px;
     }
 
+    .marketing-detail__progress {
+        display: grid;
+        gap: 10px;
+    }
+
+    .marketing-detail__progress-track {
+        width: 100%;
+        min-height: 12px;
+        overflow: hidden;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.42);
+    }
+
+    .marketing-detail__progress-bar {
+        height: 100%;
+        min-height: 12px;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(74, 222, 128, 0.92), rgba(45, 212, 191, 0.88));
+    }
+
+    .marketing-detail__progress-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: space-between;
+        color: rgba(216, 221, 232, 0.78);
+        font-size: var(--fs-200);
+        font-weight: 700;
+    }
+
     .marketing-detail__compact-grid + .marketing-detail__assignment-list,
     .marketing-detail__compact-grid + .marketing-detail__empty {
         margin-top: 12px;

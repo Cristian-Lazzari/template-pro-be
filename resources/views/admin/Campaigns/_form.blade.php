@@ -12,9 +12,9 @@
     </div>
 @endif
 
-@if ($campaign->status === 'sent')
+@if (in_array($campaign->status, ['completed', 'sent'], true))
     <div class="alert alert-warning">
-        Questa campagna risulta inviata: puoi solo archiviarla.
+        Questa campagna risulta completata: puoi solo archiviarla.
     </div>
 @endif
 
@@ -148,7 +148,7 @@
             </button>
         </div>
         <p class="menu-dashboard__copy mt-3">
-            Crea e programma prepara subito le assegnazioni, ma le email partiranno solo all’orario programmato tramite scheduler.
+            Crea e programma prepara subito i destinatari. Le email partiranno automaticamente all’orario programmato tramite scheduler.
         </p>
         @error('submit_action') <p class="error">{{ $message }}</p> @enderror
     </section>
