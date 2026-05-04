@@ -197,41 +197,61 @@
                     </div>
 
                     <div class="marketing-detail__actions">
-                        <form action="{{ route('admin.automations.activate', $automation) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact" type="submit">
-                                <i class="bi bi-check2-circle"></i>
-                                <span>Attiva</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.automations.pause', $automation) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
-                                <i class="bi bi-pause-circle"></i>
-                                <span>Pausa</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.automations.archive', $automation) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                <i class="bi bi-archive-fill"></i>
-                                <span>Archivia</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.automations.preview-audience', $automation) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact" type="submit">
-                                <i class="bi bi-people-fill"></i>
-                                <span>Preview audience</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.automations.prepare-assignments', $automation) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                <i class="bi bi-person-plus-fill"></i>
-                                <span>Prepara assegnazioni</span>
-                            </button>
-                        </form>
+                        @if (in_array($automation->status, ['draft', 'paused'], true))
+                            <form action="{{ route('admin.automations.activate', $automation) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact" type="submit">
+                                    <i class="bi bi-check2-circle"></i>
+                                    <span>Attiva</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if ($automation->status === 'active')
+                            <form action="{{ route('admin.automations.pause', $automation) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                    <i class="bi bi-pause-circle"></i>
+                                    <span>Pausa</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if (in_array($automation->status, ['active', 'paused'], true))
+                            <form action="{{ route('admin.automations.draft', $automation) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                    <i class="bi bi-clock-history"></i>
+                                    <span>Completa più tardi</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if ($automation->status !== 'archived')
+                            <form action="{{ route('admin.automations.preview-audience', $automation) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact" type="submit">
+                                    <i class="bi bi-people-fill"></i>
+                                    <span>Preview audience</span>
+                                </button>
+                            </form>
+
+                            <form action="{{ route('admin.automations.prepare-assignments', $automation) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    <span>Prepara assegnazioni</span>
+                                </button>
+                            </form>
+
+                            <form action="{{ route('admin.automations.archive', $automation) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
+                                    <i class="bi bi-archive-fill"></i>
+                                    <span>Archivia</span>
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </section>
 

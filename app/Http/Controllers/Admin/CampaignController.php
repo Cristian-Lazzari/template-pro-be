@@ -101,20 +101,13 @@ class CampaignController extends Controller
     public function update(UpdateCampaignRequest $request, Campaign $campaign)
     {
         if ($campaign->status === 'sent') {
-            if ($request->input('status') !== 'archived') {
-                return back()
-                    ->withErrors(['status' => 'Una campagna inviata puo essere solo archiviata.'])
-                    ->withInput();
-            }
-
-            $campaign->update(['status' => 'archived']);
-
-            return to_route('admin.campaigns.show', $campaign)
-                ->with('success', 'Campagna archiviata correttamente.');
+            return back()
+                ->withErrors(['status' => 'Una campagna inviata puo essere solo consultata o archiviata.'])
+                ->withInput();
         }
 
         $campaign->update(
-            $this->campaignData($request)
+            $this->campaignData($request, $campaign)
         );
 
         $campaign->promotions()->sync($this->promotionIds($request));
@@ -123,9 +116,25 @@ class CampaignController extends Controller
             ->with('success', 'Campagna aggiornata correttamente.');
     }
 
-    public function activate(Campaign $campaign)
+    public function activate(Campaign $campaign, CampaignAssignmentService $assignmentService)
     {
-        return $this->updateStatus($campaign, 'active', 'Campagna attivata correttamente.');
+        if ($campaign->status === 'sent') {
+            return back()->withErrors([
+                'status' => 'Una campagna inviata puo essere solo archiviata.',
+            ]);
+        }
+
+        $campaign->update(['status' => 'active']);
+        $campaign->refresh();
+
+        $result = $assignmentService->assign($campaign, 500, false);
+        $message = $campaign->scheduled_at
+            ? 'Campagna confermata. Le assegnazioni sono state preparate; l’invio partira dalla programmazione.'
+            : 'Campagna confermata. Le assegnazioni sono state preparate; imposta una programmazione per avviare l’invio automatico.';
+
+        return back()
+            ->with('success', $message)
+            ->with('campaign_assignment_result', $result);
     }
 
     public function pause(Campaign $campaign)
@@ -136,6 +145,11 @@ class CampaignController extends Controller
     public function archive(Campaign $campaign)
     {
         return $this->updateStatus($campaign, 'archived', 'Campagna archiviata correttamente.');
+    }
+
+    public function draft(Campaign $campaign)
+    {
+        return $this->updateStatus($campaign, 'draft', 'Campagna salvata come bozza.');
     }
 
     public function previewAudience(Campaign $campaign, CampaignAssignmentService $assignmentService)
@@ -165,10 +179,16 @@ class CampaignController extends Controller
         ];
     }
 
-    private function campaignData(Request $request): array
+    private function campaignData(Request $request, ?Campaign $campaign = null): array
     {
         $data = $request->validated();
         unset($data['promotions']);
+
+        if ($campaign?->exists) {
+            unset($data['status']);
+        } else {
+            $data['status'] = 'draft';
+        }
 
         return $data;
     }

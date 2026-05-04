@@ -112,27 +112,33 @@
                                     <i class="bi bi-pencil-square"></i>
                                     <span>Modifica</span>
                                 </a>
-                                <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-check2-circle"></i>
-                                        <span>Attiva</span>
-                                    </button>
-                                </form>
-                                <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-pause-circle"></i>
-                                        <span>Pausa</span>
-                                    </button>
-                                </form>
-                                <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-archive-fill"></i>
-                                        <span>Archivia</span>
-                                    </button>
-                                </form>
+                                @if (in_array($campaign->status, ['draft', 'paused'], true))
+                                    <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button class="order-detail__contact" type="submit">
+                                            <i class="bi bi-check2-circle"></i>
+                                            <span>Conferma</span>
+                                        </button>
+                                    </form>
+                                @endif
+                                @if ($campaign->status === 'active')
+                                    <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button class="order-detail__contact" type="submit">
+                                            <i class="bi bi-pause-circle"></i>
+                                            <span>Pausa</span>
+                                        </button>
+                                    </form>
+                                @endif
+                                @if (in_array($campaign->status, ['active', 'paused', 'draft', 'sent'], true))
+                                    <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button class="order-detail__contact" type="submit">
+                                            <i class="bi bi-archive-fill"></i>
+                                            <span>Archivia</span>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </article>

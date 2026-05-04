@@ -8,6 +8,12 @@
     </div>
 @endif
 
+@if ($errors->any())
+    <div class="alert alert-danger dashboard-home__flash" role="alert">
+        {{ $errors->first() }}
+    </div>
+@endif
+
 @php
     $tone = match ($campaign->status) {
         'active', 'sent' => 'active',
@@ -25,6 +31,13 @@
     $modelName = $campaign->model?->name ?? '-';
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();
+    $scheduleState = 'Nessuna programmazione';
+
+    if ($campaign->scheduled_at) {
+        $scheduleState = $campaign->scheduled_at->isFuture()
+            ? 'Invio programmato'
+            : 'Pronta per il prossimo scheduler';
+    }
 @endphp
 
 <div class="dash_page">
@@ -57,10 +70,12 @@
                         <i class="bi bi-arrow-left"></i>
                         <span>Lista</span>
                     </a>
-                    <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
-                        <i class="bi bi-pencil-square"></i>
-                        <span>Modifica</span>
-                    </a>
+                    @if ($campaign->status !== 'sent')
+                        <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Modifica</span>
+                        </a>
+                    @endif
                     <a class="order-detail__contact" href="{{ route('admin.marketing') }}">
                         <i class="bi bi-grid-1x2-fill"></i>
                         <span>Marketing</span>
@@ -109,6 +124,10 @@
                         <article class="marketing-detail__fact">
                             <span>Programmata</span>
                             <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Invio email</span>
+                            <strong>{{ $scheduleState }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
                             <span>Inviata</span>
@@ -189,41 +208,63 @@
                     </div>
 
                     <div class="marketing-detail__actions">
-                        <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact" type="submit">
-                                <i class="bi bi-check2-circle"></i>
-                                <span>Attiva</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
-                                <i class="bi bi-pause-circle"></i>
-                                <span>Pausa</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                <i class="bi bi-archive-fill"></i>
-                                <span>Archivia</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.campaigns.preview-audience', $campaign) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact" type="submit">
-                                <i class="bi bi-people-fill"></i>
-                                <span>Preview audience</span>
-                            </button>
-                        </form>
-                        <form action="{{ route('admin.campaigns.prepare-assignments', $campaign) }}" method="POST">
-                            @csrf
-                            <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                <i class="bi bi-person-plus-fill"></i>
-                                <span>Prepara assegnazioni</span>
-                            </button>
-                        </form>
+                        @if (in_array($campaign->status, ['draft', 'paused'], true))
+                            <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact" type="submit">
+                                    <i class="bi bi-check2-circle"></i>
+                                    <span>Conferma/programma campagna</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if ($campaign->status === 'active')
+                            <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                    <i class="bi bi-pause-circle"></i>
+                                    <span>Pausa</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if (in_array($campaign->status, ['active', 'paused'], true))
+                            <form action="{{ route('admin.campaigns.draft', $campaign) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                    <i class="bi bi-clock-history"></i>
+                                    <span>Completa più tardi</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if (! in_array($campaign->status, ['sent', 'archived'], true))
+                            <form action="{{ route('admin.campaigns.preview-audience', $campaign) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact" type="submit">
+                                    <i class="bi bi-people-fill"></i>
+                                    <span>Preview audience</span>
+                                </button>
+                            </form>
+
+                            <form action="{{ route('admin.campaigns.prepare-assignments', $campaign) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    <span>Prepara assegnazioni</span>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if (in_array($campaign->status, ['active', 'paused', 'draft', 'sent'], true))
+                            <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
+                                @csrf
+                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
+                                    <i class="bi bi-archive-fill"></i>
+                                    <span>Archivia</span>
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </section>
 
@@ -232,6 +273,9 @@
                         $audiencePreview = session('audience_preview');
                         $assignableCount = $audiencePreview['assignable_count'] ?? $audiencePreview['assigned_count'] ?? 0;
                         $previewMetrics = [
+                            ['label' => 'Status campagna', 'value' => $statuses[$campaign->status] ?? $campaign->status],
+                            ['label' => 'Programmazione', 'value' => $campaign->scheduled_at?->format('d/m/Y H:i') ?? 'Mancante'],
+                            ['label' => 'Invio', 'value' => $scheduleState],
                             ['label' => 'Assegnabile', 'value' => ($audiencePreview['can_assign'] ?? false) ? 'Si' : 'No'],
                             ['label' => 'Motivo', 'value' => $audiencePreview['failure_reason'] ?? '-'],
                             ['label' => 'Clienti', 'value' => $audiencePreview['customers_checked'] ?? 0],
@@ -251,6 +295,11 @@
                                 </span>
                                 Preview audience
                             </h3>
+                        </div>
+
+                        <div class="marketing-detail__empty">
+                            <strong>Simulazione soltanto.</strong>
+                            <small>La preview non crea assegnazioni e non invia email.</small>
                         </div>
 
                         <div class="marketing-detail__compact-grid">
@@ -290,6 +339,11 @@
                                 </span>
                                 Risultato assegnazioni
                             </h3>
+                        </div>
+
+                        <div class="marketing-detail__empty">
+                            <strong>Assegnazioni create, email non inviate.</strong>
+                            <small>L’invio reale parte solo da scheduled_at tramite scheduler Laravel.</small>
                         </div>
 
                         <div class="marketing-detail__compact-grid">

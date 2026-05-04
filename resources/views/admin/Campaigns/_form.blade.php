@@ -33,31 +33,15 @@
             </h3>
         </div>
 
-        <div class="split">
-            <div>
-                <label class="label_c" for="name">
-                    <i class="bi bi-type"></i>
-                    Nome
-                </label>
-                <p>
-                    <input value="{{ old('name', $campaign->name) }}" type="text" name="name" id="name" placeholder="Nome campagna">
-                </p>
-                @error('name') <p class="error">{{ $message }}</p> @enderror
-            </div>
-            <div>
-                <label class="label_c" for="status">
-                    <i class="bi bi-toggle-on"></i>
-                    Status
-                </label>
-                <p>
-                    <select name="status" id="status">
-                        @foreach ($statuses as $value => $label)
-                            <option value="{{ $value }}" @selected(old('status', $campaign->status) === $value)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </p>
-                @error('status') <p class="error">{{ $message }}</p> @enderror
-            </div>
+        <div>
+            <label class="label_c" for="name">
+                <i class="bi bi-type"></i>
+                Nome
+            </label>
+            <p>
+                <input value="{{ old('name', $campaign->name) }}" type="text" name="name" id="name" placeholder="Nome campagna">
+            </p>
+            @error('name') <p class="error">{{ $message }}</p> @enderror
         </div>
     </section>
 

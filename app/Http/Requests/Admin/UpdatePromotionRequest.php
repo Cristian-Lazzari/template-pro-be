@@ -25,7 +25,6 @@ class UpdatePromotionRequest extends FormRequest
                 'max:255',
                 Rule::unique('promotions', 'slug')->ignore($promotionId),
             ],
-            'status' => ['required', Rule::in(['draft', 'active', 'paused', 'archived'])],
             'case_use' => ['nullable', Rule::in(['generic', 'take_away', 'delivery', 'table', 'gift'])],
             'type_discount' => ['nullable', Rule::in(['fixed', 'percentage', 'gift'])],
             'discount' => ['nullable', 'numeric', 'min:0'],

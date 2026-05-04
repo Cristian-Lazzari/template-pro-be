@@ -113,27 +113,33 @@
                                     <i class="bi bi-pencil-square"></i>
                                     <span>Modifica</span>
                                 </a>
-                                <form action="{{ route('admin.promotions.publish', $promotion) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-check2-circle"></i>
-                                        <span>Pubblica</span>
-                                    </button>
-                                </form>
-                                <form action="{{ route('admin.promotions.pause', $promotion) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-pause-circle"></i>
-                                        <span>Pausa</span>
-                                    </button>
-                                </form>
-                                <form action="{{ route('admin.promotions.archive', $promotion) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-archive-fill"></i>
-                                        <span>Archivia</span>
-                                    </button>
-                                </form>
+                                @if (in_array($promotion->status, ['draft', 'paused'], true))
+                                    <form action="{{ route('admin.promotions.publish', $promotion) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button class="order-detail__contact" type="submit">
+                                            <i class="bi bi-check2-circle"></i>
+                                            <span>Attiva</span>
+                                        </button>
+                                    </form>
+                                @endif
+                                @if ($promotion->status === 'active')
+                                    <form action="{{ route('admin.promotions.pause', $promotion) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button class="order-detail__contact" type="submit">
+                                            <i class="bi bi-pause-circle"></i>
+                                            <span>Pausa</span>
+                                        </button>
+                                    </form>
+                                @endif
+                                @if ($promotion->status !== 'archived')
+                                    <form action="{{ route('admin.promotions.archive', $promotion) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button class="order-detail__contact" type="submit">
+                                            <i class="bi bi-archive-fill"></i>
+                                            <span>Archivia</span>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </article>

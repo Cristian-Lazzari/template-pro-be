@@ -168,36 +168,20 @@
             </div>
         </div>
 
-        <div class="split">
-            <div>
-                <label class="label_c" for="status">
-                    <i class="bi bi-toggle-on"></i>
-                    Status
-                </label>
-                <p>
-                    <select name="status" id="status">
-                        @foreach ($statuses as $value => $label)
-                            <option value="{{ $value }}" @selected(old('status', $promotion->status) === $value)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </p>
-                @error('status') <p class="error">{{ $message }}</p> @enderror
-            </div>
-            <div>
-                <label class="label_c" for="case_use">
-                    <i class="bi bi-bullseye"></i>
-                    Caso d'uso
-                </label>
-                <p>
-                    <select name="case_use" id="case_use">
-                        <option value="">Nessuno</option>
-                        @foreach ($caseUses as $value => $label)
-                            <option value="{{ $value }}" @selected(old('case_use', $promotion->case_use) === $value)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </p>
-                @error('case_use') <p class="error">{{ $message }}</p> @enderror
-            </div>
+        <div>
+            <label class="label_c" for="case_use">
+                <i class="bi bi-bullseye"></i>
+                Caso d'uso
+            </label>
+            <p>
+                <select name="case_use" id="case_use">
+                    <option value="">Nessuno</option>
+                    @foreach ($caseUses as $value => $label)
+                        <option value="{{ $value }}" @selected(old('case_use', $promotion->case_use) === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </p>
+            @error('case_use') <p class="error">{{ $message }}</p> @enderror
         </div>
     </section>
 

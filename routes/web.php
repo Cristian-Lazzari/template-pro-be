@@ -93,12 +93,14 @@ Route::middleware(['auth', 'verified'])
         Route::post('promotions/{promotion}/publish', [PromotionController::class, 'publish'])->name('promotions.publish');
         Route::post('promotions/{promotion}/pause',   [PromotionController::class, 'pause'])->name('promotions.pause');
         Route::post('promotions/{promotion}/archive', [PromotionController::class, 'archive'])->name('promotions.archive');
+        Route::post('promotions/{promotion}/draft',   [PromotionController::class, 'draft'])->name('promotions.draft');
 
         // Rotte campaign marketing
 
         Route::post('campaigns/{campaign}/activate', [CampaignController::class, 'activate'])->name('campaigns.activate');
         Route::post('campaigns/{campaign}/pause',    [CampaignController::class, 'pause'])->name('campaigns.pause');
         Route::post('campaigns/{campaign}/archive',  [CampaignController::class, 'archive'])->name('campaigns.archive');
+        Route::post('campaigns/{campaign}/draft',    [CampaignController::class, 'draft'])->name('campaigns.draft');
         Route::post('campaigns/{campaign}/preview-audience', [CampaignController::class, 'previewAudience'])->name('campaigns.preview-audience');
         Route::post('campaigns/{campaign}/prepare-assignments', [CampaignController::class, 'prepareAssignments'])->name('campaigns.prepare-assignments');
 
@@ -107,6 +109,7 @@ Route::middleware(['auth', 'verified'])
         Route::post('automations/{automation}/activate', [AutomationController::class, 'activate'])->name('automations.activate');
         Route::post('automations/{automation}/pause',    [AutomationController::class, 'pause'])->name('automations.pause');
         Route::post('automations/{automation}/archive',  [AutomationController::class, 'archive'])->name('automations.archive');
+        Route::post('automations/{automation}/draft',    [AutomationController::class, 'draft'])->name('automations.draft');
         Route::post('automations/{automation}/preview-audience', [AutomationController::class, 'previewAudience'])->name('automations.preview-audience');
         Route::post('automations/{automation}/prepare-assignments', [AutomationController::class, 'prepareAssignments'])->name('automations.prepare-assignments');
         

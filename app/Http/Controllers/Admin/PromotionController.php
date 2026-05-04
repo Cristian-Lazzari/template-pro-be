@@ -150,6 +150,11 @@ class PromotionController extends Controller
         return $this->updateStatus($promotion, 'archived', 'Promozione archiviata correttamente.');
     }
 
+    public function draft(Promotion $promotion)
+    {
+        return $this->updateStatus($promotion, 'draft', 'Promozione salvata come bozza.');
+    }
+
     private function formOptions(?Promotion $promotion = null): array
     {
         $targetOptions = $this->targetOptions($promotion);
@@ -182,6 +187,12 @@ class PromotionController extends Controller
         $metadata['reusable'] = $request->boolean('metadata.reusable');
         $data['metadata'] = $metadata;
         unset($data['targets'], $data['target_scope']);
+
+        if ($promotion?->exists) {
+            unset($data['status']);
+        } else {
+            $data['status'] = 'draft';
+        }
 
         return $data;
     }

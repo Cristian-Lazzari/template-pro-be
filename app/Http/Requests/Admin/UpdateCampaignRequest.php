@@ -16,7 +16,6 @@ class UpdateCampaignRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['draft', 'active', 'paused', 'archived', 'sent'])],
             'segment' => ['nullable', Rule::in(['all', 'new_customers', 'inactive_customers', 'loyal_customers', 'high_spending_customers'])],
             'model_id' => ['nullable', 'exists:models,id'],
             'scheduled_at' => ['nullable', 'date'],

@@ -124,6 +124,11 @@ class AutomationController extends Controller
         return $this->updateStatus($automation, 'archived', 'Automazione archiviata correttamente.');
     }
 
+    public function draft(Automation $automation)
+    {
+        return $this->updateStatus($automation, 'draft', 'Automazione salvata come bozza.');
+    }
+
     public function previewAudience(Automation $automation, AutomationAudienceBuilder $audienceBuilder)
     {
         $promotionsCount = $automation->promotions()->count();
@@ -178,6 +183,12 @@ class AutomationController extends Controller
 
         unset($data['promotions'], $data['metadata']);
         $data['metadata'] = $metadata;
+
+        if ($automation?->exists) {
+            unset($data['status']);
+        } else {
+            $data['status'] = 'draft';
+        }
 
         return $data;
     }

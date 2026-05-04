@@ -16,7 +16,6 @@ class UpdateAutomationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'status' => ['required', Rule::in(['draft', 'active', 'paused', 'archived'])],
             'trigger' => ['nullable', Rule::in(['order_inactive_30_days', 'reservation_inactive_30_days', 'birthday', 'first_order_completed', 'abandoned_profile'])],
             'model_id' => ['nullable', 'exists:models,id'],
             'promotions' => ['nullable', 'array'],

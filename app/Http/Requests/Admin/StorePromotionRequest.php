@@ -17,7 +17,6 @@ class StorePromotionRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('promotions', 'slug')],
-            'status' => ['required', Rule::in(['draft', 'active', 'paused', 'archived'])],
             'case_use' => ['nullable', Rule::in(['generic', 'take_away', 'delivery', 'table', 'gift'])],
             'type_discount' => ['nullable', Rule::in(['fixed', 'percentage', 'gift'])],
             'discount' => ['nullable', 'numeric', 'min:0'],
