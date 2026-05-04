@@ -42,16 +42,19 @@ Route::middleware(['auth', 'verified'])
         Route::get('/',           [AdminPageController::class, 'dashboard'])->name('dashboard');
    
         Route::get('/statistics', [AdminPageController::class, 'statistics'])->name('statistics');
+        Route::get('/marketing', [AdminPageController::class, 'marketing'])->name('marketing');
         Route::get('/customers',  [CustomerController::class, 'index'])->name('customers.index');
         Route::get('/customers/guest/{email}', [CustomerController::class, 'showGuest'])->where('email', '.*')->name('customers.show_guest');
-        Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
-        Route::post('/customers/profile-settings', [CustomerController::class, 'updateProfileSettings'])->name('customers.profile_settings');
 
+        Route::get('/customers/mail-models', [MailerController::class, 'indexModels'])->name('customers.mail_models.index');
         Route::get('/customers/mail-models/create', [MailerController::class, 'createModel'])->name('customers.mail_models.create');
         Route::post('/customers/mail-models', [MailerController::class, 'storeModel'])->name('customers.mail_models.store');
         Route::get('/customers/mail-models/{id}/edit', [MailerController::class, 'editModel'])->name('customers.mail_models.edit');
         Route::post('/customers/mail-models/update', [MailerController::class, 'updateModel'])->name('customers.mail_models.update');
         Route::delete('/customers/mail-models/{id}', [MailerController::class, 'deleteModel'])->name('customers.mail_models.delete');
+
+        Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
+        Route::post('/customers/profile-settings', [CustomerController::class, 'updateProfileSettings'])->name('customers.profile_settings');
 
         // Rotte setting
 

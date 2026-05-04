@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\MenuTranslation;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\PromotionTarget;
 use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,18 @@ class Menu extends Model
     public function translations()
     {
         return $this->hasMany(MenuTranslation::class);
+    }
+
+    public function promotionTargets()
+    {
+        return $this->hasMany(PromotionTarget::class, 'target_id')
+            ->where('target_type', PromotionTarget::TYPE_MENU);
+    }
+
+    public function activePromotionTargets()
+    {
+        return $this->promotionTargets()
+            ->whereHas('promotion', fn ($query) => $query->where('status', 'active'));
     }
     
     public function getNameAttribute()

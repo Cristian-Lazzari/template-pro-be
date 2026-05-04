@@ -56,6 +56,36 @@ class Promotion extends Model
         return $this->hasMany(CustomerPromotion::class);
     }
 
+    public function targets()
+    {
+        return $this->hasMany(PromotionTarget::class);
+    }
+
+    public function productTargets()
+    {
+        return $this->targets()->where('target_type', PromotionTarget::TYPE_PRODUCT);
+    }
+
+    public function menuTargets()
+    {
+        return $this->targets()->where('target_type', PromotionTarget::TYPE_MENU);
+    }
+
+    public function categoryTargets()
+    {
+        return $this->targets()->where('target_type', PromotionTarget::TYPE_CATEGORY);
+    }
+
+    public function postTargets()
+    {
+        return $this->targets()->where('target_type', PromotionTarget::TYPE_POST);
+    }
+
+    public function genericTargets()
+    {
+        return $this->targets()->where('target_type', PromotionTarget::TYPE_GENERIC);
+    }
+
     public function customers()
     {
         return $this->belongsToMany(Customer::class, 'customer_promotion')

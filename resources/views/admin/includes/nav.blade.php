@@ -45,15 +45,15 @@
         'label' => 'Clienti',
         'route' => route('admin.customers.index'),
         'icon' => 'people-fill',
-        'active' => request()->routeIs('admin.customers.*'),
+        'active' => request()->routeIs('admin.customers.*') && ! request()->routeIs('admin.customers.mail_models.*'),
     ];
 
     $navItems[] = [
         'key' => 'marketing',
         'label' => 'Marketing',
-        'route' => route('admin.campaigns.index'),
+        'route' => route('admin.marketing'),
         'icon' => 'megaphone-fill',
-        'active' => request()->routeIs('admin.promotions.*') || request()->routeIs('admin.campaigns.*') || request()->routeIs('admin.automations.*'),
+        'active' => request()->routeIs('admin.marketing') || request()->routeIs('admin.promotions.*') || request()->routeIs('admin.campaigns.*') || request()->routeIs('admin.automations.*') || request()->routeIs('admin.customers.mail_models.*'),
     ];
 
     $navItems[] = [

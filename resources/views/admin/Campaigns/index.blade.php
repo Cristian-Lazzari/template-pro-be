@@ -5,7 +5,6 @@
 @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show dashboard-home__flash" role="alert">
         {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
@@ -13,7 +12,7 @@
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.campaigns.index')],
+            ['label' => 'Marketing', 'url' => route('admin.marketing')],
             ['label' => 'Campagne'],
         ],
     ])
@@ -51,75 +50,93 @@
         </div>
 
         @if ($campaigns->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-dark table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Status</th>
-                            <th>Segmento</th>
-                            <th>Modello mail</th>
-                            <th>Promozioni</th>
-                            <th>Programmata</th>
-                            <th>Coinvolti</th>
-                            <th>Inviate</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($campaigns as $campaign)
-                            <tr>
-                                <td><strong>{{ $campaign->name }}</strong></td>
-                                <td>
-                                    @include('admin.Marketing.partials.status-pill', [
-                                        'status' => $campaign->status,
-                                        'label' => $statuses[$campaign->status] ?? $campaign->status,
-                                    ])
-                                </td>
-                                <td>{{ $segments[$campaign->segment] ?? ($campaign->segment ?: '-') }}</td>
-                                <td>{{ $campaign->model?->name ?? '-' }}</td>
-                                <td>
-                                    @forelse ($campaign->promotions as $promotion)
-                                        <div>{{ $promotion->name }}</div>
-                                    @empty
-                                        -
-                                    @endforelse
-                                </td>
-                                <td>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</td>
-                                <td>{{ $campaign->total_activation }}</td>
-                                <td>{{ $campaign->total_sent }}</td>
-                                <td>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <a class="btn btn-sm btn-outline-light" href="{{ route('admin.campaigns.show', $campaign) }}" title="Dettaglio">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </a>
-                                        <a class="btn btn-sm btn-outline-light" href="{{ route('admin.campaigns.edit', $campaign) }}" title="Modifica">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-sm btn-outline-success" type="submit" title="Attiva">
-                                                <i class="bi bi-check2-circle"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-sm btn-outline-warning" type="submit" title="Pausa">
-                                                <i class="bi bi-pause-circle"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-sm btn-outline-danger" type="submit" title="Archivia">
-                                                <i class="bi bi-archive-fill"></i>
-                                            </button>
-                                        </form>
+            <div class="menu-dashboard__promo-grid">
+                @foreach ($campaigns as $campaign)
+                    <article class="menu-dashboard__promo-card">
+                        <div class="menu-dashboard__promo-banner">
+                            <span class="order-detail__section-icon">
+                                <i class="bi bi-envelope-paper-fill"></i>
+                            </span>
+                            <div>
+                                <span class="menu-dashboard__banner-eyebrow">Campagna</span>
+                                @include('admin.Marketing.partials.status-pill', [
+                                    'status' => $campaign->status,
+                                    'label' => $statuses[$campaign->status] ?? $campaign->status,
+                                ])
+                            </div>
+                        </div>
+
+                        <div class="menu-dashboard__promo-body">
+                            <div class="menu-dashboard__promo-top">
+                                <div class="menu-dashboard__promo-intro">
+                                    <div class="menu-dashboard__chip-row">
+                                        <span class="menu-dashboard__chip">{{ $segments[$campaign->segment] ?? ($campaign->segment ?: 'Segmento non definito') }}</span>
+                                        <span class="menu-dashboard__chip menu-dashboard__chip--accent">{{ $campaign->promotions->count() }} promo</span>
                                     </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+
+                                    <h4>{{ $campaign->name }}</h4>
+                                    <p class="menu-dashboard__copy">Modello: {{ $campaign->model?->name ?? '-' }}</p>
+                                </div>
+
+                                <div class="menu-dashboard__price-block">
+                                    <span class="menu-dashboard__price">{{ $campaign->total_activation }}</span>
+                                    <small>coinvolti</small>
+                                </div>
+                            </div>
+
+                            <div class="menu-dashboard__detail-list">
+                                <span>Promozioni collegate</span>
+                                <div class="menu-dashboard__pill-row">
+                                    @forelse ($campaign->promotions as $promotion)
+                                        <small>{{ $promotion->name }}</small>
+                                    @empty
+                                        <small>Nessuna promozione</small>
+                                    @endforelse
+                                </div>
+                            </div>
+
+                            <div class="menu-dashboard__detail-list">
+                                <span>Operativita</span>
+                                <div class="menu-dashboard__pill-row">
+                                    <small>Programmata: {{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                                    <small>{{ $campaign->total_sent }} invii</small>
+                                </div>
+                            </div>
+
+                            <div class="menu-dashboard__hero-actions dashboard-home__hero-actions mt-3">
+                                <a class="order-detail__contact" href="{{ route('admin.campaigns.show', $campaign) }}">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>Apri</span>
+                                </a>
+                                <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span>Modifica</span>
+                                </a>
+                                <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-check2-circle"></i>
+                                        <span>Attiva</span>
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-pause-circle"></i>
+                                        <span>Pausa</span>
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-archive-fill"></i>
+                                        <span>Archivia</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
             </div>
 
             <div class="d-flex justify-content-center mt-3">

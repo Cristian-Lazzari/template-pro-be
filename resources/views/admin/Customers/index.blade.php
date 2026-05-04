@@ -770,30 +770,12 @@
                     <span>Configura profilo cliente</span>
                 </a>
 
-                <a href="#customerMailModels" class="order-detail__contact">
-                    <x-icon name="envelope-paper-fill" />
-                    <span>Apri modelli mail</span>
+
+                <a href="{{ route('admin.marketing') }}" class="order-detail__contact">
+                    <x-icon name="grid-1x2-fill" />
+                    <span>Area marketing</span>
                 </a>
 
-                <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
-                    <x-icon name="envelope-paper-fill" />
-                    <span>Campagne marketing</span>
-                </a>
-
-                <a href="{{ route('admin.automations.index') }}" class="order-detail__contact">
-                    <x-icon name="lightning-charge-fill" />
-                    <span>Automazioni marketing</span>
-                </a>
-
-                <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
-                    <x-icon name="megaphone-fill" />
-                    <span>Promozioni</span>
-                </a>
-
-                <a href="#customerList" class="order-detail__contact">
-                    <x-icon name="person-vcard-fill" />
-                    <span>Vai ai profili</span>
-                </a>
             </div>
         </header>
 
@@ -934,146 +916,6 @@
         </div>
     </form>
 
-    <section id="customerMailModels" class="order-detail customer-page__mail-models">
-        <div class="order-detail__body">
-            <section class="order-detail__section">
-                <div class="order-detail__section-head">
-                    <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="envelope-paper-fill" />
-                        </span>
-                        Modelli mail
-                    </h3>
-
-                    <a class="customer-page__button" href="{{ route('admin.customers.mail_models.create') }}">
-                        <x-icon name="plus-circle-fill" />
-                        <span>Nuovo modello</span>
-                    </a>
-                </div>
-
-                <div class="customer-page__actions" style="margin-bottom: 14px;">
-                    <div class="customer-page__settings-copy">
-                        <p>
-                            I template restano disponibili qui dentro, insieme ai profili cliente.
-                            Le nuove aree marketing usano questi modelli dentro campagne e automazioni.
-                        </p>
-                    </div>
-
-                    <a class="customer-page__button--ghost" href="{{ route('admin.campaigns.index') }}">
-                        <x-icon name="envelope-paper-fill" />
-                        <span>Apri campagne</span>
-                    </a>
-
-                    <a class="customer-page__button--ghost" href="{{ route('admin.automations.index') }}">
-                        <x-icon name="lightning-charge-fill" />
-                        <span>Apri automazioni</span>
-                    </a>
-
-                    <a class="customer-page__button--ghost" href="{{ route('admin.promotions.index') }}">
-                        <x-icon name="megaphone-fill" />
-                        <span>Apri promozioni</span>
-                    </a>
-                </div>
-
-                @if ($mailModels->isNotEmpty())
-                    <div class="customer-page__mail-model-grid">
-                        @foreach ($mailModels as $mailModel)
-                            @php
-                                $bodyParts = array_values(array_filter(
-                                    explode('/*/', (string) $mailModel->body),
-                                    fn ($part) => trim($part) !== ''
-                                ));
-                            @endphp
-
-                            <article class="customer-page__mail-model">
-                                <div class="customer-page__mail-model-head">
-                                    <div class="customer-page__mail-model-title">
-                                        <h3>{{ $mailModel->name }}</h3>
-                                        <span class="customer-page__mail-model-label">{{ $mailModel->sender }}</span>
-                                    </div>
-
-                                    <p class="customer-page__mail-model-meta">
-                                        <strong>Oggetto:</strong> {{ $mailModel->object }}
-                                    </p>
-                                </div>
-
-                                <div class="customer-page__mail-model-body">
-                                    <h4>{{ $mailModel->heading }}</h4>
-
-                                    @foreach ($bodyParts as $part)
-                                        <p>{!! nl2br(e(str_replace('\n', "\n", $part))) !!}</p>
-                                    @endforeach
-                                </div>
-
-                                @if ($mailModel->img_1 || $mailModel->img_2)
-                                    <div class="customer-page__mail-model-images">
-                                        @if ($mailModel->img_1)
-                                            <img class="customer-page__mail-model-image" src="{{ asset('public/storage/' . $mailModel->img_1) }}" alt="{{ $mailModel->name }} immagine 1">
-                                        @endif
-
-                                        @if ($mailModel->img_2)
-                                            <img class="customer-page__mail-model-image" src="{{ asset('public/storage/' . $mailModel->img_2) }}" alt="{{ $mailModel->name }} immagine 2">
-                                        @endif
-                                    </div>
-                                @endif
-
-                                <div class="customer-page__mail-model-footer">
-                                    <p>{!! nl2br(e(str_replace('\n', "\n", $mailModel->ending))) !!}</p>
-                                </div>
-
-                                <div class="customer-page__mail-model-actions">
-                                    <a class="customer-page__button--ghost" href="{{ route('admin.customers.mail_models.edit', $mailModel->id) }}">
-                                        <x-icon name="pencil-square" />
-                                        <span>Modifica</span>
-                                    </a>
-
-                                    <button type="button" class="customer-page__button--ghost" data-bs-toggle="modal" data-bs-target="#deleteMailModel{{ $mailModel->id }}">
-                                        <x-icon name="trash3-fill" />
-                                        <span>Elimina</span>
-                                    </button>
-                                </div>
-                            </article>
-
-                            <div class="modal fade" id="deleteMailModel{{ $mailModel->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteMailModel{{ $mailModel->id }}Label" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered creation">
-                                    <form action="{{ route('admin.customers.mail_models.delete', $mailModel->id) }}" class="w-100" method="post">
-                                        @method('delete')
-                                        @csrf
-                                        <x-dashboard.action-modal
-                                            title-id="deleteMailModel{{ $mailModel->id }}Label"
-                                            title="Sicuro di voler eliminare il modello?"
-                                            eyebrow="Template mail"
-                                            tone="danger"
-                                            :subject="$mailModel->name"
-                                            description="Una volta eliminato, questo modello non potra piu essere recuperato."
-                                        >
-                                            <p class="dashboard-action-modal__hint">Controlla il nome del template prima di confermare.</p>
-
-                                            <x-slot name="footer">
-                                                <button class="my_btn_2" type="submit">
-                                                    Elimina definitivamente
-                                                </button>
-                                            </x-slot>
-                                        </x-dashboard.action-modal>
-                                    </form>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="customer-page__empty">
-                        <div>
-                            <span class="customer-page__empty-icon" aria-hidden="true">
-                                <x-icon name="envelope-paper-fill" />
-                            </span>
-                            <strong>Nessun modello mail disponibile</strong>
-                            <p>Crea il primo template direttamente da questa pagina clienti.</p>
-                        </div>
-                    </div>
-                @endif
-            </section>
-        </div>
-    </section>
 
     <section class="order-detail customer-page__toolbar-shell">
         <form id="customerToolbarForm" class="customer-page__toolbar-form" method="GET" action="{{ route('admin.customers.index') }}">

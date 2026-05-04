@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Model;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class MailerController extends Controller
@@ -19,6 +21,24 @@ class MailerController extends Controller
         'ending' => 'required|string|min:1',
         'sender' => 'required|string|min:1|max:50',
     ];
+
+    public function indexModels()
+    {
+        $countRelations = array_filter([
+            Schema::hasTable('campaigns') ? 'campaigns' : null,
+            Schema::hasTable('automations') ? 'automations' : null,
+        ]);
+
+        $models = Schema::hasTable('models')
+            ? $this->mailModelQuery()
+                ->when($countRelations !== [], fn ($query) => $query->withCount($countRelations))
+                ->orderByDesc('updated_at')
+                ->orderByDesc('id')
+                ->simplePaginate(40)
+            : new LengthAwarePaginator(collect(), 0, 40);
+
+        return view('admin.Mailer.index', compact('models'));
+    }
 
     public function createModel()
     {
@@ -51,7 +71,7 @@ class MailerController extends Controller
 
         $message = 'Il modello "' . $data['name'] . '" è stato creato correttamente';
 
-        return $this->redirectToCustomers($message);
+        return $this->redirectToModels($message);
     }
 
     public function editModel(int $id)
@@ -93,7 +113,7 @@ class MailerController extends Controller
 
         $message = 'Il modello "' . $data['name'] . '" è stato modificato correttamente';
 
-        return $this->redirectToCustomers($message);
+        return $this->redirectToModels($message);
     }
 
     public function deleteModel(int $id)
@@ -110,13 +130,32 @@ class MailerController extends Controller
 
         $model->delete();
 
-        return $this->redirectToCustomers('Modello eliminato con successo');
+        return $this->redirectToModels('Modello eliminato con successo');
     }
 
-    private function redirectToCustomers(string $message)
+    private function redirectToModels(string $message)
     {
         return redirect()
-            ->to(route('admin.customers.index') . '#customerMailModels')
+            ->route('admin.customers.mail_models.index')
             ->with('success', $message);
+    }
+
+    private function mailModelQuery()
+    {
+        $hasType = Schema::hasColumn('models', 'type');
+        $hasChannel = Schema::hasColumn('models', 'channel');
+
+        return Model::query()
+            ->when($hasType || $hasChannel, function ($query) use ($hasType, $hasChannel) {
+                $query->where(function ($nested) use ($hasType, $hasChannel) {
+                    if ($hasType) {
+                        $nested->orWhere('type', 'marketing');
+                    }
+
+                    if ($hasChannel) {
+                        $nested->orWhere('channel', 'email');
+                    }
+                });
+            });
     }
 }

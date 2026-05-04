@@ -387,6 +387,11 @@
                     </a>
                 @endif
 
+                <a href="{{ route('admin.marketing') }}" class="order-detail__contact">
+                    <x-icon name="grid-1x2-fill" />
+                    <span>Area marketing</span>
+                </a>
+
                 <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
                     <x-icon name="envelope-paper-fill" />
                     <span>Campagne marketing</span>

@@ -5,16 +5,18 @@
 @include('admin.Marketing.partials.breadcrumbs', [
     'items' => [
         ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-        ['label' => 'Clienti', 'url' => route('admin.customers.index')],
-        ['label' => 'Modelli mail', 'url' => route('admin.customers.index') . '#customerMailModels'],
+        ['label' => 'Marketing', 'url' => route('admin.marketing')],
+        ['label' => 'Modelli mail', 'url' => route('admin.customers.mail_models.index')],
         ['label' => $model->name],
     ],
 ])
 
-<div class="d-flex flex-wrap gap-2 my-4">
-    <a class="my_btn_5 w-auto" href="{{ route('admin.customers.index') }}#customerMailModels"> Indietro </a>
-    <a class="my_btn_1 w-auto" href="{{ route('admin.campaigns.index') }}"> Campagne </a>
-    <a class="my_btn_1 w-auto" href="{{ route('admin.automations.index') }}"> Automazioni </a>
+<div class="menu-dashboard__hero-actions dashboard-home__hero-actions my-4">
+    <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.index') }}">
+        <x-icon name="arrow-left-circle-fill" />
+        <span>Indietro</span>
+    </a>
+    @include('admin.Marketing.partials.area-links', ['current' => 'models'])
 </div>
 
 <h2 class="my-4">Modifica il modello "{{ $model->name }}"</h2>

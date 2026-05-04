@@ -2,6 +2,13 @@
     $current = $current ?? null;
 @endphp
 
+@if ($current !== 'marketing')
+    <a class="order-detail__contact" href="{{ route('admin.marketing') }}">
+        <x-icon name="grid-1x2-fill" />
+        <span>Marketing</span>
+    </a>
+@endif
+
 @if ($current !== 'customers')
     <a class="order-detail__contact" href="{{ route('admin.customers.index') }}">
         <x-icon name="people-fill" />
@@ -27,5 +34,12 @@
     <a class="order-detail__contact" href="{{ route('admin.automations.index') }}">
         <x-icon name="lightning-charge-fill" />
         <span>Automazioni</span>
+    </a>
+@endif
+
+@if ($current !== 'models')
+    <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.index') }}">
+        <x-icon name="file-earmark-richtext-fill" />
+        <span>Modelli mail</span>
     </a>
 @endif

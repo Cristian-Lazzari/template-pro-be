@@ -6,19 +6,24 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Allergen;
+use App\Models\Automation;
+use App\Models\Campaign;
 use App\Models\Category;
 use App\Models\Date;
 use App\Models\Ingredient;
 use App\Models\Menu;
+use App\Models\Model as MailModel;
 use App\Models\Order;
 use App\Models\Post;
 use App\Models\Product;
+use App\Models\Promotion;
 use App\Models\Reservation;
 use App\Models\Setting;
 use App\Support\Currency;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PageController extends Controller
 {
@@ -399,6 +404,86 @@ class PageController extends Controller
 
         return view('admin.menu', compact('menus', 'products', 'stat'));
     }
+
+    public function marketing()
+    {
+        $stat = [
+            'promotions' => [
+                'tot' => Schema::hasTable('promotions') ? Promotion::count() : 0,
+                'active' => Schema::hasTable('promotions') ? Promotion::where('status', 'active')->count() : 0,
+                'draft' => Schema::hasTable('promotions') ? Promotion::where('status', 'draft')->count() : 0,
+                'archived' => Schema::hasTable('promotions') ? Promotion::where('status', 'archived')->count() : 0,
+            ],
+            'campaigns' => [
+                'tot' => Schema::hasTable('campaigns') ? Campaign::count() : 0,
+                'active' => Schema::hasTable('campaigns') ? Campaign::where('status', 'active')->count() : 0,
+                'draft' => Schema::hasTable('campaigns') ? Campaign::where('status', 'draft')->count() : 0,
+                'sent' => Schema::hasTable('campaigns') ? Campaign::where('status', 'sent')->count() : 0,
+            ],
+            'automations' => [
+                'tot' => Schema::hasTable('automations') ? Automation::count() : 0,
+                'active' => Schema::hasTable('automations') ? Automation::where('status', 'active')->count() : 0,
+                'draft' => Schema::hasTable('automations') ? Automation::where('status', 'draft')->count() : 0,
+                'paused' => Schema::hasTable('automations') ? Automation::where('status', 'paused')->count() : 0,
+            ],
+            'models' => [
+                'tot' => $this->mailModelCount(),
+            ],
+        ];
+
+        $latestPromotions = Schema::hasTable('promotions')
+            ? Promotion::query()->latest('updated_at')->limit(5)->get()
+            : collect();
+
+        $latestCampaigns = Schema::hasTable('campaigns')
+            ? Campaign::query()->with('promotions')->latest('updated_at')->limit(5)->get()
+            : collect();
+
+        $latestAutomations = Schema::hasTable('automations')
+            ? Automation::query()->with('promotions')->latest('updated_at')->limit(5)->get()
+            : collect();
+
+        $latestMailModels = Schema::hasTable('models')
+            ? $this->mailModelQuery()->latest('updated_at')->limit(5)->get()
+            : collect();
+
+        return view('admin.marketing', compact(
+            'stat',
+            'latestPromotions',
+            'latestCampaigns',
+            'latestAutomations',
+            'latestMailModels'
+        ));
+    }
+
+    private function mailModelCount(): int
+    {
+        if (! Schema::hasTable('models')) {
+            return 0;
+        }
+
+        return $this->mailModelQuery()->count();
+    }
+
+    private function mailModelQuery()
+    {
+        $hasType = Schema::hasColumn('models', 'type');
+        $hasChannel = Schema::hasColumn('models', 'channel');
+
+        return MailModel::query()
+            ->when($hasType || $hasChannel, function ($query) use ($hasType, $hasChannel) {
+                $query->where(function ($nested) use ($hasType, $hasChannel) {
+                    if ($hasType) {
+                        $nested->orWhere('type', 'marketing');
+                    }
+
+                    if ($hasChannel) {
+                        $nested->orWhere('channel', 'email');
+                    }
+                });
+            });
+    }
+
     protected function menu_int(){
         $menus = Menu::where('fixed_menu', '!=', '0')
             ->where('promo', 1)

@@ -5,7 +5,6 @@
 @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show dashboard-home__flash" role="alert">
         {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
@@ -13,7 +12,7 @@
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.campaigns.index')],
+            ['label' => 'Marketing', 'url' => route('admin.marketing')],
             ['label' => 'Promozioni'],
         ],
     ])
@@ -51,80 +50,94 @@
         </div>
 
         @if ($promotions->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-dark table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Slug</th>
-                            <th>Status</th>
-                            <th>Uso</th>
-                            <th>Sconto</th>
-                            <th>Permanente</th>
-                            <th>Coinvolti</th>
-                            <th>Inviate</th>
-                            <th>Usate</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($promotions as $promotion)
-                            <tr>
-                                <td><strong>{{ $promotion->name }}</strong></td>
-                                <td><code>{{ $promotion->slug }}</code></td>
-                                <td>
-                                    @include('admin.Marketing.partials.status-pill', [
-                                        'status' => $promotion->status,
-                                        'label' => $statuses[$promotion->status] ?? $promotion->status,
-                                    ])
-                                </td>
-                                <td>{{ $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: '-') }}</td>
-                                <td>
-                                    {{ $discountTypes[$promotion->type_discount] ?? ($promotion->type_discount ?: '-') }}
-                                    @if ($promotion->discount !== null)
-                                        <br>{{ number_format((float) $promotion->discount, 2, ',', '.') }}
-                                    @endif
-                                </td>
-                                <td>
-                                    <x-dashboard.state-pill :tone="$promotion->permanent ? 'active' : 'neutral'">
-                                        {{ $promotion->permanent ? 'Si' : 'No' }}
-                                    </x-dashboard.state-pill>
-                                </td>
-                                <td>{{ $promotion->total_activation }}</td>
-                                <td>{{ $promotion->total_sent }}</td>
-                                <td>{{ $promotion->total_used }}</td>
-                                <td>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <a class="btn btn-sm btn-outline-light" href="{{ route('admin.promotions.show', $promotion) }}" title="Dettaglio">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </a>
-                                        <a class="btn btn-sm btn-outline-light" href="{{ route('admin.promotions.edit', $promotion) }}" title="Modifica">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <form action="{{ route('admin.promotions.publish', $promotion) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-sm btn-outline-success" type="submit" title="Pubblica">
-                                                <i class="bi bi-check2-circle"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('admin.promotions.pause', $promotion) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-sm btn-outline-warning" type="submit" title="Pausa">
-                                                <i class="bi bi-pause-circle"></i>
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('admin.promotions.archive', $promotion) }}" method="POST">
-                                            @csrf
-                                            <button class="btn btn-sm btn-outline-danger" type="submit" title="Archivia">
-                                                <i class="bi bi-archive-fill"></i>
-                                            </button>
-                                        </form>
+            <div class="menu-dashboard__promo-grid">
+                @foreach ($promotions as $promotion)
+                    <article class="menu-dashboard__promo-card">
+                        <div class="menu-dashboard__promo-banner">
+                            <span class="order-detail__section-icon">
+                                <i class="bi bi-megaphone-fill"></i>
+                            </span>
+                            <div>
+                                <span class="menu-dashboard__banner-eyebrow">Promozione</span>
+                                @include('admin.Marketing.partials.status-pill', [
+                                    'status' => $promotion->status,
+                                    'label' => $statuses[$promotion->status] ?? $promotion->status,
+                                ])
+                            </div>
+                        </div>
+
+                        <div class="menu-dashboard__promo-body">
+                            <div class="menu-dashboard__promo-top">
+                                <div class="menu-dashboard__promo-intro">
+                                    <div class="menu-dashboard__chip-row">
+                                        <span class="menu-dashboard__chip">{{ $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: 'Uso generico') }}</span>
+                                        <span class="menu-dashboard__chip menu-dashboard__chip--accent">{{ $promotion->permanent ? 'Permanente' : 'Programmabile' }}</span>
                                     </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+
+                                    <h4>{{ $promotion->name }}</h4>
+                                    <p class="menu-dashboard__copy"><code>{{ $promotion->slug }}</code></p>
+                                </div>
+
+                                <div class="menu-dashboard__price-block">
+                                    <span class="menu-dashboard__price">
+                                        {{ $promotion->discount !== null ? number_format((float) $promotion->discount, 2, ',', '.') : '-' }}
+                                    </span>
+                                    <small>{{ $discountTypes[$promotion->type_discount] ?? ($promotion->type_discount ?: 'Sconto non impostato') }}</small>
+                                </div>
+                            </div>
+
+                            <div class="menu-dashboard__detail-list">
+                                <span>Contatori</span>
+                                <div class="menu-dashboard__pill-row">
+                                    <small>{{ $promotion->total_activation }} coinvolti</small>
+                                    <small>{{ $promotion->total_sent }} invii</small>
+                                    <small>{{ $promotion->total_used }} usi</small>
+                                    <small>{{ $promotion->targets_count }} target</small>
+                                </div>
+                            </div>
+
+                            <div class="menu-dashboard__detail-list">
+                                <span>Validita</span>
+                                <div class="menu-dashboard__pill-row">
+                                    <small>Dal {{ $promotion->schedule_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                                    <small>Al {{ $promotion->expiring_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                                </div>
+                            </div>
+
+                            <div class="menu-dashboard__hero-actions dashboard-home__hero-actions mt-3">
+                                <a class="order-detail__contact" href="{{ route('admin.promotions.show', $promotion) }}">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>Apri</span>
+                                </a>
+                                <a class="order-detail__contact" href="{{ route('admin.promotions.edit', $promotion) }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span>Modifica</span>
+                                </a>
+                                <form action="{{ route('admin.promotions.publish', $promotion) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-check2-circle"></i>
+                                        <span>Pubblica</span>
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.promotions.pause', $promotion) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-pause-circle"></i>
+                                        <span>Pausa</span>
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.promotions.archive', $promotion) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-archive-fill"></i>
+                                        <span>Archivia</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
             </div>
 
             <div class="d-flex justify-content-center mt-3">

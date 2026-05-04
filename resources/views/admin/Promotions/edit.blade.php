@@ -6,7 +6,7 @@
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.campaigns.index')],
+            ['label' => 'Marketing', 'url' => route('admin.marketing')],
             ['label' => 'Promozioni', 'url' => route('admin.promotions.index')],
             ['label' => $promotion->name, 'url' => route('admin.promotions.show', $promotion)],
             ['label' => 'Modifica'],

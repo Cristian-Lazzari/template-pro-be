@@ -1,4 +1,4 @@
-<section class="order-detail__section mt-4">
+<section class="order-detail__section">
     <div class="order-detail__section-head">
         <h3>
             <span class="order-detail__section-icon">
@@ -8,77 +8,63 @@
         </h3>
     </div>
 
-    <p>Record in questa pagina: {{ $customerPromotions->count() }} di {{ $customerPromotions->total() }}</p>
+    <div class="marketing-detail__compact-grid">
+        <article class="marketing-detail__fact">
+            <span>Pagina</span>
+            <strong>{{ $customerPromotions->count() }}</strong>
+            <small>Totale: {{ $customerPromotions->total() }}</small>
+        </article>
+    </div>
 
     @if ($customerPromotions->count() > 0)
-        <div class="table-responsive">
-            <table class="table table-dark table-striped align-middle">
-                <thead>
-                    <tr>
-                        <th>Cliente</th>
-                        <th>Promotion</th>
-                        <th>Status</th>
-                        <th>Tracking</th>
-                        <th>Email sent</th>
-                        <th>Open</th>
-                        <th>Click</th>
-                        <th>Usata</th>
-                        <th>Order</th>
-                        <th>Reservation</th>
-                        <th>Creata</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($customerPromotions as $customerPromotion)
-                        @php
-                            $customer = $customerPromotion->customer;
-                            $token = $customerPromotion->tracking_token;
-                        @endphp
-                        <tr>
-                            <td>
-                                @if ($customer)
-                                    <strong>{{ trim(($customer->name ?? '') . ' ' . ($customer->surname ?? '')) ?: '-' }}</strong>
-                                    <br>
-                                    <small>{{ $customer->email ?? '-' }}</small>
-                                    <br>
-                                    <small>{{ $customer->phone ?? '-' }}</small>
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>{{ $customerPromotion->promotion?->name ?? '-' }}</td>
-                            <td>
-                                @include('admin.Marketing.partials.status-pill', [
-                                    'status' => $customerPromotion->status,
-                                    'label' => $customerPromotion->status,
-                                ])
-                            </td>
-                            <td><code>{{ $token ? substr($token, 0, 8) . '...' . substr($token, -6) : '-' }}</code></td>
-                            <td>{{ $customerPromotion->email_sent_at?->format('d/m/Y H:i') ?? '-' }}</td>
-                            <td>{{ $customerPromotion->email_open_at?->format('d/m/Y H:i') ?? '-' }}</td>
-                            <td>{{ $customerPromotion->email_click_at?->format('d/m/Y H:i') ?? '-' }}</td>
-                            <td>{{ $customerPromotion->promo_used?->format('d/m/Y H:i') ?? '-' }}</td>
-                            <td>{{ $customerPromotion->order_id ?? '-' }}</td>
-                            <td>{{ $customerPromotion->reservation_id ?? '-' }}</td>
-                            <td>{{ $customerPromotion->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="marketing-detail__assignment-list">
+            @foreach ($customerPromotions as $customerPromotion)
+                @php
+                    $customer = $customerPromotion->customer;
+                    $token = $customerPromotion->tracking_token;
+                    $customerName = $customer
+                        ? trim(($customer->name ?? '') . ' ' . ($customer->surname ?? ''))
+                        : '';
+                @endphp
+
+                <article class="marketing-detail__assignment-card">
+                    <div class="marketing-detail__assignment-head">
+                        <div class="marketing-detail__assignment-person">
+                            <span>Cliente</span>
+                            <strong>{{ $customerName !== '' ? $customerName : '-' }}</strong>
+                            <small>{{ $customer?->email ?? '-' }}</small>
+                            <small>{{ $customer?->phone ?? '-' }}</small>
+                        </div>
+
+                        <div>
+                            @include('admin.Marketing.partials.status-pill', [
+                                'status' => $customerPromotion->status,
+                                'label' => $customerPromotion->status,
+                            ])
+                        </div>
+                    </div>
+
+                    <div class="marketing-detail__assignment-grid">
+                        <small>Promo: {{ $customerPromotion->promotion?->name ?? '-' }}</small>
+                        <small>Token: {{ $token ? substr($token, 0, 8) . '...' . substr($token, -6) : '-' }}</small>
+                        <small>Inviata: {{ $customerPromotion->email_sent_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                        <small>Aperta: {{ $customerPromotion->email_open_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                        <small>Click: {{ $customerPromotion->email_click_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                        <small>Usata: {{ $customerPromotion->promo_used?->format('d/m/Y H:i') ?? '-' }}</small>
+                        <small>Ordine: {{ $customerPromotion->order_id ?? '-' }}</small>
+                        <small>Prenotazione: {{ $customerPromotion->reservation_id ?? '-' }}</small>
+                        <small>Creata: {{ $customerPromotion->created_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                    </div>
+                </article>
+            @endforeach
         </div>
 
-        <div class="d-flex justify-content-center mt-3">
+        <div class="marketing-detail__pager">
             {{ $customerPromotions->links() }}
         </div>
     @else
-        <div class="dashboard-home__details-placeholder">
-            <span class="dashboard-home__details-placeholder-icon">
-                <i class="bi bi-person-plus-fill"></i>
-            </span>
-            <div>
-                <strong>{{ $emptyText ?? 'Nessuna assegnazione creata.' }}</strong>
-                <p>Le assegnazioni appariranno qui dopo la preparazione controllata.</p>
-            </div>
+        <div class="marketing-detail__empty">
+            <strong>{{ $emptyText ?? 'Nessuna assegnazione creata.' }}</strong>
         </div>
     @endif
 </section>

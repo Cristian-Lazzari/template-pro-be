@@ -27,6 +27,11 @@ class StorePromotionRequest extends FormRequest
             'schedule_at' => ['nullable', 'date'],
             'expiring_at' => ['nullable', 'date', 'after_or_equal:schedule_at'],
             'metadata.reusable' => ['nullable', 'boolean'],
+            'target_scope' => ['nullable', Rule::in(['generic', 'specific'])],
+            'targets' => ['nullable', 'array'],
+            'targets.*.target_key' => ['nullable', 'string', 'max:120'],
+            'targets.*.discount' => ['nullable', 'numeric', 'min:0'],
+            'targets.*.type_discount' => ['nullable', Rule::in(['fixed', 'percentage', 'gift'])],
         ];
     }
 }
