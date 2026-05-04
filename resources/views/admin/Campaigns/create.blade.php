@@ -37,7 +37,6 @@
     @include('admin.Campaigns._form', [
         'action' => route('admin.campaigns.store'),
         'method' => 'POST',
-        'submitLabel' => 'Crea campagna',
     ])
 </div>
 

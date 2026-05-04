@@ -38,7 +38,6 @@
     @include('admin.Promotions._form', [
         'action' => route('admin.promotions.update', $promotion),
         'method' => 'PUT',
-        'submitLabel' => 'Salva modifiche',
     ])
 </div>
 

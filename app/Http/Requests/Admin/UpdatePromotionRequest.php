@@ -19,6 +19,7 @@ class UpdatePromotionRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
+            'submit_action' => ['required', Rule::in(['activate', 'draft'])],
             'slug' => [
                 'nullable',
                 'string',

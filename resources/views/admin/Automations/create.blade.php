@@ -37,7 +37,6 @@
     @include('admin.Automations._form', [
         'action' => route('admin.automations.store'),
         'method' => 'POST',
-        'submitLabel' => 'Crea automazione',
     ])
 </div>
 

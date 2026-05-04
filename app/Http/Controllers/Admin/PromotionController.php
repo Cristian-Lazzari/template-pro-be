@@ -186,15 +186,15 @@ class PromotionController extends Controller
         }
         $metadata['reusable'] = $request->boolean('metadata.reusable');
         $data['metadata'] = $metadata;
-        unset($data['targets'], $data['target_scope']);
-
-        if ($promotion?->exists) {
-            unset($data['status']);
-        } else {
-            $data['status'] = 'draft';
-        }
+        $data['status'] = $this->statusFromSubmitAction($request);
+        unset($data['targets'], $data['target_scope'], $data['submit_action']);
 
         return $data;
+    }
+
+    private function statusFromSubmitAction(Request $request): string
+    {
+        return $request->input('submit_action') === 'activate' ? 'active' : 'draft';
     }
 
     private function syncTargets(Promotion $promotion, Request $request): void

@@ -38,7 +38,6 @@
     @include('admin.Automations._form', [
         'action' => route('admin.automations.update', $automation),
         'method' => 'PUT',
-        'submitLabel' => 'Salva modifiche',
     ])
 </div>
 

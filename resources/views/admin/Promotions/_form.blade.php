@@ -21,6 +21,8 @@
             'type_discount' => '',
         ];
     }
+
+    $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
 @endphp
 
 <style>
@@ -442,12 +444,22 @@
         </div>
     </section>
 
-    <div class="d-flex justify-content-end mb-5">
-        <button class="my_btn_2 w-auto" type="submit">
-            <i class="bi bi-check2-circle"></i>
-            {{ $submitLabel }}
-        </button>
-    </div>
+    <section class="order-detail__section">
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <button class="order-detail__contact" type="submit" name="submit_action" value="activate">
+                <i class="bi bi-check2-circle"></i>
+                <span>{{ $primaryActionLabel }}</span>
+            </button>
+            <button class="order-detail__contact" type="submit" name="submit_action" value="draft">
+                <i class="bi bi-clock-history"></i>
+                <span>Completa più tardi</span>
+            </button>
+        </div>
+        <p class="menu-dashboard__copy mt-3">
+            Crea e attiva rende subito disponibile la promozione. Completa più tardi la salva come bozza.
+        </p>
+        @error('submit_action') <p class="error">{{ $message }}</p> @enderror
+    </section>
 </form>
 
 <script>

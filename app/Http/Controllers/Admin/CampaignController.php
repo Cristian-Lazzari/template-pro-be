@@ -58,7 +58,7 @@ class CampaignController extends Controller
         ));
     }
 
-    public function store(StoreCampaignRequest $request)
+    public function store(StoreCampaignRequest $request, CampaignAssignmentService $assignmentService)
     {
         $campaign = Campaign::query()->create(
             $this->campaignData($request)
@@ -66,8 +66,7 @@ class CampaignController extends Controller
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
-        return to_route('admin.campaigns.show', $campaign)
-            ->with('success', 'Campagna creata correttamente.');
+        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, 'Campagna creata correttamente.');
     }
 
     public function show(Campaign $campaign, MarketingReportService $reportService)
@@ -98,7 +97,7 @@ class CampaignController extends Controller
         ));
     }
 
-    public function update(UpdateCampaignRequest $request, Campaign $campaign)
+    public function update(UpdateCampaignRequest $request, Campaign $campaign, CampaignAssignmentService $assignmentService)
     {
         if ($campaign->status === 'sent') {
             return back()
@@ -112,8 +111,7 @@ class CampaignController extends Controller
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
-        return to_route('admin.campaigns.show', $campaign)
-            ->with('success', 'Campagna aggiornata correttamente.');
+        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, 'Campagna aggiornata correttamente.');
     }
 
     public function activate(Campaign $campaign, CampaignAssignmentService $assignmentService)
@@ -182,15 +180,38 @@ class CampaignController extends Controller
     private function campaignData(Request $request, ?Campaign $campaign = null): array
     {
         $data = $request->validated();
-        unset($data['promotions']);
-
-        if ($campaign?->exists) {
-            unset($data['status']);
-        } else {
-            $data['status'] = 'draft';
-        }
+        $data['status'] = $this->statusFromSubmitAction($request);
+        unset($data['promotions'], $data['submit_action']);
 
         return $data;
+    }
+
+    private function statusFromSubmitAction(Request $request): string
+    {
+        return $request->input('submit_action') === 'activate' ? 'active' : 'draft';
+    }
+
+    private function redirectAfterFormSave(
+        Campaign $campaign,
+        Request $request,
+        CampaignAssignmentService $assignmentService,
+        string $baseMessage
+    ) {
+        $redirect = to_route('admin.campaigns.show', $campaign);
+
+        if ($request->input('submit_action') !== 'activate') {
+            return $redirect->with('success', $baseMessage . ' Salvata come bozza.');
+        }
+
+        $campaign->refresh();
+        $result = $assignmentService->assign($campaign, 500, false);
+        $message = $campaign->scheduled_at
+            ? $baseMessage . ' Assegnazioni preparate; le email partiranno all’orario programmato tramite scheduler.'
+            : $baseMessage . ' Assegnazioni preparate; imposta una programmazione per avviare l’invio automatico.';
+
+        return $redirect
+            ->with('success', $message)
+            ->with('campaign_assignment_result', $result);
     }
 
     private function promotionIds(Request $request): array

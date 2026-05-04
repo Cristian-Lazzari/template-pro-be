@@ -38,7 +38,6 @@
     @include('admin.Campaigns._form', [
         'action' => route('admin.campaigns.update', $campaign),
         'method' => 'PUT',
-        'submitLabel' => 'Salva modifiche',
     ])
 </div>
 

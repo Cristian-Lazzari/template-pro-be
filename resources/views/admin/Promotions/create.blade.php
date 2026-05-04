@@ -37,7 +37,6 @@
     @include('admin.Promotions._form', [
         'action' => route('admin.promotions.store'),
         'method' => 'POST',
-        'submitLabel' => 'Crea promozione',
     ])
 </div>
 

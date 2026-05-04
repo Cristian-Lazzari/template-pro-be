@@ -16,6 +16,7 @@ class StoreAutomationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'submit_action' => ['required', Rule::in(['activate', 'draft'])],
             'trigger' => ['nullable', Rule::in(['order_inactive_30_days', 'reservation_inactive_30_days', 'birthday', 'first_order_completed', 'abandoned_profile'])],
             'model_id' => ['nullable', 'exists:models,id'],
             'promotions' => ['nullable', 'array'],

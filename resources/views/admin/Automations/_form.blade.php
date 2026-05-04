@@ -5,6 +5,7 @@
     $cooldownValue = old('metadata.cooldown_days', data_get($automation->metadata, 'cooldown_days'));
     $enabledFromValue = old('metadata.enabled_from', data_get($automation->metadata, 'enabled_from'));
     $enabledUntilValue = old('metadata.enabled_until', data_get($automation->metadata, 'enabled_until'));
+    $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
 @endphp
 
 @if ($errors->any())
@@ -165,10 +166,20 @@
         @error('promotions.*') <p class="error">{{ $message }}</p> @enderror
     </section>
 
-    <div class="d-flex justify-content-end mt-4 mb-5">
-        <button class="my_btn_2 w-auto" type="submit">
-            <i class="bi bi-check2-circle"></i>
-            {{ $submitLabel }}
-        </button>
-    </div>
+    <section class="order-detail__section mt-4">
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <button class="order-detail__contact" type="submit" name="submit_action" value="activate">
+                <i class="bi bi-check2-circle"></i>
+                <span>{{ $primaryActionLabel }}</span>
+            </button>
+            <button class="order-detail__contact" type="submit" name="submit_action" value="draft">
+                <i class="bi bi-clock-history"></i>
+                <span>Completa più tardi</span>
+            </button>
+        </div>
+        <p class="menu-dashboard__copy mt-3">
+            Crea e attiva abilita l’automazione. L’esecuzione dipende dal relativo trigger/scheduler.
+        </p>
+        @error('submit_action') <p class="error">{{ $message }}</p> @enderror
+    </section>
 </form>

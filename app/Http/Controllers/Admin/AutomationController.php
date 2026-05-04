@@ -184,13 +184,15 @@ class AutomationController extends Controller
         unset($data['promotions'], $data['metadata']);
         $data['metadata'] = $metadata;
 
-        if ($automation?->exists) {
-            unset($data['status']);
-        } else {
-            $data['status'] = 'draft';
-        }
+        $data['status'] = $this->statusFromSubmitAction($request);
+        unset($data['submit_action']);
 
         return $data;
+    }
+
+    private function statusFromSubmitAction(Request $request): string
+    {
+        return $request->input('submit_action') === 'activate' ? 'active' : 'draft';
     }
 
     private function promotionIds(Request $request): array

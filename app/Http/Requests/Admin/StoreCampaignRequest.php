@@ -16,6 +16,7 @@ class StoreCampaignRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'submit_action' => ['required', Rule::in(['activate', 'draft'])],
             'segment' => ['nullable', Rule::in(['all', 'new_customers', 'inactive_customers', 'loyal_customers', 'high_spending_customers'])],
             'model_id' => ['nullable', 'exists:models,id'],
             'scheduled_at' => ['nullable', 'date'],
