@@ -25,6 +25,8 @@
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
 @endphp
 
+@include('admin.Marketing.partials.form-style')
+
 <style>
     .promotion-form-ui {
         display: grid;
@@ -131,7 +133,7 @@
     </div>
 @endif
 
-<form class="creation promotion-form-ui mt-4" action="{{ $action }}" method="POST" data-promotion-form>
+<form class="creation marketing-form-shell promotion-form-ui mt-4" action="{{ $action }}" method="POST" data-promotion-form>
     @csrf
     @if ($method !== 'POST')
         @method($method)

@@ -8,13 +8,15 @@
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
 @endphp
 
+@include('admin.Marketing.partials.form-style')
+
 @if ($errors->any())
     <div class="alert alert-danger">
         Controlla i campi evidenziati prima di salvare.
     </div>
 @endif
 
-<form class="creation mt-4" action="{{ $action }}" method="POST">
+<form class="creation marketing-form-shell mt-4" action="{{ $action }}" method="POST">
     @csrf
     @if ($method !== 'POST')
         @method($method)

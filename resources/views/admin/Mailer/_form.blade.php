@@ -44,17 +44,84 @@
     ];
 @endphp
 
+@include('admin.Marketing.partials.form-style')
+
 <style>
     .mail-model-form {
         display: grid;
         gap: 18px;
+        min-width: 0;
     }
 
     .mail-model-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+        grid-template-columns: minmax(0, 1.28fr) minmax(320px, .72fr);
         gap: 18px;
         align-items: start;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .mail-model-form .order-detail__section {
+        min-width: 0;
+    }
+
+    .mail-model-form .split {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    }
+
+    .mail-model-form .label_c {
+        flex-wrap: wrap;
+        line-height: 1.25;
+    }
+
+    .mail-model-form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    .mail-model-form select,
+    .mail-model-form textarea {
+        opacity: 1;
+        text-align: left;
+        color: var(--c3);
+        background: rgba(216, 221, 232, 0.06);
+        border: 1px solid rgba(216, 221, 232, 0.16);
+        border-radius: 12px;
+    }
+
+    .mail-model-form input:not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    .mail-model-form select {
+        min-height: 44px;
+        height: auto;
+        padding: 10px 14px;
+    }
+
+    .mail-model-form textarea {
+        min-height: 130px;
+        padding: 14px;
+        line-height: 1.55;
+        resize: vertical;
+    }
+
+    .mail-model-form input[type="file"] {
+        min-height: 44px;
+        height: auto;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .mail-model-form input::placeholder,
+    .mail-model-form textarea::placeholder {
+        color: rgba(216, 221, 232, 0.52);
+        text-align: left;
+    }
+
+    .mail-model-form input:focus,
+    .mail-model-form select:focus,
+    .mail-model-form textarea:focus,
+    .mail-model-form input:hover,
+    .mail-model-form select:hover,
+    .mail-model-form textarea:hover {
+        opacity: 1;
+        border-color: rgba(14, 183, 146, 0.55);
+        background: rgba(216, 221, 232, 0.08);
     }
 
     .mail-model-variable-list {
@@ -155,7 +222,7 @@
         font-size: 12px;
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 1100px) {
         .mail-model-grid {
             grid-template-columns: 1fr;
         }
@@ -168,7 +235,7 @@
     </div>
 @endif
 
-<form class="creation mail-model-form mt-4" action="{{ $action }}" enctype="multipart/form-data" method="POST">
+<form class="creation marketing-form-shell mail-model-form mt-4" action="{{ $action }}" enctype="multipart/form-data" method="POST">
     @csrf
     @if ($isEdit)
         <input type="hidden" name="id" value="{{ $model->id }}">
