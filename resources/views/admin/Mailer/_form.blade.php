@@ -344,7 +344,7 @@
                             <strong>{{ $group }}</strong>
                             <div class="mail-model-variable-chips">
                                 @foreach ($items as $variable)
-                                    <code class="mail-model-variable-chip">{{ '{{ ' . $variable . ' }}' }}</code>
+                                    <code class="mail-model-variable-chip">&#123;&#123; {{ $variable }} &#125;&#125;</code>
                                 @endforeach
                             </div>
                         </div>
