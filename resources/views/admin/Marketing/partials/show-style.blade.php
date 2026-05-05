@@ -167,10 +167,22 @@
     }
 
     .marketing-detail__progress-bar {
+        position: relative;
         height: 100%;
         min-height: 12px;
         border-radius: inherit;
         background: linear-gradient(90deg, rgba(74, 222, 128, 0.92), rgba(45, 212, 191, 0.88));
+        transition: width .25s ease;
+        overflow: hidden;
+    }
+
+    .marketing-detail__progress-bar.is-running::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, .32) 45%, transparent 72%);
+        transform: translateX(-100%);
+        animation: marketingProgressSweep 1.35s linear infinite;
     }
 
     .marketing-detail__progress-meta {
@@ -181,6 +193,213 @@
         color: rgba(216, 221, 232, 0.78);
         font-size: var(--fs-200);
         font-weight: 700;
+    }
+
+    .marketing-detail__send-panel {
+        gap: 14px;
+    }
+
+    .marketing-detail__progress-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        max-width: 100%;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: rgba(9, 3, 51, 0.44);
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        color: rgba(216, 221, 232, 0.84);
+        font-size: var(--fs-200);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-promotion-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .campaign-promotion-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(240px, .9fr);
+        gap: 14px;
+        align-items: start;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.05);
+        color: var(--c3);
+        overflow: hidden;
+    }
+
+    .campaign-promotion-card__main,
+    .campaign-promotion-card__heading,
+    .campaign-promotion-card__stats,
+    .campaign-promotion-card__targets {
+        min-width: 0;
+    }
+
+    .campaign-promotion-card__main {
+        display: grid;
+        gap: 12px;
+    }
+
+    .campaign-promotion-card__heading {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+    }
+
+    .campaign-promotion-card__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 13px;
+        background: rgba(14, 183, 146, 0.12);
+        color: rgba(142, 246, 219, 0.95);
+    }
+
+    .campaign-promotion-card strong {
+        display: block;
+        color: var(--c3);
+        font-size: var(--fs-400);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-promotion-card small {
+        display: block;
+        margin-top: 4px;
+        color: rgba(216, 221, 232, 0.7);
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-promotion-card__meta,
+    .campaign-promotion-card__targets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .campaign-promotion-card__meta > span:not(.marketing-status-pill),
+    .campaign-promotion-card__targets > span {
+        display: inline-flex;
+        width: fit-content;
+        max-width: 100%;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.42);
+        color: rgba(216, 221, 232, 0.86);
+        font-size: var(--fs-200);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-promotion-card__stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .campaign-promotion-card__stats span {
+        display: grid;
+        gap: 4px;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(9, 3, 51, 0.32);
+        border: 1px solid rgba(216, 221, 232, 0.1);
+    }
+
+    .campaign-promotion-card__stats small {
+        margin: 0;
+        color: rgba(216, 221, 232, 0.66);
+        font-size: var(--fs-100);
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .campaign-promotion-card__stats strong {
+        font-size: var(--fs-300);
+    }
+
+    .campaign-promotion-card > .order-detail__contact {
+        justify-self: start;
+    }
+
+    .campaign-report-panel {
+        display: grid;
+        gap: 14px;
+    }
+
+    .campaign-report-panel__summary {
+        display: grid;
+        gap: 4px;
+        padding: 15px;
+        border-radius: 16px;
+        border: 1px solid rgba(14, 183, 146, 0.18);
+        background: rgba(14, 183, 146, 0.08);
+        color: var(--c3);
+    }
+
+    .campaign-report-panel__summary strong,
+    .campaign-report-panel__summary span {
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-report-panel__summary span {
+        color: rgba(216, 221, 232, 0.78);
+        line-height: 1.45;
+    }
+
+    .campaign-report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+    }
+
+    .campaign-report-card {
+        display: grid;
+        gap: 8px;
+        padding: 15px;
+        border-radius: 16px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.05);
+        min-height: 102px;
+    }
+
+    .campaign-report-card--active {
+        border-color: rgba(14, 183, 146, 0.24);
+        background: rgba(14, 183, 146, 0.08);
+    }
+
+    .campaign-report-card--rate {
+        border-color: rgba(98, 166, 255, 0.22);
+        background: rgba(98, 166, 255, 0.07);
+    }
+
+    .campaign-report-card span {
+        color: rgba(216, 221, 232, 0.7);
+        font-size: var(--fs-200);
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .campaign-report-card strong {
+        color: var(--c3);
+        font-size: var(--fs-500);
+        line-height: 1;
+        overflow-wrap: anywhere;
+    }
+
+    @keyframes marketingProgressSweep {
+        to {
+            transform: translateX(100%);
+        }
     }
 
     .marketing-detail__compact-grid + .marketing-detail__assignment-list,
@@ -249,6 +468,14 @@
         }
 
         .marketing-detail__assignment-head {
+            grid-template-columns: 1fr;
+        }
+
+        .campaign-promotion-card {
+            grid-template-columns: 1fr;
+        }
+
+        .campaign-promotion-card__stats {
             grid-template-columns: 1fr;
         }
     }

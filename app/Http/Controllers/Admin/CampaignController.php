@@ -87,11 +87,11 @@ class CampaignController extends Controller
         MarketingCustomerSegmentService $segmentService
     )
     {
-        $campaign->load(['model', 'promotions']);
+        $campaign->load(['model', 'promotions.targets']);
         $report = $reportService->forCampaign($campaign);
         $sendProgress = $this->sendProgress($campaign, $report);
         $customerPromotions = $campaign->customerPromotions()
-            ->with(['customer', 'promotion'])
+            ->with(['customer', 'promotion.targets'])
             ->latest('created_at')
             ->paginate(50);
 

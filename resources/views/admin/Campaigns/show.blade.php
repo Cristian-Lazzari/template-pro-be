@@ -51,6 +51,66 @@
     $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? ($scheduleWindow ?: '-');
     $requestedScheduledAt = data_get($campaign->metadata, 'requested_scheduled_at');
     $estimatedDuration = data_get($campaign->metadata, 'estimated_duration_minutes');
+    $caseUseLabels = [
+        'generic' => 'Generica',
+        'take_away' => 'Asporto',
+        'delivery' => 'Delivery',
+        'table' => 'Tavolo',
+        'gift' => 'Regalo',
+    ];
+    $discountTypeLabels = [
+        'fixed' => 'Importo fisso',
+        'percentage' => 'Percentuale',
+        'gift' => 'Regalo',
+    ];
+    $formatDiscount = function ($promotion) {
+        if (! $promotion) {
+            return '-';
+        }
+
+        if ($promotion->type_discount === 'gift') {
+            return 'Regalo';
+        }
+
+        if ($promotion->discount === null) {
+            return '-';
+        }
+
+        $value = number_format((float) $promotion->discount, 2, ',', '.');
+        $value = str_ends_with($value, ',00') ? substr($value, 0, -3) : $value;
+
+        return match ($promotion->type_discount) {
+            'fixed' => $value . '€',
+            'percentage' => $value . '%',
+            default => $value,
+        };
+    };
+    $promotionCaseUses = $campaign->promotions->pluck('case_use')->filter()->unique()->values();
+    $hasTablePromotion = $promotionCaseUses->contains('table');
+    $hasOrderPromotion = $promotionCaseUses->intersect(['take_away', 'delivery', 'gift', 'generic'])->isNotEmpty();
+    $conversionMode = $hasTablePromotion && ! $hasOrderPromotion
+        ? 'reservation'
+        : ($hasOrderPromotion && ! $hasTablePromotion ? 'order' : 'mixed');
+    $reportMetrics = [
+        ['label' => 'Coinvolti', 'value' => $report['involved_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => 'Email inviate', 'value' => $report['sent_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => 'Aperture', 'value' => $report['opened_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => 'Click', 'value' => $report['clicked_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => 'Promo usate', 'value' => $report['used_count'] ?? 0, 'tone' => 'active'],
+        ['label' => 'Sconto totale', 'value' => \App\Support\Currency::formatAmount($report['discount_total'] ?? 0), 'tone' => 'active'],
+    ];
+
+    if ($conversionMode !== 'reservation') {
+        $reportMetrics[] = ['label' => 'Ordini generati', 'value' => $report['order_conversion_count'] ?? 0, 'tone' => 'active'];
+    }
+
+    if ($conversionMode !== 'order') {
+        $reportMetrics[] = ['label' => 'Prenotazioni generate', 'value' => $report['reservation_conversion_count'] ?? 0, 'tone' => 'active'];
+    }
+
+    $reportMetrics[] = ['label' => 'Open rate', 'value' => number_format((float) ($report['open_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
+    $reportMetrics[] = ['label' => 'Click rate', 'value' => number_format((float) ($report['click_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
+    $reportMetrics[] = ['label' => 'Usage rate', 'value' => number_format((float) ($report['usage_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
 @endphp
 
 <div class="dash_page">
@@ -147,15 +207,32 @@
                         </article>
                     </div>
 
-                    <div class="marketing-detail__empty mt-3">
+                    <div
+                        class="marketing-detail__empty marketing-detail__send-panel mt-3"
+                        data-marketing-progress
+                        data-target-percent="{{ $progressPercentage }}"
+                        data-total="{{ $sendProgress['total'] ?? 0 }}"
+                        data-sent="{{ $sendProgress['sent'] ?? 0 }}"
+                        data-status="{{ $normalizedStatus }}"
+                        data-started-at="{{ $campaign->scheduled_at?->toIso8601String() }}"
+                        data-completed-at="{{ $campaign->sent_at?->toIso8601String() }}"
+                    >
                         <strong>{{ $scheduleState }}</strong>
                         <div class="marketing-detail__progress" aria-label="Avanzamento invio campagna">
                             <div class="marketing-detail__progress-track">
-                                <div class="marketing-detail__progress-bar" style="width: {{ $progressPercentage }}%"></div>
+                                <div
+                                    class="marketing-detail__progress-bar @if ($normalizedStatus === 'running' && $progressPercentage < 100) is-running @endif"
+                                    style="width: 0"
+                                    data-progress-bar
+                                ></div>
                             </div>
                             <div class="marketing-detail__progress-meta">
-                                <span>{{ $sendProgress['sent'] ?? 0 }} di {{ $sendProgress['total'] ?? 0 }} email inviate</span>
-                                <span>{{ $progressPercentage }}%</span>
+                                <span data-progress-count>{{ $sendProgress['sent'] ?? 0 }} di {{ $sendProgress['total'] ?? 0 }} email inviate</span>
+                                <span data-progress-percent>{{ $progressPercentage }}%</span>
+                            </div>
+                            <div class="marketing-detail__progress-live">
+                                <i class="bi bi-clock-history"></i>
+                                <span data-progress-clock>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? now()->format('H:i:s') }}</span>
                             </div>
                         </div>
                     </div>
@@ -253,19 +330,75 @@
                     </div>
 
                     @if ($promotionsCount > 0)
-                        <div class="marketing-detail__linked-grid">
+                        <div class="campaign-promotion-list">
                             @foreach ($campaign->promotions as $promotion)
-                                <article class="marketing-detail__linked-card">
-                                    <span>Promozione</span>
-                                    <strong>{{ $promotion->name }}</strong>
-                                    <small>{{ $promotion->slug }}</small>
-                                    @include('admin.Marketing.partials.status-pill', [
-                                        'status' => $promotion->status,
-                                        'label' => $promotion->status,
-                                    ])
+                                @php
+                                    $targetLabels = $promotion->targets->map(function ($target) {
+                                        $resolvedTarget = null;
+
+                                        try {
+                                            $resolvedTarget = $target->target();
+                                        } catch (\Throwable) {
+                                            $resolvedTarget = null;
+                                        }
+
+                                        $name = $resolvedTarget?->name ?? $resolvedTarget?->title ?? null;
+
+                                        return [
+                                            'type' => $target->target_type,
+                                            'name' => $name ?: ($target->target_type === 'generic' ? 'Generica' : '#' . $target->target_id),
+                                        ];
+                                    })->filter(fn ($target) => filled($target['name']))->values();
+                                @endphp
+
+                                <article class="campaign-promotion-card">
+                                    <div class="campaign-promotion-card__main">
+                                        <div class="campaign-promotion-card__heading">
+                                            <span class="campaign-promotion-card__icon">
+                                                <i class="bi bi-megaphone-fill"></i>
+                                            </span>
+                                            <div>
+                                                <strong>{{ $promotion->name }}</strong>
+                                                <small>{{ $promotion->slug }}</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="campaign-promotion-card__meta">
+                                            @include('admin.Marketing.partials.status-pill', [
+                                                'status' => $promotion->status,
+                                                'label' => $promotion->status,
+                                            ])
+                                            <span>{{ $caseUseLabels[$promotion->case_use] ?? ($promotion->case_use ?: 'Nessun ambito') }}</span>
+                                            <span>{{ $discountTypeLabels[$promotion->type_discount] ?? ($promotion->type_discount ?: 'Sconto non definito') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="campaign-promotion-card__stats">
+                                        <span>
+                                            <small>Sconto</small>
+                                            <strong>{{ $formatDiscount($promotion) }}</strong>
+                                        </span>
+                                        <span>
+                                            <small>Minimo</small>
+                                            <strong>{{ $promotion->minimum_pretest !== null ? number_format((float) $promotion->minimum_pretest, 2, ',', '.') : '-' }}</strong>
+                                        </span>
+                                        <span>
+                                            <small>Scadenza</small>
+                                            <strong>{{ $promotion->expiring_at?->format('d/m/Y') ?? 'Senza scadenza' }}</strong>
+                                        </span>
+                                    </div>
+
+                                    <div class="campaign-promotion-card__targets">
+                                        @forelse ($targetLabels as $target)
+                                            <span>{{ ucfirst($target['type']) }}: {{ $target['name'] }}</span>
+                                        @empty
+                                            <span>Target generico</span>
+                                        @endforelse
+                                    </div>
+
                                     <a href="{{ route('admin.promotions.show', $promotion) }}" class="order-detail__contact">
                                         <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                        <span>Apri</span>
+                                        <span>Apri promozione</span>
                                     </a>
                                 </article>
                             @endforeach
@@ -441,7 +574,32 @@
                     </section>
                 @endif
 
-                @include('admin.Marketing.partials.report-metrics', ['report' => $report])
+                <section class="order-detail__section">
+                    <div class="order-detail__section-head">
+                        <h3>
+                            <span class="order-detail__section-icon">
+                                <i class="bi bi-bar-chart-fill"></i>
+                            </span>
+                            Report marketing
+                        </h3>
+                    </div>
+
+                    <div class="campaign-report-panel">
+                        <div class="campaign-report-panel__summary">
+                            <strong>{{ $conversionMode === 'reservation' ? 'Promozione orientata alle prenotazioni' : ($conversionMode === 'order' ? 'Promozione orientata agli ordini' : 'Promozioni miste') }}</strong>
+                            <span>Il report mostra sconto e conversioni coerenti con le promozioni collegate alla campagna.</span>
+                        </div>
+
+                        <div class="campaign-report-grid">
+                            @foreach ($reportMetrics as $metric)
+                                <article class="campaign-report-card campaign-report-card--{{ $metric['tone'] }}">
+                                    <span>{{ $metric['label'] }}</span>
+                                    <strong>{{ $metric['value'] }}</strong>
+                                </article>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
 
                 @include('admin.Marketing.partials.customer-promotions-table', [
                     'customerPromotions' => $customerPromotions,
@@ -451,5 +609,100 @@
         </article>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-marketing-progress]').forEach((panel) => {
+            const bar = panel.querySelector('[data-progress-bar]');
+            const percentLabel = panel.querySelector('[data-progress-percent]');
+            const clockLabel = panel.querySelector('[data-progress-clock]');
+            const targetPercent = Math.max(0, Math.min(100, Number(panel.dataset.targetPercent || 0)));
+            const status = panel.dataset.status || 'draft';
+            const startedAt = panel.dataset.startedAt ? new Date(panel.dataset.startedAt) : null;
+            const completedAt = panel.dataset.completedAt ? new Date(panel.dataset.completedAt) : null;
+            const startedAtTime = startedAt instanceof Date && !Number.isNaN(startedAt.getTime()) ? startedAt.getTime() : null;
+            const completedAtTime = completedAt instanceof Date && !Number.isNaN(completedAt.getTime()) ? completedAt.getTime() : null;
+            const started = performance.now();
+            const duration = 950;
+
+            const formatDuration = (milliseconds) => {
+                const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                if (hours > 0) {
+                    return `${hours}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+                }
+
+                return `${minutes}m ${String(seconds).padStart(2, '0')}s`;
+            };
+
+            const formatTime = (date) => date.toLocaleTimeString('it-IT', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            });
+
+            const animate = (now) => {
+                const progress = Math.min(1, (now - started) / duration);
+                const current = targetPercent * (1 - Math.pow(1 - progress, 3));
+
+                if (bar) {
+                    bar.style.width = `${current}%`;
+                }
+
+                if (percentLabel) {
+                    percentLabel.textContent = `${current.toFixed(current >= 10 || current === 0 ? 0 : 1)}%`;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
+
+                if (bar) {
+                    bar.style.width = `${targetPercent}%`;
+                }
+
+                if (percentLabel) {
+                    percentLabel.textContent = `${targetPercent}%`;
+                }
+            };
+
+            const tickClock = () => {
+                if (!clockLabel) {
+                    return;
+                }
+
+                const now = new Date();
+
+                if (status === 'completed' && completedAtTime) {
+                    clockLabel.textContent = `Completata alle ${formatTime(new Date(completedAtTime))}`;
+                    return;
+                }
+
+                if (status === 'running' && startedAtTime) {
+                    clockLabel.textContent = `In corso da ${formatDuration(now.getTime() - startedAtTime)} · ora ${formatTime(now)}`;
+                    return;
+                }
+
+                if (status === 'scheduled' && startedAtTime) {
+                    const diff = startedAtTime - now.getTime();
+                    clockLabel.textContent = diff > 0
+                        ? `Inizia tra ${formatDuration(diff)} · ora ${formatTime(now)}`
+                        : `In attesa del prossimo batch · ora ${formatTime(now)}`;
+                    return;
+                }
+
+                clockLabel.textContent = `Ora ${formatTime(now)}`;
+            };
+
+            requestAnimationFrame(animate);
+            tickClock();
+            window.setInterval(tickClock, 1000);
+        });
+    });
+</script>
 
 @endsection
