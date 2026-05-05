@@ -42,6 +42,10 @@
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();
     $scheduleState = $sendProgress['message'] ?? 'Nessuna programmazione';
+    $scheduleWindow = data_get($campaign->metadata, 'schedule_window');
+    $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? ($scheduleWindow ?: '-');
+    $requestedScheduledAt = data_get($campaign->metadata, 'requested_scheduled_at');
+    $estimatedDuration = data_get($campaign->metadata, 'estimated_duration_minutes');
 @endphp
 
 <div class="dash_page">
@@ -181,6 +185,18 @@
                             <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
+                            <span>Finestra</span>
+                            <strong>{{ $scheduleWindowLabel }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Orario richiesto</span>
+                            <strong>{{ $requestedScheduledAt ?: '-' }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Durata stimata</span>
+                            <strong>{{ $estimatedDuration ? $estimatedDuration . ' min' : '-' }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
                             <span>Invio email</span>
                             <strong>{{ $scheduleState }}</strong>
                         </article>
@@ -192,6 +208,10 @@
                             <span>Promozioni</span>
                             <strong>{{ $promotionsCount }}</strong>
                         </article>
+                    </div>
+
+                    <div class="marketing-detail__empty mt-3">
+                        <strong>L’orario reale puo essere stato ottimizzato per evitare sovrapposizioni.</strong>
                     </div>
                 </section>
 

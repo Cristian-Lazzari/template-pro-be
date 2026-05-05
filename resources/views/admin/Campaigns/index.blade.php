@@ -65,6 +65,8 @@
                         $sentAssignments = (int) ($campaign->sent_customer_promotions_count ?? 0);
                         $pendingAssignments = max(0, $totalAssignments - $sentAssignments);
                         $progressPercentage = $totalAssignments > 0 ? round(($sentAssignments / $totalAssignments) * 100, 2) : 0;
+                        $scheduleWindow = data_get($campaign->metadata, 'schedule_window');
+                        $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? null;
                     @endphp
 
                     <article class="marketing-index-row">
@@ -83,6 +85,9 @@
                             <div class="marketing-index-meta">
                                 <span class="marketing-index-chip">{{ $segments[$campaign->segment] ?? ($campaign->segment ?: 'Segmento non definito') }}</span>
                                 <span class="marketing-index-chip marketing-index-chip--accent">{{ $campaign->promotions->count() }} promo</span>
+                                @if ($scheduleWindowLabel)
+                                    <span class="marketing-index-chip marketing-index-extra">{{ $scheduleWindowLabel }}</span>
+                                @endif
                             </div>
                         </div>
 

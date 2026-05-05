@@ -4,6 +4,7 @@
         ->map(fn ($id) => (string) $id)
         ->all();
     $primaryActionLabel = $method === 'POST' ? 'Crea e programma' : 'Salva e programma';
+    $selectedScheduleWindow = old('schedule_window', data_get($campaign->metadata, 'schedule_window', 'next_available'));
 @endphp
 
 @if ($errors->any())
@@ -96,17 +97,33 @@
 
         <div class="split">
             <div>
-                <label class="label_c" for="scheduled_at">
+                <label class="label_c" for="schedule_window">
                     <i class="bi bi-calendar-plus"></i>
-                    Programmazione
+                    Finestra di invio
+                </label>
+                <p>
+                    <select name="schedule_window" id="schedule_window">
+                        @foreach ($scheduleWindows as $value => $label)
+                            <option value="{{ $value }}" @selected($selectedScheduleWindow === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </p>
+                @error('schedule_window') <p class="error">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="label_c" for="scheduled_at">
+                    <i class="bi bi-clock-fill"></i>
+                    Data personalizzata / opzionale
                 </label>
                 <p>
                     <input value="{{ $scheduledValue }}" type="datetime-local" name="scheduled_at" id="scheduled_at">
                 </p>
                 @error('scheduled_at') <p class="error">{{ $message }}</p> @enderror
             </div>
-            <div></div>
         </div>
+        <p class="menu-dashboard__copy mt-3">
+            Il sistema puo ottimizzare l’orario reale per evitare sovrapposizioni con altre campagne.
+        </p>
     </section>
 
     <section class="order-detail__section mt-4">

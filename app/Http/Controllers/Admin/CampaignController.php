@@ -9,6 +9,7 @@ use App\Models\Campaign;
 use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAssignmentService;
+use App\Services\Marketing\CampaignScheduleService;
 use App\Services\Marketing\MarketingRunMarkerService;
 use App\Services\Marketing\MarketingReportService;
 use Carbon\CarbonInterface;
@@ -54,6 +55,7 @@ class CampaignController extends Controller
             'campaigns' => $campaigns,
             'statuses' => self::STATUSES,
             'segments' => self::SEGMENTS,
+            'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
         ]);
     }
 
@@ -70,15 +72,19 @@ class CampaignController extends Controller
         ));
     }
 
-    public function store(StoreCampaignRequest $request, CampaignAssignmentService $assignmentService)
+    public function store(
+        StoreCampaignRequest $request,
+        CampaignAssignmentService $assignmentService,
+        CampaignScheduleService $scheduleService
+    )
     {
         $campaign = Campaign::query()->create(
-            $this->campaignData($request)
+            $this->campaignData($request, $scheduleService)
         );
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
-        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, 'Campagna creata correttamente.');
+        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, 'Campagna creata correttamente.');
     }
 
     public function show(Campaign $campaign, MarketingReportService $reportService)
@@ -98,6 +104,7 @@ class CampaignController extends Controller
             'customerPromotions' => $customerPromotions,
             'statuses' => self::STATUSES,
             'segments' => self::SEGMENTS,
+            'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
         ]);
     }
 
@@ -111,7 +118,12 @@ class CampaignController extends Controller
         ));
     }
 
-    public function update(UpdateCampaignRequest $request, Campaign $campaign, CampaignAssignmentService $assignmentService)
+    public function update(
+        UpdateCampaignRequest $request,
+        Campaign $campaign,
+        CampaignAssignmentService $assignmentService,
+        CampaignScheduleService $scheduleService
+    )
     {
         if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()
@@ -120,15 +132,19 @@ class CampaignController extends Controller
         }
 
         $campaign->update(
-            $this->campaignData($request, $campaign)
+            $this->campaignData($request, $scheduleService, $campaign)
         );
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
-        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, 'Campagna aggiornata correttamente.');
+        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, 'Campagna aggiornata correttamente.');
     }
 
-    public function activate(Campaign $campaign, CampaignAssignmentService $assignmentService)
+    public function activate(
+        Campaign $campaign,
+        CampaignAssignmentService $assignmentService,
+        CampaignScheduleService $scheduleService
+    )
     {
         if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()->withErrors([
@@ -136,10 +152,11 @@ class CampaignController extends Controller
             ]);
         }
 
-        $campaign->update(['status' => 'scheduled']);
+        $campaign->update($this->scheduleExistingCampaignData($campaign, $scheduleService));
         $campaign->refresh();
 
         $result = $assignmentService->assign($campaign, 500, false);
+        $this->updateEstimatedDuration($campaign, $scheduleService);
         $this->refreshMarketingRunMarker();
 
         $message = $campaign->scheduled_at
@@ -186,6 +203,7 @@ class CampaignController extends Controller
         return [
             'statuses' => self::STATUSES,
             'segments' => self::SEGMENTS,
+            'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
                 ->where('status', '!=', 'archived')
@@ -194,11 +212,37 @@ class CampaignController extends Controller
         ];
     }
 
-    private function campaignData(Request $request, ?Campaign $campaign = null): array
+    private function campaignData(Request $request, CampaignScheduleService $scheduleService, ?Campaign $campaign = null): array
     {
         $data = $request->validated();
+        $metadata = is_array($campaign?->metadata) ? $campaign->metadata : [];
+        $requestedAt = $request->input('scheduled_at');
+        $scheduleWindow = $request->input('schedule_window') ?: ($requestedAt ? 'custom' : 'next_available');
+
+        if ($request->input('submit_action') === 'activate') {
+            $scheduledAt = $scheduleService->normalizeScheduledAt($requestedAt, $scheduleWindow, $campaign);
+            $data['scheduled_at'] = $scheduledAt;
+            $metadata['schedule_window'] = $scheduleWindow;
+            $metadata['estimated_duration_minutes'] = $scheduleService->estimateCampaignDurationMinutes($campaign);
+
+            if ($requestedAt) {
+                $metadata['requested_scheduled_at'] = $requestedAt;
+            } else {
+                unset($metadata['requested_scheduled_at']);
+            }
+        } else {
+            if ($requestedAt === null || $requestedAt === '') {
+                $data['scheduled_at'] = null;
+            }
+
+            if ($request->filled('schedule_window')) {
+                $metadata['schedule_window'] = $scheduleWindow;
+            }
+        }
+
         $data['status'] = $this->statusFromSubmitAction($request);
-        unset($data['promotions'], $data['submit_action']);
+        $data['metadata'] = $metadata;
+        unset($data['promotions'], $data['submit_action'], $data['schedule_window']);
 
         return $data;
     }
@@ -212,6 +256,7 @@ class CampaignController extends Controller
         Campaign $campaign,
         Request $request,
         CampaignAssignmentService $assignmentService,
+        CampaignScheduleService $scheduleService,
         string $baseMessage
     ) {
         $redirect = to_route('admin.campaigns.show', $campaign);
@@ -224,6 +269,7 @@ class CampaignController extends Controller
 
         $campaign->refresh();
         $result = $assignmentService->assign($campaign, 500, false);
+        $this->updateEstimatedDuration($campaign, $scheduleService);
         $this->refreshMarketingRunMarker();
 
         $message = $campaign->scheduled_at
@@ -238,6 +284,38 @@ class CampaignController extends Controller
     private function promotionIds(Request $request): array
     {
         return array_values(array_filter((array) $request->input('promotions', [])));
+    }
+
+    private function scheduleExistingCampaignData(Campaign $campaign, CampaignScheduleService $scheduleService): array
+    {
+        $metadata = is_array($campaign->metadata) ? $campaign->metadata : [];
+        $requestedAt = $campaign->scheduled_at?->toDateTimeString();
+        $scheduleWindow = data_get($metadata, 'schedule_window') ?: ($requestedAt ? 'custom' : 'next_available');
+        $scheduledAt = $scheduleService->normalizeScheduledAt($requestedAt, $scheduleWindow, $campaign);
+
+        $metadata['schedule_window'] = $scheduleWindow;
+        $metadata['estimated_duration_minutes'] = $scheduleService->estimateCampaignDurationMinutes($campaign);
+
+        if ($requestedAt) {
+            $metadata['requested_scheduled_at'] = $requestedAt;
+        } else {
+            unset($metadata['requested_scheduled_at']);
+        }
+
+        return [
+            'status' => 'scheduled',
+            'scheduled_at' => $scheduledAt,
+            'metadata' => $metadata,
+        ];
+    }
+
+    private function updateEstimatedDuration(Campaign $campaign, CampaignScheduleService $scheduleService): void
+    {
+        $campaign->refresh();
+        $metadata = is_array($campaign->metadata) ? $campaign->metadata : [];
+        $metadata['estimated_duration_minutes'] = $scheduleService->estimateCampaignDurationMinutes($campaign);
+
+        $campaign->forceFill(['metadata' => $metadata])->save();
     }
 
     private function mailModelOptions()
