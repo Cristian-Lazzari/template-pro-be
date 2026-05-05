@@ -9,9 +9,11 @@ use App\Models\Campaign;
 use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAssignmentService;
+use App\Services\Marketing\MarketingRunMarkerService;
 use App\Services\Marketing\MarketingReportService;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class CampaignController extends Controller
@@ -138,6 +140,8 @@ class CampaignController extends Controller
         $campaign->refresh();
 
         $result = $assignmentService->assign($campaign, 500, false);
+        $this->refreshMarketingRunMarker();
+
         $message = $campaign->scheduled_at
             ? 'Campagna confermata. Le assegnazioni sono state preparate; l’invio partira dalla programmazione.'
             : 'Campagna confermata. Le assegnazioni sono state preparate; imposta una programmazione per avviare l’invio automatico.';
@@ -172,6 +176,7 @@ class CampaignController extends Controller
     public function prepareAssignments(Campaign $campaign, CampaignAssignmentService $assignmentService)
     {
         $result = $assignmentService->assign($campaign, 500, false);
+        $this->refreshMarketingRunMarker();
 
         return back()->with('campaign_assignment_result', $result);
     }
@@ -212,11 +217,15 @@ class CampaignController extends Controller
         $redirect = to_route('admin.campaigns.show', $campaign);
 
         if ($request->input('submit_action') !== 'activate') {
+            $this->refreshMarketingRunMarker();
+
             return $redirect->with('success', $baseMessage . ' Salvata come bozza.');
         }
 
         $campaign->refresh();
         $result = $assignmentService->assign($campaign, 500, false);
+        $this->refreshMarketingRunMarker();
+
         $message = $campaign->scheduled_at
             ? $baseMessage . ' Assegnazioni preparate; le email partiranno all’orario programmato tramite scheduler.'
             : $baseMessage . ' Assegnazioni preparate; imposta una programmazione per avviare l’invio automatico.';
@@ -265,8 +274,20 @@ class CampaignController extends Controller
         }
 
         $campaign->update(['status' => $status]);
+        $this->refreshMarketingRunMarker();
 
         return back()->with('success', $message);
+    }
+
+    private function refreshMarketingRunMarker(): void
+    {
+        try {
+            app(MarketingRunMarkerService::class)->refresh();
+        } catch (\Throwable $exception) {
+            Log::warning('Unable to refresh marketing run marker.', [
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     private function sendProgress(Campaign $campaign, array $report): array
