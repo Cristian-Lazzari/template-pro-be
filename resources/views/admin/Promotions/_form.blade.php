@@ -23,6 +23,40 @@
     }
 
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
+    $previewDiscountType = old('type_discount', $promotion->type_discount);
+    $previewDiscount = old('discount', $promotion->discount);
+    $previewMinimum = old('minimum_pretest', $promotion->minimum_pretest);
+    $previewCta = old('cta', $promotion->cta);
+    $previewCaseUse = old('case_use', $promotion->case_use);
+    $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
+    $previewReusable = filter_var($reusableValue, FILTER_VALIDATE_BOOLEAN);
+    $targetOptionLabels = collect($specificTargetOptions)
+        ->flatMap(fn ($options) => collect($options)->mapWithKeys(fn ($option) => [$option['key'] => $option['label']]))
+        ->all();
+    $previewTargetLabels = collect($targetRows)
+        ->pluck('target_key')
+        ->filter()
+        ->map(fn ($key) => $targetOptionLabels[$key] ?? $key)
+        ->unique()
+        ->values();
+    $formatPreviewDiscount = function ($type, $discount) {
+        if ($type === 'gift') {
+            return 'Regalo';
+        }
+
+        if ($discount === null || $discount === '') {
+            return '-';
+        }
+
+        $value = number_format((float) $discount, 2, ',', '.');
+        $value = str_ends_with($value, ',00') ? substr($value, 0, -3) : $value;
+
+        return match ($type) {
+            'fixed' => $value . '€',
+            'percentage' => $value . '%',
+            default => $value,
+        };
+    };
 @endphp
 
 @include('admin.Marketing.partials.form-style')
@@ -139,6 +173,8 @@
         @method($method)
     @endif
 
+    <div class="marketing-form-grid">
+        <div class="marketing-form-main">
     <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
@@ -445,6 +481,101 @@
             </div>
         </div>
     </section>
+        </div>
+
+        <aside class="marketing-form-sidebar">
+            <section class="order-detail__section marketing-form-preview">
+                <div class="order-detail__section-head">
+                    <h3>
+                        <span class="order-detail__section-icon">
+                            <i class="bi bi-eye-fill"></i>
+                        </span>
+                        Anteprima promozione
+                    </h3>
+                </div>
+
+                <div class="marketing-form-preview__panel">
+                    <div class="marketing-form-preview__head">
+                        <span class="marketing-form-preview__icon">
+                            <i class="bi bi-megaphone-fill"></i>
+                        </span>
+                        <div>
+                            <strong>{{ old('name', $promotion->name) ?: 'Nome promozione' }}</strong>
+                            <small>{{ old('slug', $promotion->slug) ?: 'slug generato al salvataggio' }}</small>
+                        </div>
+                    </div>
+
+                    <div class="marketing-form-preview__facts">
+                        <div class="marketing-form-preview__fact">
+                            <span>Ambito</span>
+                            <strong>{{ $targetScope === 'specific' ? 'Target specifici' : 'Carrello' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Caso d'uso</span>
+                            <strong>{{ $caseUses[$previewCaseUse] ?? ($previewCaseUse ?: '-') }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Sconto</span>
+                            <strong>{{ $targetScope === 'specific' ? 'Per target' : $formatPreviewDiscount($previewDiscountType, $previewDiscount) }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Minimo</span>
+                            <strong>{{ $previewMinimum !== null && $previewMinimum !== '' ? $previewMinimum : '-' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>CTA</span>
+                            <strong>{{ $previewCta ?: '-' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Scadenza</span>
+                            <strong>{{ $expiringValue ?: ($previewPermanent ? 'Permanente' : '-') }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="marketing-form-preview__chips">
+                        <span>{{ $previewPermanent ? 'Permanente' : 'Con date' }}</span>
+                        <span>{{ $previewReusable ? 'Riusabile' : 'Singolo uso' }}</span>
+                        @if ($targetScope === 'specific')
+                            @forelse ($previewTargetLabels->take(5) as $targetLabel)
+                                <span>{{ $targetLabel }}</span>
+                            @empty
+                                <span>Nessun target selezionato</span>
+                            @endforelse
+                            @if ($previewTargetLabels->count() > 5)
+                                <span>+{{ $previewTargetLabels->count() - 5 }}</span>
+                            @endif
+                        @else
+                            <span>Sconto generico</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="marketing-form-preview__steps">
+                    <div class="marketing-form-preview__step">
+                        <i class="bi bi-cart-check-fill"></i>
+                        <div>
+                            <strong>{{ $targetScope === 'specific' ? 'Target selettivo' : 'Regola generale' }}</strong>
+                            <small>{{ $targetScope === 'specific' ? 'Lo sconto viene letto dai target scelti.' : 'Lo sconto vale sulla regola principale della promozione.' }}</small>
+                        </div>
+                    </div>
+                    <div class="marketing-form-preview__step">
+                        <i class="bi bi-calendar2-week-fill"></i>
+                        <div>
+                            <strong>Validita</strong>
+                            <small>{{ $previewPermanent ? 'Le date vengono ignorate finche la promo resta permanente.' : 'Programmazione e scadenza definiscono la finestra di utilizzo.' }}</small>
+                        </div>
+                    </div>
+                    <div class="marketing-form-preview__step">
+                        <i class="bi bi-envelope-paper-fill"></i>
+                        <div>
+                            <strong>Uso marketing</strong>
+                            <small>La promozione potra essere collegata a campagne e automazioni.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
 
     <section class="order-detail__section">
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">

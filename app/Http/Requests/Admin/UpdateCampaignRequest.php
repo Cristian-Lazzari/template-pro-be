@@ -22,9 +22,8 @@ class UpdateCampaignRequest extends FormRequest
             'submit_action' => ['required', Rule::in(['activate', 'draft'])],
             'segment' => ['nullable', Rule::in($segmentService->validSegmentKeys())],
             'model_id' => ['nullable', 'exists:models,id'],
-            'schedule_window' => ['nullable', Rule::in(['next_available', 'today_afternoon', 'today_evening', 'tomorrow_morning', 'tomorrow_lunch', 'tomorrow_evening', 'custom'])],
+            'schedule_window' => ['nullable', Rule::in(['next_available', 'today_afternoon', 'today_evening', 'tomorrow_morning', 'tomorrow_lunch', 'tomorrow_evening'])],
             'scheduled_at' => [
-                Rule::requiredIf(fn () => $this->input('submit_action') === 'activate' && $this->input('schedule_window') === 'custom'),
                 'nullable',
                 'date',
             ],

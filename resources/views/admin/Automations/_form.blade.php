@@ -6,6 +6,12 @@
     $enabledFromValue = old('metadata.enabled_from', data_get($automation->metadata, 'enabled_from'));
     $enabledUntilValue = old('metadata.enabled_until', data_get($automation->metadata, 'enabled_until'));
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
+    $selectedMailModelId = (string) old('model_id', $automation->model_id);
+    $selectedTrigger = old('trigger', $automation->trigger);
+    $previewMailModel = collect($mailModels)->first(fn ($mailModel) => (string) $mailModel->id === $selectedMailModelId) ?: $automation->model;
+    $previewPromotions = collect($promotions)
+        ->filter(fn ($promotion) => in_array((string) $promotion->id, $selectedPromotionIds, true))
+        ->values();
 @endphp
 
 @include('admin.Marketing.partials.form-style')
@@ -22,6 +28,8 @@
         @method($method)
     @endif
 
+    <div class="marketing-form-grid">
+        <div class="marketing-form-main">
     <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
@@ -167,6 +175,87 @@
         @error('promotions') <p class="error">{{ $message }}</p> @enderror
         @error('promotions.*') <p class="error">{{ $message }}</p> @enderror
     </section>
+        </div>
+
+        <aside class="marketing-form-sidebar">
+            <section class="order-detail__section marketing-form-preview">
+                <div class="order-detail__section-head">
+                    <h3>
+                        <span class="order-detail__section-icon">
+                            <i class="bi bi-eye-fill"></i>
+                        </span>
+                        Anteprima automazione
+                    </h3>
+                </div>
+
+                <div class="marketing-form-preview__panel">
+                    <div class="marketing-form-preview__head">
+                        <span class="marketing-form-preview__icon">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </span>
+                        <div>
+                            <strong>{{ old('name', $automation->name) ?: 'Nome automazione' }}</strong>
+                            <small>{{ $triggers[$selectedTrigger] ?? 'Trigger da scegliere' }}</small>
+                        </div>
+                    </div>
+
+                    <div class="marketing-form-preview__facts">
+                        <div class="marketing-form-preview__fact">
+                            <span>Modello</span>
+                            <strong>{{ $previewMailModel?->name ?? 'Da scegliere' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Promozioni</span>
+                            <strong>{{ $previewPromotions->count() }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Cooldown</span>
+                            <strong>{{ $cooldownValue !== null && $cooldownValue !== '' ? $cooldownValue . ' giorni' : '-' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Periodo</span>
+                            <strong>{{ $enabledFromValue || $enabledUntilValue ? trim(($enabledFromValue ?: '-') . ' / ' . ($enabledUntilValue ?: '-')) : 'Sempre' }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="marketing-form-preview__chips">
+                        @forelse ($previewPromotions->take(6) as $previewPromotion)
+                            <span>{{ $previewPromotion->name }}</span>
+                        @empty
+                            <span>Nessuna promozione selezionata</span>
+                        @endforelse
+                        @if ($previewPromotions->count() > 6)
+                            <span>+{{ $previewPromotions->count() - 6 }}</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="marketing-form-preview__steps">
+                    <div class="marketing-form-preview__step">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <div>
+                            <strong>Trigger</strong>
+                            <small>L'automazione resta pronta per il trigger scelto, senza eseguirsi da questa pagina.</small>
+                        </div>
+                    </div>
+                    <div class="marketing-form-preview__step">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div>
+                            <strong>Contenuto</strong>
+                            <small>Il modello mail verra renderizzato solo quando esistera una assegnazione cliente-promozione.</small>
+                        </div>
+                    </div>
+                    <div class="marketing-form-preview__step">
+                        <i class="bi bi-shield-check"></i>
+                        <div>
+                            <strong>Sicurezza</strong>
+                            <small>Il salvataggio non crea assegnazioni e non invia email.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
 
     <section class="order-detail__section mt-4">
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">

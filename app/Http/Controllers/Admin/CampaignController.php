@@ -199,10 +199,14 @@ class CampaignController extends Controller
 
     private function formOptions(): array
     {
+        $segmentService = app(MarketingCustomerSegmentService::class);
+        $segments = $segmentService->getSegmentOptions();
+
         return [
             'statuses' => self::STATUSES,
-            'segments' => app(MarketingCustomerSegmentService::class)->getSegmentOptions(),
-            'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
+            'segments' => $segments,
+            'audienceCounts' => $this->audienceCounts($segmentService, $segments),
+            'scheduleWindows' => $this->campaignFormScheduleWindows(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
                 ->where('status', '!=', 'archived')
@@ -251,6 +255,34 @@ class CampaignController extends Controller
         unset($data['promotions'], $data['submit_action'], $data['schedule_window']);
 
         return $data;
+    }
+
+    private function campaignFormScheduleWindows(): array
+    {
+        $scheduleWindows = app(CampaignScheduleService::class)->getWindowOptions();
+        unset($scheduleWindows['custom']);
+
+        return $scheduleWindows;
+    }
+
+    private function audienceCounts(MarketingCustomerSegmentService $segmentService, array $segments): array
+    {
+        $counts = [];
+
+        foreach (array_keys($segments) as $segment) {
+            try {
+                $counts[$segment] = $segmentService->queryForSegment($segment)->count();
+            } catch (\Throwable $exception) {
+                Log::warning('Unable to count marketing audience segment.', [
+                    'segment' => $segment,
+                    'error' => $exception->getMessage(),
+                ]);
+
+                $counts[$segment] = 0;
+            }
+        }
+
+        return $counts;
     }
 
     private function statusFromSubmitAction(Request $request): string
