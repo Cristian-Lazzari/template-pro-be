@@ -88,7 +88,10 @@ class MarketingTemplateRenderer
         $customerName = trim($customerFirstName . ' ' . $customerLastName);
         $trackingToken = (string) ($customerPromotion->tracking_token ?? '');
         $trackingOpenUrl = $this->trackingOpenUrl($trackingToken);
-        $trackingClickUrl = $this->trackingClickUrl($trackingToken, $promotion?->cta);
+        $promotionRedirectPath = $promotion
+            ? $this->resolvePromotionRedirectPath($promotion)
+            : '/';
+        $trackingClickUrl = $this->trackingClickUrl($trackingToken, $promotionRedirectPath);
         $promotionTypeDiscount = (string) ($promotion?->type_discount ?? '');
         $campaignName = (string) ($customerPromotion->campaign?->name ?? '');
         $automationName = (string) ($customerPromotion->automation?->name ?? '');
@@ -101,7 +104,7 @@ class MarketingTemplateRenderer
             'customer_phone' => (string) ($customer?->phone ?? ''),
             'promotion_name' => (string) ($promotion?->name ?? ''),
             'promotion_slug' => (string) ($promotion?->slug ?? ''),
-            'promotion_cta' => (string) ($promotion?->cta ?? ''),
+            'promotion_cta' => $promotionRedirectPath,
             'promotion_discount' => $promotion?->discount !== null ? (string) $promotion->discount : '',
             'promotion_type_discount' => $promotionTypeDiscount,
             'promotion_expiring_at' => $promotion?->expiring_at
@@ -326,7 +329,7 @@ class MarketingTemplateRenderer
     private function trackingOpenUrl(string $token): string
     {
         if ($token !== '' && Route::has('api.marketing.open')) {
-            return route('api.marketing.open', ['token' => $token]);
+            return $this->absoluteUrl(route('api.marketing.open', ['token' => $token], false));
         }
 
         return $this->absoluteUrl('/api/marketing/open/' . rawurlencode($token));
@@ -337,16 +340,29 @@ class MarketingTemplateRenderer
         $safeRedirect = $this->safeRedirectUrl($redirect);
 
         if ($token !== '' && Route::has('api.marketing.click')) {
-            return route('api.marketing.click', [
-                'token' => $token,
-                'redirect' => $safeRedirect,
-            ]);
+            return $this->absoluteUrl(route(
+                'api.marketing.click',
+                [
+                    'token' => $token,
+                    'redirect' => $safeRedirect,
+                ],
+                false
+            ));
         }
 
         return $this->absoluteUrl(
             '/api/marketing/click/' . rawurlencode($token)
             . '?redirect=' . rawurlencode($safeRedirect)
         );
+    }
+
+    private function resolvePromotionRedirectPath(Promotion $promotion): string
+    {
+        return match ($promotion->case_use) {
+            'take_away', 'delivery' => '/ordina',
+            'table' => '/check-out',
+            default => $this->safeRedirectUrl($promotion->cta),
+        };
     }
 
     private function safeRedirectUrl(?string $redirect): string
@@ -382,7 +398,15 @@ class MarketingTemplateRenderer
             return $path;
         }
 
-        $baseUrl = rtrim((string) config('app.url'), '/');
+        $baseUrl = rtrim((string) config('configurazione.domain'), '/');
+
+        if ($baseUrl === '') {
+            $baseUrl = rtrim((string) env('DOMAIN'), '/');
+        }
+
+        if ($baseUrl === '') {
+            $baseUrl = rtrim((string) config('app.url'), '/');
+        }
 
         if ($baseUrl === '') {
             $baseUrl = rtrim((string) config('configurazione.APP_URL'), '/');

@@ -292,9 +292,7 @@
                         </article>
                     </div>
 
-                    <div class="marketing-detail__empty mt-3">
-                        <strong>L’orario reale puo essere stato ottimizzato per evitare sovrapposizioni.</strong>
-                    </div>
+                  
                 </section>
 
                 <section class="order-detail__section">
