@@ -3,12 +3,14 @@
 @section('contents')
 
 @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show dashboard-home__flash" role="alert">
+    <div class="dashboard-home__flash" role="alert">
         {{ session('success') }}
     </div>
 @endif
 
-<div class="dash_page">
+<div class="dash_page marketing-index-page">
+    @include('admin.Marketing.partials.index-style')
+
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
@@ -50,86 +52,77 @@
         </div>
 
         @if ($models->count() > 0)
-            <div class="menu-dashboard__promo-grid">
+            <div class="marketing-index-list">
                 @foreach ($models as $mailModel)
                     @php
                         $status = $mailModel->status ?: 'draft';
                         $bodyPreview = trim(strip_tags($mailModel->body_html ?: $mailModel->body ?: ''));
+                        $usageCount = (int) ($mailModel->campaigns_count ?? 0) + (int) ($mailModel->automations_count ?? 0);
                     @endphp
 
-                    <article class="menu-dashboard__promo-card">
-                        <div class="menu-dashboard__promo-banner">
-                            <span class="order-detail__section-icon">
+                    <article class="marketing-index-row">
+                        <div class="marketing-index-main">
+                            <div class="marketing-index-kicker">
                                 <x-icon name="file-earmark-richtext-fill" />
-                            </span>
-                            <div>
-                                <span class="menu-dashboard__banner-eyebrow">Modello mail</span>
+                                <span>Modello mail</span>
                                 @include('admin.Marketing.partials.status-pill', [
                                     'status' => $status,
                                     'label' => ucfirst($status),
                                 ])
                             </div>
+
+                            <h4 class="marketing-index-title">{{ $mailModel->name }}</h4>
+
+                            <div class="marketing-index-meta">
+                                <span class="marketing-index-chip">{{ $mailModel->channel ?: 'email' }}</span>
+                                <span class="marketing-index-chip marketing-index-chip--accent">{{ $mailModel->type ?: 'marketing' }}</span>
+                            </div>
                         </div>
 
-                        <div class="menu-dashboard__promo-body">
-                            <div class="menu-dashboard__promo-top">
-                                <div class="menu-dashboard__promo-intro">
-                                    <div class="menu-dashboard__chip-row">
-                                        <span class="menu-dashboard__chip">{{ $mailModel->channel ?: 'email' }}</span>
-                                        <span class="menu-dashboard__chip menu-dashboard__chip--accent">{{ $mailModel->type ?: 'marketing' }}</span>
-                                    </div>
-
-                                    <h4>{{ $mailModel->name }}</h4>
-                                    <p class="menu-dashboard__copy">{{ $mailModel->object ?: 'Oggetto non definito' }}</p>
-                                </div>
-
-                                <div class="menu-dashboard__price-block">
-                                    <span class="menu-dashboard__price">{{ ($mailModel->campaigns_count ?? 0) + ($mailModel->automations_count ?? 0) }}</span>
-                                    <small>utilizzi</small>
-                                </div>
+                        <div class="marketing-index-block">
+                            <p class="marketing-index-copy">{{ $mailModel->object ?: 'Oggetto non definito' }}</p>
+                            <div class="marketing-index-meta marketing-index-extra">
+                                <span>Heading: {{ $mailModel->heading ?: '-' }}</span>
+                                <span>Mittente: {{ $mailModel->sender ?: '-' }}</span>
                             </div>
-
-                            <div class="menu-dashboard__detail-list">
-                                <span>Contenuto</span>
-                                <div class="menu-dashboard__pill-row">
-                                    <small>Heading: {{ $mailModel->heading ?: '-' }}</small>
-                                    <small>Mittente: {{ $mailModel->sender ?: '-' }}</small>
-                                </div>
-                            </div>
-
                             @if ($bodyPreview !== '')
-                                <p class="menu-dashboard__copy">{{ \Illuminate\Support\Str::limit($bodyPreview, 180) }}</p>
+                                <p class="marketing-index-copy marketing-index-extra">{{ \Illuminate\Support\Str::limit($bodyPreview, 130) }}</p>
                             @endif
+                        </div>
 
-                            <div class="menu-dashboard__detail-list">
-                                <span>Collegamenti</span>
-                                <div class="menu-dashboard__pill-row">
-                                    <small>{{ $mailModel->campaigns_count ?? 0 }} campagne</small>
-                                    <small>{{ $mailModel->automations_count ?? 0 }} automazioni</small>
-                                    <small>Aggiornato: {{ $mailModel->updated_at?->format('d/m/Y H:i') ?? '-' }}</small>
-                                </div>
+                        <div class="marketing-index-stats">
+                            <div class="marketing-index-stat-row">
+                                <span class="marketing-index-stat">
+                                    <strong>{{ $usageCount }}</strong>
+                                    <span>utilizzi</span>
+                                </span>
                             </div>
+                            <div class="marketing-index-meta marketing-index-extra">
+                                <span>{{ $mailModel->campaigns_count ?? 0 }} campagne</span>
+                                <span>{{ $mailModel->automations_count ?? 0 }} automazioni</span>
+                                <span>Aggiornato: {{ $mailModel->updated_at?->format('d/m/Y H:i') ?? '-' }}</span>
+                            </div>
+                        </div>
 
-                            <div class="menu-dashboard__hero-actions dashboard-home__hero-actions mt-3">
-                                <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.edit', $mailModel->id) }}">
-                                    <x-icon name="pencil-square" />
-                                    <span>Modifica</span>
-                                </a>
-                                <form action="{{ route('admin.customers.mail_models.delete', $mailModel->id) }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="order-detail__contact" type="submit">
-                                        <x-icon name="trash-fill" />
-                                        <span>Elimina</span>
-                                    </button>
-                                </form>
-                            </div>
+                        <div class="marketing-index-actions">
+                            <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.edit', $mailModel->id) }}">
+                                <x-icon name="pencil-square" />
+                                <span>Modifica</span>
+                            </a>
+                            <form class="marketing-index-secondary" action="{{ route('admin.customers.mail_models.delete', $mailModel->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="order-detail__contact marketing-index-danger" type="submit">
+                                    <x-icon name="trash-fill" />
+                                    <span>Elimina</span>
+                                </button>
+                            </form>
                         </div>
                     </article>
                 @endforeach
             </div>
 
-            <div class="d-flex justify-content-center mt-3">
+            <div class="marketing-index-pager">
                 {{ $models->links() }}
             </div>
         @else
