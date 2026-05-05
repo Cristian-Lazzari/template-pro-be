@@ -396,6 +396,185 @@
         overflow-wrap: anywhere;
     }
 
+    .campaign-assignment-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .campaign-assignment-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .campaign-assignment-card {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.05);
+        color: var(--c3);
+        overflow: hidden;
+    }
+
+    .campaign-assignment-card__top {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: start;
+    }
+
+    .campaign-assignment-avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 15px;
+        background: rgba(14, 183, 146, 0.12);
+        border: 1px solid rgba(14, 183, 146, 0.22);
+        color: rgba(142, 246, 219, 0.95);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        letter-spacing: .02em;
+    }
+
+    .campaign-assignment-person,
+    .campaign-assignment-promo,
+    .campaign-assignment-meta,
+    .campaign-assignment-timeline {
+        min-width: 0;
+    }
+
+    .campaign-assignment-person {
+        display: grid;
+        gap: 8px;
+    }
+
+    .campaign-assignment-person strong {
+        color: var(--c3);
+        font-size: var(--fs-400);
+        line-height: 1.18;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-assignment-contact,
+    .campaign-assignment-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .campaign-assignment-contact span {
+        display: inline-flex;
+        width: fit-content;
+        max-width: 100%;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.38);
+        color: rgba(216, 221, 232, 0.8);
+        font-size: var(--fs-200);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-assignment-promo {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(98, 166, 255, 0.16);
+        background: rgba(98, 166, 255, 0.07);
+    }
+
+    .campaign-assignment-promo__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 13px;
+        background: rgba(98, 166, 255, 0.14);
+        color: rgba(170, 207, 255, 0.95);
+    }
+
+    .campaign-assignment-promo span,
+    .campaign-assignment-meta small,
+    .campaign-assignment-step span {
+        color: rgba(216, 221, 232, 0.68);
+        font-size: var(--fs-100);
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .campaign-assignment-promo strong {
+        display: block;
+        margin-top: 3px;
+        color: var(--c3);
+        font-size: var(--fs-300);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-assignment-timeline {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+        gap: 10px;
+    }
+
+    .campaign-assignment-step {
+        display: grid;
+        gap: 6px;
+        padding: 12px;
+        border-radius: 15px;
+        border: 1px solid rgba(216, 221, 232, 0.1);
+        background: rgba(9, 3, 51, 0.34);
+        opacity: .72;
+    }
+
+    .campaign-assignment-step.is-done {
+        opacity: 1;
+        border-color: rgba(14, 183, 146, 0.24);
+        background: rgba(14, 183, 146, 0.08);
+    }
+
+    .campaign-assignment-step i {
+        color: rgba(216, 221, 232, 0.68);
+    }
+
+    .campaign-assignment-step.is-done i {
+        color: rgba(142, 246, 219, 0.95);
+    }
+
+    .campaign-assignment-step small {
+        color: rgba(216, 221, 232, 0.78);
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-assignment-meta span {
+        display: grid;
+        gap: 4px;
+        min-width: 132px;
+        max-width: 100%;
+        padding: 11px 12px;
+        border-radius: 15px;
+        border: 1px solid rgba(216, 221, 232, 0.1);
+        background: rgba(9, 3, 51, 0.34);
+    }
+
+    .campaign-assignment-meta strong {
+        color: var(--c3);
+        font-size: var(--fs-200);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
     @keyframes marketingProgressSweep {
         to {
             transform: translateX(100%);
@@ -477,6 +656,23 @@
 
         .campaign-promotion-card__stats {
             grid-template-columns: 1fr;
+        }
+
+        .campaign-assignment-card__top {
+            grid-template-columns: auto minmax(0, 1fr);
+        }
+
+        .campaign-assignment-card__top > :last-child {
+            grid-column: 1 / -1;
+            justify-self: start;
+        }
+
+        .campaign-assignment-timeline {
+            grid-template-columns: 1fr;
+        }
+
+        .campaign-assignment-meta span {
+            width: 100%;
         }
     }
 </style>
