@@ -67,6 +67,12 @@
                         $progressPercentage = $totalAssignments > 0 ? round(($sentAssignments / $totalAssignments) * 100, 2) : 0;
                         $scheduleWindow = data_get($campaign->metadata, 'schedule_window');
                         $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? null;
+                        $legacySegmentMap = [
+                            'inactive_customers' => 'at_risk_customers',
+                            'high_spending_customers' => 'high_value_customers',
+                        ];
+                        $normalizedSegment = $legacySegmentMap[$campaign->segment] ?? ($campaign->segment ?: 'all');
+                        $segmentLabel = $segments[$normalizedSegment] ?? ($campaign->segment ?: 'Segmento non definito');
                     @endphp
 
                     <article class="marketing-index-row">
@@ -83,7 +89,7 @@
                             <h4 class="marketing-index-title">{{ $campaign->name }}</h4>
 
                             <div class="marketing-index-meta">
-                                <span class="marketing-index-chip">{{ $segments[$campaign->segment] ?? ($campaign->segment ?: 'Segmento non definito') }}</span>
+                                <span class="marketing-index-chip">{{ $segmentLabel }}</span>
                                 <span class="marketing-index-chip marketing-index-chip--accent">{{ $campaign->promotions->count() }} promo</span>
                                 @if ($scheduleWindowLabel)
                                     <span class="marketing-index-chip marketing-index-extra">{{ $scheduleWindowLabel }}</span>

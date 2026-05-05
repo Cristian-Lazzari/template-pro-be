@@ -4,6 +4,8 @@ namespace App\Services\Marketing;
 
 use App\Models\CustomerPromotion;
 use App\Models\Model;
+use App\Models\Promotion;
+use App\Models\PromotionTarget;
 use Illuminate\Support\Facades\Route;
 
 class MarketingTemplateRenderer
@@ -14,7 +16,7 @@ class MarketingTemplateRenderer
             'automation.model',
             'campaign.model',
             'customer',
-            'promotion',
+            'promotion.targets',
         ]);
 
         $template = $this->getTemplateFor($customerPromotion);
@@ -36,8 +38,17 @@ class MarketingTemplateRenderer
 
         return [
             'subject' => $subject,
+            'heading' => $this->replaceVariables($this->resolveHeading($template, $customerPromotion), $variables),
             'body_html' => $bodyHtml,
             'body_text' => $bodyText,
+            'ending' => $template && filled($template->ending)
+                ? $this->replaceVariables((string) $template->ending, $variables)
+                : null,
+            'sender' => $template && filled($template->sender)
+                ? $this->replaceVariables((string) $template->sender, $variables)
+                : config('configurazione.APP_NAME', config('app.name')),
+            'img_1' => $template?->img_1,
+            'img_2' => $template?->img_2,
             'tracking_open_url' => $variables['tracking_open_url'],
             'tracking_click_url' => $variables['tracking_click_url'],
         ];
@@ -63,7 +74,12 @@ class MarketingTemplateRenderer
 
     public function buildVariables(CustomerPromotion $customerPromotion): array
     {
-        $customerPromotion->loadMissing(['customer', 'promotion']);
+        $customerPromotion->loadMissing([
+            'automation',
+            'campaign',
+            'customer',
+            'promotion.targets',
+        ]);
 
         $customer = $customerPromotion->customer;
         $promotion = $customerPromotion->promotion;
@@ -73,17 +89,35 @@ class MarketingTemplateRenderer
         $trackingToken = (string) ($customerPromotion->tracking_token ?? '');
         $trackingOpenUrl = $this->trackingOpenUrl($trackingToken);
         $trackingClickUrl = $this->trackingClickUrl($trackingToken, $promotion?->cta);
+        $promotionTypeDiscount = (string) ($promotion?->type_discount ?? '');
+        $campaignName = (string) ($customerPromotion->campaign?->name ?? '');
+        $automationName = (string) ($customerPromotion->automation?->name ?? '');
 
         return [
             'customer_name' => $customerName !== '' ? $customerName : 'Cliente',
             'customer_first_name' => $customerFirstName,
             'customer_last_name' => $customerLastName,
-            'customer_email' => (string) ($customer?->email ?? ''),
+            'customer_email' => (string) ($customer?->email ?? $customer?->mail ?? ''),
+            'customer_phone' => (string) ($customer?->phone ?? ''),
             'promotion_name' => (string) ($promotion?->name ?? ''),
             'promotion_slug' => (string) ($promotion?->slug ?? ''),
             'promotion_cta' => (string) ($promotion?->cta ?? ''),
             'promotion_discount' => $promotion?->discount !== null ? (string) $promotion->discount : '',
-            'promotion_type_discount' => (string) ($promotion?->type_discount ?? ''),
+            'promotion_type_discount' => $promotionTypeDiscount,
+            'promotion_expiring_at' => $promotion?->expiring_at
+                ? $promotion->expiring_at->format('d/m/Y')
+                : '',
+            'promotion_case_use' => (string) ($promotion?->case_use ?? ''),
+            'promotion_minimum_pretest' => $promotion?->minimum_pretest !== null ? (string) $promotion->minimum_pretest : '',
+            'promotion_discount_label' => $this->promotionDiscountLabel($promotion),
+            'promotion_type_discount_label' => $this->promotionTypeDiscountLabel($promotionTypeDiscount),
+            'product_name' => $this->targetName($promotion, PromotionTarget::TYPE_PRODUCT, ['name']),
+            'menu_name' => $this->targetName($promotion, PromotionTarget::TYPE_MENU, ['name']),
+            'category_name' => $this->targetName($promotion, PromotionTarget::TYPE_CATEGORY, ['name']),
+            'post_title' => $this->targetName($promotion, PromotionTarget::TYPE_POST, ['title', 'name']),
+            'campaign_name' => $campaignName,
+            'automation_name' => $automationName,
+            'marketing_source_name' => $campaignName !== '' ? $campaignName : $automationName,
             'tracking_token' => $trackingToken,
             'tracking_open_url' => $trackingOpenUrl,
             'tracking_click_url' => $trackingClickUrl,
@@ -95,7 +129,7 @@ class MarketingTemplateRenderer
         return (string) preg_replace_callback(
             '/{{\s*([A-Za-z0-9_]+)\s*}}/',
             fn (array $matches) => array_key_exists($matches[1], $variables)
-                ? (string) $variables[$matches[1]]
+                ? $this->stringValue($variables[$matches[1]])
                 : $matches[0],
             $content
         );
@@ -107,6 +141,19 @@ class MarketingTemplateRenderer
             return (string) $template->object;
         }
 
+        if ($template && filled($template->heading)) {
+            return (string) $template->heading;
+        }
+
+        if (filled($customerPromotion->promotion?->name)) {
+            return (string) $customerPromotion->promotion->name;
+        }
+
+        return 'Promozione per te';
+    }
+
+    private function resolveHeading(?Model $template, CustomerPromotion $customerPromotion): string
+    {
         if ($template && filled($template->heading)) {
             return (string) $template->heading;
         }
@@ -179,13 +226,110 @@ class MarketingTemplateRenderer
         return $text !== '' ? $text : null;
     }
 
+    private function promotionTypeDiscountLabel(string $typeDiscount): string
+    {
+        return match ($typeDiscount) {
+            'fixed' => '€',
+            'percentage' => '%',
+            'gift' => 'Regalo',
+            default => $typeDiscount,
+        };
+    }
+
+    private function promotionDiscountLabel(?Promotion $promotion): string
+    {
+        if (! $promotion) {
+            return '';
+        }
+
+        $typeDiscount = (string) ($promotion->type_discount ?? '');
+
+        if ($typeDiscount === 'gift') {
+            return 'Regalo';
+        }
+
+        if ($promotion->discount === null) {
+            return '';
+        }
+
+        $discount = $this->formatDecimal($promotion->discount);
+
+        return match ($typeDiscount) {
+            'fixed' => $discount . '€',
+            'percentage' => $discount . '%',
+            default => $discount,
+        };
+    }
+
+    private function targetName(?Promotion $promotion, string $targetType, array $fields): string
+    {
+        if (! $promotion) {
+            return '';
+        }
+
+        $promotion->loadMissing('targets');
+
+        $targetRow = $promotion->targets
+            ->first(fn (PromotionTarget $target) => $target->target_type === $targetType);
+
+        if (! $targetRow) {
+            return '';
+        }
+
+        try {
+            $target = $targetRow->target();
+        } catch (\Throwable) {
+            return '';
+        }
+
+        if (! $target) {
+            return '';
+        }
+
+        foreach ($fields as $field) {
+            $value = $target->{$field} ?? null;
+
+            if (is_scalar($value) && trim((string) $value) !== '') {
+                return trim((string) $value);
+            }
+        }
+
+        return '';
+    }
+
+    private function formatDecimal($value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        $formatted = number_format((float) $value, 2, ',', '.');
+
+        return str_ends_with($formatted, ',00')
+            ? substr($formatted, 0, -3)
+            : $formatted;
+    }
+
+    private function stringValue($value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        if (is_scalar($value) || $value instanceof \Stringable) {
+            return (string) $value;
+        }
+
+        return '';
+    }
+
     private function trackingOpenUrl(string $token): string
     {
         if ($token !== '' && Route::has('api.marketing.open')) {
-            return route('api.marketing.open', ['token' => $token], false);
+            return route('api.marketing.open', ['token' => $token]);
         }
 
-        return '/api/marketing/open/' . rawurlencode($token);
+        return $this->absoluteUrl('/api/marketing/open/' . rawurlencode($token));
     }
 
     private function trackingClickUrl(string $token, ?string $redirect): string
@@ -196,11 +340,13 @@ class MarketingTemplateRenderer
             return route('api.marketing.click', [
                 'token' => $token,
                 'redirect' => $safeRedirect,
-            ], false);
+            ]);
         }
 
-        return '/api/marketing/click/' . rawurlencode($token)
-            . '?redirect=' . rawurlencode($safeRedirect);
+        return $this->absoluteUrl(
+            '/api/marketing/click/' . rawurlencode($token)
+            . '?redirect=' . rawurlencode($safeRedirect)
+        );
     }
 
     private function safeRedirectUrl(?string $redirect): string
@@ -228,5 +374,24 @@ class MarketingTemplateRenderer
         }
 
         return $redirect;
+    }
+
+    private function absoluteUrl(string $path): string
+    {
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $baseUrl = rtrim((string) config('app.url'), '/');
+
+        if ($baseUrl === '') {
+            $baseUrl = rtrim((string) config('configurazione.APP_URL'), '/');
+        }
+
+        if ($baseUrl === '') {
+            return url($path);
+        }
+
+        return $baseUrl . '/' . ltrim($path, '/');
     }
 }

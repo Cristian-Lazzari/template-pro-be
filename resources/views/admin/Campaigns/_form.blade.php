@@ -5,6 +5,12 @@
         ->all();
     $primaryActionLabel = $method === 'POST' ? 'Crea e programma' : 'Salva e programma';
     $selectedScheduleWindow = old('schedule_window', data_get($campaign->metadata, 'schedule_window', 'next_available'));
+    $legacySegmentMap = [
+        'inactive_customers' => 'at_risk_customers',
+        'high_spending_customers' => 'high_value_customers',
+    ];
+    $selectedSegment = old('segment', $campaign->segment ?: 'all');
+    $selectedSegment = $legacySegmentMap[$selectedSegment] ?? $selectedSegment;
 @endphp
 
 @if ($errors->any())
@@ -65,9 +71,8 @@
                 </label>
                 <p>
                     <select name="segment" id="segment">
-                        <option value="">Nessuno</option>
                         @foreach ($segments as $value => $label)
-                            <option value="{{ $value }}" @selected(old('segment', $campaign->segment) === $value)>{{ $label }}</option>
+                            <option value="{{ $value }}" @selected($selectedSegment === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </p>

@@ -8,6 +8,7 @@ use App\Services\Marketing\CustomerPromotionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class MarketingTrackingController extends Controller
@@ -18,7 +19,12 @@ class MarketingTrackingController extends Controller
 
         if ($customerPromotion) {
             try {
-                $service->markOpened($customerPromotion);
+                $customerPromotion = $service->markOpened($customerPromotion);
+
+                Log::debug('Marketing email open tracked.', [
+                    'customer_promotion_id' => $customerPromotion->getKey(),
+                    'opened_at' => $customerPromotion->email_open_at?->toDateTimeString(),
+                ]);
             } catch (Throwable $exception) {
                 report($exception);
             }
@@ -56,7 +62,8 @@ class MarketingTrackingController extends Controller
         return response($pixel, 200)
             ->header('Content-Type', 'image/gif')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->header('Pragma', 'no-cache');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     private function safeRedirectUrl(mixed $redirect): string

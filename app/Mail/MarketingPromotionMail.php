@@ -11,25 +11,23 @@ class MarketingPromotionMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public array $rendered;
     public string $subjectLine;
-    public string $bodyHtml;
     public ?string $bodyText;
-    public ?string $trackingOpenUrl;
 
     public function __construct(array $rendered)
     {
+        $this->rendered = $rendered;
         $this->subjectLine = (string) ($rendered['subject'] ?? 'Promozione per te');
-        $this->bodyHtml = (string) ($rendered['body_html'] ?? '');
         $this->bodyText = isset($rendered['body_text']) ? (string) $rendered['body_text'] : null;
-        $this->trackingOpenUrl = isset($rendered['tracking_open_url'])
-            ? (string) $rendered['tracking_open_url']
-            : null;
     }
 
     public function build()
     {
         $mail = $this->subject($this->subjectLine)
-            ->html($this->bodyHtmlWithTrackingPixel());
+            ->view('emails.marketing-promotion', [
+                'rendered' => $this->rendered,
+            ]);
 
         if ($this->bodyText !== null && $this->bodyText !== '') {
             $mail->withSymfonyMessage(function (Email $message) {
@@ -38,16 +36,5 @@ class MarketingPromotionMail extends Mailable
         }
 
         return $mail;
-    }
-
-    private function bodyHtmlWithTrackingPixel(): string
-    {
-        if ($this->trackingOpenUrl === null || $this->trackingOpenUrl === '') {
-            return $this->bodyHtml;
-        }
-
-        return $this->bodyHtml
-            . "\n"
-            . '<img src="' . e($this->trackingOpenUrl) . '" width="1" height="1" style="display:none;" alt="">';
     }
 }

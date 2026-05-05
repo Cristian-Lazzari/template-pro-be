@@ -13,13 +13,37 @@ class MailerController extends Controller
 {
     private array $validations = [
         'name' => 'required|string|min:1|max:50',
-        'object' => 'required|string|min:1|max:150',
-        'heading' => 'required|string|min:1|max:150',
+        'object' => 'nullable|string|max:150',
+        'heading' => 'nullable|string|max:150',
         'img_1' => 'nullable|image|max:1012',
         'img_2' => 'nullable|image|max:1012',
-        'body' => 'required|string|min:1',
-        'ending' => 'required|string|min:1',
-        'sender' => 'required|string|min:1|max:50',
+        'body' => 'nullable|string',
+        'body_html' => 'nullable|string',
+        'body_text' => 'nullable|string',
+        'ending' => 'nullable|string',
+        'sender' => 'nullable|string|max:50',
+        'status' => 'nullable|in:draft,active,archived',
+    ];
+
+    private array $supportedVariables = [
+        'customer_name',
+        'customer_first_name',
+        'customer_last_name',
+        'customer_email',
+        'customer_phone',
+        'promotion_name',
+        'promotion_discount',
+        'promotion_discount_label',
+        'promotion_type_discount',
+        'promotion_type_discount_label',
+        'promotion_expiring_at',
+        'promotion_cta',
+        'product_name',
+        'menu_name',
+        'category_name',
+        'post_title',
+        'campaign_name',
+        'tracking_click_url',
     ];
 
     public function indexModels()
@@ -42,32 +66,32 @@ class MailerController extends Controller
 
     public function createModel()
     {
-        return view('admin.Customers.mail-model-create');
+        return view('admin.Customers.mail-model-create', [
+            'model' => new Model([
+                'status' => 'draft',
+                'type' => 'marketing',
+                'channel' => 'email',
+            ]),
+            'variables' => $this->supportedVariables,
+        ]);
     }
 
     public function storeModel(Request $request)
     {
-        $request->validate($this->validations);
-        $data = $request->all();
+        $data = $request->validate($this->validations);
 
-        $img1Path = isset($data['img_1'])
-            ? Storage::put('public/uploads', $data['img_1'])
+        $img1Path = $request->hasFile('img_1')
+            ? Storage::put('public/uploads', $request->file('img_1'))
             : null;
 
-        $img2Path = isset($data['img_2'])
-            ? Storage::put('public/uploads', $data['img_2'])
+        $img2Path = $request->hasFile('img_2')
+            ? Storage::put('public/uploads', $request->file('img_2'))
             : null;
 
-        Model::create([
-            'name' => $data['name'],
-            'object' => $data['object'],
-            'heading' => $data['heading'],
-            'body' => $data['body'],
-            'ending' => $data['ending'],
-            'sender' => $data['sender'],
+        Model::create(array_merge($this->modelPayload($data), [
             'img_1' => $img1Path,
             'img_2' => $img2Path,
-        ]);
+        ]));
 
         $message = 'Il modello "' . $data['name'] . '" è stato creato correttamente';
 
@@ -78,37 +102,36 @@ class MailerController extends Controller
     {
         $model = Model::query()->findOrFail($id);
 
-        return view('admin.Customers.mail-model-edit', compact('model'));
+        return view('admin.Customers.mail-model-edit', [
+            'model' => $model,
+            'variables' => $this->supportedVariables,
+        ]);
     }
 
     public function updateModel(Request $request)
     {
-        $request->validate($this->validations);
-        $data = $request->all();
+        $data = $request->validate(array_merge($this->validations, [
+            'id' => 'required|integer|exists:models,id',
+        ]));
         $model = Model::query()->findOrFail((int) $data['id']);
 
-        if (isset($data['img_1'])) {
-            $img1Path = Storage::put('public/uploads', $data['img_1']);
+        if ($request->hasFile('img_1')) {
+            $img1Path = Storage::put('public/uploads', $request->file('img_1'));
             if ($model->img_1) {
                 Storage::delete($model->img_1);
             }
             $model->img_1 = $img1Path;
         }
 
-        if (isset($data['img_2'])) {
-            $img2Path = Storage::put('public/uploads', $data['img_2']);
+        if ($request->hasFile('img_2')) {
+            $img2Path = Storage::put('public/uploads', $request->file('img_2'));
             if ($model->img_2) {
                 Storage::delete($model->img_2);
             }
             $model->img_2 = $img2Path;
         }
 
-        $model->name = $data['name'];
-        $model->object = $data['object'];
-        $model->heading = $data['heading'];
-        $model->body = $data['body'];
-        $model->ending = $data['ending'];
-        $model->sender = $data['sender'];
+        $model->fill($this->modelPayload($data));
         $model->save();
 
         $message = 'Il modello "' . $data['name'] . '" è stato modificato correttamente';
@@ -138,6 +161,76 @@ class MailerController extends Controller
         return redirect()
             ->route('admin.customers.mail_models.index')
             ->with('success', $message);
+    }
+
+    private function modelPayload(array $data): array
+    {
+        $bodyHtml = trim((string) ($data['body_html'] ?? ''));
+        $body = trim((string) ($data['body'] ?? ''));
+        $bodyText = trim((string) ($data['body_text'] ?? ''));
+
+        if ($bodyHtml === '' && $body !== '') {
+            $bodyHtml = $body;
+        }
+
+        if ($body === '' && $bodyHtml !== '') {
+            $body = $bodyHtml;
+        }
+
+        if ($bodyText === '' && $bodyHtml !== '') {
+            $bodyText = trim(html_entity_decode(strip_tags($bodyHtml), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+
+        $payload = [
+            'name' => $data['name'],
+            'object' => trim((string) ($data['object'] ?? '')),
+            'heading' => trim((string) ($data['heading'] ?? '')),
+            'body' => $body,
+            'ending' => trim((string) ($data['ending'] ?? '')),
+            'sender' => trim((string) ($data['sender'] ?? '')),
+        ];
+
+        $marketingPayload = [
+            'type' => 'marketing',
+            'channel' => 'email',
+            'status' => $data['status'] ?? 'draft',
+            'body_html' => $bodyHtml,
+            'body_text' => $bodyText !== '' ? $bodyText : null,
+            'variables' => $this->supportedVariables,
+            'preview_data' => $this->previewData(),
+        ];
+
+        foreach ($marketingPayload as $column => $value) {
+            if (Schema::hasColumn('models', $column)) {
+                $payload[$column] = $value;
+            }
+        }
+
+        return $payload;
+    }
+
+    private function previewData(): array
+    {
+        return [
+            'customer_name' => 'Mario Rossi',
+            'customer_first_name' => 'Mario',
+            'customer_last_name' => 'Rossi',
+            'customer_email' => 'mario@example.com',
+            'customer_phone' => '+39 333 000 0000',
+            'promotion_name' => 'Promozione speciale',
+            'promotion_discount' => '10',
+            'promotion_discount_label' => '10%',
+            'promotion_type_discount' => 'percentage',
+            'promotion_type_discount_label' => 'Percentuale',
+            'promotion_expiring_at' => now()->addDays(7)->format('d/m/Y'),
+            'promotion_cta' => '/promo',
+            'product_name' => 'Margherita',
+            'menu_name' => 'Menu degustazione',
+            'category_name' => 'Pizze',
+            'post_title' => 'Evento speciale',
+            'campaign_name' => 'Campagna primavera',
+            'tracking_click_url' => '/api/marketing/click/example?redirect=/promo',
+        ];
     }
 
     private function mailModelQuery()

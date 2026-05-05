@@ -37,7 +37,12 @@
         default => 'bi-exclamation-circle-fill',
     };
 
-    $segmentLabel = $segments[$campaign->segment] ?? ($campaign->segment ?: '-');
+    $legacySegmentMap = [
+        'inactive_customers' => 'at_risk_customers',
+        'high_spending_customers' => 'high_value_customers',
+    ];
+    $normalizedSegment = $legacySegmentMap[$campaign->segment] ?? ($campaign->segment ?: 'all');
+    $segmentLabel = $segments[$normalizedSegment] ?? ($campaign->segment ?: '-');
     $modelName = $campaign->model?->name ?? '-';
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();

@@ -10,6 +10,7 @@ use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAssignmentService;
 use App\Services\Marketing\CampaignScheduleService;
+use App\Services\Marketing\MarketingCustomerSegmentService;
 use App\Services\Marketing\MarketingRunMarkerService;
 use App\Services\Marketing\MarketingReportService;
 use Carbon\CarbonInterface;
@@ -30,15 +31,7 @@ class CampaignController extends Controller
         'sent' => 'Completata',
     ];
 
-    private const SEGMENTS = [
-        'all' => 'Tutti',
-        'new_customers' => 'Nuovi clienti',
-        'inactive_customers' => 'Clienti inattivi',
-        'loyal_customers' => 'Clienti fedeli',
-        'high_spending_customers' => 'Clienti alto valore',
-    ];
-
-    public function index()
+    public function index(MarketingCustomerSegmentService $segmentService)
     {
         $campaigns = Campaign::query()
             ->with(['model', 'promotions'])
@@ -54,7 +47,7 @@ class CampaignController extends Controller
         return view('admin.Campaigns.index', [
             'campaigns' => $campaigns,
             'statuses' => self::STATUSES,
-            'segments' => self::SEGMENTS,
+            'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
         ]);
     }
@@ -75,11 +68,12 @@ class CampaignController extends Controller
     public function store(
         StoreCampaignRequest $request,
         CampaignAssignmentService $assignmentService,
-        CampaignScheduleService $scheduleService
+        CampaignScheduleService $scheduleService,
+        MarketingCustomerSegmentService $segmentService
     )
     {
         $campaign = Campaign::query()->create(
-            $this->campaignData($request, $scheduleService)
+            $this->campaignData($request, $scheduleService, null, $segmentService)
         );
 
         $campaign->promotions()->sync($this->promotionIds($request));
@@ -87,7 +81,11 @@ class CampaignController extends Controller
         return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, 'Campagna creata correttamente.');
     }
 
-    public function show(Campaign $campaign, MarketingReportService $reportService)
+    public function show(
+        Campaign $campaign,
+        MarketingReportService $reportService,
+        MarketingCustomerSegmentService $segmentService
+    )
     {
         $campaign->load(['model', 'promotions']);
         $report = $reportService->forCampaign($campaign);
@@ -103,7 +101,7 @@ class CampaignController extends Controller
             'sendProgress' => $sendProgress,
             'customerPromotions' => $customerPromotions,
             'statuses' => self::STATUSES,
-            'segments' => self::SEGMENTS,
+            'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
         ]);
     }
@@ -122,7 +120,8 @@ class CampaignController extends Controller
         UpdateCampaignRequest $request,
         Campaign $campaign,
         CampaignAssignmentService $assignmentService,
-        CampaignScheduleService $scheduleService
+        CampaignScheduleService $scheduleService,
+        MarketingCustomerSegmentService $segmentService
     )
     {
         if (in_array($campaign->status, ['completed', 'sent'], true)) {
@@ -132,7 +131,7 @@ class CampaignController extends Controller
         }
 
         $campaign->update(
-            $this->campaignData($request, $scheduleService, $campaign)
+            $this->campaignData($request, $scheduleService, $campaign, $segmentService)
         );
 
         $campaign->promotions()->sync($this->promotionIds($request));
@@ -202,7 +201,7 @@ class CampaignController extends Controller
     {
         return [
             'statuses' => self::STATUSES,
-            'segments' => self::SEGMENTS,
+            'segments' => app(MarketingCustomerSegmentService::class)->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
@@ -212,9 +211,16 @@ class CampaignController extends Controller
         ];
     }
 
-    private function campaignData(Request $request, CampaignScheduleService $scheduleService, ?Campaign $campaign = null): array
+    private function campaignData(
+        Request $request,
+        CampaignScheduleService $scheduleService,
+        ?Campaign $campaign = null,
+        ?MarketingCustomerSegmentService $segmentService = null
+    ): array
     {
         $data = $request->validated();
+        $segmentService ??= app(MarketingCustomerSegmentService::class);
+        $data['segment'] = $segmentService->normalizeSegment($data['segment'] ?? null);
         $metadata = is_array($campaign?->metadata) ? $campaign->metadata : [];
         $requestedAt = $request->input('scheduled_at');
         $scheduleWindow = $request->input('schedule_window') ?: ($requestedAt ? 'custom' : 'next_available');
