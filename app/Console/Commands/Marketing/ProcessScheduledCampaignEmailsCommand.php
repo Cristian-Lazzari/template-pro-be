@@ -284,7 +284,7 @@ class ProcessScheduledCampaignEmailsCommand extends Command
 
     private function batchIntervalMinutes(Campaign $campaign): int
     {
-        return max(1, (int) data_get($campaign->metadata, 'batch_interval_minutes', 10));
+        return max(1, (int) data_get($campaign->metadata, 'batch_interval_minutes', 5));
     }
 
     private function emptySummary(bool $dryRun, int $limit): array

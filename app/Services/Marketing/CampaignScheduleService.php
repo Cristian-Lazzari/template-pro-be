@@ -7,9 +7,9 @@ use Illuminate\Support\Carbon;
 
 class CampaignScheduleService
 {
-    private const SLOT_MINUTES = 15;
-    private const BUFFER_MINUTES = 15;
-    private const DEFAULT_DURATION_MINUTES = 60;
+    private const SLOT_MINUTES = 5;
+    private const BUFFER_MINUTES = 0;
+    private const DEFAULT_DURATION_MINUTES = 5;
 
     public function normalizeScheduledAt(?string $requestedAt, ?string $window = null, ?Campaign $campaign = null): Carbon
     {
@@ -88,7 +88,7 @@ class CampaignScheduleService
         }
 
         $batchLimit = max(1, (int) data_get($campaign?->metadata, 'send_batch_limit', 20));
-        $batchInterval = max(1, (int) data_get($campaign?->metadata, 'batch_interval_minutes', 10));
+        $batchInterval = max(1, (int) data_get($campaign?->metadata, 'batch_interval_minutes', 5));
         $duration = (int) ceil($recipients / $batchLimit) * $batchInterval;
 
         return max(self::SLOT_MINUTES, $duration);
