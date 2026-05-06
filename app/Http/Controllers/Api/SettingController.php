@@ -224,9 +224,11 @@ class SettingController extends Controller
         string $number,
         array $textPayload,
         array $templatePayload,
-        bool $preferText,
+        ?bool $preferText,
         string $logPrefix
     ) {
+        $preferText = (bool) $preferText;
+
         $attempts = $preferText
             ? [
                 ['type' => 'text', 'payload' => $textPayload],
@@ -269,31 +271,31 @@ class SettingController extends Controller
 
         return null;
     }
-    protected function isLastResponseWaWithin24Hours($p)
+    protected function isLastResponseWaWithin24Hours($p): bool
     {
         $setting = Setting::where('name', 'wa')->first();
 
-        if ($setting) {
-            // Decodifica il campo 'property' da JSON ad array
-            $property = json_decode($setting->property, true);
-            if($p == 0){
-                 // Controlla se 'last_response_wa' è impostato
-                if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
-                    // Confronta la data salvata con le ultime 24 ore
-                    $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
-                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
-                }
-            }else{
-                 // Controlla se 'last_response_wa' è impostato
-                if (isset($property['last_response_wa_2']) && !empty($property['last_response_wa_2'])) {
-                    // Confronta la data salvata con le ultime 24 ore
-                    $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
-                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
-                }
-            }
-        }else{
-            return false; // Se il record non esiste o la data non è impostata
+        if (!$setting) {
+            return false;
         }
+
+        $property = json_decode($setting->property, true);
+        if (!is_array($property)) {
+            return false;
+        }
+
+        $lastResponseKey = ((int) $p === 0) ? 'last_response_wa_1' : 'last_response_wa_2';
+        if (empty($property[$lastResponseKey])) {
+            return false;
+        }
+
+        try {
+            $lastResponseDate = Carbon::parse($property[$lastResponseKey]);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
     }
     protected function statusOrder($c_a, $order){
         if($c_a == 0 && in_array($order->status, [0, 6])){

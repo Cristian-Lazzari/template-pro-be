@@ -11,9 +11,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         //$schedule->job(new \App\Jobs\DeletePending)->evertMinute();
-        $schedule->command('marketing:send-scheduled-campaign-emails')
-            ->everyMinute()
-            ->withoutOverlapping();
+        // Invio marketing gestito dal runner centrale cPanel:
+        // marketing:process-scheduled-campaign-emails
     }
 
    

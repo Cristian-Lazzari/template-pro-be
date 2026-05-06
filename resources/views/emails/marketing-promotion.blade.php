@@ -6,6 +6,14 @@
     $sender = (string) ($rendered['sender'] ?? config('configurazione.APP_NAME', config('app.name')));
     $trackingOpenUrl = (string) ($rendered['tracking_open_url'] ?? '');
     $trackingClickUrl = (string) ($rendered['tracking_click_url'] ?? '');
+    $trackingRedirectUrl = null;
+
+    if ($trackingClickUrl !== '') {
+        parse_str((string) parse_url($trackingClickUrl, PHP_URL_QUERY), $trackingQuery);
+        $trackingRedirectUrl = isset($trackingQuery['redirect']) && is_string($trackingQuery['redirect'])
+            ? $trackingQuery['redirect']
+            : null;
+    }
 
     $absoluteUrl = function (?string $url): ?string {
         if (! is_string($url) || $url === '') {
@@ -48,6 +56,27 @@
     $logoUrl = $absoluteUrl($logoUrl);
     $imageOneUrl = $storageImageUrl($rendered['img_1'] ?? null);
     $imageTwoUrl = $storageImageUrl($rendered['img_2'] ?? null);
+    $hiddenUrls = array_values(array_filter([$trackingClickUrl, $trackingRedirectUrl], fn ($url) => is_string($url) && $url !== ''));
+    $bodyHtml = preg_replace_callback(
+        '/<a\b[^>]*href=(["\'])(.*?)\1[^>]*>.*?<\/a>/is',
+        function (array $matches) use ($hiddenUrls): string {
+            $href = html_entity_decode((string) ($matches[2] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            if (in_array($href, $hiddenUrls, true) || str_contains($href, '/api/marketing/click/')) {
+                return '';
+            }
+
+            return $matches[0];
+        },
+        $bodyHtml
+    );
+
+    foreach ($hiddenUrls as $hiddenUrl) {
+        $bodyHtml = str_replace($hiddenUrl, '', $bodyHtml);
+        $bodyHtml = str_replace(e($hiddenUrl), '', $bodyHtml);
+    }
+
+    $bodyHtml = preg_replace('/<p\b[^>]*>\s*(?:&nbsp;|<br\s*\/?>|\s)*<\/p>/i', '', $bodyHtml);
 @endphp
 
 <!DOCTYPE html>

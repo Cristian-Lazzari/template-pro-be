@@ -530,8 +530,10 @@ class ReservationController extends Controller
         string $number,
         array $interactivePayload,
         array $templatePayload,
-        bool $preferInteractive
+        ?bool $preferInteractive
     ): array {
+        $preferInteractive = (bool) $preferInteractive;
+
         $attempts = $preferInteractive
             ? [
                 ['type' => 'interactive', 'payload' => $interactivePayload, 'type_flag' => 0],
@@ -650,35 +652,31 @@ class ReservationController extends Controller
         }
 
     }
-    protected function isLastResponseWaWithin24Hours($n)
+    protected function isLastResponseWaWithin24Hours($n): bool
     {
         $setting = Setting::where('name', 'wa')->first();
 
-        if ($setting) {
-            // Decodifica il campo 'property' da JSON ad array
-            $property = json_decode($setting->property, true);
-            if($n == 0){
-                 // Controlla se 'last_response_wa' è impostato
-                if (isset($property['last_response_wa_1']) && !empty($property['last_response_wa_1'])) {
-                    // Confronta la data salvata con le ultime 24 ore
-                    $lastResponseDate = Carbon::parse($property['last_response_wa_1']);
-                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
-                }else{
-                    return false; // Se la data non è impostata, considera che non è entro 24 ore
-                }
-            }else{
-                 // Controlla se 'last_response_wa' è impostato
-                if (isset($property['last_response_wa_2']) && !empty($property['last_response_wa_2'])) {
-                    // Confronta la data salvata con le ultime 24 ore
-                    $lastResponseDate = Carbon::parse($property['last_response_wa_2']);
-                    return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
-                }else{
-                    return false; // Se la data non è impostata, considera che non è entro 24 ore
-                }
-            }
-        }else{
-            return false; // Se il record non esiste o la data non è impostata
+        if (!$setting) {
+            return false;
         }
+
+        $property = json_decode($setting->property, true);
+        if (!is_array($property)) {
+            return false;
+        }
+
+        $lastResponseKey = ((int) $n === 0) ? 'last_response_wa_1' : 'last_response_wa_2';
+        if (empty($property[$lastResponseKey])) {
+            return false;
+        }
+
+        try {
+            $lastResponseDate = Carbon::parse($property[$lastResponseKey]);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
     }
 
 
