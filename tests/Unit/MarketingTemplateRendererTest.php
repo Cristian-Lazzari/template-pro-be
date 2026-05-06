@@ -103,6 +103,36 @@ class MarketingTemplateRendererTest extends TestCase
         $this->assertSame('https://ristorante.test', $this->queryRedirect($variables['tracking_click_url']));
     }
 
+    public function test_marketing_mail_uses_public_storage_image_urls(): void
+    {
+        config([
+            'app.url' => 'https://db-demo3.future-plus.it',
+            'configurazione.APP_URL' => 'https://db-demo3.future-plus.it',
+            'configurazione.domain' => 'https://ristorante.test',
+        ]);
+
+        $html = view('emails.marketing-promotion', [
+            'rendered' => [
+                'subject' => 'Promo test',
+                'heading' => 'Promo test',
+                'body_html' => '<p>Ciao</p>',
+                'img_1' => 'public/uploads/beOeNq8vw5q6qC7N00YLP9q7xNUIanQmLsjuw0cH.png',
+                'img_2' => null,
+                'tracking_open_url' => '',
+                'tracking_click_url' => '',
+            ],
+        ])->render();
+
+        $this->assertStringContainsString(
+            'src="https://db-demo3.future-plus.it/public/storage/public/uploads/beOeNq8vw5q6qC7N00YLP9q7xNUIanQmLsjuw0cH.png"',
+            $html
+        );
+        $this->assertStringNotContainsString(
+            'src="https://db-demo3.future-plus.it/storage/public/uploads/beOeNq8vw5q6qC7N00YLP9q7xNUIanQmLsjuw0cH.png"',
+            $html
+        );
+    }
+
     private function variablesForPromotionCaseUse(?string $caseUse, ?string $cta): array
     {
         $this->configureDomains();

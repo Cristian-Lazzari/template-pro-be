@@ -46,7 +46,13 @@
             return $path;
         }
 
-        return $absoluteUrl(\Illuminate\Support\Facades\Storage::url($path));
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'public/storage/') || str_starts_with($path, 'storage/')) {
+            return $absoluteUrl($path);
+        }
+
+        return $absoluteUrl('public/storage/' . $path);
     };
 
     $logoUrl = config('configurazione.APP_URL') === 'https://db-demo3.future-plus.it'
