@@ -57,6 +57,23 @@
     $requestedScheduledAt = data_get($campaign->metadata, 'requested_scheduled_at');
     $estimatedDuration = $sendProgress['estimated_duration_minutes'] ?? ($estimatedDurationMinutes ?? data_get($campaign->metadata, 'estimated_duration_minutes'));
     $completedAt = $sendProgress['completed_at'] ?? ($completedAt ?? $campaign->sent_at);
+    $scheduledAtIso = $campaign->scheduled_at?->toIso8601String();
+    $nextBatchDueAtIso = $nextBatchDueAt?->toIso8601String();
+    $readyRunnerMessage = 'Pronta per il prossimo ciclo del runner marketing';
+    $isScheduledFuture = $normalizedStatus === 'scheduled' && $campaign->scheduled_at?->isFuture();
+    $isRunning = $normalizedStatus === 'running';
+    $hasFutureNextBatch = $isRunning && $nextBatchDueAt?->isFuture();
+    $progressPercentageLabel = number_format($progressPercentage, $progressPercentage === floor($progressPercentage) ? 0 : 2, ',', '.') . '%';
+    $sendPanelMessage = match (true) {
+        $normalizedStatus === 'scheduled' && $isScheduledFuture => 'Invio programmato per: ' . $campaign->scheduled_at->format('d/m/Y H:i'),
+        $normalizedStatus === 'scheduled' => $readyRunnerMessage,
+        $isRunning => "Invio in corso: {$sentEmails} di {$totalEmails} email inviate",
+        $normalizedStatus === 'completed' => 'Campagna completata',
+        $normalizedStatus === 'draft' => 'Bozza: programma la campagna per creare i destinatari.',
+        $normalizedStatus === 'paused' => 'Campagna in pausa: non verranno inviati nuovi batch.',
+        $normalizedStatus === 'archived' => 'Campagna archiviata.',
+        default => $scheduleState,
+    };
     $caseUseLabels = [
         'generic' => 'Generica',
         'take_away' => 'Asporto',
@@ -129,6 +146,100 @@
     ])
 
     @include('admin.Marketing.partials.show-style')
+
+    <style>
+        .campaign-send-panel .marketing-detail__progress-track {
+            position: relative;
+            min-height: 18px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28);
+        }
+
+        .campaign-send-panel .marketing-detail__progress-bar {
+            min-height: 18px;
+            transition: width .8s cubic-bezier(.22, 1, .36, 1);
+            transform-origin: left center;
+            animation: campaignProgressLoad .7s ease-out both;
+        }
+
+        .campaign-send-panel .marketing-detail__progress-bar.is-running {
+            background-image:
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.18) 0,
+                    rgba(255, 255, 255, 0.18) 8px,
+                    transparent 8px,
+                    transparent 16px
+                ),
+                linear-gradient(90deg, rgba(74, 222, 128, 0.96), rgba(45, 212, 191, 0.9));
+            background-size: 24px 24px, auto;
+            animation: campaignProgressLoad .7s ease-out both, campaignProgressStripes .95s linear infinite, campaignProgressPulse 1.8s ease-in-out infinite;
+        }
+
+        .campaign-send-panel .marketing-detail__progress-bar.is-completed {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.96), rgba(14, 183, 146, 0.94));
+        }
+
+        .campaign-send-panel .marketing-detail__progress-percent {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            color: var(--c3);
+            font-size: var(--fs-100);
+            font-weight: 900;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+            pointer-events: none;
+        }
+
+        .campaign-send-panel .marketing-detail__progress-live {
+            color: rgba(216, 221, 232, 0.9);
+        }
+
+        .campaign-send-panel .marketing-detail__progress-live.is-expired {
+            border-color: rgba(14, 183, 146, 0.24);
+            background: rgba(14, 183, 146, 0.09);
+            color: rgba(184, 255, 236, 0.95);
+        }
+
+        @keyframes campaignProgressLoad {
+            from {
+                transform: scaleX(0);
+            }
+
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        @keyframes campaignProgressStripes {
+            to {
+                background-position: 24px 0, 0 0;
+            }
+        }
+
+        @keyframes campaignProgressPulse {
+            0%,
+            100% {
+                filter: saturate(1);
+            }
+
+            50% {
+                filter: saturate(1.18) brightness(1.05);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .campaign-send-panel .marketing-detail__progress-bar {
+                transition: none;
+            }
+
+            .campaign-send-panel .marketing-detail__progress-bar.is-running {
+                animation: none;
+            }
+        }
+    </style>
 
     <div class="marketing-detail-page">
         <article class="order-detail order-detail--{{ $tone }}">
@@ -208,7 +319,7 @@
 	                        </article>
 	                        <article class="marketing-detail__fact">
 	                            <span>Avanzamento</span>
-	                            <strong>{{ $progressPercentage }}%</strong>
+	                            <strong>{{ $progressPercentageLabel }}</strong>
 	                        </article>
 	                        @if ($nextBatchDueAt)
 	                            <article class="marketing-detail__fact">
@@ -230,23 +341,56 @@
 	                        @endif
 	                    </div>
 	
-	                    <div
-	                        class="marketing-detail__empty marketing-detail__send-panel mt-3"
-	                    >
-	                        <strong>{{ $scheduleState }}</strong>
-	                        @if ($normalizedStatus === 'scheduled' && $campaign->scheduled_at?->isFuture())
+	                    <div class="marketing-detail__empty marketing-detail__send-panel campaign-send-panel mt-3">
+	                        <strong id="campaign-send-message">{{ $sendPanelMessage }}</strong>
+
+	                        @if ($isScheduledFuture && $scheduledAtIso)
+	                            <span
+	                                class="marketing-detail__progress-live"
+	                                data-marketing-countdown
+	                                data-countdown-target="{{ $scheduledAtIso }}"
+	                                data-countdown-prefix="Partenza tra:"
+	                                data-countdown-expired="{{ $readyRunnerMessage }}"
+	                                data-countdown-sync="campaign-send-message"
+	                            >
+	                                <i class="bi bi-hourglass-split"></i>
+	                                <span data-countdown-text>Partenza tra: calcolo...</span>
+	                            </span>
 	                            <small>Il prossimo batch partirà dopo questa finestra.</small>
 	                        @endif
+
+	                        @if ($isRunning && $nextBatchDueAt)
+	                            <small>Prossimo batch previsto: {{ $nextBatchDueAt->format('d/m/Y H:i') }}</small>
+
+	                            @if ($hasFutureNextBatch && $nextBatchDueAtIso)
+	                                <span
+	                                    class="marketing-detail__progress-live"
+	                                    data-marketing-countdown
+	                                    data-countdown-target="{{ $nextBatchDueAtIso }}"
+	                                    data-countdown-prefix="Prossimo batch tra:"
+	                                    data-countdown-expired="Batch pronto per il runner marketing"
+	                                >
+	                                    <i class="bi bi-clock-history"></i>
+	                                    <span data-countdown-text>Prossimo batch tra: calcolo...</span>
+	                                </span>
+	                            @endif
+	                        @endif
+
+	                        @if ($totalEmails === 0)
+	                            <small>Nessun destinatario preparato</small>
+	                        @endif
+
 	                        <div class="marketing-detail__progress" aria-label="Avanzamento invio campagna">
 	                            <div class="marketing-detail__progress-track">
 	                                <div
-	                                    class="marketing-detail__progress-bar @if ($normalizedStatus === 'running' && $progressPercentage < 100) is-running @endif"
+	                                    class="marketing-detail__progress-bar @if ($isRunning && $progressPercentage < 100) is-running @endif @if ($normalizedStatus === 'completed') is-completed @endif"
 	                                    style="width: {{ $progressPercentage }}%"
 	                                ></div>
+	                                <span class="marketing-detail__progress-percent">{{ $progressPercentageLabel }}</span>
 	                            </div>
 	                            <div class="marketing-detail__progress-meta">
 	                                <span>{{ $sentEmails }} di {{ $totalEmails }} email inviate</span>
-	                                <span>{{ $progressPercentage }}%</span>
+	                                <span>{{ $pendingEmails }} in attesa</span>
 	                            </div>
 	                        </div>
 	                    </div>
@@ -627,5 +771,84 @@
         </article>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const countdowns = document.querySelectorAll('[data-marketing-countdown]');
+
+        if (!countdowns.length) {
+            return;
+        }
+
+        const pad = function (value) {
+            return String(value).padStart(2, '0');
+        };
+
+        const formatDuration = function (milliseconds) {
+            const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            if (hours > 0) {
+                return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+            }
+
+            return `${pad(minutes)}m ${pad(seconds)}s`;
+        };
+
+        const updateCountdown = function (element) {
+            const targetValue = element.dataset.countdownTarget;
+            const textElement = element.querySelector('[data-countdown-text]') || element;
+            const targetDate = targetValue ? new Date(targetValue) : null;
+
+            if (!targetDate || Number.isNaN(targetDate.getTime())) {
+                element.hidden = true;
+                return false;
+            }
+
+            const remaining = targetDate.getTime() - Date.now();
+
+            if (remaining <= 0) {
+                const expiredText = element.dataset.countdownExpired || 'Pronta per il prossimo ciclo del runner marketing';
+                textElement.textContent = expiredText;
+                element.classList.add('is-expired');
+
+                if (element.dataset.countdownSync) {
+                    const syncedElement = document.getElementById(element.dataset.countdownSync);
+
+                    if (syncedElement) {
+                        syncedElement.textContent = expiredText;
+                    }
+                }
+
+                return false;
+            }
+
+            const prefix = element.dataset.countdownPrefix || 'Tempo restante:';
+            textElement.textContent = `${prefix} ${formatDuration(remaining)}`;
+            element.classList.remove('is-expired');
+
+            return true;
+        };
+
+        let timerId = null;
+        const tick = function () {
+            let hasActiveCountdown = false;
+
+            countdowns.forEach(function (element) {
+                hasActiveCountdown = updateCountdown(element) || hasActiveCountdown;
+            });
+
+            if (!hasActiveCountdown && timerId) {
+                window.clearInterval(timerId);
+                timerId = null;
+            }
+        };
+
+        tick();
+        timerId = window.setInterval(tick, 1000);
+    });
+</script>
 
 @endsection
