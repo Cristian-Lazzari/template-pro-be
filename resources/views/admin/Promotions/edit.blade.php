@@ -19,18 +19,14 @@
                 <span class="order-detail__status-icon order-detail__status-icon--warning">
                     <i class="bi bi-megaphone-fill"></i>
                 </span>
-                <strong>Modifica regola</strong>
+                <strong>Modifica promozione</strong>
             </div>
 
             <h1 class="menu-dashboard__title">Modifica promozione</h1>
-            <p>{{ $promotion->name }}</p>
+            <p>Definisci regola, validità e target della promozione.</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <a class="order-detail__contact" href="{{ route('admin.promotions.show', $promotion) }}">
-                <i class="bi bi-arrow-left"></i>
-                <span>Annulla</span>
-            </a>
             @include('admin.Marketing.partials.area-links', ['current' => 'promotions'])
         </div>
     </header>

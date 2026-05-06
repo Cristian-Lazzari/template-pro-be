@@ -14,32 +14,26 @@ class UpdatePromotionRequest extends FormRequest
 
     public function rules(): array
     {
-        $promotion = $this->route('promotion');
-        $promotionId = is_object($promotion) ? $promotion->getKey() : $promotion;
-
         return [
             'name' => ['required', 'string', 'max:255'],
             'submit_action' => ['required', Rule::in(['activate', 'draft'])],
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('promotions', 'slug')->ignore($promotionId),
-            ],
-            'case_use' => ['nullable', Rule::in(['generic', 'take_away', 'delivery', 'table', 'gift'])],
+            'case_use' => ['nullable', Rule::in(['generic', 'take_away', 'delivery', 'table'])],
             'type_discount' => ['nullable', Rule::in(['fixed', 'percentage', 'gift'])],
-            'discount' => ['nullable', 'numeric', 'min:0'],
+            'discount' => ['exclude_if:type_discount,gift', 'required_if:type_discount,fixed,percentage', 'nullable', 'numeric', 'min:0'],
             'minimum_pretest' => ['nullable', 'numeric', 'min:0'],
             'cta' => ['nullable', 'string', 'max:255'],
             'permanent' => ['boolean'],
-            'schedule_at' => ['nullable', 'date'],
-            'expiring_at' => ['nullable', 'date', 'after_or_equal:schedule_at'],
+            'schedule_at' => ['exclude_if:permanent,1', 'nullable', 'date'],
+            'expiring_at' => [
+                'exclude_if:permanent,1',
+                'nullable',
+                'date',
+                Rule::when($this->filled('schedule_at'), ['after_or_equal:schedule_at']),
+            ],
             'metadata.reusable' => ['nullable', 'boolean'],
-            'target_scope' => ['nullable', Rule::in(['generic', 'specific'])],
-            'targets' => ['nullable', 'array'],
-            'targets.*.target_key' => ['nullable', 'string', 'max:120'],
-            'targets.*.discount' => ['nullable', 'numeric', 'min:0'],
-            'targets.*.type_discount' => ['nullable', Rule::in(['fixed', 'percentage', 'gift'])],
+            'target_type' => ['required', Rule::in(['generic', 'product'])],
+            'product_ids' => ['required_if:target_type,product', 'array', 'min:1'],
+            'product_ids.*' => ['integer', 'distinct', Rule::exists('products', 'id')],
         ];
     }
 }

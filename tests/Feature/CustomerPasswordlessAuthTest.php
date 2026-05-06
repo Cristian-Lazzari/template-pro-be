@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mail\CustomerOtpMail;
 use App\Models\Customer;
+use App\Services\CustomerAuth\CustomerAccessService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -290,5 +291,77 @@ class CustomerPasswordlessAuthTest extends TestCase
         $this->assertNotNull($customer->registered_at);
         $this->assertNull($customer->marketing_consent_at);
         $this->assertNull($customer->profiling_consent_at);
+    }
+
+    public function test_customer_lookup_keeps_email_as_primary_identifier(): void
+    {
+        $service = app(CustomerAccessService::class);
+
+        $first = $service->findOrCreateForVerifiedCheckout('SAME@example.com', [
+            'name' => 'Anna',
+            'surname' => 'Rossi',
+            'phone' => '3331112222',
+        ]);
+
+        $second = $service->findOrCreateForVerifiedCheckout('same@example.com', [
+            'name' => 'Anna',
+            'surname' => 'Rossi',
+            'phone' => '3339998888',
+        ]);
+
+        $this->assertSame($first->id, $second->id);
+        $this->assertSame('3331112222', $second->phone);
+        $this->assertSame(1, Customer::query()->where('email', 'same@example.com')->count());
+    }
+
+    public function test_customer_lookup_does_not_merge_different_emails_with_same_phone(): void
+    {
+        $service = app(CustomerAccessService::class);
+
+        $first = $service->findOrCreateForVerifiedCheckout('first@example.com', [
+            'name' => 'Mario',
+            'surname' => 'Rossi',
+            'phone' => '3331112222',
+        ]);
+
+        $second = $service->findOrCreateForVerifiedCheckout('second@example.com', [
+            'name' => 'Anna',
+            'surname' => 'Bianchi',
+            'phone' => '+39 333 111 2222',
+        ]);
+
+        $this->assertNotSame($first->id, $second->id);
+        $this->assertSame(2, Customer::query()->count());
+    }
+
+    public function test_phone_lookup_is_only_a_fallback_for_customers_without_email(): void
+    {
+        $service = app(CustomerAccessService::class);
+
+        $withoutEmail = Customer::query()->create([
+            'name' => 'Telefono',
+            'surname' => 'Solo',
+            'email' => '',
+            'phone' => '3331112222',
+        ]);
+
+        $this->assertSame(
+            $withoutEmail->id,
+            $service->findExistingCustomer(null, '+39 333 111 2222')?->id
+        );
+    }
+
+    public function test_phone_lookup_does_not_merge_when_existing_customer_has_email(): void
+    {
+        $service = app(CustomerAccessService::class);
+
+        Customer::query()->create([
+            'name' => 'Cliente',
+            'surname' => 'Email',
+            'email' => 'with-email@example.com',
+            'phone' => '3331112222',
+        ]);
+
+        $this->assertNull($service->findExistingCustomer(null, '+39 333 111 2222'));
     }
 }

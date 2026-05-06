@@ -21,7 +21,11 @@
         default => $campaign->status,
     };
     $statusLabel = $statuses[$normalizedStatus] ?? ($statuses[$campaign->status] ?? $campaign->status);
-    $progressPercentage = min(100, max(0, (float) ($sendProgress['percentage'] ?? 0)));
+    $totalEmails = (int) ($sendProgress['involved_count'] ?? ($sendProgress['total'] ?? ($involvedCount ?? 0)));
+    $sentEmails = (int) ($sendProgress['sent_count'] ?? ($sendProgress['sent'] ?? ($sentCount ?? 0)));
+    $pendingEmails = (int) ($sendProgress['pending_count'] ?? ($sendProgress['pending'] ?? ($pendingCount ?? max(0, $totalEmails - $sentEmails))));
+    $rawProgressPercentage = $sendProgress['progress_percentage'] ?? ($sendProgress['percentage'] ?? ($progressPercentage ?? 0));
+    $progressPercentage = min(100, max(0, (float) $rawProgressPercentage));
     $tone = match ($normalizedStatus) {
         'completed' => 'active',
         'archived' => 'off',
@@ -47,10 +51,12 @@
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();
     $scheduleState = $sendProgress['message'] ?? 'Nessuna programmazione';
+    $nextBatchDueAt = $sendProgress['next_batch_due_at'] ?? ($nextBatchDueAt ?? null);
     $scheduleWindow = data_get($campaign->metadata, 'schedule_window');
     $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? ($scheduleWindow ?: '-');
     $requestedScheduledAt = data_get($campaign->metadata, 'requested_scheduled_at');
-    $estimatedDuration = data_get($campaign->metadata, 'estimated_duration_minutes');
+    $estimatedDuration = $sendProgress['estimated_duration_minutes'] ?? ($estimatedDurationMinutes ?? data_get($campaign->metadata, 'estimated_duration_minutes'));
+    $completedAt = $sendProgress['completed_at'] ?? ($completedAt ?? $campaign->sent_at);
     $caseUseLabels = [
         'generic' => 'Generica',
         'take_away' => 'Asporto',
@@ -85,27 +91,26 @@
             default => $value,
         };
     };
-    $promotionCaseUses = $campaign->promotions->pluck('case_use')->filter()->unique()->values();
-    $hasTablePromotion = $promotionCaseUses->contains('table');
-    $hasOrderPromotion = $promotionCaseUses->intersect(['take_away', 'delivery', 'gift', 'generic'])->isNotEmpty();
-    $conversionMode = $hasTablePromotion && ! $hasOrderPromotion
-        ? 'reservation'
-        : ($hasOrderPromotion && ! $hasTablePromotion ? 'order' : 'mixed');
+    $campaignPromotionCaseUses = collect($campaignPromotionCaseUses ?? $campaign->promotions->pluck('case_use')->filter()->unique()->values());
+    $hasLinkedPromotions = $hasLinkedPromotions ?? $campaign->promotions->isNotEmpty();
+    $showOrderMetrics = $showOrderMetrics
+        ?? ($hasLinkedPromotions && $campaignPromotionCaseUses->intersect(['take_away', 'delivery', 'generic'])->isNotEmpty());
+    $showReservationMetrics = $showReservationMetrics
+        ?? ($hasLinkedPromotions && $campaignPromotionCaseUses->intersect(['table', 'generic'])->isNotEmpty());
     $reportMetrics = [
-        ['label' => 'Coinvolti', 'value' => $report['involved_count'] ?? 0, 'tone' => 'neutral'],
-        ['label' => 'Email inviate', 'value' => $report['sent_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => 'Coinvolti', 'value' => $totalEmails, 'tone' => 'neutral'],
+        ['label' => 'Email inviate', 'value' => $sentEmails, 'tone' => 'neutral'],
         ['label' => 'Aperture', 'value' => $report['opened_count'] ?? 0, 'tone' => 'neutral'],
         ['label' => 'Click', 'value' => $report['clicked_count'] ?? 0, 'tone' => 'neutral'],
         ['label' => 'Promo usate', 'value' => $report['used_count'] ?? 0, 'tone' => 'active'],
-        ['label' => 'Sconto totale', 'value' => \App\Support\Currency::formatAmount($report['discount_total'] ?? 0), 'tone' => 'active'],
     ];
 
-    if ($conversionMode !== 'reservation') {
-        $reportMetrics[] = ['label' => 'Ordini generati', 'value' => $report['order_conversion_count'] ?? 0, 'tone' => 'active'];
+    if ($showOrderMetrics) {
+        $reportMetrics[] = ['label' => 'Conversioni ordini', 'value' => $report['order_conversion_count'] ?? 0, 'tone' => 'active'];
     }
 
-    if ($conversionMode !== 'order') {
-        $reportMetrics[] = ['label' => 'Prenotazioni generate', 'value' => $report['reservation_conversion_count'] ?? 0, 'tone' => 'active'];
+    if ($showReservationMetrics) {
+        $reportMetrics[] = ['label' => 'Conversioni prenotazioni', 'value' => $report['reservation_conversion_count'] ?? 0, 'tone' => 'active'];
     }
 
     $reportMetrics[] = ['label' => 'Open rate', 'value' => number_format((float) ($report['open_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
@@ -189,53 +194,62 @@
                             <span>Programmata</span>
                             <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
                         </article>
-                        <article class="marketing-detail__fact">
-                            <span>Email totali</span>
-                            <strong>{{ $sendProgress['total'] ?? 0 }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Inviate</span>
-                            <strong>{{ $sendProgress['sent'] ?? 0 }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>In attesa</span>
-                            <strong>{{ $sendProgress['pending'] ?? 0 }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Avanzamento</span>
-                            <strong>{{ $progressPercentage }}%</strong>
-                        </article>
-                    </div>
-
-                    <div
-                        class="marketing-detail__empty marketing-detail__send-panel mt-3"
-                        data-marketing-progress
-                        data-target-percent="{{ $progressPercentage }}"
-                        data-total="{{ $sendProgress['total'] ?? 0 }}"
-                        data-sent="{{ $sendProgress['sent'] ?? 0 }}"
-                        data-status="{{ $normalizedStatus }}"
-                        data-started-at="{{ $campaign->scheduled_at?->toIso8601String() }}"
-                        data-completed-at="{{ $campaign->sent_at?->toIso8601String() }}"
-                    >
-                        <strong>{{ $scheduleState }}</strong>
-                        <div class="marketing-detail__progress" aria-label="Avanzamento invio campagna">
-                            <div class="marketing-detail__progress-track">
-                                <div
-                                    class="marketing-detail__progress-bar @if ($normalizedStatus === 'running' && $progressPercentage < 100) is-running @endif"
-                                    style="width: 0"
-                                    data-progress-bar
-                                ></div>
-                            </div>
-                            <div class="marketing-detail__progress-meta">
-                                <span data-progress-count>{{ $sendProgress['sent'] ?? 0 }} di {{ $sendProgress['total'] ?? 0 }} email inviate</span>
-                                <span data-progress-percent>{{ $progressPercentage }}%</span>
-                            </div>
-                            <div class="marketing-detail__progress-live">
-                                <i class="bi bi-clock-history"></i>
-                                <span data-progress-clock>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? now()->format('H:i:s') }}</span>
-                            </div>
-                        </div>
-                    </div>
+	                        <article class="marketing-detail__fact">
+	                            <span>Email totali</span>
+	                            <strong>{{ $totalEmails }}</strong>
+	                        </article>
+	                        <article class="marketing-detail__fact">
+	                            <span>Inviate</span>
+	                            <strong>{{ $sentEmails }}</strong>
+	                        </article>
+	                        <article class="marketing-detail__fact">
+	                            <span>In attesa</span>
+	                            <strong>{{ $pendingEmails }}</strong>
+	                        </article>
+	                        <article class="marketing-detail__fact">
+	                            <span>Avanzamento</span>
+	                            <strong>{{ $progressPercentage }}%</strong>
+	                        </article>
+	                        @if ($nextBatchDueAt)
+	                            <article class="marketing-detail__fact">
+	                                <span>Prossimo batch previsto</span>
+	                                <strong>{{ $nextBatchDueAt->format('d/m/Y H:i') }}</strong>
+	                            </article>
+	                        @endif
+	                        @if ($estimatedDuration)
+	                            <article class="marketing-detail__fact">
+	                                <span>Durata stimata</span>
+	                                <strong>{{ $estimatedDuration }} min</strong>
+	                            </article>
+	                        @endif
+	                        @if ($completedAt && $normalizedStatus === 'completed')
+	                            <article class="marketing-detail__fact">
+	                                <span>Completata</span>
+	                                <strong>{{ $completedAt->format('d/m/Y H:i') }}</strong>
+	                            </article>
+	                        @endif
+	                    </div>
+	
+	                    <div
+	                        class="marketing-detail__empty marketing-detail__send-panel mt-3"
+	                    >
+	                        <strong>{{ $scheduleState }}</strong>
+	                        @if ($normalizedStatus === 'scheduled' && $campaign->scheduled_at?->isFuture())
+	                            <small>Il prossimo batch partirà dopo questa finestra.</small>
+	                        @endif
+	                        <div class="marketing-detail__progress" aria-label="Avanzamento invio campagna">
+	                            <div class="marketing-detail__progress-track">
+	                                <div
+	                                    class="marketing-detail__progress-bar @if ($normalizedStatus === 'running' && $progressPercentage < 100) is-running @endif"
+	                                    style="width: {{ $progressPercentage }}%"
+	                                ></div>
+	                            </div>
+	                            <div class="marketing-detail__progress-meta">
+	                                <span>{{ $sentEmails }} di {{ $totalEmails }} email inviate</span>
+	                                <span>{{ $progressPercentage }}%</span>
+	                            </div>
+	                        </div>
+	                    </div>
                 </section>
 
                 <section class="order-detail__section">
@@ -282,10 +296,10 @@
                             <span>Invio email</span>
                             <strong>{{ $scheduleState }}</strong>
                         </article>
-                        <article class="marketing-detail__fact">
-                            <span>Inviata</span>
-                            <strong>{{ $campaign->sent_at?->format('d/m/Y H:i') ?? '-' }}</strong>
-                        </article>
+	                        <article class="marketing-detail__fact">
+	                            <span>Inviata</span>
+	                            <strong>{{ $completedAt?->format('d/m/Y H:i') ?? '-' }}</strong>
+	                        </article>
                         <article class="marketing-detail__fact">
                             <span>Promozioni</span>
                             <strong>{{ $promotionsCount }}</strong>
@@ -306,14 +320,14 @@
                     </div>
 
                     <div class="marketing-detail__compact-grid">
-                        <article class="marketing-detail__metric">
-                            <span>Coinvolti</span>
-                            <strong>{{ $campaign->total_activation }}</strong>
-                        </article>
-                        <article class="marketing-detail__metric">
-                            <span>Inviate</span>
-                            <strong>{{ $campaign->total_sent }}</strong>
-                        </article>
+	                        <article class="marketing-detail__metric">
+	                            <span>Coinvolti</span>
+	                            <strong>{{ $totalEmails }}</strong>
+	                        </article>
+	                        <article class="marketing-detail__metric">
+	                            <span>Inviate</span>
+	                            <strong>{{ $sentEmails }}</strong>
+	                        </article>
                     </div>
                 </section>
 
@@ -584,9 +598,15 @@
 
                     <div class="campaign-report-panel">
                         <div class="campaign-report-panel__summary">
-                            <strong>{{ $conversionMode === 'reservation' ? 'Promozione orientata alle prenotazioni' : ($conversionMode === 'order' ? 'Promozione orientata agli ordini' : 'Promozioni miste') }}</strong>
-                            <span>Il report mostra sconto e conversioni coerenti con le promozioni collegate alla campagna.</span>
+                            <strong>Report coerente con le promozioni collegate</strong>
+                            <span>Metriche filtrate in base al tipo di promozione collegata.</span>
                         </div>
+
+                        @unless ($hasLinkedPromotions)
+                            <div class="marketing-detail__empty mt-3">
+                                Collega almeno una promozione per ottenere metriche specifiche per ordini o prenotazioni.
+                            </div>
+                        @endunless
 
                         <div class="campaign-report-grid">
                             @foreach ($reportMetrics as $metric)
@@ -607,100 +627,5 @@
         </article>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('[data-marketing-progress]').forEach((panel) => {
-            const bar = panel.querySelector('[data-progress-bar]');
-            const percentLabel = panel.querySelector('[data-progress-percent]');
-            const clockLabel = panel.querySelector('[data-progress-clock]');
-            const targetPercent = Math.max(0, Math.min(100, Number(panel.dataset.targetPercent || 0)));
-            const status = panel.dataset.status || 'draft';
-            const startedAt = panel.dataset.startedAt ? new Date(panel.dataset.startedAt) : null;
-            const completedAt = panel.dataset.completedAt ? new Date(panel.dataset.completedAt) : null;
-            const startedAtTime = startedAt instanceof Date && !Number.isNaN(startedAt.getTime()) ? startedAt.getTime() : null;
-            const completedAtTime = completedAt instanceof Date && !Number.isNaN(completedAt.getTime()) ? completedAt.getTime() : null;
-            const started = performance.now();
-            const duration = 950;
-
-            const formatDuration = (milliseconds) => {
-                const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
-
-                if (hours > 0) {
-                    return `${hours}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
-                }
-
-                return `${minutes}m ${String(seconds).padStart(2, '0')}s`;
-            };
-
-            const formatTime = (date) => date.toLocaleTimeString('it-IT', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-            });
-
-            const animate = (now) => {
-                const progress = Math.min(1, (now - started) / duration);
-                const current = targetPercent * (1 - Math.pow(1 - progress, 3));
-
-                if (bar) {
-                    bar.style.width = `${current}%`;
-                }
-
-                if (percentLabel) {
-                    percentLabel.textContent = `${current.toFixed(current >= 10 || current === 0 ? 0 : 1)}%`;
-                }
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                    return;
-                }
-
-                if (bar) {
-                    bar.style.width = `${targetPercent}%`;
-                }
-
-                if (percentLabel) {
-                    percentLabel.textContent = `${targetPercent}%`;
-                }
-            };
-
-            const tickClock = () => {
-                if (!clockLabel) {
-                    return;
-                }
-
-                const now = new Date();
-
-                if (status === 'completed' && completedAtTime) {
-                    clockLabel.textContent = `Completata alle ${formatTime(new Date(completedAtTime))}`;
-                    return;
-                }
-
-                if (status === 'running' && startedAtTime) {
-                    clockLabel.textContent = `In corso da ${formatDuration(now.getTime() - startedAtTime)} · ora ${formatTime(now)}`;
-                    return;
-                }
-
-                if (status === 'scheduled' && startedAtTime) {
-                    const diff = startedAtTime - now.getTime();
-                    clockLabel.textContent = diff > 0
-                        ? `Inizia tra ${formatDuration(diff)} · ora ${formatTime(now)}`
-                        : `In attesa del prossimo batch · ora ${formatTime(now)}`;
-                    return;
-                }
-
-                clockLabel.textContent = `Ora ${formatTime(now)}`;
-            };
-
-            requestAnimationFrame(animate);
-            tickClock();
-            window.setInterval(tickClock, 1000);
-        });
-    });
-</script>
 
 @endsection

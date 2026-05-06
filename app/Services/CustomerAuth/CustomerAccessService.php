@@ -10,7 +10,22 @@ class CustomerAccessService
 {
     public function customerExists(string $email): bool
     {
-        return $this->findByEmail($email) !== null;
+        return $this->findExistingCustomer($email) !== null;
+    }
+
+    public function findExistingCustomer(?string $email, ?string $phone = null): ?Customer
+    {
+        $normalizedEmail = $this->normalizeEmail($email);
+
+        if ($normalizedEmail !== null) {
+            return $this->findByEmail($normalizedEmail);
+        }
+
+        $normalizedPhone = $this->normalizePhone($phone);
+
+        return $normalizedPhone !== null
+            ? $this->findByPhoneWithoutEmail($normalizedPhone)
+            : null;
     }
 
     public function hasHistoricalEmailEvidence(string $email): bool
@@ -36,7 +51,7 @@ class CustomerAccessService
         bool $forceCustomerAccount = false,
     ): array {
         $normalizedEmail = Customer::normalizeEmail($email);
-        $customer = $this->findByEmail($normalizedEmail);
+        $customer = $this->findExistingCustomer($normalizedEmail, $attributes['phone'] ?? null);
         $createdCustomer = false;
 
         if (!$customer && ($rememberDetails || $forceCustomerAccount)) {
@@ -62,7 +77,7 @@ class CustomerAccessService
     public function findOrCreateForVerifiedCheckout(string $email, array $attributes = [], bool $newsletterOptIn = false): Customer
     {
         $normalizedEmail = Customer::normalizeEmail($email);
-        $customer = $this->findByEmail($normalizedEmail);
+        $customer = $this->findExistingCustomer($normalizedEmail, $attributes['phone'] ?? null);
 
         if (!$customer) {
             $customer = Customer::query()->create(
@@ -79,21 +94,22 @@ class CustomerAccessService
 
     public function syncCustomerProfile(Customer $customer, array $attributes = []): Customer
     {
-        $guestProfile = $this->latestGuestProfile(Customer::normalizeEmail($customer->email));
+        $normalizedEmail = $this->normalizeEmail($customer->email);
+        $guestProfile = $normalizedEmail !== null ? $this->latestGuestProfile($normalizedEmail) : [];
 
-        $customer->name = $this->preferredValue(
+        $customer->name = $this->preferredProfileValue(
             $attributes['name'] ?? null,
             $customer->name,
             $guestProfile['name'] ?? ''
         );
 
-        $customer->surname = $this->preferredValue(
+        $customer->surname = $this->preferredProfileValue(
             $attributes['surname'] ?? null,
             $customer->surname,
             $guestProfile['surname'] ?? ''
         );
 
-        $phone = $this->preferredValue(
+        $phone = $this->preferredProfileValue(
             $attributes['phone'] ?? null,
             $customer->phone,
             $guestProfile['phone'] ?? null
@@ -112,8 +128,22 @@ class CustomerAccessService
     private function findByEmail(string $email): ?Customer
     {
         return Customer::query()
-            ->whereRaw('LOWER(email) = ?', [Customer::normalizeEmail($email)])
+            ->whereRaw('LOWER(TRIM(email)) = ?', [Customer::normalizeEmail($email)])
             ->first();
+    }
+
+    private function findByPhoneWithoutEmail(string $normalizedPhone): ?Customer
+    {
+        return Customer::query()
+            ->where(function ($query) {
+                $query->whereNull('email')
+                    ->orWhereRaw("TRIM(email) = ''");
+            })
+            ->whereNotNull('phone')
+            ->get()
+            ->first(function (Customer $customer) use ($normalizedPhone) {
+                return $this->normalizePhone($customer->phone) === $normalizedPhone;
+            });
     }
 
     private function buildCustomerAttributes(string $email, array $attributes = []): array
@@ -174,6 +204,21 @@ class CustomerAccessService
         return $fallback;
     }
 
+    private function preferredProfileValue($incoming, $current, $fallback)
+    {
+        $normalizedCurrent = is_string($current) ? trim($current) : $current;
+        if ($normalizedCurrent !== null && $normalizedCurrent !== '') {
+            return $normalizedCurrent;
+        }
+
+        $normalizedIncoming = is_string($incoming) ? trim($incoming) : $incoming;
+        if ($normalizedIncoming !== null && $normalizedIncoming !== '') {
+            return $normalizedIncoming;
+        }
+
+        return $fallback;
+    }
+
     private function nullIfEmpty($value)
     {
         if (!is_string($value)) {
@@ -183,6 +228,34 @@ class CustomerAccessService
         $trimmed = trim($value);
 
         return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function normalizeEmail(?string $email): ?string
+    {
+        $email = $this->nullIfEmpty($email);
+
+        return $email === null ? null : Customer::normalizeEmail($email);
+    }
+
+    private function normalizePhone(?string $phone): ?string
+    {
+        $phone = $this->nullIfEmpty($phone);
+        if ($phone === null) {
+            return null;
+        }
+
+        $normalized = preg_replace('/\D+/', '', $phone);
+        if ($normalized === '') {
+            return null;
+        }
+
+        if (str_starts_with($normalized, '0039') && strlen($normalized) > 10) {
+            $normalized = substr($normalized, 4);
+        } elseif (str_starts_with($normalized, '39') && strlen($normalized) > 10) {
+            $normalized = substr($normalized, 2);
+        }
+
+        return $normalized !== '' ? $normalized : null;
     }
 
     private function guestMarketingConsentAt(string $email)

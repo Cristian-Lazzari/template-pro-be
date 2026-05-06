@@ -6,6 +6,7 @@
     $enabledFromValue = old('metadata.enabled_from', data_get($automation->metadata, 'enabled_from'));
     $enabledUntilValue = old('metadata.enabled_until', data_get($automation->metadata, 'enabled_until'));
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
+    $cancelUrl = $automation->exists ? route('admin.automations.show', $automation) : route('admin.automations.index');
     $selectedMailModelId = (string) old('model_id', $automation->model_id);
     $selectedTrigger = old('trigger', $automation->trigger);
     $previewMailModel = collect($mailModels)->first(fn ($mailModel) => (string) $mailModel->id === $selectedMailModelId) ?: $automation->model;
@@ -36,7 +37,7 @@
                 <span class="order-detail__section-icon">
                     <i class="bi bi-card-text"></i>
                 </span>
-                Dati automazione
+                Informazioni automazione
             </h3>
         </div>
 
@@ -50,68 +51,36 @@
             </p>
             @error('name') <p class="error">{{ $message }}</p> @enderror
         </div>
+        <p class="menu-dashboard__copy mt-3">L'automazione non invia email finché non viene attivata ed elaborata dal sistema.</p>
     </section>
 
-    <section class="order-detail__section mt-4">
+    <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
                 <span class="order-detail__section-icon">
                     <i class="bi bi-lightning-charge-fill"></i>
                 </span>
-                Trigger e modello
+                Trigger
             </h3>
         </div>
 
-        <div class="split">
-            <div>
-                <label class="label_c" for="trigger">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                    Trigger
-                </label>
-                <p>
-                    <select name="trigger" id="trigger">
-                        <option value="">Nessun trigger</option>
-                        @foreach ($triggers as $value => $label)
-                            <option value="{{ $value }}" @selected(old('trigger', $automation->trigger) === $value)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </p>
-                @error('trigger') <p class="error">{{ $message }}</p> @enderror
-            </div>
-            <div>
-                <label class="label_c" for="model_id">
-                    <i class="bi bi-envelope-fill"></i>
-                    Modello mail
-                </label>
-                <p>
-                    <select name="model_id" id="model_id">
-                        <option value="">Nessun modello</option>
-                        @foreach ($mailModels as $mailModel)
-                            <option value="{{ $mailModel->id }}" @selected((string) old('model_id', $automation->model_id) === (string) $mailModel->id)>
-                                {{ $mailModel->name }}
-                                @if ($mailModel->object)
-                                    - {{ $mailModel->object }}
-                                @endif
-                            </option>
-                        @endforeach
-                    </select>
-                </p>
-                @error('model_id') <p class="error">{{ $message }}</p> @enderror
-            </div>
-        </div>
-    </section>
-
-    <section class="order-detail__section mt-4">
-        <div class="order-detail__section-head">
-            <h3>
-                <span class="order-detail__section-icon">
-                    <i class="bi bi-hourglass-split"></i>
-                </span>
-                Regole esecuzione
-            </h3>
+        <div>
+            <label class="label_c" for="trigger">
+                <i class="bi bi-lightning-charge-fill"></i>
+                Trigger
+            </label>
+            <p>
+                <select name="trigger" id="trigger">
+                    <option value="">Nessun trigger</option>
+                    @foreach ($triggers as $value => $label)
+                        <option value="{{ $value }}" @selected(old('trigger', $automation->trigger) === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </p>
+            @error('trigger') <p class="error">{{ $message }}</p> @enderror
         </div>
 
-        <div class="split">
+        <div class="split mt-3">
             <div>
                 <label class="label_c" for="metadata_cooldown_days">
                     <i class="bi bi-hourglass-split"></i>
@@ -134,7 +103,7 @@
             </div>
         </div>
 
-        <div class="split">
+        <div class="split mt-3">
             <div>
                 <label class="label_c" for="metadata_enabled_until">
                     <i class="bi bi-calendar-x"></i>
@@ -149,7 +118,37 @@
         </div>
     </section>
 
-    <section class="order-detail__section mt-4">
+    <section class="order-detail__section">
+        <div class="order-detail__section-head">
+            <h3>
+                <span class="order-detail__section-icon">
+                    <i class="bi bi-envelope-fill"></i>
+                </span>
+                Modello mail
+            </h3>
+        </div>
+
+        <label class="label_c" for="model_id">
+            <i class="bi bi-envelope-fill"></i>
+            Modello mail
+        </label>
+        <p>
+            <select name="model_id" id="model_id">
+                <option value="">Nessun modello</option>
+                @foreach ($mailModels as $mailModel)
+                    <option value="{{ $mailModel->id }}" @selected((string) old('model_id', $automation->model_id) === (string) $mailModel->id)>
+                        {{ $mailModel->name }}
+                        @if ($mailModel->object)
+                            - {{ $mailModel->object }}
+                        @endif
+                    </option>
+                @endforeach
+            </select>
+        </p>
+        @error('model_id') <p class="error">{{ $message }}</p> @enderror
+    </section>
+
+    <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
                 <span class="order-detail__section-icon">
@@ -184,7 +183,7 @@
                         <span class="order-detail__section-icon">
                             <i class="bi bi-eye-fill"></i>
                         </span>
-                        Anteprima automazione
+                        Riepilogo
                     </h3>
                 </div>
 
@@ -195,11 +194,20 @@
                         </span>
                         <div>
                             <strong>{{ old('name', $automation->name) ?: 'Nome automazione' }}</strong>
-                            <small>{{ $triggers[$selectedTrigger] ?? 'Trigger da scegliere' }}</small>
                         </div>
                     </div>
 
                     <div class="marketing-form-preview__facts">
+                        @if ($automation->exists)
+                            <div class="marketing-form-preview__fact">
+                                <span>Stato</span>
+                                <strong>{{ $statuses[$automation->status] ?? $automation->status }}</strong>
+                            </div>
+                        @endif
+                        <div class="marketing-form-preview__fact">
+                            <span>Trigger</span>
+                            <strong>{{ $triggers[$selectedTrigger] ?? 'Da scegliere' }}</strong>
+                        </div>
                         <div class="marketing-form-preview__fact">
                             <span>Modello</span>
                             <strong>{{ $previewMailModel?->name ?? 'Da scegliere' }}</strong>
@@ -208,69 +216,25 @@
                             <span>Promozioni</span>
                             <strong>{{ $previewPromotions->count() }}</strong>
                         </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Cooldown</span>
-                            <strong>{{ $cooldownValue !== null && $cooldownValue !== '' ? $cooldownValue . ' giorni' : '-' }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Periodo</span>
-                            <strong>{{ $enabledFromValue || $enabledUntilValue ? trim(($enabledFromValue ?: '-') . ' / ' . ($enabledUntilValue ?: '-')) : 'Sempre' }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="marketing-form-preview__chips">
-                        @forelse ($previewPromotions->take(6) as $previewPromotion)
-                            <span>{{ $previewPromotion->name }}</span>
-                        @empty
-                            <span>Nessuna promozione selezionata</span>
-                        @endforelse
-                        @if ($previewPromotions->count() > 6)
-                            <span>+{{ $previewPromotions->count() - 6 }}</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="marketing-form-preview__steps">
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                        <div>
-                            <strong>Trigger</strong>
-                            <small>L'automazione resta pronta per il trigger scelto, senza eseguirsi da questa pagina.</small>
-                        </div>
-                    </div>
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-envelope-fill"></i>
-                        <div>
-                            <strong>Contenuto</strong>
-                            <small>Il modello mail verra renderizzato solo quando esistera una assegnazione cliente-promozione.</small>
-                        </div>
-                    </div>
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-shield-check"></i>
-                        <div>
-                            <strong>Sicurezza</strong>
-                            <small>Il salvataggio non crea assegnazioni e non invia email.</small>
-                        </div>
                     </div>
                 </div>
             </section>
         </aside>
     </div>
 
-    <section class="order-detail__section mt-4">
-        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <button class="order-detail__contact" type="submit" name="submit_action" value="activate">
-                <i class="bi bi-check2-circle"></i>
-                <span>{{ $primaryActionLabel }}</span>
-            </button>
-            <button class="order-detail__contact" type="submit" name="submit_action" value="draft">
-                <i class="bi bi-clock-history"></i>
-                <span>Completa più tardi</span>
-            </button>
-        </div>
-        <p class="menu-dashboard__copy mt-3">
-            Crea e attiva abilita l’automazione. L’esecuzione dipende dal relativo trigger/scheduler.
-        </p>
+    <div class="marketing-form-actions">
+        <a class="order-detail__contact marketing-form-action--cancel" href="{{ $cancelUrl }}">
+            <i class="bi bi-x-lg"></i>
+            <span>Annulla</span>
+        </a>
+        <button class="order-detail__contact marketing-form-action--secondary" type="submit" name="submit_action" value="draft">
+            <i class="bi bi-clock-history"></i>
+            <span>Completa più tardi</span>
+        </button>
+        <button class="order-detail__contact marketing-form-action--primary" type="submit" name="submit_action" value="activate">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ $primaryActionLabel }}</span>
+        </button>
         @error('submit_action') <p class="error">{{ $message }}</p> @enderror
-    </section>
+    </div>
 </form>

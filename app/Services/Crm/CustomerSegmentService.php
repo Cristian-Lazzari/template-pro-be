@@ -117,37 +117,21 @@ class CustomerSegmentService
         $parents = [];
 
         foreach ($customers as $customer) {
-            $this->unionIdentifiers($parents, $this->identityTokens(
-                (int) $customer->id,
-                $customer->email ?? null,
-                $customer->phone ?? null,
-            ));
+            $this->unionIdentifiers($parents, $this->customerIdentityTokens($customer));
         }
 
         foreach ($orderEvents as $event) {
-            $this->unionIdentifiers($parents, $this->identityTokens(
-                $event['customer_id'],
-                $event['email'],
-                $event['phone'],
-            ));
+            $this->unionIdentifiers($parents, $this->eventIdentityTokens($event));
         }
 
         foreach ($reservationEvents as $event) {
-            $this->unionIdentifiers($parents, $this->identityTokens(
-                $event['customer_id'],
-                $event['email'],
-                $event['phone'],
-            ));
+            $this->unionIdentifiers($parents, $this->eventIdentityTokens($event));
         }
 
         $profiles = [];
 
         foreach ($customers as $customer) {
-            $root = $this->resolveIdentityRoot($parents, $this->identityTokens(
-                (int) $customer->id,
-                $customer->email ?? null,
-                $customer->phone ?? null,
-            ));
+            $root = $this->resolveIdentityRoot($parents, $this->customerIdentityTokens($customer));
 
             if ($root === null) {
                 continue;
@@ -161,11 +145,7 @@ class CustomerSegmentService
         }
 
         foreach ($orderEvents as $event) {
-            $root = $this->resolveIdentityRoot($parents, $this->identityTokens(
-                $event['customer_id'],
-                $event['email'],
-                $event['phone'],
-            ));
+            $root = $this->resolveIdentityRoot($parents, $this->eventIdentityTokens($event));
 
             if ($root === null) {
                 continue;
@@ -179,11 +159,7 @@ class CustomerSegmentService
         }
 
         foreach ($reservationEvents as $event) {
-            $root = $this->resolveIdentityRoot($parents, $this->identityTokens(
-                $event['customer_id'],
-                $event['email'],
-                $event['phone'],
-            ));
+            $root = $this->resolveIdentityRoot($parents, $this->eventIdentityTokens($event));
 
             if ($root === null) {
                 continue;
@@ -905,17 +881,42 @@ class CustomerSegmentService
         return $activityAt->format('H:00');
     }
 
-    private function identityTokens(?int $customerId, ?string $email, ?string $phone): array
+    private function customerIdentityTokens(Customer $customer): array
+    {
+        return $this->identityTokens(
+            (int) $customer->id,
+            $customer->email ?? null,
+            $customer->phone ?? null,
+            true
+        );
+    }
+
+    private function eventIdentityTokens(array $event): array
+    {
+        return $this->identityTokens(
+            $event['customer_id'],
+            $event['email'],
+            $event['phone'],
+            false
+        );
+    }
+
+    private function identityTokens(?int $customerId, ?string $email, ?string $phone, bool $isCustomerRecord): array
     {
         $tokens = [];
 
         if ($customerId) {
             $tokens[] = 'customer:'.$customerId;
+
+            if (! $isCustomerRecord) {
+                return array_values(array_unique($tokens));
+            }
         }
 
         $normalizedEmail = $this->normalizeEmail($email);
         if ($normalizedEmail !== null) {
             $tokens[] = 'email:'.$normalizedEmail;
+            return array_values(array_unique($tokens));
         }
 
         $normalizedPhone = $this->normalizePhone($phone);

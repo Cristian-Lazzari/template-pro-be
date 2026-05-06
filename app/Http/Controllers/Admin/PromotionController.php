@@ -25,18 +25,17 @@ class PromotionController extends Controller
         'generic' => 'Generica',
         'take_away' => 'Asporto',
         'delivery' => 'Delivery',
-        'table' => 'Tavolo',
-        'gift' => 'Gift',
+        'table' => 'Tavoli',
     ];
 
     private const DISCOUNT_TYPES = [
-        'fixed' => 'Importo fisso',
+        'fixed' => 'Sconto fisso',
         'percentage' => 'Percentuale',
         'gift' => 'Omaggio',
     ];
 
     private const TARGET_TYPES = [
-        'generic' => 'Carrello generico',
+        'generic' => 'Promo generale',
         'product' => 'Prodotto',
         'menu' => 'Menu',
         'category' => 'Categoria',
@@ -44,9 +43,7 @@ class PromotionController extends Controller
     ];
 
     private const FORM_TARGET_TYPES = [
-        'product' => 'Prodotto',
-        'category' => 'Categoria',
-        'menu' => 'Menu',
+        'product' => 'Prodotti',
     ];
 
     public function index()
@@ -177,17 +174,22 @@ class PromotionController extends Controller
         $data = $request->validated();
         $metadata = is_array($promotion?->metadata) ? $promotion->metadata : [];
 
-        $slug = trim((string) ($data['slug'] ?? ''));
-        $data['slug'] = $this->uniqueSlug($slug !== '' ? $slug : $data['name'], $promotion?->getKey());
+        $existingSlug = trim((string) ($promotion?->slug ?? ''));
+        $data['slug'] = $existingSlug !== ''
+            ? $existingSlug
+            : $this->uniqueSlug($data['name'], $promotion?->getKey());
         $data['permanent'] = $request->boolean('permanent');
-        if ($request->input('target_scope', 'generic') === 'specific') {
-            $data['type_discount'] = null;
+        if (($data['type_discount'] ?? null) === 'gift') {
             $data['discount'] = null;
+        }
+        if ($data['permanent']) {
+            $data['schedule_at'] = null;
+            $data['expiring_at'] = null;
         }
         $metadata['reusable'] = $request->boolean('metadata.reusable');
         $data['metadata'] = $metadata;
         $data['status'] = $this->statusFromSubmitAction($request);
-        unset($data['targets'], $data['target_scope'], $data['submit_action']);
+        unset($data['product_ids'], $data['target_type'], $data['submit_action']);
 
         return $data;
     }
@@ -210,7 +212,7 @@ class PromotionController extends Controller
 
     private function targetData(Request $request, ?Promotion $promotion = null): array
     {
-        if ($request->input('target_scope', 'generic') !== 'specific') {
+        if ($request->input('target_type', 'generic') !== PromotionTarget::TYPE_PRODUCT) {
             return [
                 [
                     'target_type' => PromotionTarget::TYPE_GENERIC,
@@ -222,63 +224,26 @@ class PromotionController extends Controller
             ];
         }
 
-        $allowedTargetKeys = array_flip(array_keys($this->targetLabels($this->specificTargetOptions($promotion))));
-        $seen = [];
-        $targets = [];
-
-        foreach ((array) $request->input('targets', []) as $row) {
-            $targetKey = trim((string) ($row['target_key'] ?? ''));
-
-            if ($targetKey === '' || ! isset($allowedTargetKeys[$targetKey])) {
-                continue;
-            }
-
-            [$targetType, $targetId] = array_pad(explode(':', $targetKey, 2), 2, null);
-
-            if (! array_key_exists($targetType, self::TARGET_TYPES)) {
-                continue;
-            }
-
-            $targetId = $targetId !== null && $targetId !== '' ? (int) $targetId : null;
-
-            if (! array_key_exists($targetType, self::FORM_TARGET_TYPES) || ! $targetId) {
-                continue;
-            }
-
-            $uniqueKey = $targetType . ':' . ($targetId ?? '');
-
-            if (isset($seen[$uniqueKey])) {
-                continue;
-            }
-
-            $seen[$uniqueKey] = true;
-
-            $targets[] = [
-                'target_type' => $targetType,
-                'target_id' => $targetId,
-                'discount' => $this->nullableNumber($row['discount'] ?? null),
-                'type_discount' => ($row['type_discount'] ?? '') !== '' ? $row['type_discount'] : null,
+        return collect((array) $request->input('product_ids', []))
+            ->map(fn ($productId) => (int) $productId)
+            ->filter()
+            ->unique()
+            ->values()
+            ->map(fn ($productId) => [
+                'target_type' => PromotionTarget::TYPE_PRODUCT,
+                'target_id' => $productId,
+                'discount' => null,
+                'type_discount' => null,
                 'metadata' => null,
-            ];
-        }
-
-        return $targets;
-    }
-
-    private function nullableNumber(mixed $value): ?float
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        return (float) $value;
+            ])
+            ->all();
     }
 
     private function targetOptions(?Promotion $promotion = null): array
     {
         $options = [
             PromotionTarget::TYPE_GENERIC => [
-                ['key' => PromotionTarget::TYPE_GENERIC . ':', 'label' => 'Generico'],
+                ['key' => PromotionTarget::TYPE_GENERIC . ':', 'label' => 'Promo generale'],
             ],
             PromotionTarget::TYPE_PRODUCT => $this->translatedTargetOptions(
                 PromotionTarget::TYPE_PRODUCT,
@@ -403,7 +368,7 @@ class PromotionController extends Controller
     private function targetOptionLabel(PromotionTarget $target): string
     {
         if ($target->isGenericTarget()) {
-            return 'Generico';
+            return 'Promo generale';
         }
 
         $model = $target->target();

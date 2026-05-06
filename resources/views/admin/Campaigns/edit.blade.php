@@ -23,14 +23,10 @@
             </div>
 
             <h1 class="menu-dashboard__title">Modifica campagna</h1>
-            <p>{{ $campaign->name }}</p>
+            <p>Programma l’invio a un segmento clienti.</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <a class="order-detail__contact" href="{{ route('admin.campaigns.show', $campaign) }}">
-                <i class="bi bi-arrow-left"></i>
-                <span>Annulla</span>
-            </a>
             @include('admin.Marketing.partials.area-links', ['current' => 'campaigns'])
         </div>
     </header>

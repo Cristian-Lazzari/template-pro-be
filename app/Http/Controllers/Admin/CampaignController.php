@@ -13,8 +13,8 @@ use App\Services\Marketing\CampaignScheduleService;
 use App\Services\Marketing\MarketingCustomerSegmentService;
 use App\Services\Marketing\MarketingRunMarkerService;
 use App\Services\Marketing\MarketingReportService;
-use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
@@ -89,7 +89,17 @@ class CampaignController extends Controller
     {
         $campaign->load(['model', 'promotions.targets']);
         $report = $reportService->forCampaign($campaign);
-        $sendProgress = $this->sendProgress($campaign, $report);
+        $sendProgress = $this->sendProgress($campaign);
+        $campaignPromotionCaseUses = $campaign->promotions
+            ->pluck('case_use')
+            ->filter()
+            ->unique()
+            ->values();
+        $hasLinkedPromotions = $campaign->promotions->isNotEmpty();
+        $showOrderMetrics = $hasLinkedPromotions
+            && $campaignPromotionCaseUses->intersect(['take_away', 'delivery', 'generic'])->isNotEmpty();
+        $showReservationMetrics = $hasLinkedPromotions
+            && $campaignPromotionCaseUses->intersect(['table', 'generic'])->isNotEmpty();
         $customerPromotions = $campaign->customerPromotions()
             ->with(['customer', 'promotion.targets'])
             ->latest('created_at')
@@ -99,6 +109,17 @@ class CampaignController extends Controller
             'campaign' => $campaign,
             'report' => $report,
             'sendProgress' => $sendProgress,
+            'involvedCount' => $sendProgress['involved_count'],
+            'sentCount' => $sendProgress['sent_count'],
+            'pendingCount' => $sendProgress['pending_count'],
+            'progressPercentage' => $sendProgress['progress_percentage'],
+            'nextBatchDueAt' => $sendProgress['next_batch_due_at'],
+            'estimatedDurationMinutes' => $sendProgress['estimated_duration_minutes'],
+            'completedAt' => $sendProgress['completed_at'],
+            'campaignPromotionCaseUses' => $campaignPromotionCaseUses,
+            'hasLinkedPromotions' => $hasLinkedPromotions,
+            'showOrderMetrics' => $showOrderMetrics,
+            'showReservationMetrics' => $showReservationMetrics,
             'customerPromotions' => $customerPromotions,
             'statuses' => self::STATUSES,
             'segments' => $segmentService->getSegmentOptions(),
@@ -406,22 +427,36 @@ class CampaignController extends Controller
         }
     }
 
-    private function sendProgress(Campaign $campaign, array $report): array
+    private function sendProgress(Campaign $campaign): array
     {
         $status = $this->normalizedStatus($campaign->status);
-        $total = (int) ($report['involved_count'] ?? 0);
-        $sent = (int) ($report['sent_count'] ?? 0);
+        $total = $campaign->customerPromotions()->count();
+        $sent = $campaign->customerPromotions()->whereNotNull('email_sent_at')->count();
         $pending = max(0, $total - $sent);
-        $percentage = $total > 0 ? round(($sent / $total) * 100, 2) : 0.0;
+        $percentage = match (true) {
+            $total === 0 => 0.0,
+            $status === 'completed' => 100.0,
+            default => round(($sent / $total) * 100, 2),
+        };
+        $nextBatchDueAt = $this->metadataDate($campaign, 'next_batch_due_at');
+        $completedAt = $campaign->sent_at ?: $this->metadataDate($campaign, 'completed_at');
+        $estimatedDurationMinutes = data_get($campaign->metadata, 'estimated_duration_minutes');
 
         return [
             'status' => $status,
             'label' => self::STATUSES[$status] ?? $status,
+            'involved_count' => $total,
+            'sent_count' => $sent,
+            'pending_count' => $pending,
+            'progress_percentage' => $percentage,
             'total' => $total,
             'sent' => $sent,
             'pending' => $pending,
             'percentage' => $percentage,
-            'message' => $this->sendProgressMessage($campaign, $status, $sent, $total),
+            'next_batch_due_at' => $nextBatchDueAt,
+            'estimated_duration_minutes' => $estimatedDurationMinutes,
+            'completed_at' => $completedAt,
+            'message' => $this->sendProgressMessage($campaign, $status, $sent, $total, $completedAt),
         ];
     }
 
@@ -434,15 +469,23 @@ class CampaignController extends Controller
         };
     }
 
-    private function sendProgressMessage(Campaign $campaign, string $status, int $sent, int $total): string
+    private function sendProgressMessage(
+        Campaign $campaign,
+        string $status,
+        int $sent,
+        int $total,
+        ?Carbon $completedAt = null
+    ): string
     {
         return match ($status) {
-            'draft' => 'Bozza: completa la campagna e programmala per preparare le assegnazioni.',
+            'draft' => 'Bozza: programma la campagna per creare i destinatari.',
             'scheduled' => $this->scheduledProgressMessage($campaign),
-            'running' => "In esecuzione: {$sent} di {$total} email inviate.",
-            'completed' => "Completata: {$sent} di {$total} email inviate.",
-            'paused' => 'In pausa: la campagna e sospesa e non inviera nuove email.',
-            'archived' => 'Archiviata.',
+            'running' => "Invio in corso: {$sent} di {$total} email inviate.",
+            'completed' => $completedAt
+                ? 'Campagna completata il ' . $completedAt->format('d/m/Y H:i')
+                : 'Campagna completata.',
+            'paused' => 'Campagna in pausa: non verranno inviati nuovi batch.',
+            'archived' => 'Campagna archiviata.',
             default => self::STATUSES[$status] ?? $status,
         };
     }
@@ -450,19 +493,28 @@ class CampaignController extends Controller
     private function scheduledProgressMessage(Campaign $campaign): string
     {
         if (! $campaign->scheduled_at) {
-            return 'Programmazione mancante: imposta data e ora per consentire allo scheduler di partire.';
+            return 'Programmazione non impostata.';
         }
 
         if ($campaign->scheduled_at->isFuture()) {
-            return 'Programmata: invio tra circa ' . $campaign->scheduled_at->diffForHumans(
-                now(),
-                [
-                    'parts' => 2,
-                    'syntax' => CarbonInterface::DIFF_ABSOLUTE,
-                ]
-            ) . '.';
+            return 'Invio programmato per: ' . $campaign->scheduled_at->format('d/m/Y H:i');
         }
 
-        return 'Programmata: pronta per l’invio al prossimo scheduler.';
+        return 'Pronta per il prossimo ciclo del runner marketing.';
+    }
+
+    private function metadataDate(Campaign $campaign, string $key): ?Carbon
+    {
+        $value = data_get($campaign->metadata, $key);
+
+        if (! $value) {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

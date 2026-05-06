@@ -22,14 +22,10 @@
             </div>
 
             <h1 class="menu-dashboard__title">Crea automazione</h1>
-            <p>Configura trigger, modello mail e promozioni collegate.</p>
+            <p>Configura una regola automatica di marketing.</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <a class="order-detail__contact" href="{{ route('admin.automations.index') }}">
-                <i class="bi bi-arrow-left"></i>
-                <span>Annulla</span>
-            </a>
             @include('admin.Marketing.partials.area-links', ['current' => 'automations'])
         </div>
     </header>

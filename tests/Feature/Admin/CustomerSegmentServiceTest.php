@@ -254,7 +254,7 @@ class CustomerSegmentServiceTest extends TestCase
             ->assertDontSee('Mario Base');
     }
 
-    public function test_service_deduplicates_registered_and_guest_profiles_by_email_and_phone(): void
+    public function test_service_deduplicates_registered_and_guest_profiles_by_email_without_merging_different_emails_by_phone(): void
     {
         $customer = $this->createRegisteredCustomer([
             'name' => 'Anna',
@@ -268,7 +268,7 @@ class CustomerSegmentServiceTest extends TestCase
             'name' => 'Anna',
             'surname' => 'Rossi',
             'email' => 'ANNA@example.com',
-            'phone' => '3331112222',
+            'phone' => '3339998888',
             'tot_price' => 35,
             'date' => now()->subDays(3),
         ]);
@@ -289,15 +289,51 @@ class CustomerSegmentServiceTest extends TestCase
         $this->assertSame(1, $profiles->where('customer_id', $customer->id)->count());
         $this->assertSame('anna@example.com', $profile->email);
         $this->assertSame(1, $profile->orders_count);
-        $this->assertSame(1, $profile->reservations_count);
-        $this->assertSame(2, $profile->interactions_count);
+        $this->assertSame(0, $profile->reservations_count);
+        $this->assertSame(1, $profile->interactions_count);
+
+        $secondaryProfile = $this->findProfileByEmail($profiles, 'anna.secondary@example.com');
+
+        $this->assertNull($secondaryProfile->customer_id);
+        $this->assertSame(0, $secondaryProfile->orders_count);
+        $this->assertSame(1, $secondaryProfile->reservations_count);
+        $this->assertSame(1, $secondaryProfile->interactions_count);
+    }
+
+    public function test_service_uses_phone_fallback_only_when_email_is_missing(): void
+    {
+        $customer = $this->createRegisteredCustomer([
+            'name' => 'Telefono',
+            'surname' => 'Solo',
+            'email' => '',
+            'phone' => '333 111 2222',
+        ]);
+
+        $this->createOrder([
+            'customer_id' => null,
+            'name' => 'Telefono',
+            'surname' => 'Solo',
+            'email' => '',
+            'phone' => '+39 333 111 2222',
+            'tot_price' => 35,
+            'date' => now()->subDays(3),
+        ]);
+
+        $profiles = $this->crmService()->buildBaseCustomerQuery();
+        $profile = $profiles->firstWhere('customer_id', $customer->id);
+
+        $this->assertNotNull($profile);
+        $this->assertSame(1, $profile->orders_count);
+        $this->assertSame(1, $profile->interactions_count);
     }
 
     public function test_zero_cached_customer_score_falls_back_to_real_orders_and_reservations(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->unsignedInteger('customer_score')->default(0);
-        });
+        if (! Schema::hasColumn('customers', 'customer_score')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->unsignedInteger('customer_score')->default(0);
+            });
+        }
 
         $customer = $this->createRegisteredCustomer([
             'name' => 'Giulio',

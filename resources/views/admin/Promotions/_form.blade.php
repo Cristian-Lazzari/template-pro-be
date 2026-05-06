@@ -1,62 +1,46 @@
 @php
     $reusableValue = old('metadata.reusable', data_get($promotion->metadata, 'reusable', false));
-    $scheduleValue = old('schedule_at', $promotion->schedule_at?->format('Y-m-d\TH:i'));
-    $expiringValue = old('expiring_at', $promotion->expiring_at?->format('Y-m-d\TH:i'));
-    $existingTargetRows = $promotion->exists
-        ? $promotion->targets->filter(fn ($target) => ! $target->isGenericTarget())->map(fn ($target) => [
-            'target_key' => $target->target_type . ':' . ($target->target_id ?? ''),
-            'discount' => $target->discount,
-            'type_discount' => $target->type_discount,
-        ])->values()->all()
+    $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
+    $scheduleValue = $previewPermanent ? '' : old('schedule_at', $promotion->schedule_at?->format('Y-m-d\TH:i'));
+    $expiringValue = $previewPermanent ? '' : old('expiring_at', $promotion->expiring_at?->format('Y-m-d\TH:i'));
+    $existingProductIds = $promotion->exists
+        ? $promotion->targets
+            ->where('target_type', 'product')
+            ->pluck('target_id')
+            ->filter()
+            ->map(fn ($productId) => (string) $productId)
+            ->unique()
+            ->values()
+            ->all()
         : [];
-    $hasSpecificTargets = count($existingTargetRows) > 0;
-    $targetScope = old('target_scope', $hasSpecificTargets ? 'specific' : 'generic');
-    $targetRows = array_values(old('targets', $existingTargetRows));
-    $minimumTargetRows = max(4, count($targetRows) + 1);
-
-    while (count($targetRows) < $minimumTargetRows) {
-        $targetRows[] = [
-            'target_key' => '',
-            'discount' => '',
-            'type_discount' => '',
-        ];
-    }
+    $productOptions = $specificTargetOptions['product'] ?? [];
+    $targetType = old('target_type', count($existingProductIds) > 0 ? 'product' : 'generic');
+    $selectedProductIds = collect((array) old('product_ids', $existingProductIds))
+        ->map(fn ($productId) => (string) $productId)
+        ->filter()
+        ->unique()
+        ->values()
+        ->all();
 
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
+    $cancelUrl = $promotion->exists ? route('admin.promotions.show', $promotion) : route('admin.promotions.index');
     $previewDiscountType = old('type_discount', $promotion->type_discount);
-    $previewDiscount = old('discount', $promotion->discount);
-    $previewMinimum = old('minimum_pretest', $promotion->minimum_pretest);
-    $previewCta = old('cta', $promotion->cta);
     $previewCaseUse = old('case_use', $promotion->case_use);
-    $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
-    $previewReusable = filter_var($reusableValue, FILTER_VALIDATE_BOOLEAN);
-    $targetOptionLabels = collect($specificTargetOptions)
-        ->flatMap(fn ($options) => collect($options)->mapWithKeys(fn ($option) => [$option['key'] => $option['label']]))
+    $targetOptionLabels = collect($productOptions)
+        ->mapWithKeys(function ($option) {
+            $productId = explode(':', $option['key'], 2)[1] ?? '';
+
+            return [$productId => $option['label']];
+        })
         ->all();
-    $previewTargetLabels = collect($targetRows)
-        ->pluck('target_key')
-        ->filter()
-        ->map(fn ($key) => $targetOptionLabels[$key] ?? $key)
+    $previewTargetLabels = collect($selectedProductIds)
+        ->map(fn ($productId) => $targetOptionLabels[$productId] ?? '#' . $productId)
         ->unique()
         ->values();
-    $formatPreviewDiscount = function ($type, $discount) {
-        if ($type === 'gift') {
-            return 'Regalo';
-        }
-
-        if ($discount === null || $discount === '') {
-            return '-';
-        }
-
-        $value = number_format((float) $discount, 2, ',', '.');
-        $value = str_ends_with($value, ',00') ? substr($value, 0, -3) : $value;
-
-        return match ($type) {
-            'fixed' => $value . '€',
-            'percentage' => $value . '%',
-            default => $value,
-        };
-    };
+    $productTargetCount = $previewTargetLabels->count();
+    $targetSummary = $targetType === 'product'
+        ? ($productTargetCount === 1 ? '1 prodotto' : $productTargetCount . ' prodotti')
+        : 'Promo generale';
 @endphp
 
 @include('admin.Marketing.partials.form-style')
@@ -181,7 +165,7 @@
                 <span class="order-detail__section-icon">
                     <i class="bi bi-card-text"></i>
                 </span>
-                Dati principali
+                Informazioni principali
             </h3>
         </div>
 
@@ -197,81 +181,31 @@
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="label_c" for="slug">
-                    <i class="bi bi-link-45deg"></i>
-                    Slug
+                <label class="label_c" for="case_use">
+                    <i class="bi bi-bullseye"></i>
+                    Caso d'uso
                 </label>
                 <p>
-                    <input value="{{ old('slug', $promotion->slug) }}" type="text" name="slug" id="slug" placeholder="Generato dal nome se vuoto">
+                    <select name="case_use" id="case_use">
+                        <option value="">Nessuno</option>
+                        @foreach ($caseUses as $value => $label)
+                            <option value="{{ $value }}" @selected(old('case_use', $promotion->case_use) === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
                 </p>
-                @error('slug') <p class="error">{{ $message }}</p> @enderror
+                @error('case_use') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
-
-        <div>
-            <label class="label_c" for="case_use">
-                <i class="bi bi-bullseye"></i>
-                Caso d'uso
-            </label>
-            <p>
-                <select name="case_use" id="case_use">
-                    <option value="">Nessuno</option>
-                    @foreach ($caseUses as $value => $label)
-                        <option value="{{ $value }}" @selected(old('case_use', $promotion->case_use) === $value)>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </p>
-            @error('case_use') <p class="error">{{ $message }}</p> @enderror
-        </div>
+        <p class="menu-dashboard__copy mt-3">Lo slug viene generato automaticamente.</p>
     </section>
 
     <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
                 <span class="order-detail__section-icon">
-                    <i class="bi bi-bullseye"></i>
-                </span>
-                Ambito sconto
-            </h3>
-        </div>
-
-        <div class="promotion-choice-grid">
-            <div class="promotion-choice-option">
-                <input class="promotion-choice-input" type="radio" name="target_scope" id="target_scope_generic" value="generic" @checked($targetScope !== 'specific')>
-                <label class="promotion-choice-card" for="target_scope_generic">
-                    <span class="promotion-choice-icon">
-                        <i class="bi bi-cart-check-fill"></i>
-                    </span>
-                    <span>
-                        <strong>Sconto generico sul carrello</strong>
-                        <small>La regola vale sull'intero carrello o sulla prenotazione.</small>
-                    </span>
-                </label>
-            </div>
-
-            <div class="promotion-choice-option">
-                <input class="promotion-choice-input" type="radio" name="target_scope" id="target_scope_specific" value="specific" @checked($targetScope === 'specific')>
-                <label class="promotion-choice-card" for="target_scope_specific">
-                    <span class="promotion-choice-icon">
-                        <i class="bi bi-tags-fill"></i>
-                    </span>
-                    <span>
-                        <strong>Sconto su prodotto, categoria o menu</strong>
-                        <small>La regola vale solo sugli elementi selezionati.</small>
-                    </span>
-                </label>
-            </div>
-        </div>
-        @error('target_scope') <p class="error">{{ $message }}</p> @enderror
-    </section>
-
-    <section class="order-detail__section promotion-form-panel" data-target-scope-panel="generic" @if ($targetScope === 'specific') hidden @endif>
-        <div class="order-detail__section-head">
-            <h3>
-                <span class="order-detail__section-icon">
                     <i class="bi bi-percent"></i>
                 </span>
-                Sconto carrello
+                Regola promozione
             </h3>
         </div>
 
@@ -282,7 +216,7 @@
                     Tipo sconto
                 </label>
                 <p>
-                    <select name="type_discount" id="type_discount">
+                    <select name="type_discount" id="type_discount" data-type-discount>
                         <option value="">Nessuno</option>
                         @foreach ($discountTypes as $value => $label)
                             <option value="{{ $value }}" @selected(old('type_discount', $promotion->type_discount) === $value)>{{ $label }}</option>
@@ -297,102 +231,22 @@
                     Sconto
                 </label>
                 <p>
-                    <input value="{{ old('discount', $promotion->discount) }}" type="number" step="0.01" min="0" name="discount" id="discount">
+                    <input
+                        value="{{ $previewDiscountType === 'gift' ? '' : old('discount', $promotion->discount) }}"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        name="discount"
+                        id="discount"
+                        data-discount-field
+                        @disabled($previewDiscountType === 'gift')
+                    >
                 </p>
                 @error('discount') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
-    </section>
 
-    <section class="order-detail__section promotion-form-panel" data-target-scope-panel="specific" @if ($targetScope !== 'specific') hidden @endif>
-        <div class="order-detail__section-head">
-            <h3>
-                <span class="order-detail__section-icon">
-                    <i class="bi bi-tags-fill"></i>
-                </span>
-                Sconti target
-            </h3>
-        </div>
-
-        <div class="order-detail__items">
-            @foreach ($targetRows as $index => $targetRow)
-                @php
-                    $selectedTargetKey = (string) ($targetRow['target_key'] ?? '');
-                    $targetDiscount = $targetRow['discount'] ?? '';
-                    $targetDiscountType = $targetRow['type_discount'] ?? '';
-                @endphp
-
-                <article class="order-detail__item">
-                    <div class="split">
-                        <div>
-                            <label class="label_c" for="targets_{{ $index }}_target_key">
-                                <i class="bi bi-bullseye"></i>
-                                Target {{ $index + 1 }}
-                            </label>
-                            <p>
-                                <select name="targets[{{ $index }}][target_key]" id="targets_{{ $index }}_target_key">
-                                    <option value="">Nessuna selezione</option>
-                                    @foreach ($specificTargetOptions as $group => $options)
-                                        @if (count($options) > 0)
-                                            <optgroup label="{{ $formTargetTypes[$group] ?? $group }}">
-                                                @foreach ($options as $option)
-                                                    <option value="{{ $option['key'] }}" @selected($selectedTargetKey === $option['key'])>
-                                                        {{ $option['label'] }}
-                                                    </option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </p>
-                            @error("targets.$index.target_key") <p class="error">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="label_c" for="targets_{{ $index }}_type_discount">
-                                <i class="bi bi-percent"></i>
-                                Tipo sconto
-                            </label>
-                            <p>
-                                <select name="targets[{{ $index }}][type_discount]" id="targets_{{ $index }}_type_discount">
-                                    <option value="">Nessuno</option>
-                                    @foreach ($discountTypes as $value => $label)
-                                        <option value="{{ $value }}" @selected((string) $targetDiscountType === (string) $value)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </p>
-                            @error("targets.$index.type_discount") <p class="error">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
-                    <div class="split">
-                        <div>
-                            <label class="label_c" for="targets_{{ $index }}_discount">
-                                <i class="bi bi-cash-coin"></i>
-                                Sconto
-                            </label>
-                            <p>
-                                <input value="{{ $targetDiscount }}" type="number" step="0.01" min="0" name="targets[{{ $index }}][discount]" id="targets_{{ $index }}_discount" placeholder="Valore sconto">
-                            </p>
-                            @error("targets.$index.discount") <p class="error">{{ $message }}</p> @enderror
-                        </div>
-                        <div></div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-    </section>
-
-    <section class="order-detail__section">
-        <div class="order-detail__section-head">
-            <h3>
-                <span class="order-detail__section-icon">
-                    <i class="bi bi-bag-check"></i>
-                </span>
-                Minimo e CTA
-            </h3>
-        </div>
-
-        <div class="split">
+        <div class="split mt-3">
             <div>
                 <label class="label_c" for="minimum_pretest">
                     <i class="bi bi-bag-check"></i>
@@ -420,20 +274,81 @@
         <div class="order-detail__section-head">
             <h3>
                 <span class="order-detail__section-icon">
-                    <i class="bi bi-calendar2-week-fill"></i>
+                    <i class="bi bi-bullseye"></i>
                 </span>
-                Validita e opzioni
+                Target
             </h3>
         </div>
 
-        <div class="split">
+        <div class="promotion-choice-grid">
+            <div class="promotion-choice-option">
+                <input class="promotion-choice-input" type="radio" name="target_type" id="target_type_generic" value="generic" @checked($targetType !== 'product')>
+                <label class="promotion-choice-card" for="target_type_generic">
+                    <span class="promotion-choice-icon">
+                        <i class="bi bi-cart-check-fill"></i>
+                    </span>
+                    <span>
+                        <strong>Promo generale</strong>
+                        <small>La regola vale come promozione generale.</small>
+                    </span>
+                </label>
+            </div>
+
+            <div class="promotion-choice-option">
+                <input class="promotion-choice-input" type="radio" name="target_type" id="target_type_product" value="product" @checked($targetType === 'product')>
+                <label class="promotion-choice-card" for="target_type_product">
+                    <span class="promotion-choice-icon">
+                        <i class="bi bi-tags-fill"></i>
+                    </span>
+                    <span>
+                        <strong>Uno o più prodotti</strong>
+                        <small>La regola vale solo sui prodotti selezionati.</small>
+                    </span>
+                </label>
+            </div>
+        </div>
+        @error('target_type') <p class="error">{{ $message }}</p> @enderror
+
+        <div class="promotion-form-panel mt-3" data-target-type-panel="product" @if ($targetType !== 'product') hidden @endif>
+            <label class="label_c" for="product_ids">
+                <i class="bi bi-box-seam"></i>
+                Prodotti
+            </label>
+            <p>
+                <select name="product_ids[]" id="product_ids" multiple size="8" @disabled($targetType !== 'product')>
+                    @foreach ($productOptions as $option)
+                        @php
+                            $productId = explode(':', $option['key'], 2)[1] ?? '';
+                        @endphp
+                        <option value="{{ $productId }}" @selected(in_array((string) $productId, $selectedProductIds, true))>
+                            {{ $option['label'] }}
+                        </option>
+                    @endforeach
+                </select>
+            </p>
+            @error('product_ids') <p class="error">{{ $message }}</p> @enderror
+            @error('product_ids.*') <p class="error">{{ $message }}</p> @enderror
+        </div>
+    </section>
+
+    <section class="order-detail__section">
+        <div class="order-detail__section-head">
+            <h3>
+                <span class="order-detail__section-icon">
+                    <i class="bi bi-calendar2-week-fill"></i>
+                </span>
+                Validità
+            </h3>
+        </div>
+
+        <div class="split" data-permanent-dates @if ($previewPermanent) hidden @endif>
             <div>
                 <label class="label_c" for="schedule_at">
                     <i class="bi bi-calendar-plus"></i>
                     Programmazione
                 </label>
                 <p>
-                    <input value="{{ $scheduleValue }}" type="datetime-local" name="schedule_at" id="schedule_at">
+                    <input value="{{ $scheduleValue }}" type="datetime-local" name="schedule_at" id="schedule_at" @disabled($previewPermanent)>
                 </p>
                 @error('schedule_at') <p class="error">{{ $message }}</p> @enderror
             </div>
@@ -443,7 +358,7 @@
                     Scadenza
                 </label>
                 <p>
-                    <input value="{{ $expiringValue }}" type="datetime-local" name="expiring_at" id="expiring_at">
+                    <input value="{{ $expiringValue }}" type="datetime-local" name="expiring_at" id="expiring_at" @disabled($previewPermanent)>
                 </p>
                 @error('expiring_at') <p class="error">{{ $message }}</p> @enderror
             </div>
@@ -490,7 +405,7 @@
                         <span class="order-detail__section-icon">
                             <i class="bi bi-eye-fill"></i>
                         </span>
-                        Anteprima promozione
+                        Riepilogo
                     </h3>
                 </div>
 
@@ -501,98 +416,66 @@
                         </span>
                         <div>
                             <strong>{{ old('name', $promotion->name) ?: 'Nome promozione' }}</strong>
-                            <small>{{ old('slug', $promotion->slug) ?: 'slug generato al salvataggio' }}</small>
                         </div>
                     </div>
 
                     <div class="marketing-form-preview__facts">
-                        <div class="marketing-form-preview__fact">
-                            <span>Ambito</span>
-                            <strong>{{ $targetScope === 'specific' ? 'Target specifici' : 'Carrello' }}</strong>
-                        </div>
+                        @if ($promotion->exists)
+                            <div class="marketing-form-preview__fact">
+                                <span>Stato</span>
+                                <strong>{{ $statuses[$promotion->status] ?? $promotion->status }}</strong>
+                            </div>
+                        @endif
                         <div class="marketing-form-preview__fact">
                             <span>Caso d'uso</span>
                             <strong>{{ $caseUses[$previewCaseUse] ?? ($previewCaseUse ?: '-') }}</strong>
                         </div>
                         <div class="marketing-form-preview__fact">
-                            <span>Sconto</span>
-                            <strong>{{ $targetScope === 'specific' ? 'Per target' : $formatPreviewDiscount($previewDiscountType, $previewDiscount) }}</strong>
+                            <span>Tipo sconto</span>
+                            <strong>{{ $discountTypes[$previewDiscountType] ?? ($previewDiscountType ?: '-') }}</strong>
                         </div>
                         <div class="marketing-form-preview__fact">
-                            <span>Minimo</span>
-                            <strong>{{ $previewMinimum !== null && $previewMinimum !== '' ? $previewMinimum : '-' }}</strong>
+                            <span>Target</span>
+                            <strong>{{ $targetSummary }}</strong>
                         </div>
                         <div class="marketing-form-preview__fact">
-                            <span>CTA</span>
-                            <strong>{{ $previewCta ?: '-' }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Scadenza</span>
-                            <strong>{{ $expiringValue ?: ($previewPermanent ? 'Permanente' : '-') }}</strong>
+                            <span>Permanente</span>
+                            <strong>{{ $previewPermanent ? 'Sì' : 'No' }}</strong>
                         </div>
                     </div>
 
-                    <div class="marketing-form-preview__chips">
-                        <span>{{ $previewPermanent ? 'Permanente' : 'Con date' }}</span>
-                        <span>{{ $previewReusable ? 'Riusabile' : 'Singolo uso' }}</span>
-                        @if ($targetScope === 'specific')
+                    @if ($targetType === 'product')
+                        <div class="marketing-form-preview__chips">
                             @forelse ($previewTargetLabels->take(5) as $targetLabel)
                                 <span>{{ $targetLabel }}</span>
                             @empty
-                                <span>Nessun target selezionato</span>
+                                <span>Nessun prodotto selezionato</span>
                             @endforelse
                             @if ($previewTargetLabels->count() > 5)
                                 <span>+{{ $previewTargetLabels->count() - 5 }}</span>
                             @endif
-                        @else
-                            <span>Sconto generico</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="marketing-form-preview__steps">
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-cart-check-fill"></i>
-                        <div>
-                            <strong>{{ $targetScope === 'specific' ? 'Target selettivo' : 'Regola generale' }}</strong>
-                            <small>{{ $targetScope === 'specific' ? 'Lo sconto viene letto dai target scelti.' : 'Lo sconto vale sulla regola principale della promozione.' }}</small>
                         </div>
-                    </div>
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-calendar2-week-fill"></i>
-                        <div>
-                            <strong>Validita</strong>
-                            <small>{{ $previewPermanent ? 'Le date vengono ignorate finche la promo resta permanente.' : 'Programmazione e scadenza definiscono la finestra di utilizzo.' }}</small>
-                        </div>
-                    </div>
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-envelope-paper-fill"></i>
-                        <div>
-                            <strong>Uso marketing</strong>
-                            <small>La promozione potra essere collegata a campagne e automazioni.</small>
-                        </div>
-                    </div>
+                    @endif
                 </div>
             </section>
         </aside>
     </div>
 
-    <section class="order-detail__section">
-        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <button class="order-detail__contact" type="submit" name="submit_action" value="activate">
-                <i class="bi bi-check2-circle"></i>
-                <span>{{ $primaryActionLabel }}</span>
-            </button>
-            <button class="order-detail__contact" type="submit" name="submit_action" value="draft">
-                <i class="bi bi-clock-history"></i>
-                <span>Completa più tardi</span>
-            </button>
-        </div>
-        <p class="menu-dashboard__copy mt-3">
-            Crea e attiva rende subito disponibile la promozione. Completa più tardi la salva come bozza.
-        </p>
+    <div class="marketing-form-actions">
+        <a class="order-detail__contact marketing-form-action--cancel" href="{{ $cancelUrl }}">
+            <i class="bi bi-x-lg"></i>
+            <span>Annulla</span>
+        </a>
+        <button class="order-detail__contact marketing-form-action--secondary" type="submit" name="submit_action" value="draft">
+            <i class="bi bi-clock-history"></i>
+            <span>Completa più tardi</span>
+        </button>
+        <button class="order-detail__contact marketing-form-action--primary" type="submit" name="submit_action" value="activate">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ $primaryActionLabel }}</span>
+        </button>
         @error('submit_action') <p class="error">{{ $message }}</p> @enderror
-    </section>
+    </div>
 </form>
 
 <script>
@@ -603,9 +486,12 @@
             return;
         }
 
-        const scopeInputs = form.querySelectorAll('input[name="target_scope"]');
-        const genericPanel = form.querySelector('[data-target-scope-panel="generic"]');
-        const specificPanel = form.querySelector('[data-target-scope-panel="specific"]');
+        const targetTypeInputs = form.querySelectorAll('input[name="target_type"]');
+        const productPanel = form.querySelector('[data-target-type-panel="product"]');
+        const typeDiscount = form.querySelector('[data-type-discount]');
+        const discountField = form.querySelector('[data-discount-field]');
+        const permanentInput = form.querySelector('#permanent');
+        const datePanel = form.querySelector('[data-permanent-dates]');
 
         const setPanelState = (panel, active) => {
             if (!panel) {
@@ -618,14 +504,48 @@
             });
         };
 
-        const syncPanels = () => {
-            const selected = form.querySelector('input[name="target_scope"]:checked')?.value || 'generic';
+        const syncTargetPanel = () => {
+            const selected = form.querySelector('input[name="target_type"]:checked')?.value || 'generic';
 
-            setPanelState(genericPanel, selected === 'generic');
-            setPanelState(specificPanel, selected === 'specific');
+            setPanelState(productPanel, selected === 'product');
         };
 
-        scopeInputs.forEach((input) => input.addEventListener('change', syncPanels));
-        syncPanels();
+        const syncDiscount = () => {
+            if (!typeDiscount || !discountField) {
+                return;
+            }
+
+            const isGift = typeDiscount.value === 'gift';
+
+            if (isGift) {
+                discountField.value = '';
+            }
+
+            discountField.disabled = isGift;
+        };
+
+        const syncDates = () => {
+            if (!permanentInput || !datePanel) {
+                return;
+            }
+
+            const isPermanent = permanentInput.checked;
+
+            datePanel.hidden = isPermanent;
+            datePanel.querySelectorAll('input').forEach((field) => {
+                if (isPermanent) {
+                    field.value = '';
+                }
+
+                field.disabled = isPermanent;
+            });
+        };
+
+        targetTypeInputs.forEach((input) => input.addEventListener('change', syncTargetPanel));
+        typeDiscount?.addEventListener('change', syncDiscount);
+        permanentInput?.addEventListener('change', syncDates);
+        syncTargetPanel();
+        syncDiscount();
+        syncDates();
     });
 </script>

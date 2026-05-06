@@ -3,6 +3,7 @@
         ->map(fn ($id) => (string) $id)
         ->all();
     $primaryActionLabel = $method === 'POST' ? 'Crea e programma' : 'Salva e programma';
+    $cancelUrl = $campaign->exists ? route('admin.campaigns.show', $campaign) : route('admin.campaigns.index');
     $selectedScheduleWindow = old('schedule_window', data_get($campaign->metadata, 'schedule_window', 'next_available'));
     $legacySegmentMap = [
         'inactive_customers' => 'at_risk_customers',
@@ -19,7 +20,6 @@
         ->filter(fn ($promotion) => in_array((string) $promotion->id, $selectedPromotionIds, true))
         ->values();
     $previewScheduleWindowLabel = $scheduleWindows[$selectedScheduleWindow] ?? 'Prima finestra disponibile';
-    $selectedAudienceCount = $audienceCounts[$selectedSegment] ?? 0;
     $formatPromotionDiscount = function ($promotion) {
         if ($promotion->type_discount === 'gift') {
             return 'Regalo';
@@ -68,7 +68,7 @@
                 <span class="order-detail__section-icon">
                     <i class="bi bi-card-text"></i>
                 </span>
-                Dati campagna
+                Informazioni campagna
             </h3>
         </div>
 
@@ -84,13 +84,13 @@
         </div>
     </section>
 
-    <section class="order-detail__section mt-4">
+    <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
                 <span class="order-detail__section-icon">
                     <i class="bi bi-people-fill"></i>
                 </span>
-                Audience e modello
+                Segmento e modello mail
             </h3>
         </div>
 
@@ -131,6 +131,18 @@
             </div>
         </div>
 
+    </section>
+
+    <section class="order-detail__section">
+        <div class="order-detail__section-head">
+            <h3>
+                <span class="order-detail__section-icon">
+                    <i class="bi bi-calendar-plus"></i>
+                </span>
+                Programmazione
+            </h3>
+        </div>
+
         <div>
             <label class="label_c" for="schedule_window">
                 <i class="bi bi-calendar-plus"></i>
@@ -145,24 +157,22 @@
             </p>
             @error('schedule_window') <p class="error">{{ $message }}</p> @enderror
         </div>
-        <p class="menu-dashboard__copy mt-3">
-            Scegli una finestra: il sistema definisce l’orario reale evitando sovrapposizioni con altre campagne.
-        </p>
+        <p class="menu-dashboard__copy mt-3">Le email partiranno automaticamente nella finestra programmata tramite il runner marketing.</p>
     </section>
 
-    <section class="order-detail__section mt-4">
+    <section class="order-detail__section">
         <div class="order-detail__section-head">
             <h3>
                 <span class="order-detail__section-icon">
                     <i class="bi bi-megaphone-fill"></i>
                 </span>
-                            Promozione collegata
-                        </h3>
-                    </div>
+                Promozioni collegate
+            </h3>
+        </div>
 
         <label class="label_c">
             <i class="bi bi-megaphone-fill"></i>
-            Selezione promozione
+            Promozioni
         </label>
         <div class="campaign-promotion-picker" data-campaign-promotion-picker>
             @forelse ($promotions as $promotion)
@@ -207,7 +217,7 @@
                         <span class="order-detail__section-icon">
                             <i class="bi bi-eye-fill"></i>
                         </span>
-                        Anteprima campagna
+                        Riepilogo
                     </h3>
                 </div>
 
@@ -218,69 +228,31 @@
                         </span>
                         <div>
                             <strong>{{ old('name', $campaign->name) ?: 'Nome campagna' }}</strong>
-                            <small>{{ $segments[$selectedSegment] ?? 'Tutti i clienti con consenso marketing' }}</small>
                         </div>
                     </div>
 
                     <div class="marketing-form-preview__facts">
+                        @if ($campaign->exists)
+                            <div class="marketing-form-preview__fact">
+                                <span>Stato</span>
+                                <strong>{{ $statuses[$campaign->status] ?? $campaign->status }}</strong>
+                            </div>
+                        @endif
                         <div class="marketing-form-preview__fact">
-                            <span>Finestra</span>
-                            <strong data-preview-schedule-window>{{ $previewScheduleWindowLabel }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Orario reale</span>
-                            <strong>Ottimizzato</strong>
+                            <span>Segmento</span>
+                            <strong data-audience-label>{{ $segments[$selectedSegment] ?? 'Tutti i clienti' }}</strong>
                         </div>
                         <div class="marketing-form-preview__fact">
                             <span>Modello</span>
                             <strong>{{ $previewMailModel?->name ?? 'Da scegliere' }}</strong>
                         </div>
                         <div class="marketing-form-preview__fact">
-                            <span>Promozione</span>
+                            <span>Finestra</span>
+                            <strong data-preview-schedule-window>{{ $previewScheduleWindowLabel }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Promozioni</span>
                             <strong data-preview-promotion-count>{{ $previewPromotions->count() }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Audience</span>
-                            <strong data-audience-count>{{ $selectedAudienceCount }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Segmento</span>
-                            <strong data-audience-label>{{ $segments[$selectedSegment] ?? 'Tutti i clienti con consenso marketing' }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="marketing-form-preview__chips" data-preview-promotion-chips>
-                        @forelse ($previewPromotions->take(6) as $previewPromotion)
-                            <span>{{ $previewPromotion->name }}</span>
-                        @empty
-                            <span data-empty-chip>Nessuna promozione selezionata</span>
-                        @endforelse
-                        @if ($previewPromotions->count() > 6)
-                            <span>+{{ $previewPromotions->count() - 6 }}</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="marketing-form-preview__steps">
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-people-fill"></i>
-                        <div>
-                            <strong>Preview audience</strong>
-                            <small>Il conteggio usa solo clienti con consenso marketing valido.</small>
-                        </div>
-                    </div>
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-person-check-fill"></i>
-                        <div>
-                            <strong>Programmazione</strong>
-                            <small>Crea e programma prepara subito le assegnazioni, senza inviare email.</small>
-                        </div>
-                    </div>
-                    <div class="marketing-form-preview__step">
-                        <i class="bi bi-clock-history"></i>
-                        <div>
-                            <strong>Invio</strong>
-                            <small>Le email partiranno dal runner/scheduler quando arriva l'orario reale.</small>
                         </div>
                     </div>
                 </div>
@@ -288,22 +260,21 @@
         </aside>
     </div>
 
-    <section class="order-detail__section mt-4">
-        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <button class="order-detail__contact" type="submit" name="submit_action" value="activate">
-                <i class="bi bi-check2-circle"></i>
-                <span>{{ $primaryActionLabel }}</span>
-            </button>
-            <button class="order-detail__contact" type="submit" name="submit_action" value="draft">
-                <i class="bi bi-clock-history"></i>
-                <span>Completa più tardi</span>
-            </button>
-        </div>
-        <p class="menu-dashboard__copy mt-3">
-            Crea e programma prepara subito i destinatari. Le email partiranno automaticamente all’orario programmato tramite scheduler.
-        </p>
+    <div class="marketing-form-actions">
+        <a class="order-detail__contact marketing-form-action--cancel" href="{{ $cancelUrl }}">
+            <i class="bi bi-x-lg"></i>
+            <span>Annulla</span>
+        </a>
+        <button class="order-detail__contact marketing-form-action--secondary" type="submit" name="submit_action" value="draft">
+            <i class="bi bi-clock-history"></i>
+            <span>Completa più tardi</span>
+        </button>
+        <button class="order-detail__contact marketing-form-action--primary" type="submit" name="submit_action" value="activate">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ $primaryActionLabel }}</span>
+        </button>
         @error('submit_action') <p class="error">{{ $message }}</p> @enderror
-    </section>
+    </div>
 </form>
 
 <script>

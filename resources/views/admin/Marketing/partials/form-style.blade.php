@@ -64,8 +64,8 @@
 
     .marketing-form-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
-        gap: 18px;
+        grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+        gap: 22px;
         align-items: start;
         width: 100%;
         min-width: 0;
@@ -74,13 +74,48 @@
     .marketing-form-main,
     .marketing-form-sidebar {
         display: grid;
-        gap: 18px;
+        gap: 16px;
         min-width: 0;
     }
 
     .marketing-form-sidebar {
         position: sticky;
-        top: 18px;
+        top: 24px;
+    }
+
+    .marketing-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        width: 100%;
+        margin-top: 22px;
+        padding: 18px 0 4px;
+        border-top: 1px solid rgba(216, 221, 232, 0.12);
+    }
+
+    .marketing-form-actions .order-detail__contact {
+        min-height: 46px;
+        border-radius: 14px;
+        border: 1px solid rgba(216, 221, 232, 0.14);
+    }
+
+    .marketing-form-action--primary {
+        border-color: rgba(14, 183, 146, 0.46) !important;
+        background: linear-gradient(135deg, rgba(14, 183, 146, 0.95), rgba(11, 142, 116, 0.92)) !important;
+        color: #ffffff !important;
+    }
+
+    .marketing-form-action--secondary {
+        border-color: rgba(98, 166, 255, 0.26) !important;
+        background: rgba(98, 166, 255, 0.11) !important;
+        color: rgba(216, 221, 232, 0.94) !important;
+    }
+
+    .marketing-form-action--cancel {
+        background: transparent !important;
+        color: rgba(216, 221, 232, 0.82) !important;
     }
 
     .marketing-form-preview {
@@ -332,6 +367,16 @@
 
         .marketing-form-preview__facts {
             grid-template-columns: 1fr;
+        }
+
+        .marketing-form-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .marketing-form-actions .order-detail__contact {
+            width: 100%;
+            justify-content: center;
         }
     }
 </style>

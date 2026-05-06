@@ -64,7 +64,11 @@
                         $totalAssignments = (int) ($campaign->customer_promotions_count ?? 0);
                         $sentAssignments = (int) ($campaign->sent_customer_promotions_count ?? 0);
                         $pendingAssignments = max(0, $totalAssignments - $sentAssignments);
-                        $progressPercentage = $totalAssignments > 0 ? round(($sentAssignments / $totalAssignments) * 100, 2) : 0;
+                        $progressPercentage = match (true) {
+                            $totalAssignments === 0 => 0,
+                            $normalizedStatus === 'completed' => 100,
+                            default => round(($sentAssignments / $totalAssignments) * 100, 2),
+                        };
                         $scheduleWindow = data_get($campaign->metadata, 'schedule_window');
                         $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? null;
                         $legacySegmentMap = [
@@ -115,12 +119,12 @@
                             <div class="marketing-index-progress" aria-label="Avanzamento invii campagna">
                                 <div class="marketing-index-progress-track">
                                     <div class="marketing-index-progress-bar" style="width: {{ $progressPercentage }}%"></div>
-                                </div>
-                                <div class="marketing-index-meta">
-                                    <span>{{ $sentAssignments }}/{{ $totalAssignments }} invii</span>
-                                    <span class="marketing-index-extra">{{ $pendingAssignments }} in attesa</span>
-                                </div>
-                            </div>
+	                                </div>
+	                                <div class="marketing-index-meta">
+	                                    <span>{{ $sentAssignments }}/{{ $totalAssignments }}</span>
+	                                    <span class="marketing-index-extra">{{ $pendingAssignments }} in attesa</span>
+	                                </div>
+	                            </div>
                         </div>
 
                         <div class="marketing-index-actions">
