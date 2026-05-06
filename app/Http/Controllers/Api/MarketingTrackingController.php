@@ -45,7 +45,7 @@ class MarketingTrackingController extends Controller
             }
         }
 
-        return redirect()->to($this->safeRedirectUrl($request->query('redirect')));
+        return redirect()->away($this->safeRedirectUrl($request->query('redirect')));
     }
 
     private function findCustomerPromotion(string $token): ?CustomerPromotion
@@ -68,28 +68,88 @@ class MarketingTrackingController extends Controller
 
     private function safeRedirectUrl(mixed $redirect): string
     {
+        $fallback = $this->publicBaseUrl();
+
         if (! is_string($redirect) || $redirect === '' || strlen($redirect) > 2048) {
-            return '/';
+            return $fallback;
         }
 
         if (preg_match('/[\r\n]/', $redirect)) {
-            return '/';
+            return $fallback;
         }
 
-        if (! str_starts_with($redirect, '/')) {
-            return '/';
+        if (str_contains($redirect, '\\')) {
+            return $fallback;
         }
 
-        if (str_starts_with($redirect, '//') || str_starts_with($redirect, '/\\') || str_contains($redirect, '\\')) {
-            return '/';
+        if ($this->isRelativeRedirectPath($redirect)) {
+            return $this->publicUrl($redirect);
         }
 
         $parts = parse_url($redirect);
 
-        if ($parts === false || isset($parts['scheme']) || isset($parts['host'])) {
-            return '/';
+        if ($parts === false || ! isset($parts['scheme'], $parts['host'])) {
+            return $fallback;
+        }
+
+        if (! in_array(strtolower((string) $parts['scheme']), ['http', 'https'], true)) {
+            return $fallback;
+        }
+
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            return $fallback;
+        }
+
+        if (strtolower((string) $parts['host']) !== $this->publicHost()) {
+            return $fallback;
         }
 
         return $redirect;
+    }
+
+    private function isRelativeRedirectPath(string $redirect): bool
+    {
+        if (! str_starts_with($redirect, '/')) {
+            return false;
+        }
+
+        if (str_starts_with($redirect, '//') || str_starts_with($redirect, '/\\')) {
+            return false;
+        }
+
+        $parts = parse_url($redirect);
+
+        return $parts !== false && ! isset($parts['scheme'], $parts['host']);
+    }
+
+    private function publicUrl(string $path): string
+    {
+        return $this->publicBaseUrl() . '/' . ltrim($path, '/');
+    }
+
+    private function publicBaseUrl(): string
+    {
+        $baseUrl = rtrim(trim((string) (
+            config('configurazione.domain')
+                ?: env('DOMAIN')
+                ?: config('app.url')
+                ?: config('configurazione.APP_URL')
+                ?: url('/')
+        )), '/');
+
+        if ($baseUrl === '') {
+            return url('/');
+        }
+
+        if (! preg_match('#^https?://#i', $baseUrl)) {
+            $baseUrl = 'https://' . ltrim($baseUrl, '/');
+        }
+
+        return $baseUrl;
+    }
+
+    private function publicHost(): string
+    {
+        return strtolower((string) parse_url($this->publicBaseUrl(), PHP_URL_HOST));
     }
 }

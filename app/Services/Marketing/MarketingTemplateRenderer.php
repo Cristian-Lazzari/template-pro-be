@@ -88,10 +88,10 @@ class MarketingTemplateRenderer
         $customerName = trim($customerFirstName . ' ' . $customerLastName);
         $trackingToken = (string) ($customerPromotion->tracking_token ?? '');
         $trackingOpenUrl = $this->trackingOpenUrl($trackingToken);
-        $promotionRedirectPath = $promotion
-            ? $this->resolvePromotionRedirectPath($promotion)
-            : '/';
-        $trackingClickUrl = $this->trackingClickUrl($trackingToken, $promotionRedirectPath);
+        $promotionRedirectUrl = $promotion
+            ? $this->resolvePublicPromotionUrl($promotion)
+            : $this->publicBaseUrl();
+        $trackingClickUrl = $this->trackingClickUrl($trackingToken, $promotionRedirectUrl);
         $promotionTypeDiscount = (string) ($promotion?->type_discount ?? '');
         $campaignName = (string) ($customerPromotion->campaign?->name ?? '');
         $automationName = (string) ($customerPromotion->automation?->name ?? '');
@@ -104,7 +104,7 @@ class MarketingTemplateRenderer
             'customer_phone' => (string) ($customer?->phone ?? ''),
             'promotion_name' => (string) ($promotion?->name ?? ''),
             'promotion_slug' => (string) ($promotion?->slug ?? ''),
-            'promotion_cta' => $promotionRedirectPath,
+            'promotion_cta' => $promotionRedirectUrl,
             'promotion_discount' => $promotion?->discount !== null ? (string) $promotion->discount : '',
             'promotion_type_discount' => $promotionTypeDiscount,
             'promotion_expiring_at' => $promotion?->expiring_at
@@ -329,18 +329,18 @@ class MarketingTemplateRenderer
     private function trackingOpenUrl(string $token): string
     {
         if ($token !== '' && Route::has('api.marketing.open')) {
-            return $this->absoluteUrl(route('api.marketing.open', ['token' => $token], false));
+            return $this->dashboardUrl(route('api.marketing.open', ['token' => $token], false));
         }
 
-        return $this->absoluteUrl('/api/marketing/open/' . rawurlencode($token));
+        return $this->dashboardUrl('/api/marketing/open/' . rawurlencode($token));
     }
 
     private function trackingClickUrl(string $token, ?string $redirect): string
     {
-        $safeRedirect = $this->safeRedirectUrl($redirect);
+        $safeRedirect = $this->safePublicRedirectUrl($redirect);
 
         if ($token !== '' && Route::has('api.marketing.click')) {
-            return $this->absoluteUrl(route(
+            return $this->dashboardUrl(route(
                 'api.marketing.click',
                 [
                     'token' => $token,
@@ -350,66 +350,89 @@ class MarketingTemplateRenderer
             ));
         }
 
-        return $this->absoluteUrl(
+        return $this->dashboardUrl(
             '/api/marketing/click/' . rawurlencode($token)
             . '?redirect=' . rawurlencode($safeRedirect)
         );
     }
 
-    private function resolvePromotionRedirectPath(Promotion $promotion): string
+    private function resolvePublicPromotionUrl(Promotion $promotion): string
     {
         return match ($promotion->case_use) {
-            'take_away', 'delivery' => '/ordina',
-            'table' => '/check-out',
-            default => $this->safeRedirectUrl($promotion->cta),
+            'take_away', 'delivery' => $this->publicUrl('/ordina'),
+            'table' => $this->publicUrl('/check-out'),
+            default => $this->safePublicRedirectUrl($promotion->cta),
         };
     }
 
-    private function safeRedirectUrl(?string $redirect): string
+    private function safePublicRedirectUrl(?string $redirect): string
     {
         if (! is_string($redirect) || $redirect === '' || strlen($redirect) > 2048) {
-            return '/';
+            return $this->publicBaseUrl();
         }
 
         if (preg_match('/[\r\n]/', $redirect)) {
-            return '/';
+            return $this->publicBaseUrl();
         }
 
-        if (! str_starts_with($redirect, '/')) {
-            return '/';
+        if (str_contains($redirect, '\\')) {
+            return $this->publicBaseUrl();
         }
 
-        if (str_starts_with($redirect, '//') || str_starts_with($redirect, '/\\') || str_contains($redirect, '\\')) {
-            return '/';
+        if ($this->isRelativeRedirectPath($redirect)) {
+            return $this->publicUrl($redirect);
         }
 
         $parts = parse_url($redirect);
 
-        if ($parts === false || isset($parts['scheme']) || isset($parts['host'])) {
-            return '/';
+        if ($parts === false || ! isset($parts['scheme'], $parts['host'])) {
+            return $this->publicBaseUrl();
+        }
+
+        if (! in_array(strtolower((string) $parts['scheme']), ['http', 'https'], true)) {
+            return $this->publicBaseUrl();
+        }
+
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            return $this->publicBaseUrl();
+        }
+
+        if (strtolower((string) $parts['host']) !== $this->publicHost()) {
+            return $this->publicBaseUrl();
         }
 
         return $redirect;
     }
 
-    private function absoluteUrl(string $path): string
+    private function isRelativeRedirectPath(string $redirect): bool
+    {
+        if (! str_starts_with($redirect, '/')) {
+            return false;
+        }
+
+        if (str_starts_with($redirect, '//') || str_starts_with($redirect, '/\\')) {
+            return false;
+        }
+
+        $parts = parse_url($redirect);
+
+        return $parts !== false && ! isset($parts['scheme'], $parts['host']);
+    }
+
+    private function dashboardUrl(string $path): string
+    {
+        return $this->absoluteUrl($path, $this->dashboardBaseUrl());
+    }
+
+    private function publicUrl(string $path): string
+    {
+        return $this->absoluteUrl($path, $this->publicBaseUrl());
+    }
+
+    private function absoluteUrl(string $path, string $baseUrl): string
     {
         if (preg_match('#^https?://#i', $path)) {
             return $path;
-        }
-
-        $baseUrl = rtrim((string) config('configurazione.domain'), '/');
-
-        if ($baseUrl === '') {
-            $baseUrl = rtrim((string) env('DOMAIN'), '/');
-        }
-
-        if ($baseUrl === '') {
-            $baseUrl = rtrim((string) config('app.url'), '/');
-        }
-
-        if ($baseUrl === '') {
-            $baseUrl = rtrim((string) config('configurazione.APP_URL'), '/');
         }
 
         if ($baseUrl === '') {
@@ -417,5 +440,46 @@ class MarketingTemplateRenderer
         }
 
         return $baseUrl . '/' . ltrim($path, '/');
+    }
+
+    private function publicBaseUrl(): string
+    {
+        return $this->normalizeBaseUrl(
+            config('configurazione.domain')
+                ?: env('DOMAIN')
+                ?: config('app.url')
+                ?: config('configurazione.APP_URL')
+                ?: url('/')
+        );
+    }
+
+    private function dashboardBaseUrl(): string
+    {
+        return $this->normalizeBaseUrl(
+            config('app.url')
+                ?: config('configurazione.APP_URL')
+                ?: env('APP_URL')
+                ?: url('/')
+        );
+    }
+
+    private function normalizeBaseUrl(?string $baseUrl): string
+    {
+        $baseUrl = rtrim(trim((string) $baseUrl), '/');
+
+        if ($baseUrl === '') {
+            return '';
+        }
+
+        if (! preg_match('#^https?://#i', $baseUrl)) {
+            $baseUrl = 'https://' . ltrim($baseUrl, '/');
+        }
+
+        return $baseUrl;
+    }
+
+    private function publicHost(): string
+    {
+        return strtolower((string) parse_url($this->publicBaseUrl(), PHP_URL_HOST));
     }
 }
