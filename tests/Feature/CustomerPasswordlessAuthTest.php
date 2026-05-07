@@ -274,7 +274,9 @@ class CustomerPasswordlessAuthTest extends TestCase
         ])
             ->assertOk()
             ->assertJsonPath('customer.account_state', 'registered')
-            ->assertJsonPath('customer.marketing_state', 'full');
+            ->assertJsonPath('customer.marketing_state', 'full')
+            ->assertJsonPath('customer.email_marketing_enabled', true)
+            ->assertJsonPath('customer.profiling_enabled', true);
 
         $this->patchJson('/api/auth/consents', [
             'marketing_enabled' => false,
@@ -289,8 +291,251 @@ class CustomerPasswordlessAuthTest extends TestCase
 
         $customer = Customer::query()->findOrFail($customerId);
         $this->assertNotNull($customer->registered_at);
-        $this->assertNull($customer->marketing_consent_at);
+        $this->assertNotNull($customer->marketing_consent_at);
+        $this->assertNull($customer->email_marketing_consent_at);
         $this->assertNull($customer->profiling_consent_at);
+        $this->assertNotNull($customer->consents_updated_at);
+    }
+
+    public function test_account_update_consents_true_sets_explicit_customer_consents(): void
+    {
+        $customer = Customer::query()->create([
+            'name' => 'Account',
+            'surname' => 'Consensi',
+            'email' => 'account-consents@example.com',
+            'phone' => '3331112222',
+        ]);
+        $token = $customer->createToken('customer-api')->plainTextToken;
+
+        $this->patchJson('/api/auth/consents', [
+            'email_marketing_enabled' => true,
+            'whatsapp_marketing_enabled' => true,
+            'profiling_enabled' => true,
+            'tracking_enabled' => true,
+            'privacy_accepted' => true,
+            'privacy_version' => 'privacy-v2',
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ])
+            ->assertOk()
+            ->assertJsonPath('customer.email_marketing_enabled', true)
+            ->assertJsonPath('customer.whatsapp_marketing_enabled', true)
+            ->assertJsonPath('customer.profiling_enabled', true)
+            ->assertJsonPath('customer.tracking_enabled', true)
+            ->assertJsonPath('customer.privacy_accepted', true)
+            ->assertJsonPath('customer.privacy_accepted_version', 'privacy-v2');
+
+        $customer->refresh();
+        $this->assertNotNull($customer->email_marketing_consent_at);
+        $this->assertNotNull($customer->marketing_consent_at);
+        $this->assertNotNull($customer->whatsapp_marketing_consent_at);
+        $this->assertNotNull($customer->profiling_consent_at);
+        $this->assertNotNull($customer->tracking_consent_at);
+        $this->assertNotNull($customer->privacy_accepted_at);
+        $this->assertSame('privacy-v2', $customer->privacy_accepted_version);
+        $this->assertNotNull($customer->consents_updated_at);
+    }
+
+    public function test_account_update_consents_false_revokes_optional_consents_only(): void
+    {
+        $originalConsentAt = now()->subDay()->startOfSecond();
+
+        $customer = Customer::query()->create([
+            'name' => 'Account',
+            'surname' => 'Revoche',
+            'email' => 'account-revokes@example.com',
+            'phone' => '3331112222',
+            'marketing_consent_at' => $originalConsentAt,
+            'email_marketing_consent_at' => $originalConsentAt,
+            'whatsapp_marketing_consent_at' => $originalConsentAt,
+            'profiling_consent_at' => $originalConsentAt,
+            'tracking_consent_at' => $originalConsentAt,
+            'privacy_accepted_at' => $originalConsentAt,
+            'privacy_accepted_version' => 'privacy-v1',
+        ]);
+        $token = $customer->createToken('customer-api')->plainTextToken;
+
+        $this->patchJson('/api/auth/consents', [
+            'email_marketing_enabled' => false,
+            'whatsapp_marketing_enabled' => false,
+            'profiling_enabled' => false,
+            'tracking_enabled' => false,
+            'privacy_accepted' => false,
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ])
+            ->assertOk()
+            ->assertJsonPath('customer.marketing_enabled', false)
+            ->assertJsonPath('customer.email_marketing_enabled', false)
+            ->assertJsonPath('customer.whatsapp_marketing_enabled', false)
+            ->assertJsonPath('customer.profiling_enabled', false)
+            ->assertJsonPath('customer.tracking_enabled', false)
+            ->assertJsonPath('customer.privacy_accepted', true);
+
+        $customer->refresh();
+        $this->assertSame($originalConsentAt->toDateTimeString(), $customer->marketing_consent_at->toDateTimeString());
+        $this->assertNull($customer->email_marketing_consent_at);
+        $this->assertNull($customer->whatsapp_marketing_consent_at);
+        $this->assertNull($customer->profiling_consent_at);
+        $this->assertNull($customer->tracking_consent_at);
+        $this->assertSame($originalConsentAt->toDateTimeString(), $customer->privacy_accepted_at->toDateTimeString());
+        $this->assertSame('privacy-v1', $customer->privacy_accepted_version);
+        $this->assertNotNull($customer->consents_updated_at);
+    }
+
+    public function test_account_legacy_marketing_enabled_updates_email_marketing_consent(): void
+    {
+        $customer = Customer::query()->create([
+            'name' => 'Legacy',
+            'surname' => 'Marketing',
+            'email' => 'legacy-marketing@example.com',
+            'phone' => '3331112222',
+        ]);
+        $token = $customer->createToken('customer-api')->plainTextToken;
+
+        $this->patchJson('/api/auth/consents', [
+            'marketing_enabled' => true,
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ])
+            ->assertOk()
+            ->assertJsonPath('customer.marketing_enabled', true)
+            ->assertJsonPath('customer.email_marketing_enabled', true);
+
+        $customer->refresh();
+        $this->assertNotNull($customer->email_marketing_consent_at);
+        $this->assertNotNull($customer->marketing_consent_at);
+    }
+
+    public function test_auth_me_response_contains_explicit_consents_and_settings(): void
+    {
+        $consentAt = now()->subHour()->startOfSecond();
+        $customer = Customer::query()->create([
+            'name' => 'Me',
+            'surname' => 'Consensi',
+            'email' => 'me-consents@example.com',
+            'phone' => '3331112222',
+            'email_marketing_consent_at' => $consentAt,
+            'whatsapp_marketing_consent_at' => $consentAt,
+            'profiling_consent_at' => $consentAt,
+            'tracking_consent_at' => $consentAt,
+            'privacy_accepted_at' => $consentAt,
+            'privacy_accepted_version' => 'privacy-v3',
+        ]);
+        $token = $customer->createToken('customer-api')->plainTextToken;
+
+        $this->getJson('/api/auth/me', [
+            'Authorization' => 'Bearer ' . $token,
+        ])
+            ->assertOk()
+            ->assertJsonPath('customer.email_marketing_enabled', true)
+            ->assertJsonPath('customer.whatsapp_marketing_enabled', true)
+            ->assertJsonPath('customer.profiling_enabled', true)
+            ->assertJsonPath('customer.tracking_enabled', true)
+            ->assertJsonPath('customer.privacy_accepted', true)
+            ->assertJsonPath('customer.privacy_accepted_version', 'privacy-v3')
+            ->assertJsonPath('profile_settings.email_marketing_label', 'Voglio ricevere offerte e promozioni via email')
+            ->assertJsonPath('profile_settings.accept_all_label', 'Accetta tutti e ricevi promozioni e offerte personalizzate');
+    }
+
+    public function test_checkout_consents_store_explicit_customer_consents(): void
+    {
+        $customer = Customer::query()->create([
+            'name' => 'Consenso',
+            'surname' => 'Esplicito',
+            'email' => 'explicit-consents@example.com',
+            'phone' => '3331112222',
+        ]);
+
+        $updated = app(CustomerAccessService::class)->applyCheckoutConsents($customer, [
+            'privacy_accepted' => true,
+            'privacy_version' => 'privacy-v1',
+            'email_marketing_enabled' => true,
+            'whatsapp_marketing_enabled' => true,
+            'profiling_enabled' => true,
+            'tracking_enabled' => true,
+        ]);
+
+        $this->assertNotNull($updated->privacy_accepted_at);
+        $this->assertSame('privacy-v1', $updated->privacy_accepted_version);
+        $this->assertNotNull($updated->email_marketing_consent_at);
+        $this->assertNotNull($updated->marketing_consent_at);
+        $this->assertNotNull($updated->whatsapp_marketing_consent_at);
+        $this->assertNotNull($updated->profiling_consent_at);
+        $this->assertNotNull($updated->tracking_consent_at);
+        $this->assertNotNull($updated->consents_updated_at);
+    }
+
+    public function test_checkout_legacy_newsletter_sets_email_marketing_consent(): void
+    {
+        $customer = Customer::query()->create([
+            'name' => 'Newsletter',
+            'surname' => 'Legacy',
+            'email' => 'legacy-newsletter@example.com',
+            'phone' => '3331112222',
+        ]);
+
+        $updated = app(CustomerAccessService::class)->applyCheckoutConsents($customer, [
+            'news_letter' => true,
+        ]);
+
+        $this->assertNotNull($updated->email_marketing_consent_at);
+        $this->assertNotNull($updated->marketing_consent_at);
+        $this->assertNotNull($updated->consents_updated_at);
+    }
+
+    public function test_checkout_false_values_do_not_revoke_existing_consents(): void
+    {
+        $originalConsentAt = now()->subDay()->startOfSecond();
+
+        $customer = Customer::query()->create([
+            'name' => 'No',
+            'surname' => 'Revoca',
+            'email' => 'no-revoke@example.com',
+            'phone' => '3331112222',
+            'marketing_consent_at' => $originalConsentAt,
+            'email_marketing_consent_at' => $originalConsentAt,
+            'whatsapp_marketing_consent_at' => $originalConsentAt,
+            'profiling_consent_at' => $originalConsentAt,
+            'tracking_consent_at' => $originalConsentAt,
+            'privacy_accepted_at' => $originalConsentAt,
+            'privacy_accepted_version' => 'privacy-v1',
+        ]);
+
+        $updated = app(CustomerAccessService::class)->applyCheckoutConsents($customer, [
+            'privacy_accepted' => false,
+            'email_marketing_enabled' => false,
+            'whatsapp_marketing_enabled' => false,
+            'profiling_enabled' => false,
+            'tracking_enabled' => false,
+        ]);
+
+        $this->assertSame($originalConsentAt->toDateTimeString(), $updated->privacy_accepted_at->toDateTimeString());
+        $this->assertSame('privacy-v1', $updated->privacy_accepted_version);
+        $this->assertSame($originalConsentAt->toDateTimeString(), $updated->marketing_consent_at->toDateTimeString());
+        $this->assertSame($originalConsentAt->toDateTimeString(), $updated->email_marketing_consent_at->toDateTimeString());
+        $this->assertSame($originalConsentAt->toDateTimeString(), $updated->whatsapp_marketing_consent_at->toDateTimeString());
+        $this->assertSame($originalConsentAt->toDateTimeString(), $updated->profiling_consent_at->toDateTimeString());
+        $this->assertSame($originalConsentAt->toDateTimeString(), $updated->tracking_consent_at->toDateTimeString());
+        $this->assertNull($updated->consents_updated_at);
+    }
+
+    public function test_checkout_legacy_payload_without_privacy_is_still_accepted_for_now(): void
+    {
+        $customer = Customer::query()->create([
+            'name' => 'Payload',
+            'surname' => 'Legacy',
+            'email' => 'legacy-payload@example.com',
+            'phone' => '3331112222',
+        ]);
+
+        $updated = app(CustomerAccessService::class)->applyCheckoutConsents($customer, [
+            'news_letter' => false,
+        ]);
+
+        $this->assertNull($updated->privacy_accepted_at);
+        $this->assertNull($updated->email_marketing_consent_at);
+        $this->assertNull($updated->consents_updated_at);
     }
 
     public function test_customer_lookup_keeps_email_as_primary_identifier(): void

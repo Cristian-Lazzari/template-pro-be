@@ -28,7 +28,10 @@ class CustomerPromotionService
         self::STATUS_USED => 4,
     ];
 
-    public function __construct(private PromotionEligibilityService $eligibilityService)
+    public function __construct(
+        private PromotionEligibilityService $eligibilityService,
+        private MarketingConsentService $marketingConsentService
+    )
     {
     }
 
@@ -114,6 +117,10 @@ class CustomerPromotionService
     {
         $this->ensurePersisted($customerPromotion, 'CustomerPromotion');
 
+        if (! $this->canTrackMarketingInteraction($customerPromotion)) {
+            return $customerPromotion->refresh();
+        }
+
         return DB::transaction(function () use ($customerPromotion) {
             $customerPromotion = $this->lockCustomerPromotion($customerPromotion);
 
@@ -131,6 +138,10 @@ class CustomerPromotionService
     public function markClicked(CustomerPromotion $customerPromotion): CustomerPromotion
     {
         $this->ensurePersisted($customerPromotion, 'CustomerPromotion');
+
+        if (! $this->canTrackMarketingInteraction($customerPromotion)) {
+            return $customerPromotion->refresh();
+        }
 
         return DB::transaction(function () use ($customerPromotion) {
             $customerPromotion = $this->lockCustomerPromotion($customerPromotion);
@@ -220,6 +231,13 @@ class CustomerPromotionService
         } while (CustomerPromotion::query()->where('tracking_token', $token)->exists());
 
         return $token;
+    }
+
+    private function canTrackMarketingInteraction(CustomerPromotion $customerPromotion): bool
+    {
+        $customerPromotion->loadMissing('customer');
+
+        return $this->marketingConsentService->customerHasTrackingConsent($customerPromotion->customer);
     }
 
     private function incrementAssignmentCounters(Promotion $promotion, ?Campaign $campaign, ?Automation $automation): void

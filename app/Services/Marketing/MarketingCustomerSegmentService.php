@@ -28,7 +28,8 @@ class MarketingCustomerSegmentService
     ];
 
     public function __construct(
-        private CustomerSegmentService $customerSegmentService
+        private CustomerSegmentService $customerSegmentService,
+        private MarketingConsentService $marketingConsentService
     ) {
     }
 
@@ -40,8 +41,7 @@ class MarketingCustomerSegmentService
     public function queryForSegment(?string $segment): Builder
     {
         $normalizedSegment = $this->normalizeSegment($segment);
-        $query = Customer::query()
-            ->whereNotNull('marketing_consent_at');
+        $query = $this->marketingConsentService->applyEmailMarketingConsent(Customer::query());
 
         if ($normalizedSegment !== 'all') {
             $customerIds = $this->customerIdsForSegment($normalizedSegment);

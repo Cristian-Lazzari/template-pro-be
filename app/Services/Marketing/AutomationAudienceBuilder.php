@@ -22,6 +22,10 @@ class AutomationAudienceBuilder
 
     private ?array $customerColumns = null;
 
+    public function __construct(private MarketingConsentService $marketingConsentService)
+    {
+    }
+
     public function queryForAutomation(Automation $automation): Builder
     {
         $query = Customer::query();
@@ -81,13 +85,7 @@ class AutomationAudienceBuilder
 
     private function applyMarketingConsent(Builder $query): void
     {
-        if ($this->hasCustomerColumn('marketing_consent_at')) {
-            $query->whereNotNull('marketing_consent_at');
-
-            return;
-        }
-
-        $this->applyEmptyResult($query);
+        $this->marketingConsentService->applyEmailMarketingConsent($query);
     }
 
     private function applyOrderInactiveTrigger(Builder $query): void

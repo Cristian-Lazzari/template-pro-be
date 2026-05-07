@@ -42,6 +42,13 @@ class OrderController extends Controller
         'phone'     => 'required|string|max:20',
         'email'     => 'required|email|max:100',
         'message'   => 'nullable|string|max:1000',
+        'privacy_accepted' => 'sometimes|accepted',
+        'privacy_version' => 'nullable|string|max:50',
+        'email_marketing_enabled' => 'nullable|boolean',
+        'whatsapp_marketing_enabled' => 'nullable|boolean',
+        'profiling_enabled' => 'nullable|boolean',
+        'tracking_enabled' => 'nullable|boolean',
+        'news_letter' => 'nullable|boolean',
     ];
 
     public function store(Request $request)
@@ -85,6 +92,8 @@ class OrderController extends Controller
                     'phone' => $data['phone'] ?? null,
                 ], $request->boolean('news_letter'));
 
+                $authenticatedCustomer = $this->customerAccessService->applyCheckoutConsents($authenticatedCustomer, $data);
+
                 if ($request->boolean('save_details')) {
                     $customerAuthPayload = [
                         'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
@@ -97,6 +106,7 @@ class OrderController extends Controller
                     'surname' => $data['surname'] ?? null,
                     'phone' => $data['phone'] ?? null,
                 ]);
+                $authenticatedCustomer = $this->customerAccessService->applyCheckoutConsents($authenticatedCustomer, $data);
             }
         } catch (ValidationException $e) {
             $this->sendFailureAlert($request, [
@@ -230,7 +240,7 @@ class OrderController extends Controller
             $newOrder->phone = $data['phone'];
             $newOrder->email = $data['email'];
             $newOrder->message = $data['message'];
-            $newOrder->news_letter = $data['news_letter'];
+            $newOrder->news_letter = $this->legacyNewsletterOptIn($data);
             $tot_delivery_cost = 0;
             $newOrder->status = $data['paying'] ? 4 : 2;
             if (isset($data['comune'])) {
@@ -691,6 +701,19 @@ class OrderController extends Controller
     private function customerPayload(Customer $customer): array
     {
         return $customer->toApiPayload();
+    }
+
+    private function legacyNewsletterOptIn(array $data): bool
+    {
+        if (array_key_exists('news_letter', $data)) {
+            return filter_var($data['news_letter'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if (array_key_exists('email_marketing_enabled', $data)) {
+            return filter_var($data['email_marketing_enabled'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        return false;
     }
 
     private function orderFailureResponse(Request $request, string $message, array $response = [], array $context = [], int $status = 200)

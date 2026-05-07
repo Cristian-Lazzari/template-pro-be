@@ -30,14 +30,34 @@ class CustomerProfileSettingsService
 
     public function update(array $input): array
     {
+        $current = $this->get();
+
         $payload = [
             'marketing_consent_text' => $this->sanitizeText(
-                $input['marketing_consent_text'] ?? $this->defaults()['marketing_consent_text']
+                $input['marketing_consent_text'] ?? $current['marketing_consent_text']
             ),
             'profiling_consent_text' => $this->sanitizeText(
-                $input['profiling_consent_text'] ?? $this->defaults()['profiling_consent_text']
+                $input['profiling_consent_text'] ?? $current['profiling_consent_text']
             ),
-            'questions' => $this->normalizeQuestions($input['questions'] ?? []),
+            'email_marketing_label' => $this->sanitizeText(
+                $input['email_marketing_label'] ?? $current['email_marketing_label']
+            ),
+            'whatsapp_marketing_label' => $this->sanitizeText(
+                $input['whatsapp_marketing_label'] ?? $current['whatsapp_marketing_label']
+            ),
+            'profiling_label' => $this->sanitizeText(
+                $input['profiling_label'] ?? $current['profiling_label']
+            ),
+            'tracking_label' => $this->sanitizeText(
+                $input['tracking_label'] ?? $current['tracking_label']
+            ),
+            'privacy_label' => $this->sanitizeText(
+                $input['privacy_label'] ?? $current['privacy_label']
+            ),
+            'accept_all_label' => $this->sanitizeText(
+                $input['accept_all_label'] ?? $current['accept_all_label']
+            ),
+            'questions' => $this->normalizeQuestions($input['questions'] ?? $current['questions'] ?? []),
         ];
 
         Setting::query()->updateOrCreate(
@@ -113,6 +133,12 @@ class CustomerProfileSettingsService
         return [
             'marketing_consent_text' => 'Vuoi ricevere novita, eventi e offerte del ristorante via email?',
             'profiling_consent_text' => 'Vuoi ricevere promozioni personalizzate in base ai tuoi gusti e alle tue preferenze?',
+            'email_marketing_label' => 'Voglio ricevere offerte e promozioni via email',
+            'whatsapp_marketing_label' => 'Voglio ricevere offerte e promozioni via WhatsApp',
+            'profiling_label' => 'Acconsento alla profilazione per ricevere offerte piu pertinenti',
+            'tracking_label' => 'Acconsento al tracking delle interazioni marketing, come aperture e click',
+            'privacy_label' => 'Accetto l\'informativa privacy e autorizzo il trattamento dei dati necessari per gestire ordine/prenotazione.',
+            'accept_all_label' => 'Accetta tutti e ricevi promozioni e offerte personalizzate',
             'questions' => [],
         ];
     }

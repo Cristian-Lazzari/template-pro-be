@@ -138,7 +138,12 @@ class CustomerAuthController extends Controller
             'age' => ['required', 'integer', 'min:1', 'max:120'],
             'profile_answers' => ['nullable', 'array'],
             'marketing_enabled' => ['nullable', 'boolean'],
+            'email_marketing_enabled' => ['nullable', 'boolean'],
+            'whatsapp_marketing_enabled' => ['nullable', 'boolean'],
             'profiling_enabled' => ['nullable', 'boolean'],
+            'tracking_enabled' => ['nullable', 'boolean'],
+            'privacy_accepted' => ['nullable', 'boolean'],
+            'privacy_version' => ['nullable', 'string', 'max:50'],
         ]);
 
         $customer->name = trim((string) $data['name']);
@@ -157,11 +162,7 @@ class CustomerAuthController extends Controller
             ]);
         }
 
-        $this->applyConsentPreferences(
-            $customer,
-            $request->boolean('marketing_enabled'),
-            $request->boolean('profiling_enabled')
-        );
+        $this->applyAccountConsentPreferences($customer, $data);
 
         $customer->registered_at = $customer->registered_at ?: now();
         $customer->save();
@@ -181,15 +182,16 @@ class CustomerAuthController extends Controller
         }
 
         $data = $request->validate([
-            'marketing_enabled' => ['required', 'boolean'],
-            'profiling_enabled' => ['required', 'boolean'],
+            'marketing_enabled' => ['nullable', 'boolean'],
+            'email_marketing_enabled' => ['nullable', 'boolean'],
+            'whatsapp_marketing_enabled' => ['nullable', 'boolean'],
+            'profiling_enabled' => ['nullable', 'boolean'],
+            'tracking_enabled' => ['nullable', 'boolean'],
+            'privacy_accepted' => ['nullable', 'boolean'],
+            'privacy_version' => ['nullable', 'string', 'max:50'],
         ]);
 
-        $this->applyConsentPreferences(
-            $customer,
-            (bool) $data['marketing_enabled'],
-            (bool) $data['profiling_enabled']
-        );
+        $this->applyAccountConsentPreferences($customer, $data);
 
         $customer->save();
 
@@ -274,19 +276,104 @@ class CustomerAuthController extends Controller
         return $customer->toApiPayload();
     }
 
-    private function applyConsentPreferences(Customer $customer, bool $marketingEnabled, bool $profilingEnabled): void
+    private function applyAccountConsentPreferences(Customer $customer, array $data): void
     {
-        if (!$marketingEnabled) {
-            $customer->marketing_consent_at = null;
-            $customer->profiling_consent_at = null;
+        $payload = $this->normalizeAccountConsentPayload($data);
+        $now = now();
 
-            return;
+        if (array_key_exists('email_marketing_enabled', $payload)) {
+            if ($payload['email_marketing_enabled']) {
+                $customer->email_marketing_consent_at = $now;
+                $customer->marketing_consent_at = $customer->marketing_consent_at ?: $now;
+            } else {
+                $customer->email_marketing_consent_at = null;
+            }
         }
 
-        $customer->marketing_consent_at = $customer->marketing_consent_at ?: now();
-        $customer->profiling_consent_at = $profilingEnabled
-            ? ($customer->profiling_consent_at ?: now())
-            : null;
+        if (array_key_exists('whatsapp_marketing_enabled', $payload)) {
+            $customer->whatsapp_marketing_consent_at = $payload['whatsapp_marketing_enabled']
+                ? $now
+                : null;
+        }
+
+        if (array_key_exists('profiling_enabled', $payload)) {
+            $customer->profiling_consent_at = $payload['profiling_enabled']
+                ? $now
+                : null;
+        }
+
+        if (array_key_exists('tracking_enabled', $payload)) {
+            $customer->tracking_consent_at = $payload['tracking_enabled']
+                ? $now
+                : null;
+        }
+
+        if (($payload['privacy_accepted'] ?? null) === true) {
+            $customer->privacy_accepted_at = $now;
+            $customer->privacy_accepted_version = $this->privacyVersionFromPayload($payload);
+        }
+
+        if ($customer->isDirty([
+            'email_marketing_consent_at',
+            'whatsapp_marketing_consent_at',
+            'profiling_consent_at',
+            'tracking_consent_at',
+            'privacy_accepted_at',
+            'privacy_accepted_version',
+        ])) {
+            $customer->consents_updated_at = $now;
+        }
+    }
+
+    private function normalizeAccountConsentPayload(array $data): array
+    {
+        if (
+            (!array_key_exists('email_marketing_enabled', $data) || $data['email_marketing_enabled'] === null)
+            && array_key_exists('marketing_enabled', $data)
+            && $data['marketing_enabled'] !== null
+        ) {
+            $data['email_marketing_enabled'] = $data['marketing_enabled'];
+        }
+
+        $payload = [];
+        foreach ([
+            'email_marketing_enabled',
+            'whatsapp_marketing_enabled',
+            'profiling_enabled',
+            'tracking_enabled',
+            'privacy_accepted',
+        ] as $key) {
+            $value = $this->nullableBoolean($data, $key);
+            if ($value !== null) {
+                $payload[$key] = $value;
+            }
+        }
+
+        if (array_key_exists('privacy_version', $data)) {
+            $payload['privacy_version'] = $data['privacy_version'];
+        }
+
+        return $payload;
+    }
+
+    private function nullableBoolean(array $data, string $key): ?bool
+    {
+        if (!array_key_exists($key, $data) || $data[$key] === null) {
+            return null;
+        }
+
+        return filter_var($data[$key], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    }
+
+    private function privacyVersionFromPayload(array $payload): string
+    {
+        $version = $payload['privacy_version'] ?? null;
+
+        if (is_string($version)) {
+            $version = trim($version);
+        }
+
+        return $version !== null && $version !== '' ? (string) $version : 'default';
     }
 
     private function nullableTrimmed($value): ?string

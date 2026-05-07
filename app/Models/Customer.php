@@ -21,7 +21,13 @@ class Customer extends Authenticatable
         'profile_answers',
         'registered_at',
         'marketing_consent_at',
+        'email_marketing_consent_at',
+        'whatsapp_marketing_consent_at',
         'profiling_consent_at',
+        'tracking_consent_at',
+        'privacy_accepted_at',
+        'privacy_accepted_version',
+        'consents_updated_at',
         'email_verified_at',
         'customer_score',
         'lifecycle_segment',
@@ -37,7 +43,12 @@ class Customer extends Authenticatable
         'email_verified_at' => 'datetime',
         'registered_at' => 'datetime',
         'marketing_consent_at' => 'datetime',
+        'email_marketing_consent_at' => 'datetime',
+        'whatsapp_marketing_consent_at' => 'datetime',
         'profiling_consent_at' => 'datetime',
+        'tracking_consent_at' => 'datetime',
+        'privacy_accepted_at' => 'datetime',
+        'consents_updated_at' => 'datetime',
         'profile_answers' => 'array',
         'last_activity_at' => 'datetime',
         'last_marketing_contact_at' => 'datetime',
@@ -139,15 +150,34 @@ class Customer extends Authenticatable
             return 'full';
         }
 
-        if ($this->marketing_consent_at) {
+        if ($this->emailMarketingConsentAt(true)) {
             return 'soft_marketing';
         }
 
         return 'no_marketing';
     }
 
+    public function emailMarketingConsentAt(bool $allowLegacyFallback = false)
+    {
+        if ($this->email_marketing_consent_at) {
+            return $this->email_marketing_consent_at;
+        }
+
+        if (
+            $allowLegacyFallback
+            && $this->marketing_consent_at
+            && $this->consents_updated_at === null
+        ) {
+            return $this->marketing_consent_at;
+        }
+
+        return null;
+    }
+
     public function toApiPayload(): array
     {
+        $emailMarketingConsentAt = $this->emailMarketingConsentAt(true);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -159,8 +189,19 @@ class Customer extends Authenticatable
             'profile_answers' => $this->profile_answers ?? [],
             'account_state' => $this->isRegistered() ? 'registered' : 'guest',
             'marketing_state' => $this->marketingState(),
-            'marketing_enabled' => $this->marketing_consent_at !== null,
+            'marketing_enabled' => $emailMarketingConsentAt !== null,
+            'email_marketing_enabled' => $emailMarketingConsentAt !== null,
+            'whatsapp_marketing_enabled' => $this->whatsapp_marketing_consent_at !== null,
             'profiling_enabled' => $this->profiling_consent_at !== null,
+            'tracking_enabled' => $this->tracking_consent_at !== null,
+            'privacy_accepted' => $this->privacy_accepted_at !== null,
+            'email_marketing_consent_at' => $emailMarketingConsentAt?->toISOString(),
+            'whatsapp_marketing_consent_at' => $this->whatsapp_marketing_consent_at?->toISOString(),
+            'profiling_consent_at' => $this->profiling_consent_at?->toISOString(),
+            'tracking_consent_at' => $this->tracking_consent_at?->toISOString(),
+            'privacy_accepted_at' => $this->privacy_accepted_at?->toISOString(),
+            'privacy_accepted_version' => $this->privacy_accepted_version,
+            'consents_updated_at' => $this->consents_updated_at?->toISOString(),
             'registered_at' => $this->registered_at?->toISOString(),
             'email_verified_at' => $this->email_verified_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),

@@ -15,7 +15,8 @@ class MarketingEmailDispatchService
 
     public function __construct(
         private MarketingTemplateRenderer $templateRenderer,
-        private CustomerPromotionService $customerPromotionService
+        private CustomerPromotionService $customerPromotionService,
+        private MarketingConsentService $marketingConsentService
     ) {
     }
 
@@ -131,8 +132,8 @@ class MarketingEmailDispatchService
             return $this->sendFailure('Customer email is missing or invalid.');
         }
 
-        if ($customerPromotion->customer->marketing_consent_at === null) {
-            return $this->sendFailure('Customer marketing consent is missing.', $to);
+        if (! $this->marketingConsentService->customerHasEmailMarketingConsent($customerPromotion->customer)) {
+            return $this->sendFailure('Customer email marketing consent is missing.', $to);
         }
 
         if (! $customerPromotion->promotion) {

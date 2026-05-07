@@ -195,6 +195,17 @@ class CustomerSegmentService
             'updated_at',
         ];
 
+        foreach ([
+            'email_marketing_consent_at',
+            'whatsapp_marketing_consent_at',
+            'tracking_consent_at',
+            'consents_updated_at',
+        ] as $column) {
+            if (in_array($column, $this->customerColumns(), true) && ! in_array($column, $columns, true)) {
+                $columns[] = $column;
+            }
+        }
+
         foreach ($this->metricColumns() as $column) {
             if (! in_array($column, $columns, true)) {
                 $columns[] = $column;
@@ -217,7 +228,6 @@ class CustomerSegmentService
                 'surname',
                 'email',
                 'phone',
-                'news_letter',
                 'tot_price',
                 'date_slot',
                 'created_at',
@@ -235,7 +245,6 @@ class CustomerSegmentService
                     'surname' => $this->trimString($order->surname),
                     'email' => $this->trimString($order->email),
                     'phone' => $this->trimString($order->phone),
-                    'marketing_opt_in' => (bool) $order->news_letter,
                     'activity_at' => $activityAt,
                     'time_slot_key' => $this->timeSlotKey($activityAt),
                     'weekday_key' => $activityAt?->dayOfWeekIso,
@@ -255,7 +264,6 @@ class CustomerSegmentService
                 'surname',
                 'email',
                 'phone',
-                'news_letter',
                 'date_slot',
                 'created_at',
             ])
@@ -272,7 +280,6 @@ class CustomerSegmentService
                     'surname' => $this->trimString($reservation->surname),
                     'email' => $this->trimString($reservation->email),
                     'phone' => $this->trimString($reservation->phone),
-                    'marketing_opt_in' => (bool) $reservation->news_letter,
                     'activity_at' => $activityAt,
                     'time_slot_key' => $this->timeSlotKey($activityAt),
                     'weekday_key' => $activityAt?->dayOfWeekIso,
@@ -296,7 +303,10 @@ class CustomerSegmentService
             'is_registered' => false,
             'registered_at' => null,
             'has_marketing_consent' => false,
+            'has_email_marketing_consent' => false,
+            'has_whatsapp_marketing_consent' => false,
             'has_profiling_consent' => false,
+            'has_tracking_consent' => false,
             'orders_count' => 0,
             'reservations_count' => 0,
             'interactions_count' => 0,
@@ -305,7 +315,6 @@ class CustomerSegmentService
             'last_source' => null,
             'last_source_id' => null,
             'created_at' => null,
-            'marketing_opt_in' => false,
             'cached_customer_score' => null,
             'cached_lifecycle_segment' => null,
             'cached_orders_count' => null,
@@ -335,8 +344,13 @@ class CustomerSegmentService
 
         $profile['customer_ids'][(int) $customer->id] = (int) $customer->id;
         $profile['is_registered'] = $profile['is_registered'] || $customer->isRegistered();
-        $profile['has_marketing_consent'] = $profile['has_marketing_consent'] || $customer->marketing_consent_at !== null;
+        $profile['has_email_marketing_consent'] = $profile['has_email_marketing_consent']
+            || $customer->emailMarketingConsentAt(true) !== null;
+        $profile['has_marketing_consent'] = $profile['has_marketing_consent'] || $profile['has_email_marketing_consent'];
+        $profile['has_whatsapp_marketing_consent'] = $profile['has_whatsapp_marketing_consent']
+            || $customer->whatsapp_marketing_consent_at !== null;
         $profile['has_profiling_consent'] = $profile['has_profiling_consent'] || $customer->profiling_consent_at !== null;
+        $profile['has_tracking_consent'] = $profile['has_tracking_consent'] || $customer->tracking_consent_at !== null;
 
         if (! $profile['registered_at'] && $customer->registered_at) {
             $profile['registered_at'] = Carbon::parse($customer->registered_at);
@@ -376,7 +390,6 @@ class CustomerSegmentService
         }
 
         $profile['interactions_count']++;
-        $profile['marketing_opt_in'] = $profile['marketing_opt_in'] || (bool) $event['marketing_opt_in'];
 
         if ($activityAt && (! $profile['last_activity_at'] || $activityAt->gt($profile['last_activity_at']))) {
             $profile['last_activity_at'] = $activityAt;
@@ -420,7 +433,7 @@ class CustomerSegmentService
         $profile['account_state'] = $profile['is_registered'] ? 'registered' : 'guest';
         $profile['marketing_state'] = $profile['has_profiling_consent']
             ? 'full'
-            : (($profile['has_marketing_consent'] || $profile['marketing_opt_in']) ? 'soft_marketing' : 'no_marketing');
+            : ($profile['has_email_marketing_consent'] ? 'soft_marketing' : 'no_marketing');
 
         $profile['customer_score'] = $this->resolveCustomerScore($profile);
         $profile['segments'] = $this->resolveSegments($profile);
@@ -445,8 +458,6 @@ class CustomerSegmentService
             $profile['customer_ids'],
             $profile['primary_customer_updated_at'],
             $profile['has_marketing_consent'],
-            $profile['has_profiling_consent'],
-            $profile['marketing_opt_in'],
             $profile['cached_customer_score'],
             $profile['cached_lifecycle_segment'],
             $profile['cached_orders_count'],

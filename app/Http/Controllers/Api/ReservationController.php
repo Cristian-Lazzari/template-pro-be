@@ -37,6 +37,13 @@ class ReservationController extends Controller
         'n_adult'  => 'required|string|max:10',
         'n_child'  => 'required|string|max:10',
         'message'   => 'nullable|string|max:1000',
+        'privacy_accepted' => 'sometimes|accepted',
+        'privacy_version' => 'nullable|string|max:50',
+        'email_marketing_enabled' => 'nullable|boolean',
+        'whatsapp_marketing_enabled' => 'nullable|boolean',
+        'profiling_enabled' => 'nullable|boolean',
+        'tracking_enabled' => 'nullable|boolean',
+        'news_letter' => 'nullable|boolean',
     ];
 
     public function store(Request $request)
@@ -81,6 +88,8 @@ class ReservationController extends Controller
                     'phone' => $data['phone'] ?? null,
                 ], $request->boolean('news_letter'));
 
+                $authenticatedCustomer = $this->customerAccessService->applyCheckoutConsents($authenticatedCustomer, $data);
+
                 if ($request->boolean('save_details')) {
                     $customerAuthPayload = [
                         'token' => $authenticatedCustomer->createToken('customer-api')->plainTextToken,
@@ -93,6 +102,7 @@ class ReservationController extends Controller
                     'surname' => $data['surname'] ?? null,
                     'phone' => $data['phone'] ?? null,
                 ]);
+                $authenticatedCustomer = $this->customerAccessService->applyCheckoutConsents($authenticatedCustomer, $data);
             }
 
 
@@ -213,7 +223,7 @@ class ReservationController extends Controller
             ]);
             $newRes->message = $data['message'];
             $newRes->status = 2;
-            $newRes->news_letter = $data['news_letter'];
+            $newRes->news_letter = $this->legacyNewsletterOptIn($data);
             if($isDoubleRoomEnabled){
                 $newRes->sala = $selectedSala;
             }
@@ -430,6 +440,19 @@ class ReservationController extends Controller
     private function customerPayload(Customer $customer): array
     {
         return $customer->toApiPayload();
+    }
+
+    private function legacyNewsletterOptIn(array $data): bool
+    {
+        if (array_key_exists('news_letter', $data)) {
+            return filter_var($data['news_letter'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if (array_key_exists('email_marketing_enabled', $data)) {
+            return filter_var($data['email_marketing_enabled'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        return false;
     }
 
     private function reservationFailureResponse(Request $request, string $message, array $response = [], array $context = [], int $status = 200)

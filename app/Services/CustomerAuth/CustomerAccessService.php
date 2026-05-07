@@ -92,6 +92,54 @@ class CustomerAccessService
         return $customer->fresh();
     }
 
+    public function applyCheckoutConsents(Customer $customer, array $payload): Customer
+    {
+        $now = now();
+        $acceptedAnyConsent = false;
+
+        if ($this->payloadBoolean($payload, 'privacy_accepted') === true) {
+            $customer->privacy_accepted_at = $now;
+            $customer->privacy_accepted_version = $this->privacyVersionFromPayload($payload);
+            $acceptedAnyConsent = true;
+        }
+
+        $emailMarketingEnabled = $this->payloadBoolean($payload, 'email_marketing_enabled');
+        if ($emailMarketingEnabled === null && $this->payloadBoolean($payload, 'news_letter') === true) {
+            $emailMarketingEnabled = true;
+        }
+
+        if ($emailMarketingEnabled === true) {
+            $customer->email_marketing_consent_at = $now;
+            $customer->marketing_consent_at = $customer->marketing_consent_at ?: $now;
+            $acceptedAnyConsent = true;
+        }
+
+        if ($this->payloadBoolean($payload, 'whatsapp_marketing_enabled') === true) {
+            $customer->whatsapp_marketing_consent_at = $now;
+            $acceptedAnyConsent = true;
+        }
+
+        if ($this->payloadBoolean($payload, 'profiling_enabled') === true) {
+            $customer->profiling_consent_at = $now;
+            $acceptedAnyConsent = true;
+        }
+
+        if ($this->payloadBoolean($payload, 'tracking_enabled') === true) {
+            $customer->tracking_consent_at = $now;
+            $acceptedAnyConsent = true;
+        }
+
+        if ($acceptedAnyConsent) {
+            $customer->consents_updated_at = $now;
+        }
+
+        if ($customer->isDirty()) {
+            $customer->save();
+        }
+
+        return $customer->fresh();
+    }
+
     public function syncCustomerProfile(Customer $customer, array $attributes = []): Customer
     {
         $normalizedEmail = $this->normalizeEmail($customer->email);
@@ -149,13 +197,15 @@ class CustomerAccessService
     private function buildCustomerAttributes(string $email, array $attributes = []): array
     {
         $guestProfile = $this->latestGuestProfile($email);
+        $marketingConsentAt = $this->guestMarketingConsentAt($email);
 
         return [
             'name' => $this->preferredValue($attributes['name'] ?? null, $guestProfile['name'] ?? '', ''),
             'surname' => $this->preferredValue($attributes['surname'] ?? null, $guestProfile['surname'] ?? '', ''),
             'email' => $email,
             'phone' => $this->nullIfEmpty($this->preferredValue($attributes['phone'] ?? null, $guestProfile['phone'] ?? null, null)),
-            'marketing_consent_at' => $this->guestMarketingConsentAt($email),
+            'marketing_consent_at' => $marketingConsentAt,
+            'email_marketing_consent_at' => $marketingConsentAt,
             'email_verified_at' => now(),
         ];
     }
@@ -296,6 +346,30 @@ class CustomerAccessService
             $customer->marketing_consent_at = $marketingConsentAt;
             $customer->save();
         }
+    }
+
+    private function payloadBoolean(array $payload, string $key): ?bool
+    {
+        if (!array_key_exists($key, $payload)) {
+            return null;
+        }
+
+        return filter_var($payload[$key], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    }
+
+    private function privacyVersionFromPayload(array $payload): string
+    {
+        $version = $payload['privacy_version'] ?? null;
+
+        if ($version !== null && !is_scalar($version) && !$version instanceof \Stringable) {
+            return 'default';
+        }
+
+        if (is_string($version)) {
+            $version = trim($version);
+        }
+
+        return $version !== null && $version !== '' ? (string) $version : 'default';
     }
 
     private function backfillCustomerRelations(Customer $customer): void

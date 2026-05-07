@@ -3,6 +3,7 @@
 namespace App\Jobs\Marketing;
 
 use App\Models\CustomerPromotion;
+use App\Services\Marketing\MarketingConsentService;
 use App\Services\Marketing\MarketingEmailDispatchService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,7 +24,7 @@ class SendMarketingCustomerPromotionEmailJob implements ShouldQueue
     {
     }
 
-    public function handle(MarketingEmailDispatchService $dispatchService): void
+    public function handle(MarketingEmailDispatchService $dispatchService, MarketingConsentService $marketingConsentService): void
     {
         Log::info('Marketing email job started.', [
             'customer_promotion_id' => $this->customerPromotionId,
@@ -74,7 +75,7 @@ class SendMarketingCustomerPromotionEmailJob implements ShouldQueue
                 'promotion_id' => $customerPromotion->promotion?->getKey(),
                 'campaign_id' => $customerPromotion->campaign_id,
                 'has_valid_email' => $customer ? filter_var(trim((string) $customer->email), FILTER_VALIDATE_EMAIL) !== false : false,
-                'has_marketing_consent' => $customer?->marketing_consent_at !== null,
+                'has_email_marketing_consent' => $marketingConsentService->customerHasEmailMarketingConsent($customer),
                 'email_sent_at' => optional($customerPromotion->email_sent_at)->toDateTimeString(),
             ]);
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerPromotion;
 use App\Services\Marketing\CustomerPromotionService;
+use App\Services\Marketing\MarketingConsentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -13,18 +14,20 @@ use Throwable;
 
 class MarketingTrackingController extends Controller
 {
-    public function open(string $token, CustomerPromotionService $service): Response
+    public function open(string $token, CustomerPromotionService $service, MarketingConsentService $consentService): Response
     {
         $customerPromotion = $this->findCustomerPromotion($token);
 
         if ($customerPromotion) {
             try {
-                $customerPromotion = $service->markOpened($customerPromotion);
+                if ($consentService->customerHasTrackingConsent($customerPromotion->customer)) {
+                    $customerPromotion = $service->markOpened($customerPromotion);
 
-                Log::debug('Marketing email open tracked.', [
-                    'customer_promotion_id' => $customerPromotion->getKey(),
-                    'opened_at' => $customerPromotion->email_open_at?->toDateTimeString(),
-                ]);
+                    Log::debug('Marketing email open tracked.', [
+                        'customer_promotion_id' => $customerPromotion->getKey(),
+                        'opened_at' => $customerPromotion->email_open_at?->toDateTimeString(),
+                    ]);
+                }
             } catch (Throwable $exception) {
                 report($exception);
             }
@@ -33,13 +36,15 @@ class MarketingTrackingController extends Controller
         return $this->pixelResponse();
     }
 
-    public function click(string $token, Request $request, CustomerPromotionService $service): RedirectResponse
+    public function click(string $token, Request $request, CustomerPromotionService $service, MarketingConsentService $consentService): RedirectResponse
     {
         $customerPromotion = $this->findCustomerPromotion($token);
 
         if ($customerPromotion) {
             try {
-                $service->markClicked($customerPromotion);
+                if ($consentService->customerHasTrackingConsent($customerPromotion->customer)) {
+                    $service->markClicked($customerPromotion);
+                }
             } catch (Throwable $exception) {
                 report($exception);
             }
@@ -51,6 +56,7 @@ class MarketingTrackingController extends Controller
     private function findCustomerPromotion(string $token): ?CustomerPromotion
     {
         return CustomerPromotion::query()
+            ->with('customer')
             ->where('tracking_token', $token)
             ->first();
     }
