@@ -28,6 +28,7 @@ class Customer extends Authenticatable
         'privacy_accepted_at',
         'privacy_accepted_version',
         'consents_updated_at',
+        'soft_email_marketing_unsubscribed_at',
         'email_verified_at',
         'customer_score',
         'lifecycle_segment',
@@ -49,6 +50,7 @@ class Customer extends Authenticatable
         'tracking_consent_at' => 'datetime',
         'privacy_accepted_at' => 'datetime',
         'consents_updated_at' => 'datetime',
+        'soft_email_marketing_unsubscribed_at' => 'datetime',
         'profile_answers' => 'array',
         'last_activity_at' => 'datetime',
         'last_marketing_contact_at' => 'datetime',
@@ -174,6 +176,11 @@ class Customer extends Authenticatable
         return null;
     }
 
+    public function hasSoftEmailMarketingOptOut(): bool
+    {
+        return $this->soft_email_marketing_unsubscribed_at !== null;
+    }
+
     public function toApiPayload(): array
     {
         $emailMarketingConsentAt = $this->emailMarketingConsentAt(true);
@@ -195,6 +202,7 @@ class Customer extends Authenticatable
             'profiling_enabled' => $this->profiling_consent_at !== null,
             'tracking_enabled' => $this->tracking_consent_at !== null,
             'privacy_accepted' => $this->privacy_accepted_at !== null,
+            'soft_email_marketing_unsubscribed' => $this->hasSoftEmailMarketingOptOut(),
             'email_marketing_consent_at' => $emailMarketingConsentAt?->toISOString(),
             'whatsapp_marketing_consent_at' => $this->whatsapp_marketing_consent_at?->toISOString(),
             'profiling_consent_at' => $this->profiling_consent_at?->toISOString(),
@@ -202,6 +210,7 @@ class Customer extends Authenticatable
             'privacy_accepted_at' => $this->privacy_accepted_at?->toISOString(),
             'privacy_accepted_version' => $this->privacy_accepted_version,
             'consents_updated_at' => $this->consents_updated_at?->toISOString(),
+            'soft_email_marketing_unsubscribed_at' => $this->soft_email_marketing_unsubscribed_at?->toISOString(),
             'registered_at' => $this->registered_at?->toISOString(),
             'email_verified_at' => $this->email_verified_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),

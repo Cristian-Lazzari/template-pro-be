@@ -56,6 +56,8 @@ class CampaignController extends Controller
     {
         $campaign = new Campaign([
             'status' => 'draft',
+            'channel' => Campaign::CHANNEL_EMAIL,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
             'segment' => 'all',
         ]);
 
@@ -124,6 +126,7 @@ class CampaignController extends Controller
             'statuses' => self::STATUSES,
             'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
+            'consentBasisOptions' => Campaign::consentBasisOptions(),
         ]);
     }
 
@@ -226,6 +229,7 @@ class CampaignController extends Controller
         return [
             'statuses' => self::STATUSES,
             'segments' => $segments,
+            'consentBasisOptions' => Campaign::consentBasisOptions(),
             'audienceCounts' => $this->audienceCounts($segmentService, $segments),
             'scheduleWindows' => $this->campaignFormScheduleWindows(),
             'mailModels' => $this->mailModelOptions(),
@@ -246,6 +250,8 @@ class CampaignController extends Controller
         $data = $request->validated();
         $segmentService ??= app(MarketingCustomerSegmentService::class);
         $data['segment'] = $segmentService->normalizeSegment($data['segment'] ?? null);
+        $data['consent_basis'] = Campaign::normalizeConsentBasis($data['consent_basis'] ?? null);
+        $data['channel'] = Campaign::channelForConsentBasis($data['consent_basis']);
         $metadata = is_array($campaign?->metadata) ? $campaign->metadata : [];
         $requestedAt = $request->input('scheduled_at');
         $scheduleWindow = $request->input('schedule_window') ?: ($requestedAt ? 'custom' : 'next_available');

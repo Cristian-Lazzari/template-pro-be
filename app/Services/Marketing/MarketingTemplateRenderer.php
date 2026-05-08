@@ -51,6 +51,8 @@ class MarketingTemplateRenderer
             'img_2' => $template?->img_2,
             'tracking_open_url' => $variables['tracking_open_url'],
             'tracking_click_url' => $variables['tracking_click_url'],
+            'unsubscribe_url' => $variables['unsubscribe_url'],
+            'unsubscribe_label' => $variables['unsubscribe_label'],
         ];
     }
 
@@ -88,6 +90,7 @@ class MarketingTemplateRenderer
         $customerName = trim($customerFirstName . ' ' . $customerLastName);
         $trackingToken = (string) ($customerPromotion->tracking_token ?? '');
         $trackingOpenUrl = $this->trackingOpenUrl($trackingToken);
+        $unsubscribeUrl = $this->unsubscribeUrl($trackingToken);
         $promotionRedirectUrl = $promotion
             ? $this->resolvePublicPromotionUrl($promotion)
             : $this->publicBaseUrl();
@@ -124,6 +127,8 @@ class MarketingTemplateRenderer
             'tracking_token' => $trackingToken,
             'tracking_open_url' => $trackingOpenUrl,
             'tracking_click_url' => $trackingClickUrl,
+            'unsubscribe_url' => $unsubscribeUrl,
+            'unsubscribe_label' => 'Annulla iscrizione',
         ];
     }
 
@@ -354,6 +359,15 @@ class MarketingTemplateRenderer
             '/api/marketing/click/' . rawurlencode($token)
             . '?redirect=' . rawurlencode($safeRedirect)
         );
+    }
+
+    private function unsubscribeUrl(string $token): string
+    {
+        if ($token !== '' && Route::has('api.marketing.unsubscribe')) {
+            return $this->dashboardUrl(route('api.marketing.unsubscribe', ['token' => $token], false));
+        }
+
+        return $this->dashboardUrl('/api/marketing/unsubscribe/' . rawurlencode($token));
     }
 
     private function resolvePublicPromotionUrl(Promotion $promotion): string

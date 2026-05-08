@@ -47,6 +47,10 @@
     ];
     $normalizedSegment = $legacySegmentMap[$campaign->segment] ?? ($campaign->segment ?: 'all');
     $segmentLabel = $segments[$normalizedSegment] ?? ($campaign->segment ?: '-');
+    $consentBasis = $campaign->consentBasis();
+    $consentBasisLabel = ($consentBasisOptions ?? \App\Models\Campaign::consentBasisOptions())[$consentBasis] ?? $campaign->consentBasisLabel();
+    $channelLabel = $campaign->usesWhatsappMarketingConsent() ? 'WhatsApp' : 'Email';
+    $isWhatsappMarketing = $campaign->usesWhatsappMarketingConsent();
     $modelName = $campaign->model?->name ?? '-';
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();
@@ -416,6 +420,11 @@
                             <strong>{{ $segmentLabel }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
+                            <span>Tipo invio</span>
+                            <strong>{{ $channelLabel }}</strong>
+                            <small>{{ $consentBasisLabel }}</small>
+                        </article>
+                        <article class="marketing-detail__fact">
                             <span>Modello mail</span>
                             <strong>{{ $modelName }}</strong>
                             <small>{{ $modelObject }}</small>
@@ -449,6 +458,13 @@
                             <strong>{{ $promotionsCount }}</strong>
                         </article>
                     </div>
+
+                    @if ($isWhatsappMarketing)
+                        <div class="marketing-detail__empty mt-3">
+                            <strong>Invio WhatsApp non ancora implementato.</strong>
+                            <small>La campagna puo preparare l'audience WhatsApp, ma il dispatch email la salta senza inviare messaggi.</small>
+                        </div>
+                    @endif
 
                   
                 </section>

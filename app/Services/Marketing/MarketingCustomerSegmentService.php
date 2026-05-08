@@ -2,6 +2,7 @@
 
 namespace App\Services\Marketing;
 
+use App\Models\Campaign;
 use App\Models\Customer;
 use App\Services\Crm\CustomerSegmentService;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,10 +39,16 @@ class MarketingCustomerSegmentService
         return self::SEGMENT_OPTIONS;
     }
 
-    public function queryForSegment(?string $segment): Builder
+    public function queryForSegment(?string $segment, ?Campaign $campaign = null): Builder
     {
         $normalizedSegment = $this->normalizeSegment($segment);
-        $query = $this->marketingConsentService->applyEmailMarketingConsent(Customer::query());
+        $query = Customer::query();
+
+        if ($campaign) {
+            $query = $this->marketingConsentService->applyCampaignConsent($query, $campaign);
+        } else {
+            $query = $this->marketingConsentService->applyEmailMarketingConsent($query);
+        }
 
         if ($normalizedSegment !== 'all') {
             $customerIds = $this->customerIdsForSegment($normalizedSegment);

@@ -424,6 +424,7 @@ class CustomerPasswordlessAuthTest extends TestCase
             'tracking_consent_at' => $consentAt,
             'privacy_accepted_at' => $consentAt,
             'privacy_accepted_version' => 'privacy-v3',
+            'soft_email_marketing_unsubscribed_at' => $consentAt,
         ]);
         $token = $customer->createToken('customer-api')->plainTextToken;
 
@@ -437,8 +438,25 @@ class CustomerPasswordlessAuthTest extends TestCase
             ->assertJsonPath('customer.tracking_enabled', true)
             ->assertJsonPath('customer.privacy_accepted', true)
             ->assertJsonPath('customer.privacy_accepted_version', 'privacy-v3')
+            ->assertJsonPath('customer.soft_email_marketing_unsubscribed', true)
+            ->assertJsonPath('customer.soft_email_marketing_unsubscribed_at', $consentAt->toISOString())
             ->assertJsonPath('profile_settings.email_marketing_label', 'Acconsento a ricevere via email novità, offerte e promozioni del ristorante.')
             ->assertJsonPath('profile_settings.accept_all_label', 'Accetta tutti i consensi facoltativi');
+    }
+
+    public function test_customer_payload_exposes_missing_soft_email_opt_out_as_false(): void
+    {
+        $customer = Customer::query()->create([
+            'name' => 'Soft',
+            'surname' => 'Optout',
+            'email' => 'soft-optout@example.com',
+            'phone' => '3331112222',
+        ]);
+
+        $payload = $customer->fresh()->toApiPayload();
+
+        $this->assertFalse($payload['soft_email_marketing_unsubscribed']);
+        $this->assertNull($payload['soft_email_marketing_unsubscribed_at']);
     }
 
     public function test_customer_profile_settings_ignore_custom_consent_texts_and_keep_questions(): void

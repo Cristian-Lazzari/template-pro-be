@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Campaign;
 use App\Services\Marketing\MarketingCustomerSegmentService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -20,6 +21,8 @@ class StoreCampaignRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'submit_action' => ['required', Rule::in(['activate', 'draft'])],
+            'channel' => ['nullable', Rule::in(Campaign::channelValues())],
+            'consent_basis' => ['nullable', Rule::in(Campaign::consentBasisValues())],
             'segment' => ['nullable', Rule::in($segmentService->validSegmentKeys())],
             'model_id' => ['nullable', 'exists:models,id'],
             'schedule_window' => ['nullable', Rule::in(['next_available', 'today_afternoon', 'today_evening', 'tomorrow_morning', 'tomorrow_lunch', 'tomorrow_evening'])],

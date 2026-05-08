@@ -2,6 +2,7 @@
 
 namespace App\Services\Marketing;
 
+use App\Models\Campaign;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
@@ -11,6 +12,20 @@ class MarketingConsentService
     private ?array $customerColumns = null;
 
     public function applyEmailMarketingConsent(Builder $query): Builder
+    {
+        return $this->applyExplicitEmailMarketingConsent($query);
+    }
+
+    public function applyCampaignConsent(Builder $query, Campaign $campaign): Builder
+    {
+        return match ($campaign->consentBasis()) {
+            Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => $this->applySoftEmailMarketingConsent($query),
+            Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => $this->applyWhatsappMarketingConsent($query),
+            default => $this->applyExplicitEmailMarketingConsent($query),
+        };
+    }
+
+    public function applyExplicitEmailMarketingConsent(Builder $query): Builder
     {
         if ($this->hasCustomerColumn('email_marketing_consent_at')) {
             $emailMarketingColumn = $this->qualifyCustomerColumn($query, 'email_marketing_consent_at');
@@ -41,7 +56,25 @@ class MarketingConsentService
         return $query->whereNull($this->qualifyCustomerColumn($query, 'id'))->whereNotNull($this->qualifyCustomerColumn($query, 'id'));
     }
 
-    public function customerHasEmailMarketingConsent(?Customer $customer): bool
+    public function applySoftEmailMarketingConsent(Builder $query): Builder
+    {
+        if ($this->hasCustomerColumn('soft_email_marketing_unsubscribed_at')) {
+            return $query->whereNull($this->qualifyCustomerColumn($query, 'soft_email_marketing_unsubscribed_at'));
+        }
+
+        return $query;
+    }
+
+    public function applyWhatsappMarketingConsent(Builder $query): Builder
+    {
+        if ($this->hasCustomerColumn('whatsapp_marketing_consent_at')) {
+            return $query->whereNotNull($this->qualifyCustomerColumn($query, 'whatsapp_marketing_consent_at'));
+        }
+
+        return $query->whereNull($this->qualifyCustomerColumn($query, 'id'))->whereNotNull($this->qualifyCustomerColumn($query, 'id'));
+    }
+
+    public function customerHasExplicitEmailMarketingConsent(?Customer $customer): bool
     {
         if (! $customer) {
             return false;
@@ -53,6 +86,31 @@ class MarketingConsentService
 
         return $customer->marketing_consent_at !== null
             && $customer->consents_updated_at === null;
+    }
+
+    public function customerHasEmailMarketingConsent(?Customer $customer): bool
+    {
+        return $this->customerHasExplicitEmailMarketingConsent($customer);
+    }
+
+    public function customerAllowsSoftEmailMarketing(?Customer $customer): bool
+    {
+        return $customer !== null
+            && $customer->soft_email_marketing_unsubscribed_at === null;
+    }
+
+    public function customerHasWhatsappMarketingConsent(?Customer $customer): bool
+    {
+        return $customer?->whatsapp_marketing_consent_at !== null;
+    }
+
+    public function customerCanReceiveCampaign(?Customer $customer, Campaign $campaign): bool
+    {
+        return match ($campaign->consentBasis()) {
+            Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => $this->customerAllowsSoftEmailMarketing($customer),
+            Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => $this->customerHasWhatsappMarketingConsent($customer),
+            default => $this->customerHasExplicitEmailMarketingConsent($customer),
+        };
     }
 
     public function customerHasTrackingConsent(?Customer $customer): bool

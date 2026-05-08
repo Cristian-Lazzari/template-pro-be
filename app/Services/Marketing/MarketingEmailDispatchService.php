@@ -76,6 +76,13 @@ class MarketingEmailDispatchService
     public function sendForCampaign(Campaign $campaign, int $limit = 100, bool $dryRun = true): array
     {
         $result = $this->baseBatchReport($dryRun ? 'dry_run' : 'write', 'campaign_id', $campaign->getKey());
+
+        if ($campaign->usesWhatsappMarketingConsent()) {
+            $result['failure_reason'] = 'Canale WhatsApp non ancora implementato';
+
+            return $result;
+        }
+
         $customerPromotions = $campaign->customerPromotions()
             ->with(['customer', 'promotion', 'campaign.model', 'automation.model'])
             ->whereNull('email_sent_at')
@@ -126,13 +133,21 @@ class MarketingEmailDispatchService
             return $this->sendFailure('Customer is missing.');
         }
 
+        if ($customerPromotion->campaign?->usesWhatsappMarketingConsent()) {
+            return $this->sendFailure('Canale WhatsApp non ancora implementato');
+        }
+
         $to = trim((string) $customerPromotion->customer->email);
 
         if (! filter_var($to, FILTER_VALIDATE_EMAIL)) {
             return $this->sendFailure('Customer email is missing or invalid.');
         }
 
-        if (! $this->marketingConsentService->customerHasEmailMarketingConsent($customerPromotion->customer)) {
+        if ($customerPromotion->campaign) {
+            if (! $this->marketingConsentService->customerCanReceiveCampaign($customerPromotion->customer, $customerPromotion->campaign)) {
+                return $this->sendFailure($this->campaignConsentFailureReason($customerPromotion->campaign), $to);
+            }
+        } elseif (! $this->marketingConsentService->customerHasExplicitEmailMarketingConsent($customerPromotion->customer)) {
             return $this->sendFailure('Customer email marketing consent is missing.', $to);
         }
 
@@ -240,8 +255,18 @@ class MarketingEmailDispatchService
             'already_sent_count' => 0,
             'skipped_count' => 0,
             'errors_count' => 0,
+            'failure_reason' => null,
             'errors' => [],
         ];
+    }
+
+    private function campaignConsentFailureReason(Campaign $campaign): string
+    {
+        return match ($campaign->consentBasis()) {
+            Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => 'Customer soft email marketing opt-out is present.',
+            Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'Canale WhatsApp non ancora implementato',
+            default => 'Customer email marketing consent is missing.',
+        };
     }
 
     private function emptyRenderedTemplate(): array

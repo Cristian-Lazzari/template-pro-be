@@ -17,7 +17,7 @@ class CampaignAudienceBuilder
 
     public function queryForCampaign(Campaign $campaign): Builder
     {
-        return $this->queryForSegment($campaign->segment);
+        return $this->segmentService->queryForSegment($campaign->segment, $campaign);
     }
 
     public function countForCampaign(Campaign $campaign): int

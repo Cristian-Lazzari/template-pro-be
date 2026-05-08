@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class CustomerController extends Controller
 {
@@ -131,6 +132,8 @@ class CustomerController extends Controller
     private function buildCustomerShowPayload(?Customer $customer, ?string $email = null): array
     {
         $profileSettings = $this->customerProfileSettingsService->get();
+        $hasSoftEmailMarketingUnsubscribeField = Schema::hasTable('customers')
+            && Schema::hasColumn('customers', 'soft_email_marketing_unsubscribed_at');
         $normalizedEmail = $customer
             ? Customer::normalizeEmail($customer->email)
             : Customer::normalizeEmail((string) $email);
@@ -210,7 +213,14 @@ class CustomerController extends Controller
             'email_verified_at' => null,
             'created_at' => $latestActivity,
             'marketing_consent_at' => ($lastKnownProfile['marketing_opt_in'] ?? false) ? $latestActivity : null,
+            'email_marketing_consent_at' => null,
+            'whatsapp_marketing_consent_at' => null,
             'profiling_consent_at' => null,
+            'tracking_consent_at' => null,
+            'privacy_accepted_at' => null,
+            'privacy_accepted_version' => null,
+            'consents_updated_at' => null,
+            'soft_email_marketing_unsubscribed_at' => null,
             'profile_answers' => [],
         ];
 
@@ -239,6 +249,7 @@ class CustomerController extends Controller
             'accountState' => $accountState,
             'marketingState' => $marketingState,
             'hasCustomerRecord' => $customer !== null,
+            'hasSoftEmailMarketingUnsubscribeField' => $hasSoftEmailMarketingUnsubscribeField,
         ];
     }
 

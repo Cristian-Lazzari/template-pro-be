@@ -12,6 +12,8 @@
     $selectedSegment = old('segment', $campaign->segment ?: 'all');
     $selectedSegment = $legacySegmentMap[$selectedSegment] ?? $selectedSegment;
     $selectedMailModelId = (string) old('model_id', $campaign->model_id);
+    $selectedConsentBasis = \App\Models\Campaign::normalizeConsentBasis(old('consent_basis', $campaign->consent_basis));
+    $selectedConsentBasisLabel = ($consentBasisOptions ?? \App\Models\Campaign::consentBasisOptions())[$selectedConsentBasis] ?? 'Email marketing con consenso esplicito';
     $selectedScheduleWindow = array_key_exists($selectedScheduleWindow, $scheduleWindows)
         ? $selectedScheduleWindow
         : 'next_available';
@@ -81,6 +83,25 @@
                 <input value="{{ old('name', $campaign->name) }}" type="text" name="name" id="name" placeholder="Nome campagna">
             </p>
             @error('name') <p class="error">{{ $message }}</p> @enderror
+        </div>
+
+        <div class="mt-3">
+            <label class="label_c" for="consent_basis">
+                <i class="bi bi-shield-check"></i>
+                Tipo invio
+            </label>
+            <p>
+                <select name="consent_basis" id="consent_basis">
+                    @foreach (($consentBasisOptions ?? \App\Models\Campaign::consentBasisOptions()) as $value => $label)
+                        <option value="{{ $value }}" @selected($selectedConsentBasis === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </p>
+            @error('consent_basis') <p class="error">{{ $message }}</p> @enderror
+            @error('channel') <p class="error">{{ $message }}</p> @enderror
+            @if ($selectedConsentBasis === \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING)
+                <p class="menu-dashboard__copy mt-2">Canale predisposto, invio non ancora attivo.</p>
+            @endif
         </div>
     </section>
 
@@ -241,6 +262,10 @@
                         <div class="marketing-form-preview__fact">
                             <span>Segmento</span>
                             <strong data-audience-label>{{ $segments[$selectedSegment] ?? 'Tutti i clienti' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Tipo invio</span>
+                            <strong>{{ $selectedConsentBasisLabel }}</strong>
                         </div>
                         <div class="marketing-form-preview__fact">
                             <span>Modello</span>

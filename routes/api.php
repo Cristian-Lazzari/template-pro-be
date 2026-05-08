@@ -25,6 +25,7 @@ Route::get('promoHome',         [ProductController::class, 'promoHome'])->name('
 
 Route::get('marketing/open/{token}', [MarketingTrackingController::class, 'open'])->name('api.marketing.open');
 Route::get('marketing/click/{token}', [MarketingTrackingController::class, 'click'])->name('api.marketing.click');
+Route::get('marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'unsubscribe'])->name('api.marketing.unsubscribe');
 
 Route::get('categories',        [CategoryController::class, 'index'])->name('api.categories.index');
 Route::get('getIngredient',     [IngredientController::class, 'getIngredient'])->name('api.ingredient.getIngredient');

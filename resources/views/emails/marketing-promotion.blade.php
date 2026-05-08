@@ -6,6 +6,8 @@
     $sender = (string) ($rendered['sender'] ?? config('configurazione.APP_NAME', config('app.name')));
     $trackingOpenUrl = (string) ($rendered['tracking_open_url'] ?? '');
     $trackingClickUrl = (string) ($rendered['tracking_click_url'] ?? '');
+    $unsubscribeUrl = (string) ($rendered['unsubscribe_url'] ?? '');
+    $unsubscribeLabel = (string) ($rendered['unsubscribe_label'] ?? 'Annulla iscrizione');
     $trackingRedirectUrl = null;
 
     if ($trackingClickUrl !== '') {
@@ -172,6 +174,14 @@
                 Instagram: <span style="color: white; font-weight: 900;">@future.plus_</span>
             </a>
         </div>
+        @if ($unsubscribeUrl !== '')
+            <p style="font-size: 12px; line-height: 1.5; margin: 12px 5px 8px; color: rgba(255,255,255,.82);">
+                Non vuoi più ricevere queste comunicazioni?
+                <a style="color: white; text-decoration: underline; font-weight: 700;" href="{{ $unsubscribeUrl }}">
+                    {{ $unsubscribeLabel }}
+                </a>
+            </p>
+        @endif
         <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 10px 5px;">{{ __('admin.end_copy', ['name' => config('configurazione.APP_NAME')]) }}</p>
         <p style="font-size: 15px; line-height: 1.5; margin: 5px;">Powered by <a style="color: white; text-decoration: none; font-weight: 900;" href="https://future-plus.it">Future +</a></p>
     </footer>

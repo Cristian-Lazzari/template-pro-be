@@ -73,12 +73,6 @@
         ? $formatHumanDate($latestActivity)
         : 'nessuna attivita recente';
 
-    $marketingEnabled = !empty($customer->marketing_consent_at);
-    $profilingEnabled = !empty($customer->profiling_consent_at);
-
-    $marketingTone = $marketingEnabled ? 'active' : 'off';
-    $profilingTone = $profilingEnabled ? 'active' : 'off';
-
     $statItems = [
         [
             'label' => 'Ordini',
@@ -111,26 +105,101 @@
         ['label' => 'Eta', 'value' => $customer->age ?: '-'],
     ];
 
+    $consentStatusItem = static function (
+        string $label,
+        $date,
+        string $activeValue,
+        string $inactiveValue,
+        string $activePrefix,
+        string $inactiveHelper,
+        ?string $extra = null
+    ) use ($formatHumanDateTime): array {
+        $enabled = !empty($date);
+        $helper = $enabled
+            ? $activePrefix . ' ' . $formatHumanDateTime($date)
+            : $inactiveHelper;
+
+        if ($enabled && $extra) {
+            $helper .= ' · ' . $extra;
+        }
+
+        return [
+            'label' => $label,
+            'value' => $enabled ? $activeValue : $inactiveValue,
+            'tone' => $enabled ? 'active' : 'off',
+            'pill' => $enabled ? 'Presente' : 'Assente',
+            'helper' => $helper,
+        ];
+    };
+
+    $privacyVersion = trim((string) ($customer->privacy_accepted_version ?? ''));
+    $softEmailMarketingUnsubscribedAt = $hasSoftEmailMarketingUnsubscribeField
+        ? ($customer->soft_email_marketing_unsubscribed_at ?? null)
+        : null;
+
     $consentItems = [
-        [
-            'label' => 'Marketing',
-            'value' => $marketingEnabled ? 'Attivo' : 'Disattivo',
-            'tone' => $marketingTone,
-            'pill' => $marketingEnabled ? 'Presente' : 'Assente',
-            'helper' => $marketingEnabled
-                ? 'Attivato ' . $formatHumanDateTime($customer->marketing_consent_at)
-                : 'Nessun consenso marketing registrato',
-        ],
-        [
-            'label' => 'Profilazione',
-            'value' => $profilingEnabled ? 'Attiva' : 'Disattiva',
-            'tone' => $profilingTone,
-            'pill' => $profilingEnabled ? 'Presente' : 'Assente',
-            'helper' => $profilingEnabled
-                ? 'Attivata ' . $formatHumanDateTime($customer->profiling_consent_at)
-                : 'Nessun consenso profilazione registrato',
-        ],
+        $consentStatusItem(
+            'Privacy',
+            $customer->privacy_accepted_at ?? null,
+            'Attiva',
+            'Non prestata',
+            'Accettata',
+            'Informativa privacy non ancora accettata',
+            $privacyVersion !== '' ? 'Versione ' . $privacyVersion : null
+        ),
+        $consentStatusItem(
+            'Email marketing',
+            $customer->email_marketing_consent_at ?? null,
+            'Attivo',
+            'Non prestato',
+            'Prestato',
+            'Consenso email marketing non prestato'
+        ),
+        $consentStatusItem(
+            'WhatsApp marketing',
+            $customer->whatsapp_marketing_consent_at ?? null,
+            'Attivo',
+            'Non prestato',
+            'Prestato',
+            'Consenso WhatsApp marketing non prestato'
+        ),
+        $consentStatusItem(
+            'Profilazione',
+            $customer->profiling_consent_at ?? null,
+            'Attiva',
+            'Non prestata',
+            'Prestata',
+            'Consenso profilazione non prestato'
+        ),
+        $consentStatusItem(
+            'Tracking',
+            $customer->tracking_consent_at ?? null,
+            'Attivo',
+            'Non prestato',
+            'Prestato',
+            'Consenso tracking non prestato'
+        ),
     ];
+
+    if (!empty($customer->marketing_consent_at)) {
+        $consentItems[] = [
+            'label' => 'Marketing legacy',
+            'value' => 'Presente',
+            'tone' => 'warning',
+            'pill' => 'Storico',
+            'helper' => 'Campo storico mantenuto per compatibilita. Registrato ' . $formatHumanDateTime($customer->marketing_consent_at),
+        ];
+    }
+
+    if (!empty($softEmailMarketingUnsubscribedAt)) {
+        $consentItems[] = [
+            'label' => 'Soft opt-out',
+            'value' => 'Soft opt-out annullato',
+            'tone' => 'off',
+            'pill' => 'Opt-out',
+            'helper' => 'Annullato ' . $formatHumanDateTime($softEmailMarketingUnsubscribedAt),
+        ];
+    }
 
     $timelineItems = [
         [
@@ -180,6 +249,7 @@
 
     .customer-detail__hero-title p,
     .customer-detail__notice p,
+    .customer-detail__section-copy,
     .customer-detail__stat-card small,
     .customer-detail__info-help,
     .customer-detail__empty,
@@ -198,6 +268,10 @@
 
     .customer-detail__notice strong {
         color: #ffd37a;
+    }
+
+    .customer-detail__section-copy {
+        margin: 0 0 14px;
     }
 
     .customer-detail__stat-grid,
@@ -478,15 +552,19 @@
         </article>
 
 
+        <article class="order-detail">
+            <div class="order-detail__body">
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
                             <span class="order-detail__section-icon">
                                 <x-icon name="person-check-fill" />
                             </span>
-                            Stati privacy
+                            Consensi
                         </h3>
                     </div>
+
+                    <p class="customer-detail__section-copy">Consensi e preferenze privacy registrate per questo cliente.</p>
 
                     <div class="customer-detail__info-grid">
                         @foreach ($consentItems as $item)
@@ -501,6 +579,8 @@
                         @endforeach
                     </div>
                 </section>
+            </div>
+        </article>
 
     </div>
 

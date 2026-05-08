@@ -2,12 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Mail\MarketingPromotionMail;
+use App\Models\Campaign;
 use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
+use App\Services\Marketing\CampaignAudienceBuilder;
 use App\Services\Marketing\MarketingCustomerSegmentService;
 use App\Services\Marketing\MarketingEmailDispatchService;
+use App\Services\Marketing\MarketingTemplateRenderer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class MarketingConsentTest extends TestCase
@@ -59,6 +64,198 @@ class MarketingConsentTest extends TestCase
         $this->assertTrue($dispatchService->sendCustomerPromotion($legacy, true)['can_send']);
         $this->assertFalse($dispatchService->sendCustomerPromotion($revoked, true)['can_send']);
         $this->assertFalse($dispatchService->sendCustomerPromotion($withoutConsent, true)['can_send']);
+    }
+
+    public function test_explicit_email_marketing_campaign_audience_uses_explicit_consent(): void
+    {
+        $campaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $explicit = $this->createCustomer('campaign-explicit@example.com', [
+            'email_marketing_consent_at' => now(),
+        ]);
+        $legacy = $this->createCustomer('campaign-legacy@example.com', [
+            'marketing_consent_at' => now()->subDay(),
+        ]);
+        $revoked = $this->createCustomer('campaign-revoked@example.com', [
+            'marketing_consent_at' => now()->subDay(),
+            'consents_updated_at' => now(),
+        ]);
+        $withoutConsent = $this->createCustomer('campaign-no-consent@example.com');
+
+        $customerIds = app(CampaignAudienceBuilder::class)
+            ->queryForCampaign($campaign)
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($explicit->id, $customerIds);
+        $this->assertContains($legacy->id, $customerIds);
+        $this->assertNotContains($revoked->id, $customerIds);
+        $this->assertNotContains($withoutConsent->id, $customerIds);
+    }
+
+    public function test_soft_email_marketing_campaign_audience_respects_soft_opt_out(): void
+    {
+        $campaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $withoutExplicitConsent = $this->createCustomer('soft-allowed@example.com');
+        $optedOut = $this->createCustomer('soft-opted-out@example.com', [
+            'soft_email_marketing_unsubscribed_at' => now(),
+        ]);
+
+        $customerIds = app(CampaignAudienceBuilder::class)
+            ->queryForCampaign($campaign)
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($withoutExplicitConsent->id, $customerIds);
+        $this->assertNotContains($optedOut->id, $customerIds);
+    }
+
+    public function test_whatsapp_marketing_campaign_audience_uses_whatsapp_consent(): void
+    {
+        $campaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_WHATSAPP_MARKETING,
+            'channel' => Campaign::CHANNEL_WHATSAPP,
+        ]);
+        $whatsappConsent = $this->createCustomer('whatsapp-consent@example.com', [
+            'whatsapp_marketing_consent_at' => now(),
+        ]);
+        $emailOnly = $this->createCustomer('email-only@example.com', [
+            'email_marketing_consent_at' => now(),
+        ]);
+
+        $customerIds = app(CampaignAudienceBuilder::class)
+            ->queryForCampaign($campaign)
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($whatsappConsent->id, $customerIds);
+        $this->assertNotContains($emailOnly->id, $customerIds);
+    }
+
+    public function test_marketing_email_dispatch_blocks_whatsapp_campaigns(): void
+    {
+        Mail::fake();
+
+        $campaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_WHATSAPP_MARKETING,
+            'channel' => Campaign::CHANNEL_WHATSAPP,
+        ]);
+        $customerPromotion = $this->createCustomerPromotion($this->createCustomer('whatsapp-send@example.com', [
+            'whatsapp_marketing_consent_at' => now(),
+        ]), $campaign);
+
+        $result = app(MarketingEmailDispatchService::class)
+            ->sendCustomerPromotion($customerPromotion, false);
+
+        $this->assertFalse($result['can_send']);
+        $this->assertFalse($result['sent']);
+        $this->assertSame('Canale WhatsApp non ancora implementato', $result['failure_reason']);
+        Mail::assertNotSent(MarketingPromotionMail::class);
+    }
+
+    public function test_unsubscribe_explicit_email_marketing_revokes_explicit_email_consent_only(): void
+    {
+        $legacyConsentAt = now()->subDays(3)->startOfSecond();
+        $customer = $this->createCustomer('unsubscribe-explicit@example.com', [
+            'marketing_consent_at' => $legacyConsentAt,
+            'email_marketing_consent_at' => now()->subDay(),
+        ]);
+        $campaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $customerPromotion = $this->createCustomerPromotion($customer, $campaign);
+
+        $this->get('/api/marketing/unsubscribe/' . $customerPromotion->tracking_token)
+            ->assertOk()
+            ->assertSee('Iscrizione annullata correttamente.');
+
+        $customer->refresh();
+        $customerPromotion->refresh();
+
+        $this->assertNull($customer->email_marketing_consent_at);
+        $this->assertNull($customer->soft_email_marketing_unsubscribed_at);
+        $this->assertNotNull($customer->consents_updated_at);
+        $this->assertSame($legacyConsentAt->toDateTimeString(), $customer->marketing_consent_at->toDateTimeString());
+        $this->assertNull($customerPromotion->email_open_at);
+        $this->assertNull($customerPromotion->email_click_at);
+    }
+
+    public function test_unsubscribe_soft_email_marketing_sets_soft_opt_out_only(): void
+    {
+        $explicitConsentAt = now()->subDay()->startOfSecond();
+        $customer = $this->createCustomer('unsubscribe-soft@example.com', [
+            'email_marketing_consent_at' => $explicitConsentAt,
+        ]);
+        $campaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $customerPromotion = $this->createCustomerPromotion($customer, $campaign);
+
+        $this->get('/api/marketing/unsubscribe/' . $customerPromotion->tracking_token)
+            ->assertOk()
+            ->assertSee('Iscrizione annullata correttamente.');
+
+        $customer->refresh();
+
+        $this->assertSame($explicitConsentAt->toDateTimeString(), $customer->email_marketing_consent_at->toDateTimeString());
+        $this->assertNotNull($customer->soft_email_marketing_unsubscribed_at);
+        $this->assertNotNull($customer->consents_updated_at);
+    }
+
+    public function test_unsubscribe_unknown_campaign_basis_uses_safe_fallback(): void
+    {
+        $customer = $this->createCustomer('unsubscribe-fallback@example.com', [
+            'email_marketing_consent_at' => now()->subDay(),
+        ]);
+        $campaign = $this->createCampaign([
+            'consent_basis' => 'unknown_basis',
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $customerPromotion = $this->createCustomerPromotion($customer, $campaign);
+
+        $this->get('/api/marketing/unsubscribe/' . $customerPromotion->tracking_token)
+            ->assertOk()
+            ->assertSee('Iscrizione annullata correttamente.');
+
+        $customer->refresh();
+
+        $this->assertNull($customer->email_marketing_consent_at);
+        $this->assertNotNull($customer->soft_email_marketing_unsubscribed_at);
+        $this->assertNotNull($customer->consents_updated_at);
+    }
+
+    public function test_unsubscribe_invalid_token_returns_generic_response(): void
+    {
+        $this->get('/api/marketing/unsubscribe/not-a-real-token')
+            ->assertOk()
+            ->assertSee('Richiesta gestita.');
+    }
+
+    public function test_marketing_renderer_builds_unsubscribe_url_from_app_url(): void
+    {
+        config([
+            'app.url' => 'https://backend.test',
+            'configurazione.domain' => 'https://public.test',
+        ]);
+
+        $customerPromotion = $this->createCustomerPromotion($this->createCustomer('unsubscribe-url@example.com', [
+            'email_marketing_consent_at' => now(),
+        ]));
+
+        $rendered = app(MarketingTemplateRenderer::class)->render($customerPromotion);
+
+        $this->assertSame(
+            'https://backend.test/api/marketing/unsubscribe/' . $customerPromotion->tracking_token,
+            $rendered['unsubscribe_url']
+        );
+        $this->assertSame('Annulla iscrizione', $rendered['unsubscribe_label']);
     }
 
     public function test_open_and_click_tracking_are_not_saved_without_tracking_consent(): void
@@ -115,7 +312,18 @@ class MarketingConsentTest extends TestCase
         ], $attributes));
     }
 
-    private function createCustomerPromotion(Customer $customer): CustomerPromotion
+    private function createCampaign(array $attributes = []): Campaign
+    {
+        return Campaign::query()->create(array_merge([
+            'name' => 'Campaign test',
+            'status' => 'draft',
+            'channel' => Campaign::CHANNEL_EMAIL,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'all',
+        ], $attributes));
+    }
+
+    private function createCustomerPromotion(Customer $customer, ?Campaign $campaign = null): CustomerPromotion
     {
         $promotion = Promotion::query()->create([
             'name' => 'Promo test',
@@ -125,9 +333,14 @@ class MarketingConsentTest extends TestCase
             'permanent' => true,
         ]);
 
+        if ($campaign) {
+            $campaign->promotions()->syncWithoutDetaching([$promotion->id]);
+        }
+
         return CustomerPromotion::query()->create([
             'customer_id' => $customer->id,
             'promotion_id' => $promotion->id,
+            'campaign_id' => $campaign?->id,
             'tracking_token' => '00000000-0000-4000-8000-' . str_pad((string) $customer->id, 12, '0', STR_PAD_LEFT),
             'status' => 'assigned',
         ]);
