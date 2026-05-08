@@ -107,98 +107,131 @@
 
     $consentStatusItem = static function (
         string $label,
-        $date,
-        string $activeValue,
-        string $inactiveValue,
-        string $activePrefix,
-        string $inactiveHelper,
-        ?string $extra = null
+        bool $enabled,
+        string $activeBadge,
+        string $inactiveBadge,
+        $date = null,
+        array $details = [],
+        string $activeTone = 'active',
+        string $inactiveTone = 'off'
     ) use ($formatHumanDateTime): array {
-        $enabled = !empty($date);
-        $helper = $enabled
-            ? $activePrefix . ' ' . $formatHumanDateTime($date)
-            : $inactiveHelper;
+        $itemDetails = [];
 
-        if ($enabled && $extra) {
-            $helper .= ' · ' . $extra;
+        if (!empty($date)) {
+            $itemDetails[] = 'Dal ' . $formatHumanDateTime($date);
+        }
+
+        foreach ($details as $detail) {
+            $detail = trim((string) $detail);
+
+            if ($detail !== '') {
+                $itemDetails[] = $detail;
+            }
         }
 
         return [
             'label' => $label,
-            'value' => $enabled ? $activeValue : $inactiveValue,
+            'tone' => $enabled ? $activeTone : $inactiveTone,
+            'badge' => $enabled ? $activeBadge : $inactiveBadge,
+            'details' => $itemDetails,
+        ];
+    };
+
+    $legacyConsentItem = static function (
+        string $label,
+        string $badge,
+        string $tone,
+        $date = null,
+        array $details = []
+    ) use ($formatHumanDateTime): array {
+        $itemDetails = [];
+
+        foreach ($details as $detail) {
+            $detail = trim((string) $detail);
+
+            if ($detail !== '') {
+                $itemDetails[] = $detail;
+            }
+        }
+
+        if (!empty($date)) {
+            $itemDetails[] = 'Dal ' . $formatHumanDateTime($date);
+        }
+
+        return [
+            'label' => $label,
+            'tone' => $tone,
+            'badge' => $badge,
+            'details' => $itemDetails,
+        ];
+    };
+
+    $softEmailMarketingItem = static function ($unsubscribedAt = null) use ($formatHumanDateTime): array {
+        $enabled = empty($unsubscribedAt);
+
+        return [
+            'label' => 'Soft email marketing',
             'tone' => $enabled ? 'active' : 'off',
-            'pill' => $enabled ? 'Presente' : 'Assente',
-            'helper' => $helper,
+            'badge' => $enabled ? 'Attivo' : 'Disattivato',
+            'details' => [
+                $enabled
+                    ? 'Disponibile finche il cliente non annulla l\'iscrizione.'
+                    : 'Annullato il ' . $formatHumanDateTime($unsubscribedAt),
+            ],
         ];
     };
 
     $privacyVersion = trim((string) ($customer->privacy_accepted_version ?? ''));
-    $softEmailMarketingUnsubscribedAt = $hasSoftEmailMarketingUnsubscribeField
-        ? ($customer->soft_email_marketing_unsubscribed_at ?? null)
-        : null;
+    $softEmailMarketingUnsubscribedAt = $customer->soft_email_marketing_unsubscribed_at ?? null;
 
     $consentItems = [
         $consentStatusItem(
             'Privacy',
-            $customer->privacy_accepted_at ?? null,
-            'Attiva',
-            'Non prestata',
+            !empty($customer->privacy_accepted_at),
             'Accettata',
-            'Informativa privacy non ancora accettata',
-            $privacyVersion !== '' ? 'Versione ' . $privacyVersion : null
+            'Non presente',
+            $customer->privacy_accepted_at ?? null,
+            $privacyVersion !== '' ? ['Versione ' . $privacyVersion] : []
         ),
         $consentStatusItem(
             'Email marketing',
-            $customer->email_marketing_consent_at ?? null,
+            !empty($customer->email_marketing_consent_at),
             'Attivo',
-            'Non prestato',
-            'Prestato',
-            'Consenso email marketing non prestato'
+            'Non attivo',
+            $customer->email_marketing_consent_at ?? null
         ),
+        $softEmailMarketingItem($softEmailMarketingUnsubscribedAt),
         $consentStatusItem(
             'WhatsApp marketing',
-            $customer->whatsapp_marketing_consent_at ?? null,
+            !empty($customer->whatsapp_marketing_consent_at),
             'Attivo',
-            'Non prestato',
-            'Prestato',
-            'Consenso WhatsApp marketing non prestato'
+            'Non attivo',
+            $customer->whatsapp_marketing_consent_at ?? null
         ),
         $consentStatusItem(
             'Profilazione',
-            $customer->profiling_consent_at ?? null,
+            !empty($customer->profiling_consent_at),
             'Attiva',
-            'Non prestata',
-            'Prestata',
-            'Consenso profilazione non prestato'
+            'Non attiva',
+            $customer->profiling_consent_at ?? null
         ),
         $consentStatusItem(
             'Tracking',
-            $customer->tracking_consent_at ?? null,
+            !empty($customer->tracking_consent_at),
             'Attivo',
-            'Non prestato',
-            'Prestato',
-            'Consenso tracking non prestato'
+            'Non attivo',
+            $customer->tracking_consent_at ?? null
         ),
     ];
 
     if (!empty($customer->marketing_consent_at)) {
-        $consentItems[] = [
-            'label' => 'Marketing legacy',
-            'value' => 'Presente',
-            'tone' => 'warning',
-            'pill' => 'Storico',
-            'helper' => 'Campo storico mantenuto per compatibilita. Registrato ' . $formatHumanDateTime($customer->marketing_consent_at),
-        ];
-    }
-
-    if (!empty($softEmailMarketingUnsubscribedAt)) {
-        $consentItems[] = [
-            'label' => 'Soft opt-out',
-            'value' => 'Soft opt-out annullato',
-            'tone' => 'off',
-            'pill' => 'Opt-out',
-            'helper' => 'Annullato ' . $formatHumanDateTime($softEmailMarketingUnsubscribedAt),
-        ];
+        $consentItems[] = $legacyConsentItem(
+            'Marketing legacy',
+            'Legacy',
+            'warning',
+            $customer->marketing_consent_at,
+            ['Campo storico mantenuto per compatibilita.']
+        );
     }
 
     $timelineItems = [
@@ -560,20 +593,21 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="person-check-fill" />
                             </span>
-                            Consensi
+                            Consensi e preferenze
                         </h3>
                     </div>
 
-                    <p class="customer-detail__section-copy">Consensi e preferenze privacy registrate per questo cliente.</p>
+                    <p class="customer-detail__section-copy">Stato dei consensi e delle preferenze di contatto registrate per questo cliente.</p>
 
                     <div class="customer-detail__info-grid">
                         @foreach ($consentItems as $item)
                             <div class="customer-detail__info-item">
                                 <span class="customer-detail__info-label">{{ $item['label'] }}</span>
-                                <strong class="customer-detail__info-value">{{ $item['value'] }}</strong>
                                 <div class="customer-detail__info-meta">
-                                    <x-dashboard.state-pill :tone="$item['tone']">{{ $item['pill'] }}</x-dashboard.state-pill>
-                                    <small class="customer-detail__info-help">{{ $item['helper'] }}</small>
+                                    <x-dashboard.state-pill :tone="$item['tone']">{{ $item['badge'] }}</x-dashboard.state-pill>
+                                    @foreach ($item['details'] as $detail)
+                                        <small class="customer-detail__info-help">{{ $detail }}</small>
+                                    @endforeach
                                 </div>
                             </div>
                         @endforeach

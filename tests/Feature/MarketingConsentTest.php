@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAudienceBuilder;
+use App\Services\Marketing\MarketingConsentService;
 use App\Services\Marketing\MarketingCustomerSegmentService;
 use App\Services\Marketing\MarketingEmailDispatchService;
 use App\Services\Marketing\MarketingTemplateRenderer;
@@ -113,6 +114,22 @@ class MarketingConsentTest extends TestCase
 
         $this->assertContains($withoutExplicitConsent->id, $customerIds);
         $this->assertNotContains($optedOut->id, $customerIds);
+    }
+
+    public function test_soft_email_marketing_availability_does_not_require_explicit_email_consent(): void
+    {
+        $consentService = app(MarketingConsentService::class);
+        $privacyOnly = $this->createCustomer('privacy-only@example.com', [
+            'privacy_accepted_at' => now(),
+        ]);
+        $optedOut = $this->createCustomer('soft-disabled@example.com', [
+            'privacy_accepted_at' => now(),
+            'soft_email_marketing_unsubscribed_at' => now(),
+        ]);
+
+        $this->assertFalse($consentService->customerHasExplicitEmailMarketingConsent($privacyOnly));
+        $this->assertTrue($consentService->customerAllowsSoftEmailMarketing($privacyOnly));
+        $this->assertFalse($consentService->customerAllowsSoftEmailMarketing($optedOut));
     }
 
     public function test_whatsapp_marketing_campaign_audience_uses_whatsapp_consent(): void
