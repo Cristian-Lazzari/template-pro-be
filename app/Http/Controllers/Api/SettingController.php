@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Reservation;
 use App\Models\OrderProduct;
+use App\Services\CustomerAuth\CustomerProfileSettingsService;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use App\Support\Currency;
@@ -73,7 +74,7 @@ class SettingController extends Controller
 
         return view('guests.delete_success');
     }
-    public function index() {
+    public function index(CustomerProfileSettingsService $customerProfileSettingsService) {
         $settings = Setting::all()->keyBy('name');
 
         $property_adv = json_decode($settings['advanced']->property, 1); 
@@ -81,9 +82,7 @@ class SettingController extends Controller
             'success' => true,
             'asporto'   => $settings['Prenotazione Asporti'],
             'domicilio' => $settings['Possibilità di consegna a domicilio'],
-            'customer_profile' => isset($settings['customer_profile'])
-                ? json_decode($settings['customer_profile']->property ?? '{}', true)
-                : ['marketing_consent_text' => '', 'profiling_consent_text' => '', 'questions' => []],
+            'customer_profile' => $customerProfileSettingsService->get(),
             
             'promo_table'    => $settings['Promozione Tavoli'],
             'tavoli'    => $settings['Prenotazione Tavoli']->status,

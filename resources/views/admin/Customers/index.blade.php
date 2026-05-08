@@ -839,29 +839,6 @@
                     <div class="order-detail__section-head">
                         <h3>
                             <span class="order-detail__section-icon">
-                                <x-icon name="chat-square-text-fill" />
-                            </span>
-                            Testi dei consensi
-                        </h3>
-                    </div>
-
-                    <div class="customer-page__field-grid">
-                        <label class="customer-page__field">
-                            <span>Testo consenso marketing</span>
-                            <textarea name="marketing_consent_text">{{ old('marketing_consent_text', $profileSettings['marketing_consent_text'] ?? '') }}</textarea>
-                        </label>
-
-                        <label class="customer-page__field">
-                            <span>Testo consenso profilazione</span>
-                            <textarea name="profiling_consent_text">{{ old('profiling_consent_text', $profileSettings['profiling_consent_text'] ?? '') }}</textarea>
-                        </label>
-                    </div>
-                </section>
-
-                <section class="order-detail__section">
-                    <div class="order-detail__section-head">
-                        <h3>
-                            <span class="order-detail__section-icon">
                                 <x-icon name="patch-question-fill" />
                             </span>
                             Domande personalizzate
@@ -870,7 +847,7 @@
 
                     <div class="customer-page__actions" style="margin-bottom: 14px;">
                         <div class="customer-page__settings-copy">
-                            
+                            I testi privacy e consensi sono standardizzati e non modificabili.
                         </div>
 
                         <button type="button" class="customer-page__button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>

@@ -10,65 +10,46 @@ class CustomerProfileSettingsService
 {
     private const SETTING_NAME = 'customer_profile';
 
+    private const STATIC_CONSENT_TEXTS = [
+        'marketing_consent_text' => 'Acconsento a ricevere via email novità, offerte e promozioni del ristorante.',
+        'profiling_consent_text' => 'Acconsento all\'uso delle mie preferenze, risposte al questionario e storico ordini/prenotazioni per ricevere offerte e comunicazioni personalizzate.',
+        'email_marketing_label' => 'Acconsento a ricevere via email novità, offerte e promozioni del ristorante.',
+        'whatsapp_marketing_label' => 'Acconsento a ricevere via WhatsApp comunicazioni promozionali, offerte e novità del ristorante.',
+        'profiling_label' => 'Acconsento all\'uso delle mie preferenze, risposte al questionario e storico ordini/prenotazioni per ricevere offerte e comunicazioni personalizzate.',
+        'profiling_note' => 'Le informazioni restano solo a questo ristorante e vengono usate per proporti offerte più pertinenti.',
+        'tracking_label' => 'Acconsento al tracciamento delle interazioni con le comunicazioni marketing, come aperture e click, per misurarne l\'efficacia.',
+        'privacy_label' => 'Ho letto l\'informativa privacy e acconsento al trattamento dei dati necessari per gestire il servizio richiesto.',
+        'accept_all_label' => 'Accetta tutti i consensi facoltativi',
+        'cookie_text' => 'Usiamo cookie tecnici necessari e, solo con il tuo consenso, strumenti di tracciamento e analisi per migliorare l\'esperienza.',
+    ];
+
     public function get(): array
     {
-        $setting = Setting::query()->firstOrCreate(
-            ['name' => self::SETTING_NAME],
-            [
-                'status' => 1,
-                'property' => json_encode($this->defaults()),
-            ]
+        $setting = $this->setting();
+
+        return $this->withStaticConsentTexts(
+            $this->decodeProperty($setting->property)
         );
+    }
 
-        $property = json_decode($setting->property ?? '[]', true);
-        if (!is_array($property)) {
-            $property = [];
-        }
-
-        return array_replace_recursive($this->defaults(), $property);
+    public function staticConsentTexts(): array
+    {
+        return self::STATIC_CONSENT_TEXTS;
     }
 
     public function update(array $input): array
     {
-        $current = $this->get();
+        $setting = $this->setting();
+        $property = $this->decodeProperty($setting->property);
 
-        $payload = [
-            'marketing_consent_text' => $this->sanitizeText(
-                $input['marketing_consent_text'] ?? $current['marketing_consent_text']
-            ),
-            'profiling_consent_text' => $this->sanitizeText(
-                $input['profiling_consent_text'] ?? $current['profiling_consent_text']
-            ),
-            'email_marketing_label' => $this->sanitizeText(
-                $input['email_marketing_label'] ?? $current['email_marketing_label']
-            ),
-            'whatsapp_marketing_label' => $this->sanitizeText(
-                $input['whatsapp_marketing_label'] ?? $current['whatsapp_marketing_label']
-            ),
-            'profiling_label' => $this->sanitizeText(
-                $input['profiling_label'] ?? $current['profiling_label']
-            ),
-            'tracking_label' => $this->sanitizeText(
-                $input['tracking_label'] ?? $current['tracking_label']
-            ),
-            'privacy_label' => $this->sanitizeText(
-                $input['privacy_label'] ?? $current['privacy_label']
-            ),
-            'accept_all_label' => $this->sanitizeText(
-                $input['accept_all_label'] ?? $current['accept_all_label']
-            ),
-            'questions' => $this->normalizeQuestions($input['questions'] ?? $current['questions'] ?? []),
-        ];
+        $questions = $input['questions'] ?? $property['questions'] ?? [];
+        $property['questions'] = $this->normalizeQuestions(is_array($questions) ? $questions : []);
 
-        Setting::query()->updateOrCreate(
-            ['name' => self::SETTING_NAME],
-            [
-                'status' => 1,
-                'property' => json_encode($payload),
-            ]
-        );
+        $setting->status = 1;
+        $setting->property = json_encode($property);
+        $setting->save();
 
-        return $payload;
+        return $this->withStaticConsentTexts($property);
     }
 
     public function normalizeAnswers(array $answers, array $questions): array
@@ -130,17 +111,38 @@ class CustomerProfileSettingsService
 
     public function defaults(): array
     {
-        return [
-            'marketing_consent_text' => 'Vuoi ricevere novita, eventi e offerte del ristorante via email?',
-            'profiling_consent_text' => 'Vuoi ricevere promozioni personalizzate in base ai tuoi gusti e alle tue preferenze?',
-            'email_marketing_label' => 'Voglio ricevere offerte e promozioni via email',
-            'whatsapp_marketing_label' => 'Voglio ricevere offerte e promozioni via WhatsApp',
-            'profiling_label' => 'Acconsento alla profilazione per ricevere offerte piu pertinenti',
-            'tracking_label' => 'Acconsento al tracking delle interazioni marketing, come aperture e click',
-            'privacy_label' => 'Accetto l\'informativa privacy e autorizzo il trattamento dei dati necessari per gestire ordine/prenotazione.',
-            'accept_all_label' => 'Accetta tutti e ricevi promozioni e offerte personalizzate',
+        return array_replace(self::STATIC_CONSENT_TEXTS, [
             'questions' => [],
-        ];
+        ]);
+    }
+
+    private function setting(): Setting
+    {
+        return Setting::query()->firstOrCreate(
+            ['name' => self::SETTING_NAME],
+            [
+                'status' => 1,
+                'property' => json_encode(['questions' => []]),
+            ]
+        );
+    }
+
+    private function decodeProperty(?string $property): array
+    {
+        $decoded = json_decode($property ?? '[]', true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    private function withStaticConsentTexts(array $property): array
+    {
+        $questions = $property['questions'] ?? [];
+
+        return array_replace_recursive(
+            $property,
+            self::STATIC_CONSENT_TEXTS,
+            ['questions' => $this->normalizeQuestions(is_array($questions) ? $questions : [])]
+        );
     }
 
     private function normalizeQuestions(array $questions): array
@@ -171,12 +173,18 @@ class CustomerProfileSettingsService
 
             $usedKeys[] = $key;
 
-            $normalized[] = [
+            $normalizedQuestion = [
                 'key' => $key,
                 'label' => $label,
                 'placeholder' => $this->sanitizeText($question['placeholder'] ?? ''),
                 'required' => filter_var($question['required'] ?? false, FILTER_VALIDATE_BOOLEAN),
             ];
+
+            if (isset($question['options']) && is_array($question['options'])) {
+                $normalizedQuestion['options'] = array_values($question['options']);
+            }
+
+            $normalized[] = $normalizedQuestion;
         }
 
         return array_values($normalized);

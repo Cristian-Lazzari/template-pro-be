@@ -103,8 +103,6 @@ class CustomerController extends Controller
         }
 
         $this->customerProfileSettingsService->update([
-            'marketing_consent_text' => $request->input('marketing_consent_text'),
-            'profiling_consent_text' => $request->input('profiling_consent_text'),
             'questions' => $questions,
         ]);
 

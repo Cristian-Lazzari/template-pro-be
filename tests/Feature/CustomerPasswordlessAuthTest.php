@@ -4,7 +4,10 @@ namespace Tests\Feature;
 
 use App\Mail\CustomerOtpMail;
 use App\Models\Customer;
+use App\Models\Setting;
+use App\Models\User;
 use App\Services\CustomerAuth\CustomerAccessService;
+use App\Services\CustomerAuth\CustomerProfileSettingsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -434,8 +437,84 @@ class CustomerPasswordlessAuthTest extends TestCase
             ->assertJsonPath('customer.tracking_enabled', true)
             ->assertJsonPath('customer.privacy_accepted', true)
             ->assertJsonPath('customer.privacy_accepted_version', 'privacy-v3')
-            ->assertJsonPath('profile_settings.email_marketing_label', 'Voglio ricevere offerte e promozioni via email')
-            ->assertJsonPath('profile_settings.accept_all_label', 'Accetta tutti e ricevi promozioni e offerte personalizzate');
+            ->assertJsonPath('profile_settings.email_marketing_label', 'Acconsento a ricevere via email novità, offerte e promozioni del ristorante.')
+            ->assertJsonPath('profile_settings.accept_all_label', 'Accetta tutti i consensi facoltativi');
+    }
+
+    public function test_customer_profile_settings_ignore_custom_consent_texts_and_keep_questions(): void
+    {
+        Setting::query()->updateOrCreate(
+            ['name' => 'customer_profile'],
+            [
+                'status' => 1,
+                'property' => json_encode([
+                    'marketing_consent_text' => 'Testo marketing custom',
+                    'profiling_consent_text' => 'Testo profilazione custom',
+                    'email_marketing_label' => 'Label email custom',
+                    'questions' => [
+                        [
+                            'key' => 'piatto_preferito',
+                            'label' => 'Piatto preferito',
+                            'placeholder' => 'Scrivi qui',
+                            'required' => true,
+                        ],
+                    ],
+                ]),
+            ]
+        );
+
+        $settings = app(CustomerProfileSettingsService::class)->get();
+
+        $this->assertSame(
+            'Acconsento a ricevere via email novità, offerte e promozioni del ristorante.',
+            $settings['marketing_consent_text']
+        );
+        $this->assertSame(
+            'Acconsento all\'uso delle mie preferenze, risposte al questionario e storico ordini/prenotazioni per ricevere offerte e comunicazioni personalizzate.',
+            $settings['profiling_consent_text']
+        );
+        $this->assertSame('piatto_preferito', $settings['questions'][0]['key']);
+        $this->assertSame('Piatto preferito', $settings['questions'][0]['label']);
+        $this->assertTrue($settings['questions'][0]['required']);
+    }
+
+    public function test_admin_profile_settings_update_ignores_consent_text_fields(): void
+    {
+        Setting::query()->updateOrCreate(
+            ['name' => 'customer_profile'],
+            [
+                'status' => 1,
+                'property' => json_encode([
+                    'marketing_consent_text' => 'Testo marketing precedente',
+                    'profiling_consent_text' => 'Testo profilazione precedente',
+                    'questions' => [],
+                ]),
+            ]
+        );
+
+        $this->actingAs(User::factory()->create())
+            ->post('/admin/customers/profile-settings', [
+                'marketing_consent_text' => 'Nuovo testo marketing da ignorare',
+                'profiling_consent_text' => 'Nuovo testo profilazione da ignorare',
+                'email_marketing_label' => 'Nuova label da ignorare',
+                'questions' => [
+                    [
+                        'key' => '',
+                        'label' => 'Allergie o preferenze',
+                        'placeholder' => 'Es. senza glutine',
+                        'required' => '1',
+                    ],
+                ],
+            ])
+            ->assertRedirect(route('admin.customers.index'));
+
+        $property = json_decode(Setting::query()->where('name', 'customer_profile')->firstOrFail()->property, true);
+
+        $this->assertSame('Testo marketing precedente', $property['marketing_consent_text']);
+        $this->assertSame('Testo profilazione precedente', $property['profiling_consent_text']);
+        $this->assertArrayNotHasKey('email_marketing_label', $property);
+        $this->assertSame('allergie_o_preferenze', $property['questions'][0]['key']);
+        $this->assertTrue($property['questions'][0]['required']);
     }
 
     public function test_checkout_consents_store_explicit_customer_consents(): void
