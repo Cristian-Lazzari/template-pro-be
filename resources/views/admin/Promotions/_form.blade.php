@@ -3,44 +3,95 @@
     $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
     $scheduleValue = $previewPermanent ? '' : old('schedule_at', $promotion->schedule_at?->format('Y-m-d\TH:i'));
     $expiringValue = $previewPermanent ? '' : old('expiring_at', $promotion->expiring_at?->format('Y-m-d\TH:i'));
-    $existingProductIds = $promotion->exists
-        ? $promotion->targets
-            ->where('target_type', 'product')
-            ->pluck('target_id')
+    $targetConfigs = [
+        'product' => [
+            'field' => 'product_ids',
+            'label' => 'Scegli prodotti',
+            'empty' => 'Nessun prodotto disponibile',
+            'card_title' => 'Prodotti',
+            'card_copy' => 'La regola vale sui prodotti selezionati.',
+            'icon' => 'bi-tags-fill',
+            'singular' => '1 prodotto',
+            'plural' => 'prodotti',
+        ],
+        'menu' => [
+            'field' => 'menu_ids',
+            'label' => 'Scegli menu',
+            'empty' => 'Nessun menu disponibile',
+            'card_title' => 'Menu',
+            'card_copy' => 'La regola vale sui menu selezionati.',
+            'icon' => 'bi-menu-button-wide-fill',
+            'singular' => '1 menu',
+            'plural' => 'menu',
+        ],
+        'category' => [
+            'field' => 'category_ids',
+            'label' => 'Scegli categorie',
+            'empty' => 'Nessuna categoria disponibile',
+            'card_title' => 'Categorie',
+            'card_copy' => 'La regola vale sulle categorie selezionate.',
+            'icon' => 'bi-folder-fill',
+            'singular' => '1 categoria',
+            'plural' => 'categorie',
+        ],
+    ];
+    $validTargetTypes = array_merge(['generic'], array_keys($targetConfigs));
+    $existingTargetIds = [];
+
+    foreach ($targetConfigs as $type => $config) {
+        $existingTargetIds[$type] = $promotion->exists
+            ? $promotion->targets
+                ->where('target_type', $type)
+                ->pluck('target_id')
+                ->filter()
+                ->map(fn ($targetId) => (string) $targetId)
+                ->unique()
+                ->values()
+                ->all()
+            : [];
+    }
+
+    $existingSpecificTargetType = collect($existingTargetIds)
+        ->search(fn ($targetIds) => count($targetIds) > 0);
+    $targetType = old('target_type', $existingSpecificTargetType ?: 'generic');
+    $targetType = in_array($targetType, $validTargetTypes, true) ? $targetType : 'generic';
+    $selectedTargetIds = [];
+
+    foreach ($targetConfigs as $type => $config) {
+        $selectedTargetIds[$type] = collect((array) old($config['field'], $existingTargetIds[$type]))
+            ->map(fn ($targetId) => (string) $targetId)
             ->filter()
-            ->map(fn ($productId) => (string) $productId)
             ->unique()
             ->values()
-            ->all()
-        : [];
-    $productOptions = $specificTargetOptions['product'] ?? [];
-    $targetType = old('target_type', count($existingProductIds) > 0 ? 'product' : 'generic');
-    $selectedProductIds = collect((array) old('product_ids', $existingProductIds))
-        ->map(fn ($productId) => (string) $productId)
-        ->filter()
-        ->unique()
-        ->values()
+            ->all();
+    }
+
+    $targetOptionsByType = collect($targetConfigs)
+        ->mapWithKeys(fn ($config, $type) => [$type => $specificTargetOptions[$type] ?? []])
         ->all();
 
     $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
     $cancelUrl = $promotion->exists ? route('admin.promotions.show', $promotion) : route('admin.promotions.index');
-    $previewDiscountType = old('type_discount', $promotion->type_discount);
+    $rawPreviewDiscountType = old('type_discount', $promotion->type_discount);
+    $previewDiscountType = $targetType === 'category' && $rawPreviewDiscountType === 'gift'
+        ? 'fixed'
+        : $rawPreviewDiscountType;
     $previewCaseUse = old('case_use', $promotion->case_use);
-    $targetOptionLabels = collect($productOptions)
+    $targetOptionLabels = collect($targetOptionsByType[$targetType] ?? [])
         ->mapWithKeys(function ($option) {
-            $productId = explode(':', $option['key'], 2)[1] ?? '';
+            $targetId = explode(':', $option['key'], 2)[1] ?? '';
 
-            return [$productId => $option['label']];
+            return [$targetId => $option['label']];
         })
         ->all();
-    $previewTargetLabels = collect($selectedProductIds)
-        ->map(fn ($productId) => $targetOptionLabels[$productId] ?? '#' . $productId)
+    $previewTargetLabels = collect($targetType === 'generic' ? [] : ($selectedTargetIds[$targetType] ?? []))
+        ->map(fn ($targetId) => $targetOptionLabels[$targetId] ?? ($targetConfigs[$targetType]['card_title'] ?? 'Target') . ' #' . $targetId)
         ->unique()
         ->values();
-    $productTargetCount = $previewTargetLabels->count();
-    $targetSummary = $targetType === 'product'
-        ? ($productTargetCount === 1 ? '1 prodotto' : $productTargetCount . ' prodotti')
-        : 'Promo generale';
+    $targetCount = $previewTargetLabels->count();
+    $targetSummary = $targetType === 'generic'
+        ? 'Promo generale'
+        : ($targetCount === 1 ? $targetConfigs[$targetType]['singular'] : $targetCount . ' ' . $targetConfigs[$targetType]['plural']);
 @endphp
 
 @include('admin.Marketing.partials.form-style')
@@ -80,7 +131,7 @@
         gap: 12px;
         min-height: 100%;
         padding: 16px;
-        border-radius: 18px;
+        border-radius: 8px;
         border: 1px solid rgba(216, 221, 232, 0.12);
         background: rgba(216, 221, 232, 0.05);
         color: var(--c3);
@@ -115,7 +166,7 @@
         justify-content: center;
         width: 36px;
         height: 36px;
-        border-radius: 12px;
+        border-radius: 8px;
         border: 1px solid rgba(216, 221, 232, 0.12);
         background: rgba(9, 3, 51, 0.42);
         color: rgba(142, 246, 219, 0.92);
@@ -141,6 +192,63 @@
     }
 
     .promotion-form-panel[hidden] {
+        display: none !important;
+    }
+
+    .promotion-target-panel {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(216, 221, 232, 0.04);
+    }
+
+    .promotion-target-list {
+        display: grid;
+        gap: 8px;
+        max-height: 320px;
+        overflow: auto;
+    }
+
+    .promotion-target-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.28);
+        color: var(--c3);
+        cursor: pointer;
+    }
+
+    .promotion-target-check:hover {
+        border-color: rgba(14, 183, 146, 0.28);
+        background: rgba(14, 183, 146, 0.08);
+    }
+
+    .promotion-target-check input {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+    }
+
+    .promotion-target-check span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        line-height: 1.35;
+    }
+
+    .promotion-target-empty,
+    .promotion-form-note {
+        margin: 0;
+        color: rgba(216, 221, 232, 0.74);
+        line-height: 1.45;
+    }
+
+    .promotion-form-note[hidden] {
         display: none !important;
     }
 </style>
@@ -219,10 +327,11 @@
                     <select name="type_discount" id="type_discount" data-type-discount>
                         <option value="">Nessuno</option>
                         @foreach ($discountTypes as $value => $label)
-                            <option value="{{ $value }}" @selected(old('type_discount', $promotion->type_discount) === $value)>{{ $label }}</option>
+                            <option value="{{ $value }}" @selected($previewDiscountType === $value) @disabled($targetType === 'category' && $value === 'gift')>{{ $label }}</option>
                         @endforeach
                     </select>
                 </p>
+                <p class="promotion-form-note" data-category-gift-copy @if ($targetType !== 'category') hidden @endif>L'omaggio non è disponibile per promozioni su categorie.</p>
                 @error('type_discount') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
@@ -282,7 +391,7 @@
 
         <div class="promotion-choice-grid">
             <div class="promotion-choice-option">
-                <input class="promotion-choice-input" type="radio" name="target_type" id="target_type_generic" value="generic" @checked($targetType !== 'product')>
+                <input class="promotion-choice-input" type="radio" name="target_type" id="target_type_generic" value="generic" @checked($targetType === 'generic')>
                 <label class="promotion-choice-card" for="target_type_generic">
                     <span class="promotion-choice-icon">
                         <i class="bi bi-cart-check-fill"></i>
@@ -294,41 +403,63 @@
                 </label>
             </div>
 
-            <div class="promotion-choice-option">
-                <input class="promotion-choice-input" type="radio" name="target_type" id="target_type_product" value="product" @checked($targetType === 'product')>
-                <label class="promotion-choice-card" for="target_type_product">
-                    <span class="promotion-choice-icon">
-                        <i class="bi bi-tags-fill"></i>
-                    </span>
-                    <span>
-                        <strong>Uno o più prodotti</strong>
-                        <small>La regola vale solo sui prodotti selezionati.</small>
-                    </span>
-                </label>
-            </div>
+            @foreach ($targetConfigs as $type => $config)
+                <div class="promotion-choice-option">
+                    <input class="promotion-choice-input" type="radio" name="target_type" id="target_type_{{ $type }}" value="{{ $type }}" @checked($targetType === $type)>
+                    <label class="promotion-choice-card" for="target_type_{{ $type }}">
+                        <span class="promotion-choice-icon">
+                            <i class="bi {{ $config['icon'] }}"></i>
+                        </span>
+                        <span>
+                            <strong>{{ $config['card_title'] }}</strong>
+                            <small>{{ $config['card_copy'] }}</small>
+                        </span>
+                    </label>
+                </div>
+            @endforeach
         </div>
         @error('target_type') <p class="error">{{ $message }}</p> @enderror
 
-        <div class="promotion-form-panel mt-3" data-target-type-panel="product" @if ($targetType !== 'product') hidden @endif>
-            <label class="label_c" for="product_ids">
-                <i class="bi bi-box-seam"></i>
-                Prodotti
-            </label>
-            <p>
-                <select name="product_ids[]" id="product_ids" multiple size="8" @disabled($targetType !== 'product')>
-                    @foreach ($productOptions as $option)
-                        @php
-                            $productId = explode(':', $option['key'], 2)[1] ?? '';
-                        @endphp
-                        <option value="{{ $productId }}" @selected(in_array((string) $productId, $selectedProductIds, true))>
-                            {{ $option['label'] }}
-                        </option>
-                    @endforeach
-                </select>
-            </p>
-            @error('product_ids') <p class="error">{{ $message }}</p> @enderror
-            @error('product_ids.*') <p class="error">{{ $message }}</p> @enderror
-        </div>
+        @foreach ($targetConfigs as $type => $config)
+            @php
+                $options = $targetOptionsByType[$type] ?? [];
+            @endphp
+
+            <div class="promotion-form-panel promotion-target-panel mt-3" data-target-type-panel="{{ $type }}" @if ($targetType !== $type) hidden @endif>
+                <div class="label_c">
+                    <i class="bi {{ $config['icon'] }}"></i>
+                    {{ $config['label'] }}
+                </div>
+
+                @if (count($options) === 0)
+                    <p class="promotion-target-empty">{{ $config['empty'] }}</p>
+                @else
+                    <div class="promotion-target-list">
+                        @foreach ($options as $option)
+                            @php
+                                $targetId = explode(':', $option['key'], 2)[1] ?? '';
+                                $inputId = 'target_' . $type . '_' . $targetId;
+                            @endphp
+
+                            <label class="promotion-target-check" for="{{ $inputId }}">
+                                <input
+                                    type="checkbox"
+                                    name="{{ $config['field'] }}[]"
+                                    id="{{ $inputId }}"
+                                    value="{{ $targetId }}"
+                                    @checked(in_array((string) $targetId, $selectedTargetIds[$type] ?? [], true))
+                                    @disabled($targetType !== $type)
+                                >
+                                <span>{{ $option['label'] }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                @endif
+
+                @error($config['field']) <p class="error">{{ $message }}</p> @enderror
+                @error($config['field'] . '.*') <p class="error">{{ $message }}</p> @enderror
+            </div>
+        @endforeach
     </section>
 
     <section class="order-detail__section">
@@ -444,12 +575,12 @@
                         </div>
                     </div>
 
-                    @if ($targetType === 'product')
+                    @if ($targetType !== 'generic')
                         <div class="marketing-form-preview__chips">
                             @forelse ($previewTargetLabels->take(5) as $targetLabel)
                                 <span>{{ $targetLabel }}</span>
                             @empty
-                                <span>Nessun prodotto selezionato</span>
+                                <span>{{ $targetConfigs[$targetType]['empty'] ?? 'Nessun target selezionato' }}</span>
                             @endforelse
                             @if ($previewTargetLabels->count() > 5)
                                 <span>+{{ $previewTargetLabels->count() - 5 }}</span>
@@ -487,9 +618,10 @@
         }
 
         const targetTypeInputs = form.querySelectorAll('input[name="target_type"]');
-        const productPanel = form.querySelector('[data-target-type-panel="product"]');
+        const targetPanels = form.querySelectorAll('[data-target-type-panel]');
         const typeDiscount = form.querySelector('[data-type-discount]');
         const discountField = form.querySelector('[data-discount-field]');
+        const categoryGiftCopy = form.querySelector('[data-category-gift-copy]');
         const permanentInput = form.querySelector('#permanent');
         const datePanel = form.querySelector('[data-permanent-dates]');
 
@@ -507,12 +639,32 @@
         const syncTargetPanel = () => {
             const selected = form.querySelector('input[name="target_type"]:checked')?.value || 'generic';
 
-            setPanelState(productPanel, selected === 'product');
+            targetPanels.forEach((panel) => {
+                setPanelState(panel, panel.dataset.targetTypePanel === selected);
+            });
+
+            syncDiscount();
         };
 
         const syncDiscount = () => {
             if (!typeDiscount || !discountField) {
                 return;
+            }
+
+            const selectedTarget = form.querySelector('input[name="target_type"]:checked')?.value || 'generic';
+            const giftOption = typeDiscount.querySelector('option[value="gift"]');
+            const isCategory = selectedTarget === 'category';
+
+            if (giftOption) {
+                giftOption.disabled = isCategory;
+            }
+
+            if (categoryGiftCopy) {
+                categoryGiftCopy.hidden = !isCategory;
+            }
+
+            if (isCategory && typeDiscount.value === 'gift') {
+                typeDiscount.value = 'fixed';
             }
 
             const isGift = typeDiscount.value === 'gift';

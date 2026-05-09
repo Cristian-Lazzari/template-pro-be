@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CustomerAuthController;
+use App\Http\Controllers\Api\CustomerOfferController;
 use App\Http\Controllers\Api\DateController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\OrderController;
@@ -47,6 +48,7 @@ Route::prefix('auth')->name('api.auth.')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('me', [CustomerAuthController::class, 'me'])->name('me');
         Route::get('history', [CustomerAuthController::class, 'history'])->name('history');
+        Route::get('offers', [CustomerOfferController::class, 'index'])->name('offers');
         Route::put('profile', [CustomerAuthController::class, 'updateProfile'])->name('profile');
         Route::patch('consents', [CustomerAuthController::class, 'updateConsents'])->name('consents');
         Route::post('logout', [CustomerAuthController::class, 'logout'])->name('logout');

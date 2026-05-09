@@ -28,12 +28,28 @@ class UpdatePromotionRequest extends FormRequest
                 'exclude_if:permanent,1',
                 'nullable',
                 'date',
-                Rule::when($this->filled('schedule_at'), ['after_or_equal:schedule_at']),
+                Rule::when($this->filled('schedule_at') && $this->filled('expiring_at'), ['after_or_equal:schedule_at']),
             ],
             'metadata.reusable' => ['nullable', 'boolean'],
-            'target_type' => ['required', Rule::in(['generic', 'product'])],
+            'target_type' => ['required', Rule::in(['generic', 'product', 'menu', 'category'])],
             'product_ids' => ['required_if:target_type,product', 'array', 'min:1'],
             'product_ids.*' => ['integer', 'distinct', Rule::exists('products', 'id')],
+            'menu_ids' => ['required_if:target_type,menu', 'array', 'min:1'],
+            'menu_ids.*' => ['integer', 'distinct', Rule::exists('menus', 'id')],
+            'category_ids' => ['required_if:target_type,category', 'array', 'min:1'],
+            'category_ids.*' => ['integer', 'distinct', Rule::exists('categories', 'id')],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('target_type') === 'category' && $this->input('type_discount') === 'gift') {
+                $validator->errors()->add(
+                    'type_discount',
+                    "L'omaggio non è disponibile per promozioni su categorie."
+                );
+            }
+        });
     }
 }

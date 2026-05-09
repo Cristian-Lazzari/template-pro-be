@@ -60,19 +60,42 @@
     $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? ($scheduleWindow ?: '-');
     $requestedScheduledAt = data_get($campaign->metadata, 'requested_scheduled_at');
     $estimatedDuration = $sendProgress['estimated_duration_minutes'] ?? ($estimatedDurationMinutes ?? data_get($campaign->metadata, 'estimated_duration_minutes'));
+    $batchIntervalMinutes = max(0, (int) data_get($campaign->metadata, 'batch_interval_minutes', 0));
     $completedAt = $sendProgress['completed_at'] ?? ($completedAt ?? $campaign->sent_at);
     $scheduledAtIso = $campaign->scheduled_at?->toIso8601String();
     $nextBatchDueAtIso = $nextBatchDueAt?->toIso8601String();
+    $batchWaitStartedAt = ($nextBatchDueAt && $batchIntervalMinutes > 0)
+        ? $nextBatchDueAt->copy()->subMinutes($batchIntervalMinutes)
+        : null;
+    $batchWaitStartedAtIso = $batchWaitStartedAt?->toIso8601String();
     $readyRunnerMessage = 'Pronta per il prossimo ciclo del runner marketing';
     $isScheduledFuture = $normalizedStatus === 'scheduled' && $campaign->scheduled_at?->isFuture();
     $isRunning = $normalizedStatus === 'running';
     $hasFutureNextBatch = $isRunning && $nextBatchDueAt?->isFuture();
     $progressPercentageLabel = number_format($progressPercentage, $progressPercentage === floor($progressPercentage) ? 0 : 2, ',', '.') . '%';
+    $sendPanelTitle = match ($normalizedStatus) {
+        'scheduled' => 'Invio programmato',
+        'running' => 'Invio in corso',
+        'completed' => 'Tutte le email sono state inviate',
+        'paused' => 'Campagna in pausa',
+        'archived' => 'Campagna archiviata',
+        'draft' => 'Bozza',
+        default => $statusLabel,
+    };
+    $sendPanelBadge = match ($normalizedStatus) {
+        'scheduled' => 'Programmata',
+        'running' => 'Live',
+        'completed' => 'Completata',
+        'paused' => 'In pausa',
+        'archived' => 'Archiviata',
+        'draft' => 'Bozza',
+        default => $statusLabel,
+    };
     $sendPanelMessage = match (true) {
         $normalizedStatus === 'scheduled' && $isScheduledFuture => 'Invio programmato per: ' . $campaign->scheduled_at->format('d/m/Y H:i'),
         $normalizedStatus === 'scheduled' => $readyRunnerMessage,
         $isRunning => "Invio in corso: {$sentEmails} di {$totalEmails} email inviate",
-        $normalizedStatus === 'completed' => 'Campagna completata',
+        $normalizedStatus === 'completed' => 'Tutte le email sono state inviate',
         $normalizedStatus === 'draft' => 'Bozza: programma la campagna per creare i destinatari.',
         $normalizedStatus === 'paused' => 'Campagna in pausa: non verranno inviati nuovi batch.',
         $normalizedStatus === 'archived' => 'Campagna archiviata.',
@@ -152,9 +175,103 @@
     @include('admin.Marketing.partials.show-style')
 
     <style>
+        .campaign-send-panel {
+            display: grid;
+            gap: 16px;
+        }
+
+        .campaign-send-panel__head {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .campaign-send-panel__title {
+            display: grid;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .campaign-send-panel__title strong {
+            color: var(--c3);
+            font-size: var(--fs-500);
+            line-height: 1.15;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-send-panel__title small {
+            color: rgba(216, 221, 232, 0.74);
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-send-panel__badge,
+        .campaign-send-panel__metric {
+            display: inline-flex;
+            width: fit-content;
+            max-width: 100%;
+            align-items: center;
+            gap: 7px;
+            border-radius: 999px;
+            border: 1px solid rgba(14, 183, 146, 0.28);
+            background: rgba(14, 183, 146, 0.12);
+            color: rgba(184, 255, 236, 0.96);
+            font-size: var(--fs-100);
+            font-weight: 900;
+            line-height: 1.2;
+            padding: 8px 11px;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-send-panel__status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+            gap: 10px;
+        }
+
+        .campaign-send-panel__metric {
+            display: grid;
+            gap: 4px;
+            align-items: start;
+            border-radius: 8px;
+            border-color: rgba(216, 221, 232, 0.12);
+            background: rgba(9, 3, 51, 0.32);
+            color: var(--c3);
+            padding: 12px;
+        }
+
+        .campaign-send-panel__metric span {
+            color: rgba(216, 221, 232, 0.62);
+            font-size: var(--fs-100);
+            text-transform: uppercase;
+        }
+
+        .campaign-send-panel__metric strong {
+            color: var(--c3);
+            font-size: var(--fs-300);
+            line-height: 1.2;
+        }
+
+        .campaign-send-panel .marketing-detail__progress-live {
+            display: inline-flex;
+            width: fit-content;
+            max-width: 100%;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(98, 166, 255, 0.2);
+            background: rgba(98, 166, 255, 0.08);
+            font-weight: 900;
+            line-height: 1.35;
+        }
+
         .campaign-send-panel .marketing-detail__progress-track {
             position: relative;
             min-height: 18px;
+            overflow: hidden;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28);
         }
 
@@ -177,6 +294,15 @@
                 linear-gradient(90deg, rgba(74, 222, 128, 0.96), rgba(45, 212, 191, 0.9));
             background-size: 24px 24px, auto;
             animation: campaignProgressLoad .7s ease-out both, campaignProgressStripes .95s linear infinite, campaignProgressPulse 1.8s ease-in-out infinite;
+        }
+
+        .campaign-send-panel .marketing-detail__progress-bar.is-scheduled {
+            width: 100% !important;
+            background-image:
+                linear-gradient(90deg, rgba(98, 166, 255, 0.16), rgba(14, 183, 146, 0.28), rgba(98, 166, 255, 0.16));
+            background-size: 220% 100%;
+            animation: campaignProgressShimmer 1.7s ease-in-out infinite;
+            opacity: .86;
         }
 
         .campaign-send-panel .marketing-detail__progress-bar.is-completed {
@@ -207,6 +333,52 @@
             color: rgba(184, 255, 236, 0.95);
         }
 
+        .campaign-send-panel__wait {
+            display: grid;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(216, 221, 232, 0.12);
+            background: rgba(216, 221, 232, 0.04);
+        }
+
+        .campaign-send-panel__wait-head,
+        .campaign-send-panel__wait-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .campaign-send-panel__wait-head strong {
+            color: var(--c3);
+            line-height: 1.25;
+        }
+
+        .campaign-send-panel__wait-meta {
+            color: rgba(216, 221, 232, 0.68);
+            font-size: var(--fs-100);
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .campaign-send-panel__wait-track {
+            position: relative;
+            height: 8px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(9, 3, 51, 0.46);
+        }
+
+        .campaign-send-panel__wait-bar {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, rgba(98, 166, 255, 0.9), rgba(14, 183, 146, 0.9));
+            transition: width .5s ease;
+        }
+
         @keyframes campaignProgressLoad {
             from {
                 transform: scaleX(0);
@@ -234,13 +406,33 @@
             }
         }
 
+        @keyframes campaignProgressShimmer {
+            from {
+                background-position: 160% 0;
+            }
+
+            to {
+                background-position: -60% 0;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .campaign-send-panel .marketing-detail__progress-bar {
                 transition: none;
             }
 
-            .campaign-send-panel .marketing-detail__progress-bar.is-running {
+            .campaign-send-panel .marketing-detail__progress-bar.is-running,
+            .campaign-send-panel .marketing-detail__progress-bar.is-scheduled {
                 animation: none;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .campaign-send-panel__head,
+            .campaign-send-panel__wait-head,
+            .campaign-send-panel__wait-meta {
+                align-items: stretch;
+                flex-direction: column;
             }
         }
     </style>
@@ -345,59 +537,117 @@
 	                        @endif
 	                    </div>
 	
-	                    <div class="marketing-detail__empty marketing-detail__send-panel campaign-send-panel mt-3">
-	                        <strong id="campaign-send-message">{{ $sendPanelMessage }}</strong>
+                    <div class="marketing-detail__empty marketing-detail__send-panel campaign-send-panel mt-3">
+                        <div class="campaign-send-panel__head">
+                            <div class="campaign-send-panel__title">
+                                <strong>{{ $sendPanelTitle }}</strong>
+                                <small id="campaign-send-message">{{ $sendPanelMessage }}</small>
+                            </div>
+                            <span class="campaign-send-panel__badge">
+                                <i class="bi {{ $icon }}"></i>
+                                {{ $sendPanelBadge }}
+                            </span>
+                        </div>
 
-	                        @if ($isScheduledFuture && $scheduledAtIso)
-	                            <span
-	                                class="marketing-detail__progress-live"
-	                                data-marketing-countdown
-	                                data-countdown-target="{{ $scheduledAtIso }}"
-	                                data-countdown-prefix="Partenza tra:"
-	                                data-countdown-expired="{{ $readyRunnerMessage }}"
-	                                data-countdown-sync="campaign-send-message"
-	                            >
-	                                <i class="bi bi-hourglass-split"></i>
-	                                <span data-countdown-text>Partenza tra: calcolo...</span>
-	                            </span>
-	                            <small>Il prossimo batch partirà dopo questa finestra.</small>
-	                        @endif
+                        <div class="campaign-send-panel__status-grid">
+                            <div class="campaign-send-panel__metric">
+                                <span>Email inviate</span>
+                                <strong>{{ $sentEmails }} / {{ $totalEmails }}</strong>
+                            </div>
+                            <div class="campaign-send-panel__metric">
+                                <span>Restano</span>
+                                <strong>{{ $pendingEmails }} email</strong>
+                            </div>
+                            <div class="campaign-send-panel__metric">
+                                <span>Avanzamento reale</span>
+                                <strong>{{ $progressPercentageLabel }}</strong>
+                            </div>
+                        </div>
 
-	                        @if ($isRunning && $nextBatchDueAt)
-	                            <small>Prossimo batch previsto: {{ $nextBatchDueAt->format('d/m/Y H:i') }}</small>
+                        @if ($isScheduledFuture && $scheduledAtIso)
+                            <span
+                                class="marketing-detail__progress-live"
+                                data-marketing-countdown
+                                data-countdown-target="{{ $scheduledAtIso }}"
+                                data-countdown-prefix="Parte tra"
+                                data-countdown-expired="{{ $readyRunnerMessage }}"
+                                data-countdown-sync="campaign-send-message"
+                            >
+                                <i class="bi bi-hourglass-split"></i>
+                                <span data-countdown-text>Parte tra calcolo...</span>
+                            </span>
+                        @endif
 
-	                            @if ($hasFutureNextBatch && $nextBatchDueAtIso)
-	                                <span
-	                                    class="marketing-detail__progress-live"
-	                                    data-marketing-countdown
-	                                    data-countdown-target="{{ $nextBatchDueAtIso }}"
-	                                    data-countdown-prefix="Prossimo batch tra:"
-	                                    data-countdown-expired="Batch pronto per il runner marketing"
-	                                >
-	                                    <i class="bi bi-clock-history"></i>
-	                                    <span data-countdown-text>Prossimo batch tra: calcolo...</span>
-	                                </span>
-	                            @endif
-	                        @endif
+                        @if ($isRunning && $nextBatchDueAt)
+                            <span
+                                class="marketing-detail__progress-live @if (! $hasFutureNextBatch) is-expired @endif"
+                                @if ($hasFutureNextBatch && $nextBatchDueAtIso)
+                                    data-marketing-countdown
+                                    data-countdown-target="{{ $nextBatchDueAtIso }}"
+                                    data-countdown-prefix="Prossimo batch tra"
+                                    data-countdown-expired="In attesa del prossimo ciclo del runner"
+                                @endif
+                            >
+                                <i class="bi bi-clock-history"></i>
+                                <span data-countdown-text>
+                                    {{ $hasFutureNextBatch ? 'Prossimo batch tra calcolo...' : 'In attesa del prossimo ciclo del runner' }}
+                                </span>
+                            </span>
+                        @elseif ($isRunning)
+                            <span class="marketing-detail__progress-live is-expired">
+                                <i class="bi bi-clock-history"></i>
+                                <span>In attesa del prossimo ciclo del runner</span>
+                            </span>
+                        @endif
 
-	                        @if ($totalEmails === 0)
-	                            <small>Nessun destinatario preparato</small>
-	                        @endif
+                        @if ($normalizedStatus === 'completed')
+                            <span class="marketing-detail__progress-live is-expired">
+                                <i class="bi bi-check2-circle"></i>
+                                <span>Tutte le email sono state inviate{{ $completedAt ? ' il ' . $completedAt->format('d/m/Y H:i') : '' }}</span>
+                            </span>
+                        @endif
 
-	                        <div class="marketing-detail__progress" aria-label="Avanzamento invio campagna">
-	                            <div class="marketing-detail__progress-track">
-	                                <div
-	                                    class="marketing-detail__progress-bar @if ($isRunning && $progressPercentage < 100) is-running @endif @if ($normalizedStatus === 'completed') is-completed @endif"
-	                                    style="width: {{ $progressPercentage }}%"
-	                                ></div>
-	                                <span class="marketing-detail__progress-percent">{{ $progressPercentageLabel }}</span>
-	                            </div>
-	                            <div class="marketing-detail__progress-meta">
-	                                <span>{{ $sentEmails }} di {{ $totalEmails }} email inviate</span>
-	                                <span>{{ $pendingEmails }} in attesa</span>
-	                            </div>
-	                        </div>
-	                    </div>
+                        @if ($totalEmails === 0)
+                            <small>Nessun destinatario preparato</small>
+                        @endif
+
+                        <div class="marketing-detail__progress" aria-label="Avanzamento reale invio campagna">
+                            <div class="marketing-detail__progress-track">
+                                <div
+                                    class="marketing-detail__progress-bar @if ($isScheduledFuture) is-scheduled @endif @if ($isRunning && $progressPercentage < 100) is-running @endif @if ($normalizedStatus === 'completed') is-completed @endif"
+                                    style="width: {{ $progressPercentage }}%"
+                                ></div>
+                                <span class="marketing-detail__progress-percent">{{ $progressPercentageLabel }}</span>
+                            </div>
+                            <div class="marketing-detail__progress-meta">
+                                <span>Reale: {{ $sentEmails }} di {{ $totalEmails }} email inviate</span>
+                                <span>{{ $pendingEmails }} in attesa</span>
+                            </div>
+                        </div>
+
+                        @if ($isRunning && $nextBatchDueAt && $batchWaitStartedAtIso && $nextBatchDueAtIso)
+                            <div
+                                class="campaign-send-panel__wait"
+                                data-batch-wait
+                                data-batch-start="{{ $batchWaitStartedAtIso }}"
+                                data-batch-due="{{ $nextBatchDueAtIso }}"
+                            >
+                                <div class="campaign-send-panel__wait-head">
+                                    <strong>Attesa prossimo batch</strong>
+                                    <span data-batch-wait-label>
+                                        {{ $hasFutureNextBatch ? 'Calcolo attesa...' : 'In attesa del runner' }}
+                                    </span>
+                                </div>
+                                <div class="campaign-send-panel__wait-track" aria-hidden="true">
+                                    <div class="campaign-send-panel__wait-bar" data-batch-wait-bar></div>
+                                </div>
+                                <div class="campaign-send-panel__wait-meta">
+                                    <span>Intervallo batch: {{ $batchIntervalMinutes }} min</span>
+                                    <span>Prossimo: {{ $nextBatchDueAt->format('d/m/Y H:i') }}</span>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </section>
 
                 <section class="order-detail__section">
@@ -791,8 +1041,9 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const countdowns = document.querySelectorAll('[data-marketing-countdown]');
+        const batchWaits = document.querySelectorAll('[data-batch-wait]');
 
-        if (!countdowns.length) {
+        if (!countdowns.length && !batchWaits.length) {
             return;
         }
 
@@ -848,15 +1099,49 @@
             return true;
         };
 
+        const updateBatchWait = function (element) {
+            const startDate = element.dataset.batchStart ? new Date(element.dataset.batchStart) : null;
+            const dueDate = element.dataset.batchDue ? new Date(element.dataset.batchDue) : null;
+            const bar = element.querySelector('[data-batch-wait-bar]');
+            const label = element.querySelector('[data-batch-wait-label]');
+
+            if (!startDate || !dueDate || Number.isNaN(startDate.getTime()) || Number.isNaN(dueDate.getTime())) {
+                element.hidden = true;
+                return false;
+            }
+
+            const now = Date.now();
+            const total = Math.max(1, dueDate.getTime() - startDate.getTime());
+            const elapsed = Math.min(total, Math.max(0, now - startDate.getTime()));
+            const percentage = Math.round((elapsed / total) * 100);
+            const remaining = dueDate.getTime() - now;
+
+            if (bar) {
+                bar.style.width = `${percentage}%`;
+            }
+
+            if (label) {
+                label.textContent = remaining > 0
+                    ? `Prossimo batch tra ${formatDuration(remaining)}`
+                    : 'In attesa del prossimo ciclo del runner';
+            }
+
+            return remaining > 0;
+        };
+
         let timerId = null;
         const tick = function () {
-            let hasActiveCountdown = false;
+            let hasActiveWork = false;
 
             countdowns.forEach(function (element) {
-                hasActiveCountdown = updateCountdown(element) || hasActiveCountdown;
+                hasActiveWork = updateCountdown(element) || hasActiveWork;
             });
 
-            if (!hasActiveCountdown && timerId) {
+            batchWaits.forEach(function (element) {
+                hasActiveWork = updateBatchWait(element) || hasActiveWork;
+            });
+
+            if (!hasActiveWork && timerId) {
                 window.clearInterval(timerId);
                 timerId = null;
             }

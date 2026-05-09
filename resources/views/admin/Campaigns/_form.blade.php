@@ -13,7 +13,12 @@
     $selectedSegment = $legacySegmentMap[$selectedSegment] ?? $selectedSegment;
     $selectedMailModelId = (string) old('model_id', $campaign->model_id);
     $selectedConsentBasis = \App\Models\Campaign::normalizeConsentBasis(old('consent_basis', $campaign->consent_basis));
-    $selectedConsentBasisLabel = ($consentBasisOptions ?? \App\Models\Campaign::consentBasisOptions())[$selectedConsentBasis] ?? 'Email marketing con consenso esplicito';
+    $consentBasisPreviewLabels = [
+        \App\Models\Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING => 'Email marketing con consenso esplicito',
+        \App\Models\Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => 'Email soft opt-in',
+        \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp marketing, non ancora attivo',
+    ];
+    $selectedConsentBasisLabel = $consentBasisPreviewLabels[$selectedConsentBasis] ?? 'Email marketing con consenso esplicito';
     $selectedScheduleWindow = array_key_exists($selectedScheduleWindow, $scheduleWindows)
         ? $selectedScheduleWindow
         : 'next_available';
@@ -22,6 +27,35 @@
         ->filter(fn ($promotion) => in_array((string) $promotion->id, $selectedPromotionIds, true))
         ->values();
     $previewScheduleWindowLabel = $scheduleWindows[$selectedScheduleWindow] ?? 'Prima finestra disponibile';
+    $selectedScheduledAtValue = old('scheduled_at', $campaign->scheduled_at?->format('Y-m-d\TH:i'));
+    $formatPreviewDate = function ($value) {
+        if (! $value) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::parse($value)->format('d/m/Y H:i');
+        } catch (\Throwable) {
+            return $value;
+        }
+    };
+    $previewScheduledAtLabel = $formatPreviewDate($selectedScheduledAtValue)
+        ?: ($selectedScheduleWindow === 'next_available' ? 'Prima finestra disponibile' : 'Definita dalla finestra scelta');
+    $storedSegment = $legacySegmentMap[$campaign->segment] ?? ($campaign->segment ?: 'all');
+    $hasUnsavedAudienceSelection = $campaign->exists
+        && (
+            (old('segment') !== null && $selectedSegment !== $storedSegment)
+            || (old('consent_basis') !== null && $selectedConsentBasis !== \App\Models\Campaign::normalizeConsentBasis($campaign->consent_basis))
+        );
+    $previewAudienceLabel = match (true) {
+        ! $campaign->exists => 'Calcolata dopo il salvataggio',
+        $hasUnsavedAudienceSelection => 'Aggiornata dopo il salvataggio',
+        $audienceCount !== null => number_format((int) $audienceCount, 0, ',', '.'),
+        default => 'Non disponibile',
+    };
+    $statusPreviewLabel = $campaign->exists
+        ? ($statuses[$campaign->status] ?? $campaign->status)
+        : 'Nuova campagna';
     $formatPromotionDiscount = function ($promotion) {
         if ($promotion->type_discount === 'gift') {
             return 'Regalo';
@@ -44,6 +78,101 @@
 
 @include('admin.Marketing.partials.form-style')
 
+<style>
+    @media (min-width: 1121px) {
+        .campaign-form-shell .marketing-form-sidebar {
+            position: sticky;
+            top: 90px;
+            align-self: start;
+        }
+    }
+
+    @media (max-width: 1120px) {
+        .campaign-form-shell .marketing-form-sidebar {
+            position: static;
+        }
+    }
+
+    .campaign-preview-panel {
+        gap: 12px;
+        padding: 14px;
+        border-radius: 8px;
+    }
+
+    .campaign-preview-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .campaign-preview-item {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(216, 221, 232, 0.1);
+    }
+
+    .campaign-preview-item:last-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .campaign-preview-item > span,
+    .campaign-preview-item small {
+        color: rgba(216, 221, 232, 0.66);
+        font-size: var(--fs-100);
+        font-weight: 800;
+        line-height: 1.35;
+        text-transform: uppercase;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-preview-item strong {
+        color: var(--c3);
+        font-size: var(--fs-300);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-preview-badge {
+        display: inline-flex;
+        width: fit-content;
+        max-width: 100%;
+        padding: 6px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(14, 183, 146, 0.28);
+        background: rgba(14, 183, 146, 0.12);
+        color: rgba(142, 246, 219, 0.96) !important;
+    }
+
+    .campaign-preview-badge--muted {
+        border-color: rgba(98, 166, 255, 0.24);
+        background: rgba(98, 166, 255, 0.1);
+        color: rgba(216, 221, 232, 0.92) !important;
+    }
+
+    .campaign-preview-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 4px;
+    }
+
+    .campaign-preview-chips span {
+        display: inline-flex;
+        max-width: 100%;
+        padding: 6px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.38);
+        color: rgba(216, 221, 232, 0.84);
+        font-size: var(--fs-100);
+        font-weight: 800;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+</style>
+
 @if ($errors->any())
     <div class="alert alert-danger">
         Controlla i campi evidenziati prima di salvare.
@@ -56,7 +185,7 @@
     </div>
 @endif
 
-<form class="creation marketing-form-shell mt-4" action="{{ $action }}" method="POST" data-campaign-form>
+<form class="creation marketing-form-shell campaign-form-shell mt-4" action="{{ $action }}" method="POST" data-campaign-form>
     @csrf
     @if ($method !== 'POST')
         @method($method)
@@ -91,9 +220,14 @@
                 Tipo invio
             </label>
             <p>
-                <select name="consent_basis" id="consent_basis">
+                <select
+                    name="consent_basis"
+                    id="consent_basis"
+                    data-consent-basis-select
+                    data-initial-value="{{ $selectedConsentBasis }}"
+                >
                     @foreach (($consentBasisOptions ?? \App\Models\Campaign::consentBasisOptions()) as $value => $label)
-                        <option value="{{ $value }}" @selected($selectedConsentBasis === $value)>{{ $label }}</option>
+                        <option value="{{ $value }}" data-preview-label="{{ $consentBasisPreviewLabels[$value] ?? $label }}" @selected($selectedConsentBasis === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
             </p>
@@ -122,7 +256,7 @@
                     Segmento
                 </label>
                 <p>
-                    <select name="segment" id="segment" data-segment-select>
+                    <select name="segment" id="segment" data-segment-select data-initial-value="{{ $selectedSegment }}">
                         @foreach ($segments as $value => $label)
                             <option value="{{ $value }}" @selected($selectedSegment === $value)>{{ $label }}</option>
                         @endforeach
@@ -136,10 +270,10 @@
                     Modello mail
                 </label>
                 <p>
-                    <select name="model_id" id="model_id">
-                        <option value="">Nessun modello</option>
+                    <select name="model_id" id="model_id" data-mail-model-select>
+                        <option value="" data-preview-label="Da selezionare">Nessun modello</option>
                         @foreach ($mailModels as $mailModel)
-                            <option value="{{ $mailModel->id }}" @selected((string) old('model_id', $campaign->model_id) === (string) $mailModel->id)>
+                            <option value="{{ $mailModel->id }}" data-preview-label="{{ $mailModel->name }}" @selected((string) old('model_id', $campaign->model_id) === (string) $mailModel->id)>
                                 {{ $mailModel->name }}
                                 @if ($mailModel->object)
                                     - {{ $mailModel->object }}
@@ -170,7 +304,7 @@
                 Finestra di invio
             </label>
             <p>
-                <select name="schedule_window" id="schedule_window" data-schedule-window-select>
+                <select name="schedule_window" id="schedule_window" data-schedule-window-select data-initial-value="{{ $selectedScheduleWindow }}">
                     @foreach ($scheduleWindows as $value => $label)
                         <option value="{{ $value }}" data-label="{{ $label }}" @selected($selectedScheduleWindow === $value)>{{ $label }}</option>
                     @endforeach
@@ -231,7 +365,7 @@
     </section>
         </div>
 
-        <aside class="marketing-form-sidebar">
+        <aside class="marketing-form-sidebar campaign-form-sidebar">
             <section class="order-detail__section marketing-form-preview">
                 <div class="order-detail__section-head">
                     <h3>
@@ -242,42 +376,65 @@
                     </h3>
                 </div>
 
-                <div class="marketing-form-preview__panel">
+                <div class="marketing-form-preview__panel campaign-preview-panel">
                     <div class="marketing-form-preview__head">
                         <span class="marketing-form-preview__icon">
                             <i class="bi bi-envelope-paper-fill"></i>
                         </span>
                         <div>
-                            <strong>{{ old('name', $campaign->name) ?: 'Nome campagna' }}</strong>
+                            <strong data-preview-campaign-name>{{ old('name', $campaign->name) ?: 'Nome campagna' }}</strong>
                         </div>
                     </div>
 
-                    <div class="marketing-form-preview__facts">
-                        @if ($campaign->exists)
-                            <div class="marketing-form-preview__fact">
-                                <span>Stato</span>
-                                <strong>{{ $statuses[$campaign->status] ?? $campaign->status }}</strong>
-                            </div>
-                        @endif
-                        <div class="marketing-form-preview__fact">
-                            <span>Segmento</span>
-                            <strong data-audience-label>{{ $segments[$selectedSegment] ?? 'Tutti i clienti' }}</strong>
+                    <div class="campaign-preview-list">
+                        <div class="campaign-preview-item">
+                            <span>Stato</span>
+                            <strong class="campaign-preview-badge">{{ $statusPreviewLabel }}</strong>
                         </div>
-                        <div class="marketing-form-preview__fact">
+
+                        <div class="campaign-preview-item">
                             <span>Tipo invio</span>
-                            <strong>{{ $selectedConsentBasisLabel }}</strong>
+                            <strong class="campaign-preview-badge campaign-preview-badge--muted" data-preview-consent-basis>{{ $selectedConsentBasisLabel }}</strong>
                         </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Modello</span>
-                            <strong>{{ $previewMailModel?->name ?? 'Da scegliere' }}</strong>
+
+                        <div class="campaign-preview-item">
+                            <span>Segmento</span>
+                            <strong data-preview-segment-label>{{ $segments[$selectedSegment] ?? 'Da selezionare' }}</strong>
                         </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Finestra</span>
+
+                        <div class="campaign-preview-item">
+                            <span>Audience prevista</span>
+                            <strong
+                                data-preview-audience-count
+                                data-initial-label="{{ $previewAudienceLabel }}"
+                                data-pending-label="{{ $campaign->exists ? 'Aggiornata dopo il salvataggio' : 'Calcolata dopo il salvataggio' }}"
+                            >{{ $previewAudienceLabel }}</strong>
+                        </div>
+
+                        <div class="campaign-preview-item">
+                            <span>Modello mail</span>
+                            <strong data-preview-mail-model>{{ $previewMailModel?->name ?? 'Da selezionare' }}</strong>
+                        </div>
+
+                        <div class="campaign-preview-item">
+                            <span>Promozioni collegate</span>
+                            <strong><span data-preview-promotion-count>{{ $previewPromotions->count() }}</span> selezionate</strong>
+                            <div class="campaign-preview-chips" data-preview-promotion-chips>
+                                @forelse ($previewPromotions->take(5) as $promotion)
+                                    <span>{{ $promotion->name }}</span>
+                                @empty
+                                    <span>Nessuna promozione selezionata</span>
+                                @endforelse
+                                @if ($previewPromotions->count() > 5)
+                                    <span>+{{ $previewPromotions->count() - 5 }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="campaign-preview-item">
+                            <span>Programmazione</span>
                             <strong data-preview-schedule-window>{{ $previewScheduleWindowLabel }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Promozioni</span>
-                            <strong data-preview-promotion-count>{{ $previewPromotions->count() }}</strong>
+                            <small data-preview-scheduled-at data-initial-label="{{ $previewScheduledAtLabel }}">{{ $previewScheduledAtLabel }}</small>
                         </div>
                     </div>
                 </div>
@@ -310,36 +467,122 @@
             return;
         }
 
-        const audienceCounts = @json($audienceCounts ?? []);
         const segmentLabels = @json($segments ?? []);
+        const nameInput = form.querySelector('#name');
+        const previewName = form.querySelector('[data-preview-campaign-name]');
+        const consentSelect = form.querySelector('[data-consent-basis-select]');
+        const consentLabel = form.querySelector('[data-preview-consent-basis]');
         const segmentSelect = form.querySelector('[data-segment-select]');
-        const audienceCount = form.querySelector('[data-audience-count]');
-        const audienceLabel = form.querySelector('[data-audience-label]');
+        const segmentLabel = form.querySelector('[data-preview-segment-label]');
+        const audienceCount = form.querySelector('[data-preview-audience-count]');
+        const mailModelSelect = form.querySelector('[data-mail-model-select]');
+        const mailModelLabel = form.querySelector('[data-preview-mail-model]');
         const scheduleSelect = form.querySelector('[data-schedule-window-select]');
         const scheduleLabel = form.querySelector('[data-preview-schedule-window]');
+        const scheduledAtInput = form.querySelector('[data-scheduled-at-input], input[name="scheduled_at"]');
+        const scheduledAtLabel = form.querySelector('[data-preview-scheduled-at]');
         const promotionCount = form.querySelector('[data-preview-promotion-count]');
         const promotionChips = form.querySelector('[data-preview-promotion-chips]');
         const promotionInputs = form.querySelectorAll('[data-promotion-checkbox]');
 
-        const syncAudience = () => {
-            const value = segmentSelect?.value || 'all';
+        const selectedOption = (select) => select?.options[select.selectedIndex] || null;
 
-            if (audienceCount) {
-                audienceCount.textContent = audienceCounts[value] ?? 0;
+        const formatDateTime = (value) => {
+            if (!value) {
+                return '';
             }
 
-            if (audienceLabel) {
-                audienceLabel.textContent = segmentLabels[value] || 'Tutti i clienti con consenso marketing';
+            const date = new Date(value);
+
+            if (Number.isNaN(date.getTime())) {
+                return value;
             }
+
+            return new Intl.DateTimeFormat('it-IT', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            }).format(date);
         };
 
-        const syncSchedule = () => {
-            if (!scheduleLabel || !scheduleSelect) {
+        const syncName = () => {
+            if (!previewName || !nameInput) {
                 return;
             }
 
-            const selected = scheduleSelect.options[scheduleSelect.selectedIndex];
-            scheduleLabel.textContent = selected?.dataset.label || selected?.textContent || 'Prima finestra disponibile';
+            previewName.textContent = nameInput.value.trim() || 'Nome campagna';
+        };
+
+        const syncConsent = () => {
+            if (!consentLabel || !consentSelect) {
+                return;
+            }
+
+            const option = selectedOption(consentSelect);
+            consentLabel.textContent = option?.dataset.previewLabel || option?.textContent?.trim() || 'Email marketing con consenso esplicito';
+        };
+
+        const syncSegment = () => {
+            const value = segmentSelect?.value || 'all';
+
+            if (segmentLabel) {
+                segmentLabel.textContent = segmentLabels[value] || 'Da selezionare';
+            }
+        };
+
+        const syncAudienceState = () => {
+            if (!audienceCount) {
+                return;
+            }
+
+            const initialSegment = segmentSelect?.dataset.initialValue || segmentSelect?.value || '';
+            const initialConsent = consentSelect?.dataset.initialValue || consentSelect?.value || '';
+            const segmentChanged = segmentSelect && segmentSelect.value !== initialSegment;
+            const consentChanged = consentSelect && consentSelect.value !== initialConsent;
+
+            audienceCount.textContent = segmentChanged || consentChanged
+                ? (audienceCount.dataset.pendingLabel || 'Calcolata dopo il salvataggio')
+                : (audienceCount.dataset.initialLabel || audienceCount.textContent);
+        };
+
+        const syncMailModel = () => {
+            if (!mailModelLabel || !mailModelSelect) {
+                return;
+            }
+
+            const option = selectedOption(mailModelSelect);
+            mailModelLabel.textContent = option?.dataset.previewLabel || option?.textContent?.trim() || 'Da selezionare';
+        };
+
+        const syncSchedule = () => {
+            if (scheduleLabel && scheduleSelect) {
+                const option = selectedOption(scheduleSelect);
+                scheduleLabel.textContent = option?.dataset.label || option?.textContent?.trim() || 'Prima finestra disponibile';
+            }
+
+            if (!scheduledAtLabel) {
+                return;
+            }
+
+            if (!scheduledAtInput) {
+                scheduledAtLabel.textContent = scheduleSelect?.value === scheduleSelect?.dataset.initialValue
+                    ? (scheduledAtLabel.dataset.initialLabel || scheduledAtLabel.textContent)
+                    : (scheduleSelect?.value === 'next_available' ? 'Prima finestra disponibile' : 'Definita dalla finestra scelta');
+                return;
+            }
+
+            const formattedDate = formatDateTime(scheduledAtInput?.value || '');
+
+            if (formattedDate) {
+                scheduledAtLabel.textContent = formattedDate;
+                return;
+            }
+
+            scheduledAtLabel.textContent = scheduleSelect?.value === 'next_available'
+                ? 'Prima finestra disponibile'
+                : 'Definita dalla finestra scelta';
         };
 
         const syncPromotions = () => {
@@ -375,11 +618,25 @@
             }
         };
 
-        segmentSelect?.addEventListener('change', syncAudience);
+        nameInput?.addEventListener('input', syncName);
+        consentSelect?.addEventListener('change', () => {
+            syncConsent();
+            syncAudienceState();
+        });
+        segmentSelect?.addEventListener('change', () => {
+            syncSegment();
+            syncAudienceState();
+        });
+        mailModelSelect?.addEventListener('change', syncMailModel);
         scheduleSelect?.addEventListener('change', syncSchedule);
+        scheduledAtInput?.addEventListener('input', syncSchedule);
         promotionInputs.forEach((input) => input.addEventListener('change', syncPromotions));
 
-        syncAudience();
+        syncName();
+        syncConsent();
+        syncSegment();
+        syncAudienceState();
+        syncMailModel();
         syncSchedule();
         syncPromotions();
     });

@@ -9,6 +9,7 @@ use App\Models\Campaign;
 use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAssignmentService;
+use App\Services\Marketing\CampaignAudienceBuilder;
 use App\Services\Marketing\CampaignScheduleService;
 use App\Services\Marketing\MarketingCustomerSegmentService;
 use App\Services\Marketing\MarketingRunMarkerService;
@@ -62,7 +63,7 @@ class CampaignController extends Controller
         ]);
 
         return view('admin.Campaigns.create', array_merge(
-            $this->formOptions(),
+            $this->formOptions($campaign),
             compact('campaign')
         ));
     }
@@ -132,10 +133,10 @@ class CampaignController extends Controller
 
     public function edit(Campaign $campaign)
     {
-        $campaign->load('promotions');
+        $campaign->load(['model', 'promotions']);
 
         return view('admin.Campaigns.edit', array_merge(
-            $this->formOptions(),
+            $this->formOptions($campaign),
             compact('campaign')
         ));
     }
@@ -221,7 +222,7 @@ class CampaignController extends Controller
         return back()->with('campaign_assignment_result', $result);
     }
 
-    private function formOptions(): array
+    private function formOptions(?Campaign $campaign = null): array
     {
         $segmentService = app(MarketingCustomerSegmentService::class);
         $segments = $segmentService->getSegmentOptions();
@@ -230,7 +231,7 @@ class CampaignController extends Controller
             'statuses' => self::STATUSES,
             'segments' => $segments,
             'consentBasisOptions' => Campaign::consentBasisOptions(),
-            'audienceCounts' => $this->audienceCounts($segmentService, $segments),
+            'audienceCount' => $this->campaignAudienceCount($campaign),
             'scheduleWindows' => $this->campaignFormScheduleWindows(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
@@ -292,24 +293,22 @@ class CampaignController extends Controller
         return $scheduleWindows;
     }
 
-    private function audienceCounts(MarketingCustomerSegmentService $segmentService, array $segments): array
+    private function campaignAudienceCount(?Campaign $campaign): ?int
     {
-        $counts = [];
-
-        foreach (array_keys($segments) as $segment) {
-            try {
-                $counts[$segment] = $segmentService->queryForSegment($segment)->count();
-            } catch (\Throwable $exception) {
-                Log::warning('Unable to count marketing audience segment.', [
-                    'segment' => $segment,
-                    'error' => $exception->getMessage(),
-                ]);
-
-                $counts[$segment] = 0;
-            }
+        if (! $campaign?->exists) {
+            return null;
         }
 
-        return $counts;
+        try {
+            return app(CampaignAudienceBuilder::class)->countForCampaign($campaign);
+        } catch (\Throwable $exception) {
+            Log::warning('Unable to count campaign audience.', [
+                'campaign_id' => $campaign->getKey(),
+                'error' => $exception->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     private function statusFromSubmitAction(Request $request): string

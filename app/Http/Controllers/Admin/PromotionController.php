@@ -36,14 +36,22 @@ class PromotionController extends Controller
 
     private const TARGET_TYPES = [
         'generic' => 'Promo generale',
-        'product' => 'Prodotto',
+        'product' => 'Prodotti',
         'menu' => 'Menu',
-        'category' => 'Categoria',
+        'category' => 'Categorie',
         'post' => 'Post',
     ];
 
     private const FORM_TARGET_TYPES = [
         'product' => 'Prodotti',
+        'menu' => 'Menu',
+        'category' => 'Categorie',
+    ];
+
+    private const TARGET_ID_FIELDS = [
+        PromotionTarget::TYPE_PRODUCT => 'product_ids',
+        PromotionTarget::TYPE_MENU => 'menu_ids',
+        PromotionTarget::TYPE_CATEGORY => 'category_ids',
     ];
 
     public function index()
@@ -189,7 +197,13 @@ class PromotionController extends Controller
         $metadata['reusable'] = $request->boolean('metadata.reusable');
         $data['metadata'] = $metadata;
         $data['status'] = $this->statusFromSubmitAction($request);
-        unset($data['product_ids'], $data['target_type'], $data['submit_action']);
+        unset(
+            $data['product_ids'],
+            $data['menu_ids'],
+            $data['category_ids'],
+            $data['target_type'],
+            $data['submit_action']
+        );
 
         return $data;
     }
@@ -212,7 +226,9 @@ class PromotionController extends Controller
 
     private function targetData(Request $request, ?Promotion $promotion = null): array
     {
-        if ($request->input('target_type', 'generic') !== PromotionTarget::TYPE_PRODUCT) {
+        $targetType = $request->input('target_type', PromotionTarget::TYPE_GENERIC);
+
+        if ($targetType === PromotionTarget::TYPE_GENERIC || ! array_key_exists($targetType, self::TARGET_ID_FIELDS)) {
             return [
                 [
                     'target_type' => PromotionTarget::TYPE_GENERIC,
@@ -224,14 +240,14 @@ class PromotionController extends Controller
             ];
         }
 
-        return collect((array) $request->input('product_ids', []))
-            ->map(fn ($productId) => (int) $productId)
-            ->filter()
+        return collect((array) $request->input(self::TARGET_ID_FIELDS[$targetType], []))
+            ->map(fn ($targetId) => (int) $targetId)
+            ->filter(fn ($targetId) => $targetId > 0)
             ->unique()
             ->values()
-            ->map(fn ($productId) => [
-                'target_type' => PromotionTarget::TYPE_PRODUCT,
-                'target_id' => $productId,
+            ->map(fn ($targetId) => [
+                'target_type' => $targetType,
+                'target_id' => $targetId,
                 'discount' => null,
                 'type_discount' => null,
                 'metadata' => null,
@@ -324,7 +340,7 @@ class PromotionController extends Controller
             ->get()
             ->map(fn ($row) => [
                 'key' => $type . ':' . $row->id,
-                'label' => '#' . $row->id . ' - ' . ($row->current_name ?: $row->default_name ?: $fallbackLabel),
+                'label' => $row->current_name ?: $row->default_name ?: $fallbackLabel . ' #' . $row->id,
             ])
             ->all();
     }
@@ -374,7 +390,7 @@ class PromotionController extends Controller
         $model = $target->target();
         $label = $model?->name ?? $model?->title ?? null;
 
-        return '#' . $target->target_id . ' - ' . ($label ?: (self::TARGET_TYPES[$target->target_type] ?? 'Target'));
+        return $label ?: (self::TARGET_TYPES[$target->target_type] ?? 'Target') . ' #' . $target->target_id;
     }
 
     private function targetLabels(array $targetOptions): array

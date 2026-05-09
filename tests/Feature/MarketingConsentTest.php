@@ -96,24 +96,65 @@ class MarketingConsentTest extends TestCase
         $this->assertNotContains($withoutConsent->id, $customerIds);
     }
 
-    public function test_soft_email_marketing_campaign_audience_respects_soft_opt_out(): void
+    public function test_soft_email_marketing_campaign_audience_allows_privacy_only_customers_and_respects_soft_opt_out(): void
     {
+        $softCampaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $explicitCampaign = $this->createCampaign([
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+        ]);
+        $privacyOnly = $this->createCustomer('soft-allowed@example.com', [
+            'privacy_accepted_at' => now(),
+            'email_marketing_consent_at' => null,
+            'marketing_consent_at' => null,
+            'tracking_consent_at' => null,
+            'profiling_consent_at' => null,
+            'soft_email_marketing_unsubscribed_at' => null,
+        ]);
+        $optedOut = $this->createCustomer('soft-opted-out@example.com', [
+            'privacy_accepted_at' => now(),
+            'email_marketing_consent_at' => null,
+            'marketing_consent_at' => null,
+            'soft_email_marketing_unsubscribed_at' => now(),
+        ]);
+
+        $softCustomerIds = app(CampaignAudienceBuilder::class)
+            ->queryForCampaign($softCampaign)
+            ->pluck('id')
+            ->all();
+        $explicitCustomerIds = app(CampaignAudienceBuilder::class)
+            ->queryForCampaign($explicitCampaign)
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($privacyOnly->id, $softCustomerIds);
+        $this->assertNotContains($privacyOnly->id, $explicitCustomerIds);
+        $this->assertNotContains($optedOut->id, $softCustomerIds);
+    }
+
+    public function test_marketing_email_dispatch_blocks_soft_email_campaign_when_customer_opted_out(): void
+    {
+        Mail::fake();
+
         $campaign = $this->createCampaign([
             'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
             'channel' => Campaign::CHANNEL_EMAIL,
         ]);
-        $withoutExplicitConsent = $this->createCustomer('soft-allowed@example.com');
-        $optedOut = $this->createCustomer('soft-opted-out@example.com', [
+        $customerPromotion = $this->createCustomerPromotion($this->createCustomer('soft-send-opt-out@example.com', [
+            'privacy_accepted_at' => now(),
             'soft_email_marketing_unsubscribed_at' => now(),
-        ]);
+        ]), $campaign);
 
-        $customerIds = app(CampaignAudienceBuilder::class)
-            ->queryForCampaign($campaign)
-            ->pluck('id')
-            ->all();
+        $result = app(MarketingEmailDispatchService::class)
+            ->sendCustomerPromotion($customerPromotion, false);
 
-        $this->assertContains($withoutExplicitConsent->id, $customerIds);
-        $this->assertNotContains($optedOut->id, $customerIds);
+        $this->assertFalse($result['can_send']);
+        $this->assertFalse($result['sent']);
+        $this->assertSame('Customer soft email marketing opt-out is present.', $result['failure_reason']);
+        Mail::assertNotSent(MarketingPromotionMail::class);
     }
 
     public function test_soft_email_marketing_availability_does_not_require_explicit_email_consent(): void
