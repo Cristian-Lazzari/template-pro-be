@@ -331,7 +331,9 @@
     }
 
     .customer-detail__info-item {
-        display: grid;
+        display: flex;
+        flex-direction: column;
+        
         gap: 10px;
         min-width: 0;
     }
