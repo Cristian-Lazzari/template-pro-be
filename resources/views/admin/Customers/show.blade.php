@@ -107,7 +107,6 @@
 
     $consentStatusItem = static function (
         string $label,
-        bool $enabled,
         string $activeBadge,
         string $inactiveBadge,
         $date = null,
@@ -131,7 +130,6 @@
 
         return [
             'label' => $label,
-            'tone' => $enabled ? $activeTone : $inactiveTone,
             'badge' => $enabled ? $activeBadge : $inactiveBadge,
             'details' => $itemDetails,
         ];
@@ -187,39 +185,34 @@
     $consentItems = [
         $consentStatusItem(
             'Privacy',
-            $customer->privacy_accepted_at ?? ' ',
             'Accettata',
             'Non presente',
-            $customer->privacy_accepted_at ?? null,
+            $customer->privacy_accepted_at ?? ' '
         ),
         $consentStatusItem(
             'Email marketing',
-            $customer->email_marketing_consent_at ?? ' ',
             'Attivo',
             'Non attivo',
-            $customer->email_marketing_consent_at ?? null
+            $customer->email_marketing_consent_at ?? ' '
         ),
         $softEmailMarketingItem($softEmailMarketingUnsubscribedAt),
         $consentStatusItem(
             'WhatsApp marketing',
-            $customer->whatsapp_marketing_consent_at ?? ' ',
             'Attivo',
             'Non attivo',
-            $customer->whatsapp_marketing_consent_at ?? null
+            $customer->whatsapp_marketing_consent_at ?? ' '
         ),
         $consentStatusItem(
             'Profilazione',
-            $customer->profiling_consent_at ?? ' ',
             'Attiva',
             'Non attiva',
-            $customer->profiling_consent_at ?? null
+            $customer->profiling_consent_at ?? ' '
         ),
         $consentStatusItem(
             'Tracking',
-            $customer->tracking_consent_at ?? ' ',
             'Attivo',
             'Non attivo',
-            $customer->tracking_consent_at ?? null
+            $customer->tracking_consent_at ?? ' '
         ),
     ];
 
@@ -603,7 +596,7 @@
                             <div class="customer-detail__info-item">
                                 <span class="customer-detail__info-label">{{ $item['label'] }}</span>
                                 <div class="customer-detail__info-meta">
-                                    <x-dashboard.state-pill :tone="$item['tone']">{{ $item['badge'] }}</x-dashboard.state-pill>
+                                    <x-dashboard.state-pill :tone="true">{{ $item['badge'] }}</x-dashboard.state-pill>
                                     @foreach ($item['details'] as $detail)
                                         <small class="customer-detail__info-help">{{ $detail }}</small>
                                     @endforeach
