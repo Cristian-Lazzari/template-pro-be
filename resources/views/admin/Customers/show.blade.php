@@ -191,7 +191,6 @@
             'Accettata',
             'Non presente',
             $customer->privacy_accepted_at ?? null,
-            $privacyVersion !== '' ? ['Versione ' . $privacyVersion] : []
         ),
         $consentStatusItem(
             'Email marketing',
@@ -226,7 +225,7 @@
 
     if (!empty($customer->marketing_consent_at)) {
         $consentItems[] = $legacyConsentItem(
-            'Marketing legacy',
+            'Newsletter (vecchio campo)',
             'Legacy',
             'warning',
             $customer->marketing_consent_at,
