@@ -130,7 +130,7 @@
 
         return [
             'label' => $label,
-            'badge' => $enabled ? $activeBadge : $inactiveBadge,
+            'badge' => $activeBadge,
             'details' => $itemDetails,
         ];
     };
@@ -596,7 +596,7 @@
                             <div class="customer-detail__info-item">
                                 <span class="customer-detail__info-label">{{ $item['label'] }}</span>
                                 <div class="customer-detail__info-meta">
-                                    <x-dashboard.state-pill :tone="true">{{ $item['badge'] }}</x-dashboard.state-pill>
+                                    <x-dashboard.state-pill :tone="'active'">{{ $item['badge'] }}</x-dashboard.state-pill>
                                     @foreach ($item['details'] as $detail)
                                         <small class="customer-detail__info-help">{{ $detail }}</small>
                                     @endforeach
