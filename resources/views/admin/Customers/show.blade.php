@@ -187,14 +187,14 @@
     $consentItems = [
         $consentStatusItem(
             'Privacy',
-            !empty($customer->privacy_accepted_at),
+            $customer->privacy_accepted_at ?? ' ',
             'Accettata',
             'Non presente',
             $customer->privacy_accepted_at ?? null,
         ),
         $consentStatusItem(
             'Email marketing',
-            !empty($customer->email_marketing_consent_at),
+            $customer->email_marketing_consent_at ?? ' ',
             'Attivo',
             'Non attivo',
             $customer->email_marketing_consent_at ?? null
@@ -202,21 +202,21 @@
         $softEmailMarketingItem($softEmailMarketingUnsubscribedAt),
         $consentStatusItem(
             'WhatsApp marketing',
-            !empty($customer->whatsapp_marketing_consent_at),
+            $customer->whatsapp_marketing_consent_at ?? ' ',
             'Attivo',
             'Non attivo',
             $customer->whatsapp_marketing_consent_at ?? null
         ),
         $consentStatusItem(
             'Profilazione',
-            !empty($customer->profiling_consent_at),
+            $customer->profiling_consent_at ?? ' ',
             'Attiva',
             'Non attiva',
             $customer->profiling_consent_at ?? null
         ),
         $consentStatusItem(
             'Tracking',
-            !empty($customer->tracking_consent_at),
+            $customer->tracking_consent_at ?? ' ',
             'Attivo',
             'Non attivo',
             $customer->tracking_consent_at ?? null
