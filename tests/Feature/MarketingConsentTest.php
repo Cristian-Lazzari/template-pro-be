@@ -173,6 +173,48 @@ class MarketingConsentTest extends TestCase
         $this->assertFalse($consentService->customerAllowsSoftEmailMarketing($optedOut));
     }
 
+    public function test_soft_email_marketing_count_includes_incomplete_privacy_only_customer(): void
+    {
+        $privacyOnly = $this->createCustomer('soft-incomplete@example.com', [
+            'privacy_accepted_at' => now(),
+            'email_marketing_consent_at' => null,
+            'marketing_consent_at' => null,
+            'soft_email_marketing_unsubscribed_at' => null,
+        ]);
+
+        $builder = app(CampaignAudienceBuilder::class);
+
+        $this->assertNull($privacyOnly->gender);
+        $this->assertNull($privacyOnly->age);
+        $this->assertSame(1, $builder->countForSegmentAndConsentBasis('all', Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING));
+        $this->assertSame(0, $builder->countForSegmentAndConsentBasis('all', Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING));
+    }
+
+    public function test_campaign_audience_availability_and_matrix_count_email_bases(): void
+    {
+        $this->createCustomer('matrix-soft-one@example.com', [
+            'privacy_accepted_at' => now(),
+        ]);
+        $this->createCustomer('matrix-explicit@example.com', [
+            'privacy_accepted_at' => now(),
+            'email_marketing_consent_at' => now(),
+        ]);
+        $this->createCustomer('matrix-soft-two@example.com', [
+            'privacy_accepted_at' => now(),
+        ]);
+
+        $builder = app(CampaignAudienceBuilder::class);
+        $availability = $builder->availabilityByConsentBasis();
+        $matrix = $builder->matrixForSegments(['all', 'loyal_customers']);
+
+        $this->assertSame(3, $availability[Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING]['eligible']);
+        $this->assertSame(3, $availability[Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING]['total']);
+        $this->assertSame(1, $availability[Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING]['eligible']);
+        $this->assertSame(3, $availability[Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING]['total']);
+        $this->assertSame(3, $matrix[Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING]['all']);
+        $this->assertSame(1, $matrix[Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING]['all']);
+    }
+
     public function test_whatsapp_marketing_campaign_audience_uses_whatsapp_consent(): void
     {
         $campaign = $this->createCampaign([

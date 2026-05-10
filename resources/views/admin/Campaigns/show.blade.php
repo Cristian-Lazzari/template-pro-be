@@ -24,6 +24,7 @@
     $totalEmails = (int) ($sendProgress['involved_count'] ?? ($sendProgress['total'] ?? ($involvedCount ?? 0)));
     $sentEmails = (int) ($sendProgress['sent_count'] ?? ($sendProgress['sent'] ?? ($sentCount ?? 0)));
     $pendingEmails = (int) ($sendProgress['pending_count'] ?? ($sendProgress['pending'] ?? ($pendingCount ?? max(0, $totalEmails - $sentEmails))));
+    $hasAssignments = $hasAssignments ?? $totalEmails > 0;
     $rawProgressPercentage = $sendProgress['progress_percentage'] ?? ($sendProgress['percentage'] ?? ($progressPercentage ?? 0));
     $progressPercentage = min(100, max(0, (float) $rawProgressPercentage));
     $tone = match ($normalizedStatus) {
@@ -94,7 +95,7 @@
     $sendPanelMessage = match (true) {
         $normalizedStatus === 'scheduled' && $isScheduledFuture => 'Invio programmato per: ' . $campaign->scheduled_at->format('d/m/Y H:i'),
         $normalizedStatus === 'scheduled' => $readyRunnerMessage,
-        $isRunning => "Invio in corso: {$sentEmails} di {$totalEmails} email inviate",
+        $isRunning => 'Invio in corso tramite runner marketing.',
         $normalizedStatus === 'completed' => 'Tutte le email sono state inviate',
         $normalizedStatus === 'draft' => 'Bozza: programma la campagna per creare i destinatari.',
         $normalizedStatus === 'paused' => 'Campagna in pausa: non verranno inviati nuovi batch.',
@@ -141,8 +142,14 @@
         ?? ($hasLinkedPromotions && $campaignPromotionCaseUses->intersect(['take_away', 'delivery', 'generic'])->isNotEmpty());
     $showReservationMetrics = $showReservationMetrics
         ?? ($hasLinkedPromotions && $campaignPromotionCaseUses->intersect(['table', 'generic'])->isNotEmpty());
+    $canPreviewAudience = $canPreviewAudience ?? ($normalizedStatus === 'draft' && ! $hasAssignments && $hasLinkedPromotions);
+    $canPrepareAssignments = $canPrepareAssignments ?? $canPreviewAudience;
+    $canActivateCampaign = $canActivateCampaign ?? in_array($normalizedStatus, ['draft', 'paused'], true);
+    $canPauseCampaign = $canPauseCampaign ?? in_array($normalizedStatus, ['scheduled', 'running'], true);
+    $canDraftCampaign = $canDraftCampaign ?? in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true);
+    $canArchiveCampaign = $canArchiveCampaign ?? in_array($normalizedStatus, ['draft', 'scheduled', 'running', 'paused', 'completed'], true);
     $reportMetrics = [
-        ['label' => 'Coinvolti', 'value' => $totalEmails, 'tone' => 'neutral'],
+        ['label' => 'Destinatari', 'value' => $totalEmails, 'tone' => 'neutral'],
         ['label' => 'Email inviate', 'value' => $sentEmails, 'tone' => 'neutral'],
         ['label' => 'Aperture', 'value' => $report['opened_count'] ?? 0, 'tone' => 'neutral'],
         ['label' => 'Click', 'value' => $report['clicked_count'] ?? 0, 'tone' => 'neutral'],
@@ -207,8 +214,7 @@
             overflow-wrap: anywhere;
         }
 
-        .campaign-send-panel__badge,
-        .campaign-send-panel__metric {
+        .campaign-send-panel__badge {
             display: inline-flex;
             width: fit-content;
             max-width: 100%;
@@ -225,33 +231,9 @@
             overflow-wrap: anywhere;
         }
 
-        .campaign-send-panel__status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
-            gap: 10px;
-        }
-
-        .campaign-send-panel__metric {
-            display: grid;
-            gap: 4px;
-            align-items: start;
-            border-radius: 8px;
-            border-color: rgba(216, 221, 232, 0.12);
-            background: rgba(9, 3, 51, 0.32);
-            color: var(--c3);
-            padding: 12px;
-        }
-
-        .campaign-send-panel__metric span {
-            color: rgba(216, 221, 232, 0.62);
-            font-size: var(--fs-100);
-            text-transform: uppercase;
-        }
-
-        .campaign-send-panel__metric strong {
-            color: var(--c3);
-            font-size: var(--fs-300);
-            line-height: 1.2;
+        .campaign-header-actions form {
+            margin: 0;
+            display: flex;
         }
 
         .campaign-send-panel .marketing-detail__progress-live {
@@ -450,21 +432,58 @@
                     ])
                 </div>
 
-                <div class="order-detail__contacts">
+                <div class="order-detail__contacts campaign-header-actions">
                     <a class="order-detail__contact" href="{{ route('admin.campaigns.index') }}">
                         <i class="bi bi-arrow-left"></i>
                         <span>Lista</span>
                     </a>
+
                     @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
                         <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
                             <i class="bi bi-pencil-square"></i>
                             <span>Modifica</span>
                         </a>
                     @endif
-                    <a class="order-detail__contact" href="{{ route('admin.marketing') }}">
-                        <i class="bi bi-grid-1x2-fill"></i>
-                        <span>Marketing</span>
-                    </a>
+
+                    @if ($canActivateCampaign)
+                        <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
+                            @csrf
+                            <button class="order-detail__contact" type="submit">
+                                <i class="bi bi-check2-circle"></i>
+                                <span>Conferma/programma</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($canPauseCampaign)
+                        <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
+                            @csrf
+                            <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                <i class="bi bi-pause-circle"></i>
+                                <span>Pausa</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($canDraftCampaign)
+                        <form action="{{ route('admin.campaigns.draft', $campaign) }}" method="POST">
+                            @csrf
+                            <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                <i class="bi bi-clock-history"></i>
+                                <span>Completa più tardi</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($canArchiveCampaign)
+                        <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
+                            @csrf
+                            <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
+                                <i class="bi bi-archive-fill"></i>
+                                <span>Archivia</span>
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </header>
 
@@ -492,52 +511,7 @@
                         </h3>
                     </div>
 
-                    <div class="marketing-detail__grid">
-                        <article class="marketing-detail__fact">
-                            <span>Stato</span>
-                            <strong>{{ $statusLabel }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Programmata</span>
-                            <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
-                        </article>
-	                        <article class="marketing-detail__fact">
-	                            <span>Email totali</span>
-	                            <strong>{{ $totalEmails }}</strong>
-	                        </article>
-	                        <article class="marketing-detail__fact">
-	                            <span>Inviate</span>
-	                            <strong>{{ $sentEmails }}</strong>
-	                        </article>
-	                        <article class="marketing-detail__fact">
-	                            <span>In attesa</span>
-	                            <strong>{{ $pendingEmails }}</strong>
-	                        </article>
-	                        <article class="marketing-detail__fact">
-	                            <span>Avanzamento</span>
-	                            <strong>{{ $progressPercentageLabel }}</strong>
-	                        </article>
-	                        @if ($nextBatchDueAt)
-	                            <article class="marketing-detail__fact">
-	                                <span>Prossimo batch previsto</span>
-	                                <strong>{{ $nextBatchDueAt->format('d/m/Y H:i') }}</strong>
-	                            </article>
-	                        @endif
-	                        @if ($estimatedDuration)
-	                            <article class="marketing-detail__fact">
-	                                <span>Durata stimata</span>
-	                                <strong>{{ $estimatedDuration }} min</strong>
-	                            </article>
-	                        @endif
-	                        @if ($completedAt && $normalizedStatus === 'completed')
-	                            <article class="marketing-detail__fact">
-	                                <span>Completata</span>
-	                                <strong>{{ $completedAt->format('d/m/Y H:i') }}</strong>
-	                            </article>
-	                        @endif
-	                    </div>
-	
-                    <div class="marketing-detail__empty marketing-detail__send-panel campaign-send-panel mt-3">
+                    <div class="marketing-detail__empty marketing-detail__send-panel campaign-send-panel">
                         <div class="campaign-send-panel__head">
                             <div class="campaign-send-panel__title">
                                 <strong>{{ $sendPanelTitle }}</strong>
@@ -547,21 +521,6 @@
                                 <i class="bi {{ $icon }}"></i>
                                 {{ $sendPanelBadge }}
                             </span>
-                        </div>
-
-                        <div class="campaign-send-panel__status-grid">
-                            <div class="campaign-send-panel__metric">
-                                <span>Email inviate</span>
-                                <strong>{{ $sentEmails }} / {{ $totalEmails }}</strong>
-                            </div>
-                            <div class="campaign-send-panel__metric">
-                                <span>Restano</span>
-                                <strong>{{ $pendingEmails }} email</strong>
-                            </div>
-                            <div class="campaign-send-panel__metric">
-                                <span>Avanzamento reale</span>
-                                <strong>{{ $progressPercentageLabel }}</strong>
-                            </div>
                         </div>
 
                         @if ($isScheduledFuture && $scheduledAtIso)
@@ -620,8 +579,8 @@
                                 <span class="marketing-detail__progress-percent">{{ $progressPercentageLabel }}</span>
                             </div>
                             <div class="marketing-detail__progress-meta">
-                                <span>Reale: {{ $sentEmails }} di {{ $totalEmails }} email inviate</span>
-                                <span>{{ $pendingEmails }} in attesa</span>
+                                <span>Avanzamento reale dai batch del runner</span>
+                                <span>{{ $statusLabel }}</span>
                             </div>
                         </div>
 
@@ -654,17 +613,41 @@
                     <div class="order-detail__section-head">
                         <h3>
                             <span class="order-detail__section-icon">
+                                <i class="bi bi-bar-chart-fill"></i>
+                            </span>
+                            Metriche principali
+                        </h3>
+                    </div>
+
+                    <div class="campaign-report-panel">
+                        @unless ($hasLinkedPromotions)
+                            <div class="marketing-detail__empty mt-3">
+                                Collega almeno una promozione per ottenere metriche specifiche per ordini o prenotazioni.
+                            </div>
+                        @endunless
+
+                        <div class="campaign-report-grid">
+                            @foreach ($reportMetrics as $metric)
+                                <article class="campaign-report-card campaign-report-card--{{ $metric['tone'] }}">
+                                    <span>{{ $metric['label'] }}</span>
+                                    <strong>{{ $metric['value'] }}</strong>
+                                </article>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+
+                <section class="order-detail__section">
+                    <div class="order-detail__section-head">
+                        <h3>
+                            <span class="order-detail__section-icon">
                                 <i class="bi bi-info-circle-fill"></i>
                             </span>
-                            Dettaglio campagna
+                            Configurazione campagna
                         </h3>
                     </div>
 
                     <div class="marketing-detail__grid">
-                        <article class="marketing-detail__fact">
-                            <span>Status</span>
-                            <strong>{{ $statusLabel }}</strong>
-                        </article>
                         <article class="marketing-detail__fact">
                             <span>Segmento</span>
                             <strong>{{ $segmentLabel }}</strong>
@@ -682,30 +665,20 @@
                         <article class="marketing-detail__fact">
                             <span>Programmata</span>
                             <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
+                            <small>{{ $requestedScheduledAt ? 'Richiesta: ' . $requestedScheduledAt : $scheduleWindowLabel }}</small>
                         </article>
                         <article class="marketing-detail__fact">
                             <span>Finestra</span>
                             <strong>{{ $scheduleWindowLabel }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Orario richiesto</span>
-                            <strong>{{ $requestedScheduledAt ?: '-' }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Durata stimata</span>
-                            <strong>{{ $estimatedDuration ? $estimatedDuration . ' min' : '-' }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Invio email</span>
-                            <strong>{{ $scheduleState }}</strong>
-                        </article>
-	                        <article class="marketing-detail__fact">
-	                            <span>Inviata</span>
-	                            <strong>{{ $completedAt?->format('d/m/Y H:i') ?? '-' }}</strong>
-	                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Promozioni</span>
+                            <span>Promozioni collegate</span>
                             <strong>{{ $promotionsCount }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>Audience assegnata</span>
+                            <strong>{{ $totalEmails }}</strong>
+                            <small>{{ $hasAssignments ? 'Assegnazioni create' : 'Nessuna assegnazione creata' }}</small>
                         </article>
                     </div>
 
@@ -716,29 +689,6 @@
                         </div>
                     @endif
 
-                  
-                </section>
-
-                <section class="order-detail__section">
-                    <div class="order-detail__section-head">
-                        <h3>
-                            <span class="order-detail__section-icon">
-                                <i class="bi bi-speedometer2"></i>
-                            </span>
-                            Contatori
-                        </h3>
-                    </div>
-
-                    <div class="marketing-detail__compact-grid">
-	                        <article class="marketing-detail__metric">
-	                            <span>Coinvolti</span>
-	                            <strong>{{ $totalEmails }}</strong>
-	                        </article>
-	                        <article class="marketing-detail__metric">
-	                            <span>Inviate</span>
-	                            <strong>{{ $sentEmails }}</strong>
-	                        </article>
-                    </div>
                 </section>
 
                 <section class="order-detail__section">
@@ -747,7 +697,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-megaphone-fill"></i>
                             </span>
-                            Promozioni collegate
+                            Dettaglio promozioni
                         </h3>
                     </div>
 
@@ -832,87 +782,46 @@
                     @endif
                 </section>
 
-                <section class="order-detail__section">
-                    <div class="order-detail__section-head">
-                        <h3>
-                            <span class="order-detail__section-icon">
-                                <i class="bi bi-sliders"></i>
-                            </span>
-                            Azioni
-                        </h3>
-                    </div>
-
-                    <div class="marketing-detail__actions">
-                        @if (in_array($normalizedStatus, ['draft', 'paused'], true))
-                            <form action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact" type="submit">
-                                    <i class="bi bi-check2-circle"></i>
-                                    <span>Programma campagna</span>
-                                </button>
-                            </form>
-                        @endif
-
-                        @if (in_array($normalizedStatus, ['scheduled', 'running'], true))
-                            <form action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
-                                    <i class="bi bi-pause-circle"></i>
-                                    <span>Pausa</span>
-                                </button>
-                            </form>
-                        @endif
-
-                        @if (in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true))
-                            <form action="{{ route('admin.campaigns.draft', $campaign) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
-                                    <i class="bi bi-clock-history"></i>
-                                    <span>Completa più tardi</span>
-                                </button>
-                            </form>
-                        @endif
-
-                        @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
-                            <form action="{{ route('admin.campaigns.preview-audience', $campaign) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact" type="submit">
+                @if ($canPreviewAudience || $canPrepareAssignments)
+                    <section class="order-detail__section">
+                        <div class="order-detail__section-head">
+                            <h3>
+                                <span class="order-detail__section-icon">
                                     <i class="bi bi-people-fill"></i>
-                                    <span>Preview audience</span>
-                                </button>
-                            </form>
-                        @endif
+                                </span>
+                                Preparazione audience
+                            </h3>
+                        </div>
 
-                        @if (in_array($normalizedStatus, ['draft', 'scheduled', 'paused'], true))
-                            <form action="{{ route('admin.campaigns.prepare-assignments', $campaign) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                    <i class="bi bi-person-plus-fill"></i>
-                                    <span>Prepara assegnazioni</span>
-                                </button>
-                            </form>
-                        @endif
+                        <div class="marketing-detail__actions">
+                            @if ($canPreviewAudience)
+                                <form action="{{ route('admin.campaigns.preview-audience', $campaign) }}" method="POST">
+                                    @csrf
+                                    <button class="order-detail__contact" type="submit">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span>Preview audience</span>
+                                    </button>
+                                </form>
+                            @endif
 
-                        @if (in_array($normalizedStatus, ['scheduled', 'running', 'paused', 'draft', 'completed'], true))
-                            <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                    <i class="bi bi-archive-fill"></i>
-                                    <span>Archivia</span>
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </section>
+                            @if ($canPrepareAssignments)
+                                <form action="{{ route('admin.campaigns.prepare-assignments', $campaign) }}" method="POST">
+                                    @csrf
+                                    <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
+                                        <i class="bi bi-person-plus-fill"></i>
+                                        <span>Prepara assegnazioni</span>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </section>
+                @endif
 
                 @if (session('audience_preview'))
                     @php
                         $audiencePreview = session('audience_preview');
                         $assignableCount = $audiencePreview['assignable_count'] ?? $audiencePreview['assigned_count'] ?? 0;
                         $previewMetrics = [
-                            ['label' => 'Status campagna', 'value' => $statusLabel],
-                            ['label' => 'Programmazione', 'value' => $campaign->scheduled_at?->format('d/m/Y H:i') ?? 'Mancante'],
-                            ['label' => 'Invio', 'value' => $scheduleState],
                             ['label' => 'Assegnabile', 'value' => ($audiencePreview['can_assign'] ?? false) ? 'Si' : 'No'],
                             ['label' => 'Motivo', 'value' => $audiencePreview['failure_reason'] ?? '-'],
                             ['label' => 'Clienti', 'value' => $audiencePreview['customers_checked'] ?? 0],
@@ -952,18 +861,12 @@
                     </section>
                 @endif
 
-                @if (session('campaign_assignment_result'))
+                @if (session('campaign_assignment_result') && ((session('campaign_assignment_result')['failure_reason'] ?? null) || (int) (session('campaign_assignment_result')['errors_count'] ?? 0) > 0))
                     @php
                         $assignmentResult = session('campaign_assignment_result');
                         $assignmentMetrics = [
-                            ['label' => 'Modalita', 'value' => $assignmentResult['mode'] ?? '-'],
                             ['label' => 'Assegnabile', 'value' => ($assignmentResult['can_assign'] ?? false) ? 'Si' : 'No'],
                             ['label' => 'Motivo', 'value' => $assignmentResult['failure_reason'] ?? '-'],
-                            ['label' => 'Clienti', 'value' => $assignmentResult['customers_checked'] ?? 0],
-                            ['label' => 'Promozioni', 'value' => $assignmentResult['promotions_count'] ?? 0],
-                            ['label' => 'Nuove', 'value' => $assignmentResult['assigned_count'] ?? 0],
-                            ['label' => 'Gia assegnate', 'value' => $assignmentResult['already_assigned_count'] ?? 0],
-                            ['label' => 'Saltate', 'value' => $assignmentResult['skipped_count'] ?? 0],
                             ['label' => 'Errori', 'value' => $assignmentResult['errors_count'] ?? 0],
                         ];
                     @endphp
@@ -979,8 +882,8 @@
                         </div>
 
                         <div class="marketing-detail__empty">
-                            <strong>Assegnazioni create, email non inviate.</strong>
-                            <small>L’invio reale parte solo da scheduled_at tramite scheduler Laravel.</small>
+                            <strong>Le assegnazioni richiedono attenzione.</strong>
+                            <small>Le righe create restano visibili nella tabella read-only.</small>
                         </div>
 
                         <div class="marketing-detail__compact-grid">
@@ -996,42 +899,10 @@
                     </section>
                 @endif
 
-                <section class="order-detail__section">
-                    <div class="order-detail__section-head">
-                        <h3>
-                            <span class="order-detail__section-icon">
-                                <i class="bi bi-bar-chart-fill"></i>
-                            </span>
-                            Report marketing
-                        </h3>
-                    </div>
-
-                    <div class="campaign-report-panel">
-                        <div class="campaign-report-panel__summary">
-                            <strong>Report coerente con le promozioni collegate</strong>
-                            <span>Metriche filtrate in base al tipo di promozione collegata.</span>
-                        </div>
-
-                        @unless ($hasLinkedPromotions)
-                            <div class="marketing-detail__empty mt-3">
-                                Collega almeno una promozione per ottenere metriche specifiche per ordini o prenotazioni.
-                            </div>
-                        @endunless
-
-                        <div class="campaign-report-grid">
-                            @foreach ($reportMetrics as $metric)
-                                <article class="campaign-report-card campaign-report-card--{{ $metric['tone'] }}">
-                                    <span>{{ $metric['label'] }}</span>
-                                    <strong>{{ $metric['value'] }}</strong>
-                                </article>
-                            @endforeach
-                        </div>
-                    </div>
-                </section>
-
                 @include('admin.Marketing.partials.customer-promotions-table', [
                     'customerPromotions' => $customerPromotions,
                     'emptyText' => 'Nessuna assegnazione creata per questa campagna.',
+                    'showSummary' => false,
                 ])
             </div>
         </article>

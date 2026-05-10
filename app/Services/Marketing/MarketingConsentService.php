@@ -18,11 +18,31 @@ class MarketingConsentService
 
     public function applyCampaignConsent(Builder $query, Campaign $campaign): Builder
     {
-        return match ($campaign->consentBasis()) {
+        return $this->applyConsentBasis($query, $campaign->consentBasis());
+    }
+
+    public function applyConsentBasis(Builder $query, ?string $consentBasis): Builder
+    {
+        return match (Campaign::normalizeConsentBasis($consentBasis)) {
             Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => $this->applySoftEmailMarketingConsent($query),
             Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => $this->applyWhatsappMarketingConsent($query),
             default => $this->applyExplicitEmailMarketingConsent($query),
         };
+    }
+
+    public function applyContactRequirement(Builder $query, ?string $consentBasis): Builder
+    {
+        return match (Campaign::normalizeConsentBasis($consentBasis)) {
+            Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => $this->applyPhoneContactRequirement($query),
+            default => $this->applyEmailContactRequirement($query),
+        };
+    }
+
+    public function applyCampaignAudienceEligibility(Builder $query, ?string $consentBasis): Builder
+    {
+        $this->applyContactRequirement($query, $consentBasis);
+
+        return $this->applyConsentBasis($query, $consentBasis);
     }
 
     public function applyExplicitEmailMarketingConsent(Builder $query): Builder
@@ -121,6 +141,43 @@ class MarketingConsentService
     private function qualifyCustomerColumn(Builder $query, string $column): string
     {
         return $query->getModel()->qualifyColumn($column);
+    }
+
+    private function applyEmailContactRequirement(Builder $query): Builder
+    {
+        if (! $this->hasCustomerColumn('email')) {
+            return $this->emptyQuery($query);
+        }
+
+        $emailColumn = $this->qualifyCustomerColumn($query, 'email');
+
+        return $this->whereFilled($query, $emailColumn)
+            ->where($emailColumn, 'like', '_%@_%._%');
+    }
+
+    private function applyPhoneContactRequirement(Builder $query): Builder
+    {
+        if (! $this->hasCustomerColumn('phone')) {
+            return $this->emptyQuery($query);
+        }
+
+        return $this->whereFilled($query, $this->qualifyCustomerColumn($query, 'phone'));
+    }
+
+    private function whereFilled(Builder $query, string $column): Builder
+    {
+        $wrappedColumn = $query->getQuery()->getGrammar()->wrap($column);
+
+        return $query
+            ->whereNotNull($column)
+            ->whereRaw("TRIM({$wrappedColumn}) <> ?", ['']);
+    }
+
+    private function emptyQuery(Builder $query): Builder
+    {
+        return $query
+            ->whereNull($this->qualifyCustomerColumn($query, 'id'))
+            ->whereNotNull($this->qualifyCustomerColumn($query, 'id'));
     }
 
     private function hasCustomerColumn(string $column): bool

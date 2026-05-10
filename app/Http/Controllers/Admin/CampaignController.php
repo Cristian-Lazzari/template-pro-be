@@ -93,12 +93,18 @@ class CampaignController extends Controller
         $campaign->load(['model', 'promotions.targets']);
         $report = $reportService->forCampaign($campaign);
         $sendProgress = $this->sendProgress($campaign);
+        $normalizedStatus = $this->normalizedStatus($campaign->status);
         $campaignPromotionCaseUses = $campaign->promotions
             ->pluck('case_use')
             ->filter()
             ->unique()
             ->values();
         $hasLinkedPromotions = $campaign->promotions->isNotEmpty();
+        $hasAssignments = (int) $sendProgress['involved_count'] > 0;
+        $canPreviewAudience = $normalizedStatus === 'draft'
+            && ! $hasAssignments
+            && $hasLinkedPromotions;
+        $canPrepareAssignments = $canPreviewAudience;
         $showOrderMetrics = $hasLinkedPromotions
             && $campaignPromotionCaseUses->intersect(['take_away', 'delivery', 'generic'])->isNotEmpty();
         $showReservationMetrics = $hasLinkedPromotions
@@ -112,6 +118,13 @@ class CampaignController extends Controller
             'campaign' => $campaign,
             'report' => $report,
             'sendProgress' => $sendProgress,
+            'hasAssignments' => $hasAssignments,
+            'canPreviewAudience' => $canPreviewAudience,
+            'canPrepareAssignments' => $canPrepareAssignments,
+            'canActivateCampaign' => in_array($normalizedStatus, ['draft', 'paused'], true),
+            'canPauseCampaign' => in_array($normalizedStatus, ['scheduled', 'running'], true),
+            'canDraftCampaign' => in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true),
+            'canArchiveCampaign' => in_array($normalizedStatus, ['draft', 'scheduled', 'running', 'paused', 'completed'], true),
             'involvedCount' => $sendProgress['involved_count'],
             'sentCount' => $sendProgress['sent_count'],
             'pendingCount' => $sendProgress['pending_count'],
@@ -225,6 +238,7 @@ class CampaignController extends Controller
     private function formOptions(?Campaign $campaign = null): array
     {
         $segmentService = app(MarketingCustomerSegmentService::class);
+        $audienceBuilder = app(CampaignAudienceBuilder::class);
         $segments = $segmentService->getSegmentOptions();
 
         return [
@@ -232,6 +246,8 @@ class CampaignController extends Controller
             'segments' => $segments,
             'consentBasisOptions' => Campaign::consentBasisOptions(),
             'audienceCount' => $this->campaignAudienceCount($campaign),
+            'audienceAvailability' => $this->campaignAudienceAvailability($audienceBuilder),
+            'audienceMatrix' => $this->campaignAudienceMatrix($audienceBuilder, array_keys($segments)),
             'scheduleWindows' => $this->campaignFormScheduleWindows(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
@@ -309,6 +325,54 @@ class CampaignController extends Controller
 
             return null;
         }
+    }
+
+    private function campaignAudienceAvailability(CampaignAudienceBuilder $audienceBuilder): array
+    {
+        try {
+            return $audienceBuilder->availabilityByConsentBasis();
+        } catch (\Throwable $exception) {
+            Log::warning('Unable to count campaign audience availability.', [
+                'error' => $exception->getMessage(),
+            ]);
+
+            return $this->emptyAudienceAvailability();
+        }
+    }
+
+    private function campaignAudienceMatrix(CampaignAudienceBuilder $audienceBuilder, array $segments): array
+    {
+        try {
+            return $audienceBuilder->matrixForSegments($segments);
+        } catch (\Throwable $exception) {
+            Log::warning('Unable to count campaign audience matrix.', [
+                'error' => $exception->getMessage(),
+            ]);
+
+            return [];
+        }
+    }
+
+    private function emptyAudienceAvailability(): array
+    {
+        $availability = [];
+
+        foreach (Campaign::consentBasisValues() as $consentBasis) {
+            $availability[$consentBasis] = [
+                'eligible' => 0,
+                'total' => 0,
+                'label' => match ($consentBasis) {
+                    Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => 'Soft email marketing',
+                    Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp marketing',
+                    default => 'Email marketing esplicito',
+                },
+                'total_label' => $consentBasis === Campaign::CONSENT_BASIS_WHATSAPP_MARKETING
+                    ? 'Totale: clienti con telefono'
+                    : 'Totale: clienti con email valida',
+            ];
+        }
+
+        return $availability;
     }
 
     private function statusFromSubmitAction(Request $request): string

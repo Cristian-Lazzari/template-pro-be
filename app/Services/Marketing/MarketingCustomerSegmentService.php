@@ -41,14 +41,18 @@ class MarketingCustomerSegmentService
 
     public function queryForSegment(?string $segment, ?Campaign $campaign = null): Builder
     {
+        $consentBasis = $campaign?->consentBasis()
+            ?? Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING;
+
+        return $this->queryForSegmentAndConsentBasis($segment, $consentBasis);
+    }
+
+    public function queryForSegmentAndConsentBasis(?string $segment, ?string $consentBasis): Builder
+    {
         $normalizedSegment = $this->normalizeSegment($segment);
         $query = Customer::query();
 
-        if ($campaign) {
-            $query = $this->marketingConsentService->applyCampaignConsent($query, $campaign);
-        } else {
-            $query = $this->marketingConsentService->applyEmailMarketingConsent($query);
-        }
+        $this->marketingConsentService->applyCampaignAudienceEligibility($query, $consentBasis);
 
         if ($normalizedSegment !== 'all') {
             $customerIds = $this->customerIdsForSegment($normalizedSegment);

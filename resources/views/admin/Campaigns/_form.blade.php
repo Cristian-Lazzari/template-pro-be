@@ -19,6 +19,22 @@
         \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp marketing, non ancora attivo',
     ];
     $selectedConsentBasisLabel = $consentBasisPreviewLabels[$selectedConsentBasis] ?? 'Email marketing con consenso esplicito';
+    $audienceAvailability = $audienceAvailability ?? [];
+    $audienceMatrix = $audienceMatrix ?? [];
+    $defaultAudienceAvailability = [
+        'eligible' => 0,
+        'total' => 0,
+        'label' => $consentBasisPreviewLabels[$selectedConsentBasis] ?? 'Email marketing esplicito',
+        'total_label' => $selectedConsentBasis === \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING
+            ? 'Totale: clienti con telefono'
+            : 'Totale: clienti con email valida',
+    ];
+    $selectedAudienceAvailability = array_merge(
+        $defaultAudienceAvailability,
+        $audienceAvailability[$selectedConsentBasis] ?? []
+    );
+    $selectedAudienceEstimate = (int) data_get($audienceMatrix, $selectedConsentBasis . '.' . $selectedSegment, 0);
+    $formatAudienceNumber = fn ($value) => number_format((int) $value, 0, ',', '.');
     $selectedScheduleWindow = array_key_exists($selectedScheduleWindow, $scheduleWindows)
         ? $selectedScheduleWindow
         : 'next_available';
@@ -41,18 +57,6 @@
     };
     $previewScheduledAtLabel = $formatPreviewDate($selectedScheduledAtValue)
         ?: ($selectedScheduleWindow === 'next_available' ? 'Prima finestra disponibile' : 'Definita dalla finestra scelta');
-    $storedSegment = $legacySegmentMap[$campaign->segment] ?? ($campaign->segment ?: 'all');
-    $hasUnsavedAudienceSelection = $campaign->exists
-        && (
-            (old('segment') !== null && $selectedSegment !== $storedSegment)
-            || (old('consent_basis') !== null && $selectedConsentBasis !== \App\Models\Campaign::normalizeConsentBasis($campaign->consent_basis))
-        );
-    $previewAudienceLabel = match (true) {
-        ! $campaign->exists => 'Calcolata dopo il salvataggio',
-        $hasUnsavedAudienceSelection => 'Aggiornata dopo il salvataggio',
-        $audienceCount !== null => number_format((int) $audienceCount, 0, ',', '.'),
-        default => 'Non disponibile',
-    };
     $statusPreviewLabel = $campaign->exists
         ? ($statuses[$campaign->status] ?? $campaign->status)
         : 'Nuova campagna';
@@ -149,6 +153,14 @@
         border-color: rgba(98, 166, 255, 0.24);
         background: rgba(98, 166, 255, 0.1);
         color: rgba(216, 221, 232, 0.92) !important;
+    }
+
+    .campaign-preview-warning {
+        color: #ffb4a8 !important;
+    }
+
+    .campaign-preview-warning.is-hidden {
+        display: none;
     }
 
     .campaign-preview-chips {
@@ -403,12 +415,22 @@
                         </div>
 
                         <div class="campaign-preview-item">
-                            <span>Audience prevista</span>
-                            <strong
-                                data-preview-audience-count
-                                data-initial-label="{{ $previewAudienceLabel }}"
-                                data-pending-label="{{ $campaign->exists ? 'Aggiornata dopo il salvataggio' : 'Calcolata dopo il salvataggio' }}"
-                            >{{ $previewAudienceLabel }}</strong>
+                            <span>Contatti disponibili</span>
+                            <strong data-preview-availability-count>
+                                Disponibili: {{ $formatAudienceNumber($selectedAudienceAvailability['eligible'] ?? 0) }} / {{ $formatAudienceNumber($selectedAudienceAvailability['total'] ?? 0) }}
+                            </strong>
+                            <small data-preview-availability-context>{{ $selectedAudienceAvailability['total_label'] ?? '' }}</small>
+                        </div>
+
+                        <div class="campaign-preview-item">
+                            <span>Audience stimata</span>
+                            <strong data-preview-audience-count>
+                                Assegnabili stimati: {{ $formatAudienceNumber($selectedAudienceEstimate) }}
+                            </strong>
+                            <small
+                                class="campaign-preview-warning{{ $selectedAudienceEstimate === 0 ? '' : ' is-hidden' }}"
+                                data-preview-audience-warning
+                            >Nessun contatto disponibile con questa combinazione.</small>
                         </div>
 
                         <div class="campaign-preview-item">
@@ -468,13 +490,18 @@
         }
 
         const segmentLabels = @json($segments ?? []);
+        const audienceAvailability = @json($audienceAvailability ?? []);
+        const audienceMatrix = @json($audienceMatrix ?? []);
         const nameInput = form.querySelector('#name');
         const previewName = form.querySelector('[data-preview-campaign-name]');
         const consentSelect = form.querySelector('[data-consent-basis-select]');
         const consentLabel = form.querySelector('[data-preview-consent-basis]');
         const segmentSelect = form.querySelector('[data-segment-select]');
         const segmentLabel = form.querySelector('[data-preview-segment-label]');
+        const availabilityCount = form.querySelector('[data-preview-availability-count]');
+        const availabilityContext = form.querySelector('[data-preview-availability-context]');
         const audienceCount = form.querySelector('[data-preview-audience-count]');
+        const audienceWarning = form.querySelector('[data-preview-audience-warning]');
         const mailModelSelect = form.querySelector('[data-mail-model-select]');
         const mailModelLabel = form.querySelector('[data-preview-mail-model]');
         const scheduleSelect = form.querySelector('[data-schedule-window-select]');
@@ -486,6 +513,8 @@
         const promotionInputs = form.querySelectorAll('[data-promotion-checkbox]');
 
         const selectedOption = (select) => select?.options[select.selectedIndex] || null;
+        const numberFormatter = new Intl.NumberFormat('it-IT');
+        const formatNumber = (value) => numberFormatter.format(Number(value || 0));
 
         const formatDateTime = (value) => {
             if (!value) {
@@ -533,18 +562,34 @@
         };
 
         const syncAudienceState = () => {
+            const consentBasis = consentSelect?.value || 'explicit_email_marketing';
+            const segment = segmentSelect?.value || 'all';
+            const availability = audienceAvailability[consentBasis] || {
+                eligible: 0,
+                total: 0,
+                total_label: consentBasis === 'whatsapp_marketing'
+                    ? 'Totale: clienti con telefono'
+                    : 'Totale: clienti con email valida',
+            };
+            const estimated = Number(audienceMatrix?.[consentBasis]?.[segment] || 0);
+
+            if (availabilityCount) {
+                availabilityCount.textContent = `Disponibili: ${formatNumber(availability.eligible)} / ${formatNumber(availability.total)}`;
+            }
+
+            if (availabilityContext) {
+                availabilityContext.textContent = availability.total_label || '';
+            }
+
             if (!audienceCount) {
                 return;
             }
 
-            const initialSegment = segmentSelect?.dataset.initialValue || segmentSelect?.value || '';
-            const initialConsent = consentSelect?.dataset.initialValue || consentSelect?.value || '';
-            const segmentChanged = segmentSelect && segmentSelect.value !== initialSegment;
-            const consentChanged = consentSelect && consentSelect.value !== initialConsent;
+            audienceCount.textContent = `Assegnabili stimati: ${formatNumber(estimated)}`;
 
-            audienceCount.textContent = segmentChanged || consentChanged
-                ? (audienceCount.dataset.pendingLabel || 'Calcolata dopo il salvataggio')
-                : (audienceCount.dataset.initialLabel || audienceCount.textContent);
+            if (audienceWarning) {
+                audienceWarning.classList.toggle('is-hidden', estimated !== 0);
+            }
         };
 
         const syncMailModel = () => {

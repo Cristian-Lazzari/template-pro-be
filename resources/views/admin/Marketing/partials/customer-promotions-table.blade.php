@@ -7,6 +7,7 @@
     $pageSentCount = $items->whereNotNull('email_sent_at')->count();
     $pageUsedCount = $items->whereNotNull('promo_used')->count();
     $pageClickedCount = $items->whereNotNull('email_click_at')->count();
+    $showSummary = $showSummary ?? true;
     $statusLabels = [
         'assigned' => 'Assegnata',
         'sent' => 'Inviata',
@@ -27,28 +28,30 @@
         </h3>
     </div>
 
-    <div class="campaign-assignment-summary">
-        <article class="marketing-detail__fact">
-            <span>In questa pagina</span>
-            <strong>{{ $pageCount }}</strong>
-            <small>Totale: {{ $totalCount }}</small>
-        </article>
-        <article class="marketing-detail__fact">
-            <span>Email inviate</span>
-            <strong>{{ $pageSentCount }}</strong>
-            <small>Conteggio sui record visibili</small>
-        </article>
-        <article class="marketing-detail__fact">
-            <span>Click</span>
-            <strong>{{ $pageClickedCount }}</strong>
-            <small>Conteggio sui record visibili</small>
-        </article>
-        <article class="marketing-detail__fact">
-            <span>Promo usate</span>
-            <strong>{{ $pageUsedCount }}</strong>
-            <small>Conteggio sui record visibili</small>
-        </article>
-    </div>
+    @if ($showSummary)
+        <div class="campaign-assignment-summary">
+            <article class="marketing-detail__fact">
+                <span>In questa pagina</span>
+                <strong>{{ $pageCount }}</strong>
+                <small>Totale: {{ $totalCount }}</small>
+            </article>
+            <article class="marketing-detail__fact">
+                <span>Email inviate</span>
+                <strong>{{ $pageSentCount }}</strong>
+                <small>Conteggio sui record visibili</small>
+            </article>
+            <article class="marketing-detail__fact">
+                <span>Click</span>
+                <strong>{{ $pageClickedCount }}</strong>
+                <small>Conteggio sui record visibili</small>
+            </article>
+            <article class="marketing-detail__fact">
+                <span>Promo usate</span>
+                <strong>{{ $pageUsedCount }}</strong>
+                <small>Conteggio sui record visibili</small>
+            </article>
+        </div>
+    @endif
 
     @if ($pageCount > 0)
         <div class="campaign-assignment-list">
