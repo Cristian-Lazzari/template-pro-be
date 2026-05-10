@@ -699,6 +699,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     const formatCents = (value) => currencyFormatter.format(value || 0);
 
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function promotionBadge(summary) {
+        if (!summary?.has_promotion) {
+            return '';
+        }
+
+        return `<div class="promo status paid" title="${escapeHtml(summary.name || 'Promozione applicata')}"><i class="bi bi-gift-fill"></i> ${escapeHtml(summary.badge_label || 'Promo')}</div>`;
+    }
+
+    function promotionDetail(summary, isOrder = false) {
+        if (!summary?.has_promotion) {
+            return '';
+        }
+
+        const discount = summary.discount_label ? `<div class="price">${escapeHtml(summary.discount_label)}</div>` : '';
+        const total = isOrder && summary.total_label
+            ? `<div class="item_cart"><div class="name">Totale scontato</div><div class="price">${escapeHtml(summary.total_label)}</div></div>`
+            : '';
+
+        return `<div class="cart"><div class="item_cart"><div class="name">Promo: ${escapeHtml(summary.name || 'Promozione applicata')}</div>${discount}</div>${total}</div>`;
+    }
+
     function renderDayDetails(button) {
         document.querySelectorAll(".day.day-active").forEach((dayButton) => dayButton.classList.remove("day-active"));
         button.classList.add("day-active");
@@ -740,11 +770,13 @@ document.addEventListener("DOMContentLoaded", () => {
                             ${[1, 4, 5].includes(reservationStatus) ? detailIcons.confirm : ''}
                             <div class="name">${reservation.name + ' ' + reservation.surname}</div>
                             ${[3, 5, 6].includes(reservationStatus) ? `<div class="${reservationStatus === 6 ? 'refound' : 'paid'} status">${detailIcons.paid} ${paidLabel}</div>` : ''}
+                            ${promotionBadge(reservation.promotion_summary)}
                             <div class="guest">
                                 ${people.adult > 0 ? people.adult + detailIcons.adult : ''}
                                 ${people.child > 0 ? people.child + detailIcons.child : ''}
                             </div>
                         </div>
+                        ${promotionDetail(reservation.promotion_summary)}
                     </a>`;
                 });
             }
@@ -763,9 +795,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             ${[1, 4, 5].includes(orderStatus) ? detailIcons.confirm : ''}
                             <div class="name">${order.name + ' ' + order.surname}</div>
                             ${[3, 5, 6].includes(orderStatus) ? `<div class="${orderStatus === 6 ? 'refound' : 'paid'} status">${detailIcons.paid} ${paidLabel}</div>` : ''}
+                            ${promotionBadge(order.promotion_summary)}
                             <div class="price">${formatCents(order.tot_price)}</div>
                         </div>
                         <div class="cart">`;
+
+                    if (order.promotion_summary?.has_promotion) {
+                        html += promotionDetail(order.promotion_summary, true).replace(/^<div class="cart">|<\/div>$/g, '');
+                    }
 
                     order.products.forEach((product) => {
                         html += `<div class="item_cart"><div class="name">${product.pivot?.quantity ?? 1}* ${product.name}</div><div class="price">${formatCents(product.price)}</div></div>`;

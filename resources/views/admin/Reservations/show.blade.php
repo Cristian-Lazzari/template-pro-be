@@ -35,6 +35,7 @@
         :note="$reservation->message"
         :sent-at="\Carbon\Carbon::parse($reservation->created_at)->translatedFormat('H:i:s l j F Y')"
         :marketing="$reservation->news_letter ? 'si' : 'no'"
+        :promotions="$promotionDetails"
     >
         @if (in_array($reservation->status, [0, 2, 3]))
             <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="my_btn_3">{{ __('admin.Conferma') }}</button>

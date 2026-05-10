@@ -15,10 +15,12 @@
     'note' => null,
     'sentAt' => null,
     'marketing' => null,
+    'promotions' => [],
 ])
 
 @php
     $status = (int) $status;
+    $promotions = collect($promotions)->filter();
 
     $statusMap = [
         0 => ['label' => 'Annullata', 'tone' => 'off'],
@@ -150,6 +152,67 @@
                 </div>
             @endif
         </section>
+
+        @if ($promotions->isNotEmpty())
+            <section class="order-detail__section">
+                <div class="order-detail__section-head">
+                    <h3>
+                        <span class="order-detail__section-icon">
+                            <i class="bi bi-gift-fill"></i>
+                        </span>
+                        Promozione applicata
+                    </h3>
+                </div>
+
+                <div class="order-detail__items">
+                    @foreach ($promotions as $promotion)
+                        <article class="order-detail__item">
+                            <div class="order-detail__item-top">
+                                <span class="order-detail__qty">Promo</span>
+                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? 'Promozione' }}</strong>
+                                <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
+                            </div>
+
+                            <div class="order-detail__detail-groups">
+                                @foreach ([
+                                    ['label' => 'Tipo', 'value' => $promotion['type_label'] ?? null],
+                                    ['label' => 'Sconto', 'value' => $promotion['discount_amount_label'] ?? null],
+                                    ['label' => 'Subtotale prima dello sconto', 'value' => $promotion['subtotal_before_discount_label'] ?? null],
+                                    ['label' => 'Subtotale scontato', 'value' => $promotion['subtotal_after_discount_label'] ?? null],
+                                    ['label' => 'Totale dopo sconto', 'value' => $promotion['total_after_discount_label'] ?? null],
+                                    ['label' => 'Customer promotion', 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
+                                ] as $row)
+                                    @if (!blank($row['value']))
+                                        <div class="order-detail__detail-group">
+                                            <span>{{ $row['label'] }}</span>
+                                            <div class="order-detail__detail-values">
+                                                <small>{{ $row['value'] }}</small>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+
+                                @if (!empty($promotion['affected_items']))
+                                    <div class="order-detail__detail-group">
+                                        <span>Righe interessate</span>
+                                        <div class="order-detail__detail-values">
+                                            @foreach ($promotion['affected_items'] as $affectedItem)
+                                                <small>
+                                                    {{ $affectedItem['label'] ?? 'Elemento' }}
+                                                    @if (!empty($affectedItem['details']))
+                                                        · {{ implode(' · ', $affectedItem['details']) }}
+                                                    @endif
+                                                </small>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         @if ($fulfillmentTitle)
             <section class="order-detail__section order-detail__service">

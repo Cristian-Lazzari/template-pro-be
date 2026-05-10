@@ -224,7 +224,7 @@ class OrderPromotionApplicationService
             : $promotion->targets()->get();
 
         if ($discountType === 'gift') {
-            return $this->calculateGiftDiscount($targets, $items);
+            return $this->calculateGiftDiscount($promotion, $targets, $items);
         }
 
         $affectedItems = $this->matchingItems($targets, $items);
@@ -267,11 +267,11 @@ class OrderPromotionApplicationService
             'applicable' => true,
             'reason' => null,
             'discount_amount' => $discountAmount,
-            'affected_items' => $this->affectedItemPayloads($affectedItems, $discountAmount, $affectedTotal),
+            'affected_items' => $this->affectedItemPayloads($affectedItems, $discountAmount, $affectedTotal, $promotion),
         ];
     }
 
-    private function calculateGiftDiscount(Collection $targets, array $items): array
+    private function calculateGiftDiscount(Promotion $promotion, Collection $targets, array $items): array
     {
         if ($targets->isEmpty() || $targets->contains(fn (PromotionTarget $target) => $target->isGenericTarget())) {
             return [
@@ -326,7 +326,7 @@ class OrderPromotionApplicationService
             'reason' => null,
             'discount_amount' => $discountAmount,
             'affected_items' => [
-                array_merge($this->affectedItemPayload($giftItem), [
+                array_merge($this->affectedItemPayload($giftItem, $promotion), [
                     'discount_amount' => $discountAmount,
                     'gift_quantity' => 1,
                 ]),
@@ -400,6 +400,7 @@ class OrderPromotionApplicationService
             $items[] = [
                 'type' => PromotionTarget::TYPE_PRODUCT,
                 'id' => (int) $product->id,
+                'name' => $this->snapshotName($product),
                 'category_id' => (int) $product->category_id,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
@@ -427,6 +428,7 @@ class OrderPromotionApplicationService
             $items[] = [
                 'type' => PromotionTarget::TYPE_MENU,
                 'id' => (int) $menu->id,
+                'name' => $this->snapshotName($menu),
                 'category_id' => (int) $menu->category_id,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
@@ -446,10 +448,22 @@ class OrderPromotionApplicationService
             return null;
         }
 
-        return DB::table('products')
-            ->select(['id', 'category_id', 'price'])
+        $columns = ['id', 'category_id', 'price'];
+
+        if (Schema::hasColumn('products', 'name')) {
+            $columns[] = 'name';
+        }
+
+        $product = DB::table('products')
+            ->select($columns)
             ->where('id', $productId)
             ->first();
+
+        if ($product && ! isset($product->name)) {
+            $product->name = $this->translatedName('product_translations', 'product_id', $productId);
+        }
+
+        return $product;
     }
 
     private function menuSnapshot(int $menuId): ?object
@@ -458,10 +472,46 @@ class OrderPromotionApplicationService
             return null;
         }
 
-        return DB::table('menus')
-            ->select(['id', 'category_id', 'price', 'fixed_menu'])
+        $columns = ['id', 'category_id', 'price', 'fixed_menu'];
+
+        if (Schema::hasColumn('menus', 'name')) {
+            $columns[] = 'name';
+        }
+
+        $menu = DB::table('menus')
+            ->select($columns)
             ->where('id', $menuId)
             ->first();
+
+        if ($menu && ! isset($menu->name)) {
+            $menu->name = $this->translatedName('menu_translations', 'menu_id', $menuId);
+        }
+
+        return $menu;
+    }
+
+    private function translatedName(string $table, string $foreignKey, int $id): ?string
+    {
+        if (! Schema::hasTable($table)) {
+            return null;
+        }
+
+        $query = DB::table($table)->where($foreignKey, $id);
+
+        if (Schema::hasColumn($table, 'lang')) {
+            $query->orderByRaw('CASE WHEN lang = ? THEN 0 ELSE 1 END', [app()->getLocale()]);
+        }
+
+        $name = $query->value('name');
+
+        return filled($name) ? (string) $name : null;
+    }
+
+    private function snapshotName(object $snapshot): ?string
+    {
+        return isset($snapshot->name) && filled($snapshot->name)
+            ? (string) $snapshot->name
+            : null;
     }
 
     private function ingredientModifierTotal(array $names): ?float
@@ -534,14 +584,14 @@ class OrderPromotionApplicationService
             ->sum('extra_price'));
     }
 
-    private function affectedItemPayloads(Collection $items, float $discountAmount, float $affectedTotal): array
+    private function affectedItemPayloads(Collection $items, float $discountAmount, float $affectedTotal, Promotion $promotion): array
     {
         $remainingDiscount = $discountAmount;
         $lastIndex = $items->count() - 1;
 
         return $items
             ->values()
-            ->map(function (array $item, int $index) use (&$remainingDiscount, $discountAmount, $affectedTotal, $lastIndex) {
+            ->map(function (array $item, int $index) use (&$remainingDiscount, $discountAmount, $affectedTotal, $lastIndex, $promotion) {
                 $itemDiscount = $index === $lastIndex
                     ? $remainingDiscount
                     : Currency::roundAmount($discountAmount * ($item['line_total'] / $affectedTotal));
@@ -549,24 +599,53 @@ class OrderPromotionApplicationService
                 $itemDiscount = Currency::roundAmount(min($itemDiscount, $item['line_total'], $remainingDiscount));
                 $remainingDiscount = Currency::roundAmount($remainingDiscount - $itemDiscount);
 
-                return array_merge($this->affectedItemPayload($item), [
+                return array_merge($this->affectedItemPayload($item, $promotion), [
                     'discount_amount' => $itemDiscount,
                 ]);
             })
             ->all();
     }
 
-    private function affectedItemPayload(array $item): array
+    private function affectedItemPayload(array $item, ?Promotion $promotion = null): array
     {
-        return [
+        $payload = [
             'type' => $item['type'],
             'id' => $item['id'],
+            'name' => $item['name'] ?? null,
             'category_id' => $item['category_id'],
             'quantity' => $item['quantity'],
             'unit_price' => $item['unit_price'],
             'line_total' => $item['line_total'],
             'applicable_amount' => $item['line_total'],
+            'cart_index' => $item['cart_index'] ?? null,
         ];
+
+        if ($promotion) {
+            $payload['discount_label'] = $this->promotionDiscountLabel($promotion);
+            $payload['promotion_name'] = $promotion->name;
+            $payload['type_discount'] = $promotion->type_discount;
+        }
+
+        return $payload;
+    }
+
+    private function promotionDiscountLabel(Promotion $promotion): ?string
+    {
+        $type = $this->normalize((string) $promotion->type_discount);
+
+        if ($type === 'gift') {
+            return 'Omaggio';
+        }
+
+        if ($type === 'percentage' && $promotion->discount !== null) {
+            return '-' . rtrim(rtrim(number_format((float) $promotion->discount, 2, ',', ''), '0'), ',') . '%';
+        }
+
+        if ($type === 'fixed' && $promotion->discount !== null) {
+            return '-' . Currency::formatCents($promotion->discount);
+        }
+
+        return null;
     }
 
     private function result(

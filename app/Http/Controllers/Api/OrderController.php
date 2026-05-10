@@ -324,12 +324,15 @@ class OrderController extends Controller
 
                 $promotionFormatter = app(PromotionNotificationFormatter::class);
                 $promotionWhatsappText = $promotionFormatter->whatsappTextForOrder($newOrder);
+                $promotionAnnotations = $promotionFormatter->annotationsForOrder($newOrder);
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
                 $order_mess = "";
                 $type_mess = "";
 
-                foreach ($newOrder->menus as $menu) {
+                foreach ($newOrder->menus as $menuIndex => $menu) {
+                    $menuPromotionAnnotation = $promotionFormatter->annotationForItem($promotionAnnotations, 'menu', (int) $menu->id, (int) $menuIndex);
+                    $menuPromotionText = $menuPromotionAnnotation ? ' ' . $menuPromotionAnnotation : '';
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "☞ ";
                     $order_mess .= "☞ ";
@@ -337,8 +340,8 @@ class OrderController extends Controller
                         $info .= "** {$menu->pivot->quantity}* ";
                         $order_mess .= "** {$menu->pivot->quantity}* ";
                     }
-                    $info .= "*```" . $menu->name. "```*";
-                    $order_mess .= "*```" . $menu->name. "```*";
+                    $info .= "*```" . $menu->name. "```*" . $menuPromotionText;
+                    $order_mess .= "*```" . $menu->name. "```*" . $menuPromotionText;
                     // Gestisci le opzioni del prodotto
                     $info .= "\n ```Prodotti:``` " ;
                     $order_mess .= " ```Prodotti:``` " ;
@@ -373,7 +376,9 @@ class OrderController extends Controller
                     $order_mess .= " " . " ";
                 }
 
-                foreach ($newOrder->products as $product) {
+                foreach ($newOrder->products as $productIndex => $product) {
+                    $productPromotionAnnotation = $promotionFormatter->annotationForItem($promotionAnnotations, 'product', (int) $product->id, (int) $productIndex);
+                    $productPromotionText = $productPromotionAnnotation ? ' ' . $productPromotionAnnotation : '';
                     // Aggiungi il nome e la quantità del prodotto
                     $info .= "☞ ";
                     $order_mess .= "☞ ";
@@ -381,8 +386,8 @@ class OrderController extends Controller
                         $info .= "** {$product->pivot->quantity}* ";
                         $order_mess .= "** {$product->pivot->quantity}* ";
                     }
-                    $info .= "*```" . $product->name. "```*";
-                    $order_mess .= "*```" . $product->name. "```*";
+                    $info .= "*```" . $product->name. "```*" . $productPromotionText;
+                    $order_mess .= "*```" . $product->name. "```*" . $productPromotionText;
 
                     // Gestisci le opzioni del prodotto
                     if ($product->pivot->option !== '[]') {

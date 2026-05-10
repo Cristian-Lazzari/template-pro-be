@@ -109,6 +109,42 @@ class CustomerOfferControllerTest extends TestCase
         $this->assertSame([$expired->id], array_column($response->json('expired'), 'id'));
     }
 
+    public function test_auth_offers_can_show_used_history_and_fresh_available_assignment_for_reusable_promotion(): void
+    {
+        $customer = $this->createCustomer('offers-reusable@example.com');
+        $categoryId = $this->createCategory('Promozioni riutilizzabili');
+        $productId = $this->createProduct($categoryId, 'Prodotto riutilizzabile', 10);
+        $promotion = $this->createPromotion([
+            'name' => 'Promo riutilizzabile',
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'metadata' => [
+                'reusable' => true,
+            ],
+        ]);
+
+        $this->createTarget($promotion, PromotionTarget::TYPE_PRODUCT, $productId);
+
+        $used = $this->assignPromotion($customer, $promotion, [
+            'status' => 'used',
+            'promo_used' => now(),
+        ]);
+        $available = $this->assignPromotion($customer, $promotion, [
+            'metadata' => [
+                'reusable_parent_id' => $used->id,
+                'source' => 'reusable_promotion',
+            ],
+        ]);
+
+        $response = $this->getJson('/api/auth/offers', $this->authHeaders($customer))
+            ->assertOk();
+
+        $this->assertSame([$available->id], array_column($response->json('available'), 'customer_promotion_id'));
+        $this->assertSame([$used->id], array_column($response->json('used'), 'customer_promotion_id'));
+        $this->assertSame($promotion->id, $response->json('available.0.promotion_id'));
+        $this->assertSame($promotion->id, $response->json('used.0.promotion_id'));
+    }
+
     private function authHeaders(Customer $customer): array
     {
         return [

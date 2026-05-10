@@ -97,10 +97,13 @@ class StripeWebhookController extends Controller
         
         $promotionFormatter = app(PromotionNotificationFormatter::class);
         $promotionWhatsappText = $promotionFormatter->whatsappTextForOrder($order);
+        $promotionAnnotations = $promotionFormatter->annotationsForOrder($order);
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
-        foreach ($order->menus as $menu) {
+        foreach ($order->menus as $menuIndex => $menu) {
+            $menuPromotionAnnotation = $promotionFormatter->annotationForItem($promotionAnnotations, 'menu', (int) $menu->id, (int) $menuIndex);
+            $menuPromotionText = $menuPromotionAnnotation ? ' ' . $menuPromotionAnnotation : '';
             // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
             $order_mess .= "☞ ";
@@ -108,8 +111,8 @@ class StripeWebhookController extends Controller
                 $info .= "** {$menu->pivot->quantity}* ";
                 $order_mess .= "** {$menu->pivot->quantity}* ";
             }
-            $info .= "*```" . $menu->name. "```*";
-            $order_mess .= "*```" . $menu->name. "```*";
+            $info .= "*```" . $menu->name. "```*" . $menuPromotionText;
+            $order_mess .= "*```" . $menu->name. "```*" . $menuPromotionText;
             // Gestisci le opzioni del prodotto
             $info .= "\n ```Prodotti:``` " ;
             $order_mess .= " ```Prodotti:``` " ;
@@ -143,7 +146,9 @@ class StripeWebhookController extends Controller
             $info .= " \n\n";
             $order_mess .= " " . " ";
         }
-        foreach ($order->products as $product) {
+        foreach ($order->products as $productIndex => $product) {
+            $productPromotionAnnotation = $promotionFormatter->annotationForItem($promotionAnnotations, 'product', (int) $product->id, (int) $productIndex);
+            $productPromotionText = $productPromotionAnnotation ? ' ' . $productPromotionAnnotation : '';
             // Aggiungi il nome e la quantità del prodotto
             $info .= "☞ ";
             $order_mess .= "☞ ";
@@ -151,8 +156,8 @@ class StripeWebhookController extends Controller
                 $info .= "** {$product->pivot->quantity}* ";
                 $order_mess .= "** {$product->pivot->quantity}* ";
             }
-            $info .= "*```" . $product->name. "```*";
-            $order_mess .= "*```" . $product->name. "```*";
+            $info .= "*```" . $product->name. "```*" . $productPromotionText;
+            $order_mess .= "*```" . $product->name. "```*" . $productPromotionText;
 
             // Gestisci le opzioni del prodotto
             if ($product->pivot->option !== '[]') {

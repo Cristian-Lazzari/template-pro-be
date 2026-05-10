@@ -71,6 +71,109 @@ class OrderPromotionCheckoutTest extends TestCase
         $this->assertSame('order_checkout', $customerPromotion->metadata['applied_from'] ?? null);
         $this->assertEquals(20.0, $customerPromotion->metadata['subtotal_before_discount'] ?? null);
         $this->assertEquals(15.0, $customerPromotion->metadata['total_after_discount'] ?? null);
+        $this->assertSame(1, CustomerPromotion::query()
+            ->where('customer_id', $customer->id)
+            ->where('promotion_id', $promotion->id)
+            ->count());
+    }
+
+    public function test_reusable_order_customer_promotion_creates_fresh_available_assignment_after_use(): void
+    {
+        $customer = $this->createCustomer('reusable-order-promo@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 20);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'metadata' => [
+                'reusable' => true,
+            ],
+        ], [
+            ['type' => PromotionTarget::TYPE_PRODUCT, 'id' => $productId],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+        $slot = $this->availableSlot();
+
+        $response = $this->actingAsCustomer($customer)
+            ->postJson('/api/orders', $this->orderPayload($customer, $slot, [
+                'customer_promotion_id' => $customerPromotion->id,
+                'cart' => $this->cart([
+                    $this->cartProduct($productId),
+                ]),
+            ]));
+
+        $response->assertOk()->assertJson(['success' => true]);
+
+        $order = Order::query()->firstOrFail();
+        $customerPromotion->refresh();
+        $freshCustomerPromotion = CustomerPromotion::query()
+            ->where('customer_id', $customer->id)
+            ->where('promotion_id', $promotion->id)
+            ->where('id', '!=', $customerPromotion->id)
+            ->sole();
+
+        $this->assertSame($order->id, $customerPromotion->order_id);
+        $this->assertNotNull($customerPromotion->promo_used);
+        $this->assertSame('used', $customerPromotion->status);
+        $this->assertSame($freshCustomerPromotion->id, $customerPromotion->metadata['reusable_recreated_customer_promotion_id'] ?? null);
+
+        $this->assertNull($freshCustomerPromotion->order_id);
+        $this->assertNull($freshCustomerPromotion->reservation_id);
+        $this->assertNull($freshCustomerPromotion->promo_used);
+        $this->assertNull($freshCustomerPromotion->discount_amount);
+        $this->assertSame('assigned', $freshCustomerPromotion->status);
+        $this->assertNotSame($customerPromotion->tracking_token, $freshCustomerPromotion->tracking_token);
+        $this->assertSame($customerPromotion->id, $freshCustomerPromotion->metadata['reusable_parent_id'] ?? null);
+        $this->assertSame('reusable_promotion', $freshCustomerPromotion->metadata['source'] ?? null);
+        $this->assertNotEmpty($freshCustomerPromotion->metadata['recreated_after_use_at'] ?? null);
+
+        $offersResponse = $this->getJson('/api/auth/offers')->assertOk();
+
+        $this->assertSame([$freshCustomerPromotion->id], array_column($offersResponse->json('available'), 'customer_promotion_id'));
+        $this->assertSame([$customerPromotion->id], array_column($offersResponse->json('used'), 'customer_promotion_id'));
+    }
+
+    public function test_mark_used_reusable_customer_promotion_is_idempotent(): void
+    {
+        $customer = $this->createCustomer('reusable-idempotent@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 20);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'metadata' => [
+                'reusable' => true,
+            ],
+        ], [
+            ['type' => PromotionTarget::TYPE_PRODUCT, 'id' => $productId],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+        $service = app(CustomerPromotionService::class);
+
+        $firstResult = $service->markUsed($customerPromotion, 5.0, null, null, [
+            'affected_items' => [
+                ['type' => 'product', 'id' => $productId],
+            ],
+        ]);
+        $firstFreshId = $firstResult->metadata['reusable_recreated_customer_promotion_id'] ?? null;
+
+        $secondResult = $service->markUsed($customerPromotion->fresh(), 5.0, null, null, [
+            'affected_items' => [
+                ['type' => 'product', 'id' => $productId],
+            ],
+        ]);
+
+        $this->assertSame(2, CustomerPromotion::query()
+            ->where('customer_id', $customer->id)
+            ->where('promotion_id', $promotion->id)
+            ->count());
+        $this->assertSame($firstFreshId, $secondResult->metadata['reusable_recreated_customer_promotion_id'] ?? null);
+        $this->assertSame(1, CustomerPromotion::query()
+            ->where('customer_id', $customer->id)
+            ->where('promotion_id', $promotion->id)
+            ->whereNull('promo_used')
+            ->where('status', '!=', 'used')
+            ->count());
     }
 
     public function test_order_without_promotion_keeps_total_unchanged(): void
@@ -316,14 +419,14 @@ class OrderPromotionCheckoutTest extends TestCase
         return $promotion->load('targets');
     }
 
-    private function assignPromotion(Customer $customer, Promotion $promotion): CustomerPromotion
+    private function assignPromotion(Customer $customer, Promotion $promotion, array $attributes = []): CustomerPromotion
     {
-        return CustomerPromotion::query()->create([
+        return CustomerPromotion::query()->create(array_merge([
             'customer_id' => $customer->id,
             'promotion_id' => $promotion->id,
             'tracking_token' => (string) Str::uuid(),
             'status' => 'assigned',
-        ]);
+        ], $attributes));
     }
 
     private function cart(array $products = [], array $menus = []): array

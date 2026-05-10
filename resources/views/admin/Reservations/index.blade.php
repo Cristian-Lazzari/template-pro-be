@@ -60,6 +60,9 @@
     <div id="res-list" class="time-list res_index">
     
         @foreach ($reservations as $res)
+            @php
+                $promotionSummary = $res->promotion_summary ?? ['has_promotion' => false];
+            @endphp
         
             <div class="res-item
                 @if(in_array($res->status, [0, 6])) 
@@ -110,6 +113,13 @@
                     @endif
                     @if (isset($res->tot_price))
                         <div class="price">{{ \App\Support\Currency::formatCents($res->tot_price) }}</div>
+                    @endif
+
+                    @if ($promotionSummary['has_promotion'] ?? false)
+                        <div class="promo status paid" title="{{ $promotionSummary['name'] ?? 'Promozione applicata' }}">
+                            <i class="bi bi-gift-fill"></i>
+                            {{ $promotionSummary['badge_label'] ?? 'Promo' }}
+                        </div>
                     @endif
 
                     

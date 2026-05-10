@@ -123,6 +123,7 @@
         :note="$order->message"
         :sent-at="\Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y')"
         :marketing="$order->news_letter ? 'si' : 'no'"
+        :promotions="$promotionDetails"
     >
         @if (in_array($order->status, [0, 2, 3]))
             <button type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" class="w-100 my_btn_3">{{ __('admin.Conferma') }}</button>

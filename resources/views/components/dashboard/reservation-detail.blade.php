@@ -12,12 +12,14 @@
     'note' => null,
     'sentAt' => null,
     'marketing' => null,
+    'promotions' => [],
 ])
 
 @php
     $status = (int) $status;
     $adults = (int) $adults;
     $children = (int) $children;
+    $promotions = collect($promotions)->filter();
 
     $statusMap = [
         0 => ['label' => 'Annullata', 'tone' => 'off'],
@@ -134,6 +136,63 @@
                 @endif
             </div>
         </section>
+
+        @if ($promotions->isNotEmpty())
+            <section class="order-detail__section">
+                <div class="order-detail__section-head">
+                    <h3>
+                        <span class="order-detail__section-icon">
+                            <i class="bi bi-gift-fill"></i>
+                        </span>
+                        Promozione prenotazione
+                    </h3>
+                </div>
+
+                <div class="order-detail__items">
+                    @foreach ($promotions as $promotion)
+                        <article class="order-detail__item">
+                            <div class="order-detail__item-top">
+                                <span class="order-detail__qty">Promo</span>
+                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? 'Promozione' }}</strong>
+                                <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
+                            </div>
+
+                            <div class="order-detail__detail-groups">
+                                @foreach ([
+                                    ['label' => 'Tipo', 'value' => $promotion['type_label'] ?? null],
+                                    ['label' => 'Customer promotion', 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
+                                ] as $row)
+                                    @if (!blank($row['value']))
+                                        <div class="order-detail__detail-group">
+                                            <span>{{ $row['label'] }}</span>
+                                            <div class="order-detail__detail-values">
+                                                <small>{{ $row['value'] }}</small>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+
+                                @if (!empty($promotion['affected_items']))
+                                    <div class="order-detail__detail-group">
+                                        <span>Dettagli promo</span>
+                                        <div class="order-detail__detail-values">
+                                            @foreach ($promotion['affected_items'] as $affectedItem)
+                                                <small>
+                                                    {{ $affectedItem['label'] ?? 'Elemento' }}
+                                                    @if (!empty($affectedItem['details']))
+                                                        · {{ implode(' · ', $affectedItem['details']) }}
+                                                    @endif
+                                                </small>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         @if ($note)
             <section class="order-detail__section order-detail__note">

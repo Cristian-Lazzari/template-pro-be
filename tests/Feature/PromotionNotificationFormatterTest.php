@@ -84,12 +84,113 @@ class PromotionNotificationFormatterTest extends TestCase
         $this->assertSame('Promozione tavolo attivata: Calice al tavolo', $formatted[0]['label']);
     }
 
+    public function test_order_product_fixed_discount_produces_line_annotation(): void
+    {
+        $customer = $this->createCustomer('notification-annotation-fixed@example.com');
+        $order = $this->createOrder($customer, 20.0);
+        $promotion = $this->createPromotion([
+            'name' => 'Cinque euro',
+            'case_use' => 'take_away',
+            'type_discount' => 'fixed',
+            'discount' => 5,
+        ]);
+
+        $this->assignPromotion($customer, $promotion, [
+            'order_id' => $order->id,
+            'discount_amount' => 5,
+            'promo_used' => now(),
+            'status' => 'used',
+            'metadata' => [
+                'affected_items' => [
+                    [
+                        'type' => 'product',
+                        'id' => 123,
+                        'name' => 'Margherita',
+                        'quantity' => 1,
+                        'discount_amount' => 5,
+                        'cart_index' => 0,
+                    ],
+                ],
+            ],
+        ]);
+
+        $annotations = $this->formatter()->annotationsForOrder($order);
+
+        $this->assertSame('🎁 con promozione -€5,00', $this->formatter()->annotationForItem($annotations, 'product', 123));
+        $this->assertSame('🎁 con promozione -€5,00', $this->formatter()->annotationForItem($annotations, 'product', 123, 0));
+    }
+
+    public function test_order_gift_discount_produces_omaggio_annotation(): void
+    {
+        $customer = $this->createCustomer('notification-annotation-gift@example.com');
+        $order = $this->createOrder($customer, 12.0);
+        $promotion = $this->createPromotion([
+            'name' => 'Dolce omaggio',
+            'case_use' => 'take_away',
+            'type_discount' => 'gift',
+            'discount' => 0,
+        ]);
+
+        $this->assignPromotion($customer, $promotion, [
+            'order_id' => $order->id,
+            'discount_amount' => 4,
+            'promo_used' => now(),
+            'status' => 'used',
+            'metadata' => [
+                'affected_items' => [
+                    [
+                        'type' => 'product',
+                        'id' => 456,
+                        'name' => 'Tiramisù',
+                        'quantity' => 1,
+                        'discount_amount' => 4,
+                        'gift_quantity' => 1,
+                    ],
+                ],
+            ],
+        ]);
+
+        $annotations = $this->formatter()->annotationsForOrder($order);
+
+        $this->assertSame('🎁 Omaggio', $this->formatter()->annotationForItem($annotations, 'product', 456));
+    }
+
+    public function test_reservation_whatsapp_text_mentions_active_reservation_promotion(): void
+    {
+        $customer = $this->createCustomer('notification-reservation-whatsapp@example.com');
+        $reservation = $this->createReservation($customer);
+        $promotion = $this->createPromotion([
+            'name' => 'Aperitivo tavolo',
+            'case_use' => 'table',
+            'type_discount' => 'gift',
+            'discount' => 0,
+        ]);
+
+        $this->assignPromotion($customer, $promotion, [
+            'reservation_id' => $reservation->id,
+            'discount_amount' => 0,
+            'promo_used' => now(),
+            'status' => 'used',
+            'metadata' => [
+                'affected_items' => [
+                    ['type' => 'reservation', 'gift_benefit' => true],
+                ],
+            ],
+        ]);
+
+        $text = $this->formatter()->whatsappTextForReservation($reservation);
+
+        $this->assertStringContainsString('🎁 Promozione prenotazione: Aperitivo tavolo', $text);
+        $this->assertStringNotContainsString('Sconto 0', $text);
+    }
+
     public function test_formatter_returns_empty_array_without_applied_promotion(): void
     {
         $customer = $this->createCustomer('notification-empty@example.com');
         $order = $this->createOrder($customer, 30.0);
 
         $this->assertSame([], $this->formatter()->forOrder($order));
+        $this->assertSame([], $this->formatter()->annotationsForOrder($order));
     }
 
     private function formatter(): PromotionNotificationFormatter

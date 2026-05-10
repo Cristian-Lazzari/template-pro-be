@@ -19,6 +19,7 @@ use App\Models\Product;
 use App\Models\Promotion;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Services\Marketing\PromotionNotificationFormatter;
 use App\Support\Currency;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -203,8 +204,9 @@ class PageController extends Controller
         return view('admin.dashboard', compact('calendar', 'notify','property_adv'));
     }
     private function get_res(){
+        $promotionFormatter = app(PromotionNotificationFormatter::class);
 
-        $reservations = DB::table('reservations')
+        $reservations = Reservation::query()
             ->select(
                 'name',
                 'surname',
@@ -218,6 +220,7 @@ class PageController extends Controller
             ->where('status', '!=', 4) // 👈 controllo aggiunto
             ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
+            ->with('customerPromotions.promotion')
         ->get();
         $orders = Order::select(
                 'name',
@@ -232,8 +235,24 @@ class PageController extends Controller
             ->where('status', '!=', 4) // 👈 controllo aggiunto
             ->orderByRaw("DATE(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
             ->orderByRaw("TIME(STR_TO_DATE(date_slot, '%d/%m/%Y %H:%i')) ASC")
-            ->with(['products', 'menus']) // 👈 carico anche i prodotti e i menu
+            ->with(['products', 'menus', 'customerPromotions.promotion']) // 👈 carico anche i prodotti e i menu
         ->get();
+
+        $reservations->each(function (Reservation $reservation) use ($promotionFormatter) {
+            $reservation->setAttribute(
+                'promotion_summary',
+                $this->dashboardPromotionSummary($promotionFormatter->forReservation($reservation), false)
+            );
+            $reservation->unsetRelation('customerPromotions');
+        });
+
+        $orders->each(function (Order $order) use ($promotionFormatter) {
+            $order->setAttribute(
+                'promotion_summary',
+                $this->dashboardPromotionSummary($promotionFormatter->forOrder($order), true, $order->tot_price)
+            );
+            $order->unsetRelation('customerPromotions');
+        });
 
         
         $reserved = [];
@@ -246,6 +265,29 @@ class PageController extends Controller
             $reserved[$r->day]['or'][] = $day;
         }
         return $reserved;
+    }
+
+    private function dashboardPromotionSummary(array $promotions, bool $order, ?float $total = null): array
+    {
+        if ($promotions === []) {
+            return [
+                'has_promotion' => false,
+            ];
+        }
+
+        $promotion = $promotions[0];
+        $discountAmount = (float) ($promotion['discount_amount'] ?? 0);
+
+        return [
+            'has_promotion' => true,
+            'name' => $promotion['promotion_name'] ?? 'Promozione',
+            'type_label' => $promotion['type_label'] ?? 'Promozione',
+            'discount_label' => $discountAmount > 0 ? 'Sconto ' . Currency::formatCents($discountAmount) : null,
+            'total_label' => $order && $total !== null ? Currency::formatCents($total) : null,
+            'badge_label' => $order
+                ? ($discountAmount > 0 ? 'Sconto ' . Currency::formatCents($discountAmount) : 'Promo')
+                : 'Promo prenotazione',
+        ];
     }
     private function get_date(){
         $reserved = $this->get_res();

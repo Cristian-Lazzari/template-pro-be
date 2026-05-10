@@ -8,10 +8,13 @@ use Stripe\Refund;
 use Stripe\Stripe;
 use App\Models\Date;
 use App\Models\Order;
+use App\Models\CustomerPromotion;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Ingredient;
 use App\Models\OrderProduct;
+use App\Services\Marketing\PromotionNotificationFormatter;
+use App\Support\Currency;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use Illuminate\Support\Facades\Log;
@@ -193,7 +196,9 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::where('id', $id)->with('products', 'menus.products.category')->firstOrFail();
+        $order = Order::where('id', $id)
+            ->with('products', 'menus.products.category', 'customerPromotions.promotion')
+            ->firstOrFail();
         $cart_price = 0;
         $delivery_cost = 0;
         foreach ($order->products as $o) {
@@ -237,12 +242,122 @@ class OrderController extends Controller
             $times_interval = intval($adv['times_interval'] ?? $times_interval);
         }
 
-        return view('admin.Orders.show', compact('order', 'delivery_cost', 'times_start', 'times_end', 'times_interval'));
+        $promotionDetails = $this->orderPromotionDetails($order, app(PromotionNotificationFormatter::class));
+
+        return view('admin.Orders.show', compact('order', 'delivery_cost', 'times_start', 'times_end', 'times_interval', 'promotionDetails'));
     }
 
     public function destroy($id)
     {
         //
+    }
+
+    private function orderPromotionDetails(Order $order, PromotionNotificationFormatter $formatter): array
+    {
+        $formattedPromotions = collect($formatter->forOrder($order))->keyBy('customer_promotion_id');
+        $itemNames = [
+            'product' => $order->products->pluck('name', 'id')->all(),
+            'menu' => $order->menus->pluck('name', 'id')->all(),
+        ];
+
+        return $order->customerPromotions
+            ->filter(fn (CustomerPromotion $customerPromotion) => (int) $customerPromotion->order_id === (int) $order->getKey())
+            ->map(function (CustomerPromotion $customerPromotion) use ($formattedPromotions, $itemNames, $order) {
+                $formatted = $formattedPromotions->get($customerPromotion->getKey(), []);
+                $metadata = is_array($customerPromotion->metadata) ? $customerPromotion->metadata : [];
+                $affectedItems = $formatted['affected_items'] ?? ($metadata['affected_items'] ?? []);
+                $discountAmount = (float) (
+                    $customerPromotion->discount_amount
+                    ?? ($formatted['discount_amount'] ?? ($metadata['discount_amount'] ?? 0))
+                );
+
+                return [
+                    'customer_promotion_id' => $customerPromotion->getKey(),
+                    'status' => $this->customerPromotionStatusLabel($customerPromotion->status),
+                    'name' => $formatted['promotion_name']
+                        ?? $customerPromotion->promotion?->name
+                        ?? 'Promozione #' . $customerPromotion->promotion_id,
+                    'type_label' => $formatted['type_label']
+                        ?? $this->promotionTypeLabel($customerPromotion->promotion?->type_discount),
+                    'discount_amount_label' => $discountAmount > 0 ? Currency::formatCents($discountAmount) : null,
+                    'subtotal_before_discount_label' => array_key_exists('subtotal_before_discount', $metadata)
+                        ? Currency::formatCents($metadata['subtotal_before_discount'])
+                        : null,
+                    'subtotal_after_discount_label' => array_key_exists('subtotal_after_discount', $metadata)
+                        ? Currency::formatCents($metadata['subtotal_after_discount'])
+                        : null,
+                    'total_after_discount_label' => array_key_exists('total_after_discount', $metadata)
+                        ? Currency::formatCents($metadata['total_after_discount'])
+                        : Currency::formatCents($order->tot_price),
+                    'affected_items' => $this->formatAffectedItems(is_array($affectedItems) ? $affectedItems : [], $itemNames),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    private function formatAffectedItems(array $items, array $itemNames = []): array
+    {
+        return collect($items)
+            ->map(function (array $item) use ($itemNames) {
+                $type = (string) ($item['type'] ?? '');
+                $id = $item['id'] ?? null;
+                $label = match ($type) {
+                    'product' => 'Prodotto',
+                    'menu' => 'Menu',
+                    'category' => 'Categoria',
+                    'reservation' => 'Prenotazione',
+                    default => ucfirst($type ?: 'Elemento'),
+                };
+                $name = $item['name'] ?? ($id !== null ? ($itemNames[$type][$id] ?? null) : null);
+                $title = $name ? $label . ': ' . $name : ($id !== null ? $label . ' #' . $id : $label);
+                $details = [];
+
+                if (! empty($item['quantity'])) {
+                    $details[] = 'x' . $item['quantity'];
+                }
+
+                if (! empty($item['line_total'])) {
+                    $details[] = 'base ' . Currency::formatCents($item['line_total']);
+                }
+
+                if (! empty($item['discount_amount'])) {
+                    $details[] = 'sconto ' . Currency::formatCents($item['discount_amount']);
+                }
+
+                if (! empty($item['gift_quantity'])) {
+                    $details[] = 'omaggio x' . $item['gift_quantity'];
+                }
+
+                return [
+                    'label' => $title,
+                    'details' => $details,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    private function customerPromotionStatusLabel(?string $status): string
+    {
+        return match ($status) {
+            'assigned' => 'Assegnata',
+            'sent' => 'Inviata',
+            'opened' => 'Aperta',
+            'clicked' => 'Cliccata',
+            'used' => 'Usata',
+            default => $status ?: 'n/d',
+        };
+    }
+
+    private function promotionTypeLabel(?string $type): string
+    {
+        return match ($type) {
+            'fixed' => 'Sconto fisso',
+            'percentage' => 'Sconto percentuale',
+            'gift' => 'Omaggio',
+            default => $type ?: 'Promozione',
+        };
     }
     
     public function changetime(Request $request){

@@ -45,6 +45,50 @@ class PromotionNotificationFormatter
         return implode("\n", $lines);
     }
 
+    public function annotationsForOrder(Order $order): array
+    {
+        $annotations = [];
+
+        foreach ($this->forOrder($order) as $promotion) {
+            foreach ($promotion['affected_items'] ?? [] as $affectedItem) {
+                $type = (string) ($affectedItem['type'] ?? '');
+                $id = $affectedItem['id'] ?? null;
+
+                if ($type === '' || $id === null) {
+                    continue;
+                }
+
+                $annotation = $this->annotationLabel($promotion, $affectedItem);
+
+                if ($annotation === null) {
+                    continue;
+                }
+
+                $baseKey = $this->annotationKey($type, $id);
+                $annotations[$baseKey] ??= $annotation;
+
+                if (array_key_exists('cart_index', $affectedItem) && $affectedItem['cart_index'] !== null) {
+                    $annotations[$this->annotationKey($type, $id, (int) $affectedItem['cart_index'])] = $annotation;
+                }
+            }
+        }
+
+        return $annotations;
+    }
+
+    public function annotationForItem(array $annotations, string $type, int $id, ?int $cartIndex = null): ?string
+    {
+        if ($cartIndex !== null) {
+            $cartKey = $this->annotationKey($type, $id, $cartIndex);
+
+            if (isset($annotations[$cartKey])) {
+                return $annotations[$cartKey];
+            }
+        }
+
+        return $annotations[$this->annotationKey($type, $id)] ?? null;
+    }
+
     public function whatsappTextForReservation(Reservation $reservation): ?string
     {
         $promotions = $this->forReservation($reservation);
@@ -83,7 +127,7 @@ class PromotionNotificationFormatter
         $promotionName = $promotion?->name ?: 'Promozione #' . $customerPromotion->promotion_id;
         $typeDiscount = (string) ($promotion?->type_discount ?? '');
         $discountAmount = (float) ($customerPromotion->discount_amount ?? 0);
-        $affectedItems = $this->affectedItems($customerPromotion);
+        $affectedItems = $this->affectedItems($customerPromotion, $promotionName, $typeDiscount, $promotion?->discount);
 
         return [
             'customer_promotion_id' => $customerPromotion->getKey(),
@@ -98,8 +142,12 @@ class PromotionNotificationFormatter
         ];
     }
 
-    private function affectedItems(CustomerPromotion $customerPromotion): array
-    {
+    private function affectedItems(
+        CustomerPromotion $customerPromotion,
+        string $promotionName,
+        string $typeDiscount,
+        mixed $promotionDiscount
+    ): array {
         $metadata = $customerPromotion->metadata;
 
         if (! is_array($metadata)) {
@@ -108,7 +156,87 @@ class PromotionNotificationFormatter
 
         $affectedItems = $metadata['affected_items'] ?? [];
 
-        return is_array($affectedItems) ? $affectedItems : [];
+        if (! is_array($affectedItems)) {
+            return [];
+        }
+
+        return collect($affectedItems)
+            ->filter(fn ($item) => is_array($item))
+            ->map(function (array $item) use ($promotionName, $typeDiscount, $promotionDiscount) {
+                $item['promotion_name'] ??= $promotionName;
+                $item['type_discount'] ??= $typeDiscount;
+                $item['discount_label'] ??= $this->discountLabel($typeDiscount, $promotionDiscount, $item['discount_amount'] ?? null);
+
+                return $item;
+            })
+            ->values()
+            ->all();
+    }
+
+    private function annotationLabel(array $promotion, array $affectedItem): ?string
+    {
+        $typeDiscount = (string) ($affectedItem['type_discount'] ?? ($promotion['type_discount'] ?? ''));
+
+        if ($typeDiscount === 'gift' || ! empty($affectedItem['gift_quantity'])) {
+            return '🎁 Omaggio';
+        }
+
+        if ($typeDiscount === 'percentage') {
+            $label = $affectedItem['discount_label'] ?? null;
+
+            if (is_string($label) && str_contains($label, '%')) {
+                return '🎁 con promozione ' . $this->ensureNegativeLabel($label);
+            }
+
+            return '🎁 con promozione';
+        }
+
+        $discountAmount = (float) ($affectedItem['discount_amount'] ?? 0);
+
+        if ($discountAmount > 0) {
+            return '🎁 con promozione -' . Currency::formatCents($discountAmount);
+        }
+
+        $label = $affectedItem['discount_label'] ?? null;
+
+        if (is_string($label) && filled($label)) {
+            return '🎁 con promozione ' . $this->ensureNegativeLabel($label);
+        }
+
+        return '🎁 con promozione';
+    }
+
+    private function annotationKey(string $type, mixed $id, ?int $cartIndex = null): string
+    {
+        $key = $type . ':' . $id;
+
+        return $cartIndex === null ? $key : $key . ':' . $cartIndex;
+    }
+
+    private function discountLabel(string $typeDiscount, mixed $promotionDiscount, mixed $itemDiscount = null): ?string
+    {
+        if ($typeDiscount === 'gift') {
+            return 'Omaggio';
+        }
+
+        if ($typeDiscount === 'percentage' && $promotionDiscount !== null) {
+            return '-' . rtrim(rtrim(number_format((float) $promotionDiscount, 2, ',', ''), '0'), ',') . '%';
+        }
+
+        $discount = $itemDiscount ?? $promotionDiscount;
+
+        if ($typeDiscount === 'fixed' && $discount !== null && (float) $discount > 0) {
+            return '-' . Currency::formatCents((float) $discount);
+        }
+
+        return null;
+    }
+
+    private function ensureNegativeLabel(string $label): string
+    {
+        $label = trim($label);
+
+        return str_starts_with($label, '-') ? $label : '-' . $label;
     }
 
     private function label(string $promotionName, string $typeDiscount, float $discountAmount, bool $reservation): string

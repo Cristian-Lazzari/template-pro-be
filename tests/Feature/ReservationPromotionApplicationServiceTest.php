@@ -5,8 +5,11 @@ namespace Tests\Feature;
 use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
+use App\Services\Marketing\CustomerPromotionService;
 use App\Services\Marketing\ReservationPromotionApplicationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -89,6 +92,55 @@ class ReservationPromotionApplicationServiceTest extends TestCase
         $this->assertSame('minimum_not_reached', $result['reason']);
     }
 
+    public function test_reusable_table_promotion_creates_fresh_assignment_after_reservation_use(): void
+    {
+        $customer = $this->createCustomer('reservation-reusable@example.com');
+        $promotion = $this->createPromotion([
+            'case_use' => 'table',
+            'type_discount' => 'gift',
+            'metadata' => [
+                'reusable' => true,
+            ],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+        $result = $this->service()->evaluate($customer, $customerPromotion->id, [
+            'n_adult' => 2,
+            'n_child' => 1,
+            'date_slot' => '10/05/2026 20:00',
+        ]);
+        $reservationId = $this->createReservation($customer);
+
+        app(CustomerPromotionService::class)->markUsed(
+            $result['customer_promotion'],
+            0.0,
+            null,
+            $reservationId,
+            [
+                'applied_from' => 'reservation_checkout',
+                'affected_items' => $result['affected_items'],
+            ]
+        );
+
+        $customerPromotion->refresh();
+        $freshCustomerPromotion = CustomerPromotion::query()
+            ->where('customer_id', $customer->id)
+            ->where('promotion_id', $promotion->id)
+            ->where('id', '!=', $customerPromotion->id)
+            ->sole();
+
+        $this->assertSame($reservationId, $customerPromotion->reservation_id);
+        $this->assertNotNull($customerPromotion->promo_used);
+        $this->assertSame('used', $customerPromotion->status);
+        $this->assertSame($freshCustomerPromotion->id, $customerPromotion->metadata['reusable_recreated_customer_promotion_id'] ?? null);
+
+        $this->assertNull($freshCustomerPromotion->reservation_id);
+        $this->assertNull($freshCustomerPromotion->order_id);
+        $this->assertNull($freshCustomerPromotion->promo_used);
+        $this->assertSame('assigned', $freshCustomerPromotion->status);
+        $this->assertSame($customerPromotion->id, $freshCustomerPromotion->metadata['reusable_parent_id'] ?? null);
+        $this->assertSame('reusable_promotion', $freshCustomerPromotion->metadata['source'] ?? null);
+    }
+
     private function service(): ReservationPromotionApplicationService
     {
         return app(ReservationPromotionApplicationService::class);
@@ -128,5 +180,31 @@ class ReservationPromotionApplicationServiceTest extends TestCase
             'tracking_token' => (string) Str::uuid(),
             'status' => 'assigned',
         ], $attributes));
+    }
+
+    private function createReservation(Customer $customer): int
+    {
+        $now = now();
+        $attributes = [
+            'customer_id' => $customer->id,
+            'date_slot' => '10/05/2026 20:00',
+            'status' => 2,
+            'name' => $customer->name,
+            'surname' => $customer->surname,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+            'n_person' => json_encode(['adult' => 2, 'child' => 1]),
+            'sala' => null,
+            'message' => null,
+            'whatsapp_message_id' => null,
+            'news_letter' => false,
+            'notificated' => false,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ];
+
+        $columns = array_flip(Schema::getColumnListing('reservations'));
+
+        return (int) DB::table('reservations')->insertGetId(array_intersect_key($attributes, $columns));
     }
 }

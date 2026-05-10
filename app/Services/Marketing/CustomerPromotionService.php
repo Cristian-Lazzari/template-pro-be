@@ -9,6 +9,7 @@ use App\Models\CustomerPromotion;
 use App\Models\Promotion;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -199,10 +200,108 @@ class CustomerPromotionService
 
             if ($wasUnused) {
                 $customerPromotion->promotion()->increment('total_used');
+                $this->recreateReusableAssignment($customerPromotion);
             }
 
             return $customerPromotion->refresh();
         });
+    }
+
+    private function recreateReusableAssignment(CustomerPromotion $usedCustomerPromotion): ?CustomerPromotion
+    {
+        $usedCustomerPromotion->loadMissing('promotion');
+        $promotion = $usedCustomerPromotion->promotion;
+
+        if (! $promotion || ! $promotion->isReusable()) {
+            return null;
+        }
+
+        $existing = $this->openReusableAssignmentQuery($usedCustomerPromotion)
+            ->where($usedCustomerPromotion->getKeyName(), '!=', $usedCustomerPromotion->getKey())
+            ->lockForUpdate()
+            ->first();
+
+        if ($existing) {
+            $this->rememberReusableAssignment($usedCustomerPromotion, $existing);
+
+            return $existing;
+        }
+
+        $now = now();
+        $metadata = [
+            'reusable_parent_id' => $usedCustomerPromotion->getKey(),
+            'recreated_after_use_at' => $now->toISOString(),
+            'source' => 'reusable_promotion',
+        ];
+
+        $attributes = [
+            'customer_id' => $usedCustomerPromotion->customer_id,
+            'promotion_id' => $usedCustomerPromotion->promotion_id,
+            'campaign_id' => $usedCustomerPromotion->campaign_id,
+            'automation_id' => $usedCustomerPromotion->automation_id,
+            'tracking_token' => $this->makeTrackingToken(),
+            'status' => self::STATUS_ASSIGNED,
+            'metadata' => $metadata,
+        ];
+
+        if (Schema::hasColumn('customer_promotion', 'code')) {
+            $attributes['code'] = $usedCustomerPromotion->getAttribute('code');
+        }
+
+        if (Schema::hasColumn('customer_promotion', 'expires_at')) {
+            $expiresAt = $usedCustomerPromotion->getAttribute('expires_at')
+                ?: ($promotion->isPermanent() ? null : $promotion->expiring_at);
+
+            if ($expiresAt) {
+                $attributes['expires_at'] = $expiresAt;
+            }
+        }
+
+        $newCustomerPromotion = new CustomerPromotion();
+        $newCustomerPromotion->forceFill($attributes);
+        $newCustomerPromotion->save();
+
+        $this->rememberReusableAssignment($usedCustomerPromotion, $newCustomerPromotion);
+
+        return $newCustomerPromotion;
+    }
+
+    private function openReusableAssignmentQuery(CustomerPromotion $customerPromotion): Builder
+    {
+        $query = CustomerPromotion::query()
+            ->where('customer_id', $customerPromotion->customer_id)
+            ->where('promotion_id', $customerPromotion->promotion_id)
+            ->whereNull('promo_used')
+            ->where(function (Builder $query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', self::STATUS_USED);
+            });
+
+        $this->whereNullableKey($query, 'campaign_id', $customerPromotion->campaign_id);
+        $this->whereNullableKey($query, 'automation_id', $customerPromotion->automation_id);
+
+        if (Schema::hasColumn('customer_promotion', 'code')) {
+            $this->whereNullableKey($query, 'code', $customerPromotion->getAttribute('code'));
+        }
+
+        return $query;
+    }
+
+    private function rememberReusableAssignment(
+        CustomerPromotion $usedCustomerPromotion,
+        CustomerPromotion $newCustomerPromotion
+    ): void {
+        $metadata = is_array($usedCustomerPromotion->metadata)
+            ? $usedCustomerPromotion->metadata
+            : [];
+
+        if (($metadata['reusable_recreated_customer_promotion_id'] ?? null) === $newCustomerPromotion->getKey()) {
+            return;
+        }
+
+        $metadata['reusable_recreated_customer_promotion_id'] = $newCustomerPromotion->getKey();
+        $usedCustomerPromotion->metadata = $metadata;
+        $usedCustomerPromotion->save();
     }
 
     private function matchingAssignmentQuery(
