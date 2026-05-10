@@ -161,11 +161,12 @@ class CustomerPromotionService
         CustomerPromotion $customerPromotion,
         ?float $discountAmount = null,
         ?int $orderId = null,
-        ?int $reservationId = null
+        ?int $reservationId = null,
+        array $metadata = []
     ): CustomerPromotion {
         $this->ensurePersisted($customerPromotion, 'CustomerPromotion');
 
-        return DB::transaction(function () use ($customerPromotion, $discountAmount, $orderId, $reservationId) {
+        return DB::transaction(function () use ($customerPromotion, $discountAmount, $orderId, $reservationId, $metadata) {
             $customerPromotion = $this->lockCustomerPromotion($customerPromotion);
             $wasUnused = $customerPromotion->promo_used === null;
 
@@ -185,6 +186,13 @@ class CustomerPromotionService
 
             if ($reservationId !== null) {
                 $customerPromotion->reservation_id = $reservationId;
+            }
+
+            if ($metadata !== []) {
+                $customerPromotion->metadata = array_merge(
+                    is_array($customerPromotion->metadata) ? $customerPromotion->metadata : [],
+                    $metadata
+                );
             }
 
             $customerPromotion->save();

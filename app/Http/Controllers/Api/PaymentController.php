@@ -2,170 +2,126 @@
 
 namespace App\Http\Controllers\Api;
 
-use Stripe\Stripe;
-use App\Models\Order;
-use App\Models\Setting;
-use Stripe\PaymentIntent;
-use App\Models\Ingredient;
-use Illuminate\Http\Request;
-use App\Support\Currency;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\CustomerPromotion;
+use App\Models\Order;
+use App\Support\Currency;
+use InvalidArgumentException;
 
 class PaymentController extends Controller
-{        
-    public function checkout($cart, $id, $delivery, $menus) 
+{
+    public function checkout($cart, $id, $delivery, $menus)
     {
-       
-        $final_destination = config('configurazione.domain') . '/success-pay'; 
-        $final_destination_error = config('configurazione.domain') . '/error-pay'; 
-        $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
+        $stripe = $this->stripeClient();
+        $order = Order::query()
+            ->with(['customerPromotions.promotion'])
+            ->findOrFail($id);
 
-        $stripe = new \Stripe\StripeClient($stripeSecretKey);
-        $currency = Currency::stripeCode();
- 
-        $line_items = [];
-        foreach ($menus as $menu) {
-            $line_items[] = [
-                'price_data' => [
-                    'currency' => $currency,
-                    'product_data' => [
-                        'name' => $menu->name,
-                    ],
-                    'unit_amount' => Currency::toMinorUnits($menu->price),
-                ],
-                'quantity' => $menu->pivot->quantity,
-            ];
-            if ($menu->fixed_menu == '2') {
+        $checkoutSession = $stripe->checkout->sessions->create(
+            $this->checkoutSessionPayload($order)
+        );
 
-                $choices = json_decode($menu->pivot->choices, 1);
-                foreach ($choices as $key => $value) {
-                    foreach ($menu->products as $p) {
-                        if ($p->id == $value) {
-                            $line_items[] = [
-                                'price_data' => [
-                                    'currency' => $currency,
-                                    'product_data' => [
-                                        'name' => $p->name,
-                                    ],
-                                    'unit_amount' => Currency::toMinorUnits($p->pivot->extra_price ? $p->pivot->extra_price : 0),
-                                ],
-                                'quantity' => $menu->pivot->quantity,
-                            ];
-                            break; 
-                        }
-                    }
-                }
-            }
-
-        }
-        foreach ($cart as $orderProduct) {
-            //return [$orderProduct->quantity, $orderProduct->price];
-            $line_items[] = [
-                'price_data' => [
-                    'currency' => $currency,
-                    'product_data' => [
-                        'name' => $orderProduct->name,
-                    ],
-                    'unit_amount' => Currency::toMinorUnits($orderProduct->price),
-                ],
-                'quantity' => $orderProduct->pivot->quantity,
-            ];
-
-            // Calcola i prezzi degli ingredienti aggiunti
-            $added_ingredients = json_decode($orderProduct->pivot->add, true); // Decodifica la stringa add
-            $option_ingredients = json_decode($orderProduct->pivot->option, true); // Decodifica la stringa option
-            $removed_ingredients = json_decode($orderProduct->pivot->remove, true); // Decodifica la stringa remove
-
-
-
-            // Aggiungi prezzi ingredienti 'add'
-            if ($added_ingredients) {
-                foreach ($added_ingredients as $ingredient_name) {
-                    $ingredient = Ingredient::where('name', $ingredient_name)->first();
-                    if ($ingredient) {
-                        $line_items[] = [
-                            'price_data' => [
-                                'currency' => $currency,
-                                'product_data' => [
-                                    'name' => $ingredient_name . '(EXTRA)',
-                                ],
-                                'unit_amount' => Currency::toMinorUnits($ingredient->price),
-                            ],
-                            'quantity' => $orderProduct->pivot->quantity,
-                        ];
-                        
-                    }
-                }
-            }
-
-            // Aggiungi prezzi ingredienti 'option'
-            if ($option_ingredients) {      
-                foreach ($option_ingredients as $option_name) {
-                    $option = Ingredient::where('name', $option_name)->first();
-                    if ($option) {
-                        $line_items[] = [
-                            'price_data' => [
-                                'currency' => $currency,
-                                'product_data' => [
-                                    'name' => $option_name . '(EXTRA)',
-                                ],
-                                'unit_amount' => Currency::toMinorUnits($option->price),
-                            ],
-                            'quantity' => $orderProduct->pivot->quantity,
-                        ];
-                        
-
-                    }
-                }
-            }
-            
-
-            if ($removed_ingredients) {
-                foreach ($removed_ingredients as $option_name) {
-                    $option = Ingredient::where('name', $option_name)->first();
-                    if ($option) {
-                        $line_items[] = [
-                            'price_data' => [
-                                'currency' => $currency,
-                                'product_data' => [
-                                    'name' => $option_name . '(RIMOSSO)',
-                                ],
-                                'unit_amount' => 0, 
-                            ],
-                            'quantity' => $orderProduct->pivot->quantity,
-                        ];
-
-                    }
-                }
-            }
-        }
-        if($delivery){
-            $line_items[] = [
-                'price_data' => [
-                    'currency' => $currency,
-                    'product_data' => [
-                        'name' => 'Spese di spedizione',
-                    ],
-                    'unit_amount' => Currency::toMinorUnits($delivery),
-                ],
-                'quantity' => 1,
-            ];
-        }
-
-        $checkout_session = $stripe->checkout->sessions->create([
-            'line_items' => $line_items,
-            'mode' => 'payment',
-            'metadata' => [
-                'order_id' => $id,
-            ],
-            'success_url' => $final_destination,
-            'cancel_url' => $final_destination_error,
-        ]);
-
-        
-        return $checkout_session->url;
-
+        return $checkoutSession->url;
     }
 
+    protected function checkoutSessionPayload(Order $order): array
+    {
+        $currency = Currency::stripeCode();
+        $amount = $this->stripeAmountForOrder($order, $currency);
+        $metadata = $this->stripeMetadataForOrder($order);
+
+        return [
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => $currency,
+                        'product_data' => [
+                            'name' => 'Ordine ristorante #' . $order->getKey(),
+                        ],
+                        'unit_amount' => $amount,
+                    ],
+                    'quantity' => 1,
+                ],
+            ],
+            'mode' => 'payment',
+            'metadata' => $metadata,
+            'payment_intent_data' => [
+                'metadata' => $metadata,
+            ],
+            'success_url' => config('configurazione.domain') . '/success-pay',
+            'cancel_url' => config('configurazione.domain') . '/error-pay',
+        ];
+    }
+
+    protected function stripeAmountForOrder(Order $order, string $currency): int
+    {
+        $amount = Currency::toMinorUnits(max(0, Currency::roundAmount($order->tot_price)));
+
+        if ($amount < $this->stripeMinimumAmount($currency)) {
+            throw new InvalidArgumentException('order_total_below_stripe_minimum');
+        }
+
+        return $amount;
+    }
+
+    protected function stripeMinimumAmount(string $currency): int
+    {
+        return match (strtolower($currency)) {
+            'gbp' => 30,
+            default => 50,
+        };
+    }
+
+    protected function stripeMetadataForOrder(Order $order): array
+    {
+        $customerPromotion = $this->appliedCustomerPromotion($order);
+        $metadata = [
+            'order_id' => (string) $order->getKey(),
+            'order_total' => $this->metadataAmount($order->tot_price),
+        ];
+
+        if (! $customerPromotion) {
+            return $metadata;
+        }
+
+        $promotionMetadata = is_array($customerPromotion->metadata) ? $customerPromotion->metadata : [];
+        $promotion = $customerPromotion->promotion;
+
+        return array_merge($metadata, [
+            'customer_promotion_id' => (string) $customerPromotion->getKey(),
+            'promotion_id' => (string) ($promotion?->getKey() ?? $customerPromotion->promotion_id),
+            'discount_amount' => $this->metadataAmount(
+                $customerPromotion->discount_amount
+                    ?? ($promotionMetadata['discount_amount'] ?? 0)
+            ),
+            'subtotal_before_discount' => $this->metadataAmount(
+                $promotionMetadata['subtotal_before_discount'] ?? null
+            ),
+            'total_after_discount' => $this->metadataAmount(
+                $promotionMetadata['total_after_discount'] ?? $order->tot_price
+            ),
+        ]);
+    }
+
+    protected function appliedCustomerPromotion(Order $order): ?CustomerPromotion
+    {
+        $promotions = $order->relationLoaded('customerPromotions')
+            ? $order->customerPromotions
+            : $order->customerPromotions()->with('promotion')->get();
+
+        return $promotions
+            ->filter(fn (CustomerPromotion $customerPromotion) => $customerPromotion->order_id !== null)
+            ->sortByDesc(fn (CustomerPromotion $customerPromotion) => $customerPromotion->promo_used?->getTimestamp() ?? 0)
+            ->first();
+    }
+
+    protected function metadataAmount($amount): string
+    {
+        return number_format(Currency::roundAmount($amount ?? 0), Currency::decimals(), '.', '');
+    }
+
+    protected function stripeClient(): \Stripe\StripeClient
+    {
+        return new \Stripe\StripeClient(config('configurazione.STRIPE_SECRET'));
+    }
 }

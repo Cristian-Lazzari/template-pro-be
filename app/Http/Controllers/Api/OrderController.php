@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\confermaOrdineAdmin;
 use App\Models\Customer;
+use App\Models\CustomerPromotion;
 use App\Models\Ingredient;
 use App\Models\Menu;
 use App\Models\MenuOrder;
@@ -15,6 +16,8 @@ use App\Models\Setting;
 use App\Services\FailureAlertService;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
+use App\Services\Marketing\CustomerPromotionService;
+use App\Services\Marketing\OrderPromotionApplicationService;
 use App\Support\Currency;
 use Carbon\Carbon;
 use Exception;
@@ -33,6 +36,8 @@ class OrderController extends Controller
     public function __construct(
         private VerifiedCheckoutSessionService $verifiedCheckoutSessionService,
         private CustomerAccessService $customerAccessService,
+        private OrderPromotionApplicationService $orderPromotionApplicationService,
+        private CustomerPromotionService $customerPromotionService,
     ) {
     }
 
@@ -49,6 +54,7 @@ class OrderController extends Controller
         'profiling_enabled' => 'nullable|boolean',
         'tracking_enabled' => 'nullable|boolean',
         'news_letter' => 'nullable|boolean',
+        'customer_promotion_id' => 'nullable|integer|exists:customer_promotion,id',
     ];
 
     public function store(Request $request)
@@ -229,6 +235,12 @@ class OrderController extends Controller
             }
 
             $total_price = Currency::roundAmount($total_price);
+            $subtotalBeforePromotion = $total_price;
+            $promotionEvaluation = $this->evaluateOrderPromotion($authenticatedCustomer, $cart, $data);
+
+            if (($promotionEvaluation['applicable'] ?? false) === true) {
+                $total_price = Currency::roundAmount($promotionEvaluation['total']);
+            }
             
     
             $newOrder = new Order();
@@ -288,7 +300,7 @@ class OrderController extends Controller
                 $item_order->save();
             }
 
-            
+            $this->markAppliedOrderPromotion($promotionEvaluation ?? null, $newOrder, $subtotalBeforePromotion);
             
 
             
@@ -696,6 +708,74 @@ class OrderController extends Controller
         }
 
         return $fallback;
+    }
+
+    private function evaluateOrderPromotion(?Customer $customer, array $cart, array $data): array
+    {
+        if (! $customer) {
+            return [
+                'applicable' => false,
+                'reason' => 'customer_not_available',
+                'customer_promotion' => null,
+                'promotion' => null,
+                'discount_amount' => 0.0,
+                'subtotal' => 0.0,
+                'total' => 0.0,
+                'affected_items' => [],
+                'minimum_required' => null,
+            ];
+        }
+
+        $cartForPromotion = array_merge($cart, [
+            'case_use' => isset($data['comune']) ? 'delivery' : 'take_away',
+        ]);
+        $customerPromotionId = isset($data['customer_promotion_id'])
+            ? (int) $data['customer_promotion_id']
+            : null;
+
+        $evaluation = $customerPromotionId
+            ? $this->orderPromotionApplicationService->evaluate($customer, $cartForPromotion, $customerPromotionId)
+            : $this->orderPromotionApplicationService->findBestApplicable($customer, $cartForPromotion);
+
+        if ($customerPromotionId && ! ($evaluation['applicable'] ?? false)) {
+            Log::warning('(OrderController) Promozione cliente non applicata all\'ordine', [
+                'customer_id' => $customer->getKey(),
+                'customer_promotion_id' => $customerPromotionId,
+                'reason' => $evaluation['reason'] ?? null,
+            ]);
+        }
+
+        return $evaluation;
+    }
+
+    private function markAppliedOrderPromotion(?array $evaluation, Order $order, float $subtotalBeforePromotion): void
+    {
+        if (! ($evaluation['applicable'] ?? false)) {
+            return;
+        }
+
+        $customerPromotion = $evaluation['customer_promotion'] ?? null;
+
+        if (! $customerPromotion instanceof CustomerPromotion) {
+            return;
+        }
+
+        $discountAmount = Currency::roundAmount($evaluation['discount_amount'] ?? 0);
+
+        $this->customerPromotionService->markUsed(
+            $customerPromotion,
+            $discountAmount,
+            $order->getKey(),
+            null,
+            [
+                'subtotal_before_discount' => Currency::roundAmount($subtotalBeforePromotion),
+                'discount_amount' => $discountAmount,
+                'subtotal_after_discount' => Currency::roundAmount($evaluation['total'] ?? $subtotalBeforePromotion),
+                'total_after_discount' => Currency::roundAmount($order->tot_price),
+                'affected_items' => $evaluation['affected_items'] ?? [],
+                'applied_from' => 'order_checkout',
+            ]
+        );
     }
 
     private function customerPayload(Customer $customer): array
