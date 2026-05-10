@@ -18,6 +18,7 @@ use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
 use App\Services\Marketing\CustomerPromotionService;
 use App\Services\Marketing\OrderPromotionApplicationService;
+use App\Services\Marketing\PromotionNotificationFormatter;
 use App\Support\Currency;
 use Carbon\Carbon;
 use Exception;
@@ -301,6 +302,7 @@ class OrderController extends Controller
             }
 
             $this->markAppliedOrderPromotion($promotionEvaluation ?? null, $newOrder, $subtotalBeforePromotion);
+            $newOrder->loadMissing('customerPromotions.promotion');
             
 
             
@@ -320,6 +322,8 @@ class OrderController extends Controller
                 
             }else{
 
+                $promotionFormatter = app(PromotionNotificationFormatter::class);
+                $promotionWhatsappText = $promotionFormatter->whatsappTextForOrder($newOrder);
                 $info = $newOrder->name . ' ' . $newOrder->surname .' ha ordinato per il ' . $newOrder->date_slot . ": \n\n";
                 // Itera sui prodotti dell'ordine
                 $order_mess = "";
@@ -413,6 +417,10 @@ class OrderController extends Controller
                 $t = $newOrder->comune ? "Ordine a domicilio" : "Ordine d'asporto";
                 if($newOrder->message){
                     $info .= "Note: " . $newOrder->message . " \n";
+                }
+                if ($promotionWhatsappText) {
+                    $info .= "\n" . $promotionWhatsappText . "\n";
+                    $type_mess .= "\n" . $promotionWhatsappText;
                 }
                 $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
                     "📞 Chiama: " . $newOrder->phone . "\n\n" .
@@ -621,6 +629,7 @@ class OrderController extends Controller
                     'status' => $newOrder->status,
                     'cart' => $cart_mail,
                     'total_price' => $newOrder->tot_price,
+                    'promotions' => $promotionFormatter->forOrder($newOrder),
                     
                     'property_adv' => $property_adv,
                     

@@ -15,6 +15,7 @@ use App\Models\Ingredient;
 use App\Services\FailureAlertService;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
+use App\Services\Marketing\PromotionNotificationFormatter;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -85,7 +86,7 @@ class StripeWebhookController extends Controller
     {
         // Aggiorna il tuo database per segnare l'ordine come completato
         $orderId = $session->metadata->order_id; // Assicurati di aver aggiunto l'ID dell'ordine nei metadata
-        $order = Order::where('id', $orderId)->with('products', 'menus')->firstOrFail();
+        $order = Order::where('id', $orderId)->with('products', 'menus', 'customerPromotions.promotion')->firstOrFail();
 
         // aggiorno la disponibilità in date
         $adv_s = Setting::where('name', 'advanced')->first();
@@ -94,6 +95,8 @@ class StripeWebhookController extends Controller
     
         // Esegui la logica per aggiornare lo stato dell'ordine nel database
         
+        $promotionFormatter = app(PromotionNotificationFormatter::class);
+        $promotionWhatsappText = $promotionFormatter->whatsappTextForOrder($order);
         $info = $order->name . ' ' . $order->surname .' ha ordinato *e PAGATO* per il ' . $order->date_slot . ": \n\n";
         $order_mess = "";
         $type_mess = "";
@@ -182,6 +185,10 @@ class StripeWebhookController extends Controller
         }
         if($order->message){
             $info .= "Note: " . $order->message . " \n";
+        }
+        if ($promotionWhatsappText) {
+            $info .= "\n" . $promotionWhatsappText . "\n";
+            $type_mess .= "\n" . $promotionWhatsappText;
         }
         $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $order->id;
         $t = $order->comune ? "Ordine a domicilio *GIÀ PAGATO*" : "Ordine d'asporto *GIÀ PAGATO*";
@@ -466,6 +473,8 @@ class StripeWebhookController extends Controller
 
     protected function send_mail($order){
                                 
+        $order->loadMissing('customerPromotions.promotion');
+        $promotionFormatter = app(PromotionNotificationFormatter::class);
         
         $set = Setting::where('name', 'Contatti')->firstOrFail();
         $p_set = json_decode($set->property, true);
@@ -548,6 +557,7 @@ class StripeWebhookController extends Controller
             'status' => $order->status,
             'cart' => $cart_mail,
             'total_price' => $order->tot_price,
+            'promotions' => $promotionFormatter->forOrder($order),
             
             'property_adv' => $property_adv,
             

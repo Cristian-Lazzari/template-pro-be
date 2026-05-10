@@ -227,6 +227,35 @@
             @endif
         @endif
 
+        @php
+            $appliedPromotions = $content_mail['promotions'] ?? [];
+        @endphp
+        @if (($content_mail['to'] ?? null) === 'admin' && !empty($appliedPromotions))
+            <div style="margin: 18px 0; padding: 14px; border: 1px solid #159478; border-radius: 8px; background-color: #f2fbf8;">
+                <h3 style="color: #04001d; font-size: 18px; margin: 0 0 10px;">Promozione applicata</h3>
+                @foreach ($appliedPromotions as $promotion)
+                    <div style="margin: 10px 0;">
+                        <p style="color: #04001d; font-size: 16px; margin: 4px 0;"><strong>{{ $promotion['promotion_name'] }}</strong></p>
+                        <p style="color: #04001d; font-size: 15px; margin: 4px 0;">{{ $promotion['label'] }}</p>
+                        <p style="color: #04001d; opacity: .8; font-size: 14px; margin: 4px 0;">Tipo: {{ $promotion['type_label'] }}</p>
+                        @if (($promotion['discount_amount'] ?? 0) > 0)
+                            <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Sconto applicato: <strong>{{ \App\Support\Currency::formatCents($promotion['discount_amount']) }}</strong></p>
+                        @elseif (($promotion['type_discount'] ?? '') === 'gift')
+                            <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Omaggio applicato</p>
+                        @endif
+                        @if (($content_mail['type'] ?? null) === 'or')
+                            <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Totale ordine già scontato: <strong>{{ \App\Support\Currency::formatCents($content_mail['total_price']) }}</strong></p>
+                        @endif
+                        @if (!empty($promotion['affected_items']))
+                            <p style="color: #04001d; opacity: .8; font-size: 13px; margin: 8px 0 0;">
+                                Dettagli: {{ collect($promotion['affected_items'])->map(fn ($item) => $item['name'] ?? $item['label'] ?? $item['type'] ?? null)->filter()->implode(', ') }}
+                            </p>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
         <!-- Messaggio opzionale -->
         @if($content_mail['message'] !== NULL)
             <h4 style="color: #04001d; font-size: 16px;  margin: 5px;">{{__('admin.Messaggio')}}:</h4>

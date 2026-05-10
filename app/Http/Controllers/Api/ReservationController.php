@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\confermaOrdineAdmin;
 use App\Models\Customer;
+use App\Models\CustomerPromotion;
 use App\Models\Reservation;
 use App\Models\Setting;
 use App\Services\FailureAlertService;
 use App\Support\AvailabilityWeekSet;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
+use App\Services\Marketing\CustomerPromotionService;
+use App\Services\Marketing\PromotionNotificationFormatter;
+use App\Services\Marketing\ReservationPromotionApplicationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +30,8 @@ class ReservationController extends Controller
     public function __construct(
         private VerifiedCheckoutSessionService $verifiedCheckoutSessionService,
         private CustomerAccessService $customerAccessService,
+        private ReservationPromotionApplicationService $reservationPromotionApplicationService,
+        private CustomerPromotionService $customerPromotionService,
     ) {
     }
 
@@ -44,6 +50,7 @@ class ReservationController extends Controller
         'profiling_enabled' => 'nullable|boolean',
         'tracking_enabled' => 'nullable|boolean',
         'news_letter' => 'nullable|boolean',
+        'customer_promotion_id' => 'nullable|integer|exists:customer_promotion,id',
     ];
 
     public function store(Request $request)
@@ -208,6 +215,12 @@ class ReservationController extends Controller
                 );
             }
 
+            $promotionEvaluation = $this->evaluateReservationPromotion($authenticatedCustomer, array_merge($data, [
+                'people' => $tot_p,
+                'date_slot' => $formattedDateSlot,
+                'sala' => $selectedSala,
+            ]));
+
         
             // Crea la nuova prenotazione
             $newRes = new Reservation();
@@ -231,6 +244,17 @@ class ReservationController extends Controller
 
             $newRes->save();
 
+            $this->markAppliedReservationPromotion($promotionEvaluation ?? null, $newRes, [
+                'date_slot' => $formattedDateSlot,
+                'people' => $tot_p,
+                'n_adult' => $n_adult,
+                'n_child' => $n_child,
+                'sala' => $selectedSala,
+            ]);
+
+            $newRes->loadMissing('customerPromotions.promotion');
+            $promotionFormatter = app(PromotionNotificationFormatter::class);
+            $reservationPromotionText = $promotionFormatter->whatsappTextForReservation($newRes);
 
 
         $info = $newRes->name . " " . $newRes->surname ." ha prenotato per il: " . $newRes->date_slot . " \n\n 🧑‍🧑‍🧒‍🧒 gli ospiti sono: ";
@@ -259,6 +283,10 @@ class ReservationController extends Controller
         }
         if($newRes->message){
             $info .= "Note: " . $newRes->message . " \n";
+        }
+        if ($reservationPromotionText) {
+            $info .= "\n" . $reservationPromotionText . "\n";
+            $guest .= ' | ' . str_replace("\n", ' - ', $reservationPromotionText);
         }
         $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
         $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
@@ -435,6 +463,67 @@ class ReservationController extends Controller
         }
 
         return $fallback;
+    }
+
+    private function evaluateReservationPromotion(?Customer $customer, array $reservationData): array
+    {
+        if (! $customer) {
+            return [
+                'applicable' => false,
+                'reason' => 'customer_not_available',
+                'customer_promotion' => null,
+                'promotion' => null,
+                'discount_amount' => 0.0,
+                'affected_items' => [],
+            ];
+        }
+
+        $customerPromotionId = isset($reservationData['customer_promotion_id'])
+            ? (int) $reservationData['customer_promotion_id']
+            : null;
+
+        $evaluation = $customerPromotionId
+            ? $this->reservationPromotionApplicationService->evaluate($customer, $customerPromotionId, $reservationData)
+            : $this->reservationPromotionApplicationService->findBestApplicable($customer, $reservationData);
+
+        if ($customerPromotionId && ! ($evaluation['applicable'] ?? false)) {
+            Log::warning('(ReservationController) Promozione cliente non applicata alla prenotazione', [
+                'customer_id' => $customer->getKey(),
+                'customer_promotion_id' => $customerPromotionId,
+                'reason' => $evaluation['reason'] ?? null,
+            ]);
+        }
+
+        return $evaluation;
+    }
+
+    private function markAppliedReservationPromotion(?array $evaluation, Reservation $reservation, array $reservationMetadata): void
+    {
+        if (! ($evaluation['applicable'] ?? false)) {
+            return;
+        }
+
+        $customerPromotion = $evaluation['customer_promotion'] ?? null;
+
+        if (! $customerPromotion instanceof CustomerPromotion) {
+            return;
+        }
+
+        $this->customerPromotionService->markUsed(
+            $customerPromotion,
+            0.0,
+            null,
+            $reservation->getKey(),
+            [
+                'applied_from' => 'reservation_checkout',
+                'affected_items' => $evaluation['affected_items'] ?? [],
+                'reservation_date_slot' => $reservationMetadata['date_slot'] ?? $reservation->date_slot,
+                'reservation_people' => $reservationMetadata['people'] ?? null,
+                'reservation_n_adult' => $reservationMetadata['n_adult'] ?? null,
+                'reservation_n_child' => $reservationMetadata['n_child'] ?? null,
+                'reservation_sala' => $reservationMetadata['sala'] ?? $reservation->sala,
+            ]
+        );
     }
 
     private function customerPayload(Customer $customer): array
@@ -617,6 +706,9 @@ class ReservationController extends Controller
 
     protected function send_mail($newRes, $lang, $defaultLang){
         try{
+            $newRes->loadMissing('customerPromotions.promotion');
+            $promotionFormatter = app(PromotionNotificationFormatter::class);
+
             // Ottieni le impostazioni di contatto
             $adv_s = Setting::where('name', 'advanced')->first();
             $property_adv = json_decode($adv_s->property, 1);
@@ -649,6 +741,7 @@ class ReservationController extends Controller
                 'n_person' => $newRes->n_person,
                 'status' => $newRes->status,
                 'whatsapp_message_id' => $newRes->whatsapp_message_id,
+                'promotions' => $promotionFormatter->forReservation($newRes),
                 'property_adv' => $property_adv,
             ];
 
