@@ -29,41 +29,40 @@
         ],
     ])
 
-    <header class="menu-dashboard__hero order-detail__summary">
-        <div class="order-detail__meta">
-            <div class="order-detail__status">
-                <span class="order-detail__status-icon order-detail__status-icon--active">
-                    <i class="bi bi-envelope-paper-fill"></i>
-                </span>
-                <strong>Marketing</strong>
+    <header class="campaign-index-hero">
+        <div class="campaign-index-hero__top">
+            <div class="campaign-index-hero__title">
+                <span>Marketing CRM</span>
+                <h1>{{ $isArchivedView ? 'Campagne archiviate' : 'Campagne' }}</h1>
+                <p>
+                    {{ $isArchivedView
+                        ? 'Campagne tolte dalla lista principale, consultabili o ripristinabili.'
+                        : 'Lista operativa degli invii verso segmenti clienti.' }}
+                </p>
             </div>
 
-            <h1 class="menu-dashboard__title">{{ $isArchivedView ? 'Campagne archiviate' : 'Campagne' }}</h1>
-            <p>
-                {{ $isArchivedView
-                    ? 'Campagne tolte dalla lista principale, disponibili per consultazione o ripristino.'
-                    : 'Invii manuali o programmati verso segmenti clienti.' }}
-            </p>
-        </div>
-
-        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             @if ($isArchivedView)
-                <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
+                <a href="{{ route('admin.campaigns.index') }}" class="campaign-index-hero__primary">
                     <i class="bi bi-arrow-left"></i>
                     <span>Torna alle campagne</span>
                 </a>
             @else
-                <a href="{{ route('admin.campaigns.create') }}" class="order-detail__contact">
-                    <i class="bi bi-cloud-plus-fill"></i>
+                <a href="{{ route('admin.campaigns.create') }}" class="campaign-index-hero__primary">
+                    <i class="bi bi-plus-lg"></i>
                     <span>Crea nuova</span>
                 </a>
-                <a href="{{ route('admin.campaigns.archived') }}" class="order-detail__contact marketing-index-muted">
+            @endif
+        </div>
+
+        <nav class="campaign-index-quicklinks" aria-label="Collegamenti marketing">
+            @if (! $isArchivedView)
+                <a href="{{ route('admin.campaigns.archived') }}">
                     <i class="bi bi-archive-fill"></i>
                     <span>Campagne archiviate</span>
                 </a>
             @endif
             @include('admin.Marketing.partials.area-links', ['current' => 'campaigns'])
-        </div>
+        </nav>
     </header>
 
     <section class="order-detail__section mt-4">
@@ -113,52 +112,49 @@
                             : in_array($normalizedStatus, ['draft', 'paused', 'scheduled', 'running', 'completed'], true);
                     @endphp
 
-                    <article class="marketing-index-row campaign-card--compact">
-                        <div class="marketing-index-main">
-                            <div class="campaign-card__chips">
-                                @include('admin.Marketing.partials.status-pill', [
-                                    'status' => $normalizedStatus,
-                                    'label' => $statusLabel,
-                                ])
-                                <span class="marketing-index-chip marketing-index-chip--accent">{{ $consentBasisLabel }}</span>
-                            </div>
-
-                            <h4 class="marketing-index-title">{{ $campaign->name }}</h4>
-                        </div>
-
-                        <div class="marketing-index-block">
-                            <div class="campaign-card__meta">
-                                <div class="campaign-meta-row">
-                                    <span class="campaign-meta-label">Segmento</span>
-                                    <span class="campaign-meta-value">{{ $segmentLabel }}</span>
-                                </div>
-                                <div class="campaign-meta-row">
-                                    <span class="campaign-meta-label">Programma</span>
-                                    <span class="campaign-meta-value">{{ $scheduledLabel }}</span>
-                                </div>
-                                <div class="campaign-meta-row">
-                                    <span class="campaign-meta-label">Modello</span>
-                                    <span class="campaign-meta-value">{{ $campaign->model?->name ?? '-' }}</span>
-                                </div>
-                                <div class="campaign-meta-row">
-                                    <span class="campaign-meta-label">Promo</span>
-                                    <span class="campaign-meta-value">{{ $campaign->promotions->count() }} collegate</span>
-                                </div>
+                    <article class="campaign-row-card">
+                        <div class="campaign-row-card__identity">
+                            <h4 class="campaign-row-card__title">{{ $campaign->name }}</h4>
+                            <div class="campaign-row-card__meta-line">
+                                <span class="campaign-row-card__basis">{{ $consentBasisLabel }}</span>
+                                <span>{{ $segmentLabel }}</span>
                             </div>
                         </div>
 
-                        <div class="marketing-index-stats">
-                            <div class="marketing-index-progress" aria-label="Avanzamento invii campagna">
-                                <div class="marketing-index-progress-track">
-                                    <div class="marketing-index-progress-bar" style="width: {{ $progressPercentage }}%"></div>
+                        <div class="campaign-row-card__status">
+                            @include('admin.Marketing.partials.status-pill', [
+                                'status' => $normalizedStatus,
+                                'label' => $statusLabel,
+                            ])
+                            <span>{{ $scheduledLabel === '-' ? 'Non programmata' : $scheduledLabel }}</span>
+                        </div>
+
+                        <div class="campaign-row-card__details">
+                            <div>
+                                <span>Modello</span>
+                                <strong>{{ $campaign->model?->name ?? '-' }}</strong>
+                            </div>
+                            <div>
+                                <span>Promo</span>
+                                <strong>{{ $campaign->promotions->count() }} collegate</strong>
+                            </div>
+                        </div>
+
+                        <div class="campaign-row-card__progress">
+                            <div class="campaign-progress-compact" aria-label="Avanzamento invii campagna">
+                                <div class="campaign-progress-compact__head">
+                                    <span>{{ $totalAssignments > 0 ? $sentAssignments . '/' . $totalAssignments . ' inviate' : 'Nessun invio' }}</span>
+                                    @if ($totalAssignments > 0 && $pendingAssignments > 0)
+                                        <small>{{ $pendingAssignments }} in attesa</small>
+                                    @endif
                                 </div>
-                                <div class="marketing-index-meta">
-                                    <span>{{ $sentAssignments }}/{{ $totalAssignments }} inviate</span>
+                                <div class="campaign-progress-compact__track">
+                                    <div class="campaign-progress-compact__bar" style="width: {{ $progressPercentage }}%"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="marketing-index-actions campaign-actions-compact">
+                        <div class="campaign-row-card__actions campaign-actions-compact">
                             <div class="campaign-actions-compact__primary">
                                 <a class="order-detail__contact" href="{{ route('admin.campaigns.show', $campaign) }}">
                                     <i class="bi bi-eye-fill"></i>
