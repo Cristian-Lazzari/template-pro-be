@@ -217,16 +217,16 @@
 
     .campaign-promotion-list {
         display: grid;
-        gap: 14px;
+        gap: 10px;
     }
 
     .campaign-promotion-card {
         display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(240px, .9fr);
-        gap: 14px;
+        grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr) auto;
+        gap: 12px;
         align-items: start;
-        padding: 16px;
-        border-radius: 18px;
+        padding: 12px;
+        border-radius: 12px;
         border: 1px solid rgba(216, 221, 232, 0.12);
         background: rgba(216, 221, 232, 0.05);
         color: var(--c3);
@@ -242,25 +242,14 @@
 
     .campaign-promotion-card__main {
         display: grid;
-        gap: 12px;
+        gap: 8px;
     }
 
     .campaign-promotion-card__heading {
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 12px;
-        align-items: start;
-    }
-
-    .campaign-promotion-card__icon {
-        display: inline-flex;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
         align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        border-radius: 13px;
-        background: rgba(14, 183, 146, 0.12);
-        color: rgba(142, 246, 219, 0.95);
     }
 
     .campaign-promotion-card strong {
@@ -280,37 +269,39 @@
 
     .campaign-promotion-card__meta,
     .campaign-promotion-card__targets {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+        display: grid;
+        gap: 4px;
     }
 
-    .campaign-promotion-card__meta > span:not(.marketing-status-pill),
+    .campaign-promotion-card__targets strong {
+        color: rgba(216, 221, 232, 0.58);
+        font-size: var(--fs-100);
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
     .campaign-promotion-card__targets > span {
-        display: inline-flex;
-        width: fit-content;
-        max-width: 100%;
-        padding: 7px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(9, 3, 51, 0.42);
+        display: block;
+        padding: 0;
+        border: 0;
+        background: transparent;
         color: rgba(216, 221, 232, 0.86);
         font-size: var(--fs-200);
-        font-weight: 800;
+        font-weight: 700;
         overflow-wrap: anywhere;
     }
 
     .campaign-promotion-card__stats {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
+        gap: 8px;
     }
 
     .campaign-promotion-card__stats span {
         display: grid;
-        gap: 4px;
-        padding: 12px;
-        border-radius: 14px;
+        gap: 3px;
+        padding: 8px 10px;
+        border-radius: 10px;
         background: rgba(9, 3, 51, 0.32);
         border: 1px solid rgba(216, 221, 232, 0.1);
     }
@@ -329,6 +320,7 @@
 
     .campaign-promotion-card > .order-detail__contact {
         justify-self: start;
+        align-self: center;
     }
 
     .campaign-report-panel {
@@ -575,6 +567,66 @@
         overflow-wrap: anywhere;
     }
 
+    .campaign-assignment-table {
+        display: grid;
+        gap: 8px;
+    }
+
+    .campaign-assignment-table__head,
+    .campaign-assignment-table__row {
+        display: grid;
+        grid-template-columns: minmax(180px, 1.25fr) minmax(160px, 1fr) minmax(92px, .5fr) minmax(170px, 1fr) minmax(120px, .6fr) minmax(130px, .7fr);
+        gap: 10px;
+        align-items: center;
+    }
+
+    .campaign-assignment-table__head {
+        padding: 0 10px 4px;
+        color: rgba(216, 221, 232, 0.58);
+        font-size: var(--fs-100);
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .campaign-assignment-table__row {
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(216, 221, 232, 0.1);
+        background: rgba(216, 221, 232, 0.04);
+        color: rgba(216, 221, 232, 0.84);
+    }
+
+    .campaign-assignment-table__cell {
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+        line-height: 1.32;
+    }
+
+    .campaign-assignment-table__cell strong {
+        color: var(--c3);
+        font-size: var(--fs-200);
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-assignment-table__cell small {
+        color: rgba(216, 221, 232, 0.62);
+        overflow-wrap: anywhere;
+    }
+
+    .campaign-assignment-table__events {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: rgba(216, 221, 232, 0.76);
+        font-size: var(--fs-100);
+        font-weight: 800;
+    }
+
+    .campaign-assignment-table__events span.is-done {
+        color: rgba(142, 246, 219, 0.95);
+    }
+
     @keyframes marketingProgressSweep {
         to {
             transform: translateX(100%);
@@ -673,6 +725,14 @@
 
         .campaign-assignment-meta span {
             width: 100%;
+        }
+
+        .campaign-assignment-table__head {
+            display: none;
+        }
+
+        .campaign-assignment-table__row {
+            grid-template-columns: 1fr;
         }
     }
 </style>

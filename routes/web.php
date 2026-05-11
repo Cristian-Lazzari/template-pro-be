@@ -97,12 +97,15 @@ Route::middleware(['auth', 'verified'])
 
         // Rotte campaign marketing
 
+        Route::get('campaigns/archived', [CampaignController::class, 'archived'])->name('campaigns.archived');
         Route::post('campaigns/{campaign}/activate', [CampaignController::class, 'activate'])->name('campaigns.activate');
         Route::post('campaigns/{campaign}/pause',    [CampaignController::class, 'pause'])->name('campaigns.pause');
         Route::post('campaigns/{campaign}/archive',  [CampaignController::class, 'archive'])->name('campaigns.archive');
+        Route::post('campaigns/{campaign}/restore',  [CampaignController::class, 'restore'])->name('campaigns.restore');
         Route::post('campaigns/{campaign}/draft',    [CampaignController::class, 'draft'])->name('campaigns.draft');
         Route::post('campaigns/{campaign}/preview-audience', [CampaignController::class, 'previewAudience'])->name('campaigns.preview-audience');
         Route::post('campaigns/{campaign}/prepare-assignments', [CampaignController::class, 'prepareAssignments'])->name('campaigns.prepare-assignments');
+        Route::delete('campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
 
         // Rotte automation marketing
 

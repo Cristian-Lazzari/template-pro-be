@@ -8,6 +8,7 @@
     $pageUsedCount = $items->whereNotNull('promo_used')->count();
     $pageClickedCount = $items->whereNotNull('email_click_at')->count();
     $showSummary = $showSummary ?? true;
+    $compact = $compact ?? false;
     $statusLabels = [
         'assigned' => 'Assegnata',
         'sent' => 'Inviata',
@@ -53,7 +54,83 @@
         </div>
     @endif
 
-    @if ($pageCount > 0)
+    @if ($pageCount > 0 && $compact)
+        <div class="campaign-assignment-table" role="table" aria-label="Assegnazioni create">
+            <div class="campaign-assignment-table__head" role="row">
+                <span>Cliente</span>
+                <span>Promozione</span>
+                <span>Status</span>
+                <span>Email</span>
+                <span>Promo / link</span>
+                <span>Creata</span>
+            </div>
+
+            @foreach ($items as $customerPromotion)
+                @php
+                    $customer = $customerPromotion->customer;
+                    $promotion = $customerPromotion->promotion;
+                    $customerEmail = $customer?->mail ?? $customer?->email ?? null;
+                    $customerPhone = $customer?->phone ?? null;
+                    $customerName = $customer
+                        ? trim(($customer->name ?? '') . ' ' . ($customer->surname ?? ''))
+                        : '';
+                    $customerLabel = $customerName !== ''
+                        ? $customerName
+                        : ($customerEmail ?: ($customer ? 'Cliente #' . $customer->id : 'Cliente non disponibile'));
+                    $emailEvents = [
+                        ['label' => 'Sent', 'date' => $customerPromotion->email_sent_at],
+                        ['label' => 'Open', 'date' => $customerPromotion->email_open_at],
+                        ['label' => 'Click', 'date' => $customerPromotion->email_click_at],
+                    ];
+                @endphp
+
+                <div class="campaign-assignment-table__row" role="row">
+                    <div class="campaign-assignment-table__cell" role="cell">
+                        <strong>{{ $customerLabel }}</strong>
+                        <small>{{ $customerEmail ?: 'Email non disponibile' }}</small>
+                        @if ($customerPhone)
+                            <small>{{ $customerPhone }}</small>
+                        @endif
+                    </div>
+
+                    <div class="campaign-assignment-table__cell" role="cell">
+                        <strong>{{ $promotion?->name ?? 'Promozione non disponibile' }}</strong>
+                    </div>
+
+                    <div class="campaign-assignment-table__cell" role="cell">
+                        @include('admin.Marketing.partials.status-pill', [
+                            'status' => $customerPromotion->status,
+                            'label' => $statusLabels[$customerPromotion->status] ?? ($customerPromotion->status ?: '-'),
+                        ])
+                    </div>
+
+                    <div class="campaign-assignment-table__cell" role="cell">
+                        <div class="campaign-assignment-table__events">
+                            @foreach ($emailEvents as $event)
+                                <span class="@if ($event['date']) is-done @endif">
+                                    {{ $event['label'] }}: {{ $formatDate($event['date']) }}
+                                </span>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="campaign-assignment-table__cell" role="cell">
+                        <strong>{{ $customerPromotion->promo_used ? 'Usata' : 'Non usata' }}</strong>
+                        <small>Ordine: {{ $customerPromotion->order_id ? '#' . $customerPromotion->order_id : '-' }}</small>
+                        <small>Prenotazione: {{ $customerPromotion->reservation_id ? '#' . $customerPromotion->reservation_id : '-' }}</small>
+                    </div>
+
+                    <div class="campaign-assignment-table__cell" role="cell">
+                        <strong>{{ $formatDate($customerPromotion->created_at) }}</strong>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="marketing-detail__pager">
+            {{ $customerPromotions->links() }}
+        </div>
+    @elseif ($pageCount > 0)
         <div class="campaign-assignment-list">
             @foreach ($items as $customerPromotion)
                 @php

@@ -148,6 +148,11 @@
     $canPauseCampaign = $canPauseCampaign ?? in_array($normalizedStatus, ['scheduled', 'running'], true);
     $canDraftCampaign = $canDraftCampaign ?? in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true);
     $canArchiveCampaign = $canArchiveCampaign ?? in_array($normalizedStatus, ['draft', 'scheduled', 'running', 'paused', 'completed'], true);
+    $canRestoreCampaign = $canRestoreCampaign ?? $normalizedStatus === 'archived';
+    $canDestroyCampaign = $canDestroyCampaign ?? ($normalizedStatus === 'archived' && ! $hasAssignments);
+    $backToCampaignsRoute = $normalizedStatus === 'archived'
+        ? route('admin.campaigns.archived')
+        : route('admin.campaigns.index');
     $reportMetrics = [
         ['label' => 'Destinatari', 'value' => $totalEmails, 'tone' => 'neutral'],
         ['label' => 'Email inviate', 'value' => $sentEmails, 'tone' => 'neutral'],
@@ -155,14 +160,6 @@
         ['label' => 'Click', 'value' => $report['clicked_count'] ?? 0, 'tone' => 'neutral'],
         ['label' => 'Promo usate', 'value' => $report['used_count'] ?? 0, 'tone' => 'active'],
     ];
-
-    if ($showOrderMetrics) {
-        $reportMetrics[] = ['label' => 'Conversioni ordini', 'value' => $report['order_conversion_count'] ?? 0, 'tone' => 'active'];
-    }
-
-    if ($showReservationMetrics) {
-        $reportMetrics[] = ['label' => 'Conversioni prenotazioni', 'value' => $report['reservation_conversion_count'] ?? 0, 'tone' => 'active'];
-    }
 
     $reportMetrics[] = ['label' => 'Open rate', 'value' => number_format((float) ($report['open_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
     $reportMetrics[] = ['label' => 'Click rate', 'value' => number_format((float) ($report['click_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
@@ -361,6 +358,50 @@
             transition: width .5s ease;
         }
 
+        .campaign-config-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .campaign-config-row {
+            display: grid;
+            grid-template-columns: minmax(130px, .32fr) minmax(0, 1fr);
+            gap: 12px;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(216, 221, 232, 0.08);
+        }
+
+        .campaign-config-row:last-child {
+            border-bottom: 0;
+        }
+
+        .campaign-config-label {
+            color: rgba(216, 221, 232, 0.58);
+            font-size: var(--fs-100);
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .campaign-config-value {
+            display: grid;
+            gap: 3px;
+            color: var(--c3);
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-config-value small {
+            color: rgba(216, 221, 232, 0.66);
+        }
+
+        @media (max-width: 620px) {
+            .campaign-config-row {
+                grid-template-columns: 1fr;
+                gap: 3px;
+            }
+        }
+
         @keyframes campaignProgressLoad {
             from {
                 transform: scaleX(0);
@@ -433,9 +474,9 @@
                 </div>
 
                 <div class="order-detail__contacts campaign-header-actions">
-                    <a class="order-detail__contact" href="{{ route('admin.campaigns.index') }}">
+                    <a class="order-detail__contact" href="{{ $backToCampaignsRoute }}">
                         <i class="bi bi-arrow-left"></i>
-                        <span>Lista</span>
+                        <span>{{ $normalizedStatus === 'archived' ? 'Archivio' : 'Lista' }}</span>
                     </a>
 
                     @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
@@ -481,6 +522,31 @@
                             <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
                                 <i class="bi bi-archive-fill"></i>
                                 <span>Archivia</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($canRestoreCampaign)
+                        <form action="{{ route('admin.campaigns.restore', $campaign) }}" method="POST">
+                            @csrf
+                            <button class="order-detail__contact" type="submit">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Ripristina come bozza</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($canDestroyCampaign)
+                        <form
+                            action="{{ route('admin.campaigns.destroy', $campaign) }}"
+                            method="POST"
+                            onsubmit="return confirm('Eliminare definitivamente questa campagna? Questa azione non è reversibile.');"
+                        >
+                            @csrf
+                            @method('DELETE')
+                            <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
+                                <i class="bi bi-trash-fill"></i>
+                                <span>Elimina definitivamente</span>
                             </button>
                         </form>
                     @endif
@@ -647,39 +713,43 @@
                         </h3>
                     </div>
 
-                    <div class="marketing-detail__grid">
-                        <article class="marketing-detail__fact">
-                            <span>Segmento</span>
-                            <strong>{{ $segmentLabel }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Tipo invio</span>
-                            <strong>{{ $channelLabel }}</strong>
-                            <small>{{ $consentBasisLabel }}</small>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Modello mail</span>
-                            <strong>{{ $modelName }}</strong>
-                            <small>{{ $modelObject }}</small>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Programmata</span>
-                            <strong>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}</strong>
-                            <small>{{ $requestedScheduledAt ? 'Richiesta: ' . $requestedScheduledAt : $scheduleWindowLabel }}</small>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Finestra</span>
-                            <strong>{{ $scheduleWindowLabel }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Promozioni collegate</span>
-                            <strong>{{ $promotionsCount }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>Audience assegnata</span>
-                            <strong>{{ $totalEmails }}</strong>
-                            <small>{{ $hasAssignments ? 'Assegnazioni create' : 'Nessuna assegnazione creata' }}</small>
-                        </article>
+                    <div class="campaign-config-list">
+                        <div class="campaign-config-row">
+                            <span class="campaign-config-label">Segmento</span>
+                            <span class="campaign-config-value">{{ $segmentLabel }}</span>
+                        </div>
+                        <div class="campaign-config-row">
+                            <span class="campaign-config-label">Tipo invio</span>
+                            <span class="campaign-config-value">
+                                {{ $channelLabel }}
+                                <small>{{ $consentBasisLabel }}</small>
+                            </span>
+                        </div>
+                        <div class="campaign-config-row">
+                            <span class="campaign-config-label">Modello mail</span>
+                            <span class="campaign-config-value">
+                                {{ $modelName }}
+                                <small>{{ $modelObject }}</small>
+                            </span>
+                        </div>
+                        <div class="campaign-config-row">
+                            <span class="campaign-config-label">Programmazione</span>
+                            <span class="campaign-config-value">
+                                {{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}
+                                <small>{{ $requestedScheduledAt ? 'Richiesta: ' . $requestedScheduledAt : $scheduleWindowLabel }}</small>
+                            </span>
+                        </div>
+                        <div class="campaign-config-row">
+                            <span class="campaign-config-label">Promozioni</span>
+                            <span class="campaign-config-value">{{ $promotionsCount }} collegate</span>
+                        </div>
+                        <div class="campaign-config-row">
+                            <span class="campaign-config-label">Audience</span>
+                            <span class="campaign-config-value">
+                                {{ $totalEmails }} assegnati
+                                <small>{{ $hasAssignments ? 'Assegnazioni create' : 'Nessuna assegnazione creata' }}</small>
+                            </span>
+                        </div>
                     </div>
 
                     @if ($isWhatsappMarketing)
@@ -726,22 +796,18 @@
                                 <article class="campaign-promotion-card">
                                     <div class="campaign-promotion-card__main">
                                         <div class="campaign-promotion-card__heading">
-                                            <span class="campaign-promotion-card__icon">
-                                                <i class="bi bi-megaphone-fill"></i>
-                                            </span>
                                             <div>
                                                 <strong>{{ $promotion->name }}</strong>
-                                                <small>{{ $promotion->slug }}</small>
+                                                <small>
+                                                    {{ $promotion->slug }}
+                                                    · {{ $caseUseLabels[$promotion->case_use] ?? ($promotion->case_use ?: 'Nessun ambito') }}
+                                                    · {{ $discountTypeLabels[$promotion->type_discount] ?? ($promotion->type_discount ?: 'Sconto non definito') }}
+                                                </small>
                                             </div>
-                                        </div>
-
-                                        <div class="campaign-promotion-card__meta">
                                             @include('admin.Marketing.partials.status-pill', [
                                                 'status' => $promotion->status,
                                                 'label' => $promotion->status,
                                             ])
-                                            <span>{{ $caseUseLabels[$promotion->case_use] ?? ($promotion->case_use ?: 'Nessun ambito') }}</span>
-                                            <span>{{ $discountTypeLabels[$promotion->type_discount] ?? ($promotion->type_discount ?: 'Sconto non definito') }}</span>
                                         </div>
                                     </div>
 
@@ -761,6 +827,7 @@
                                     </div>
 
                                     <div class="campaign-promotion-card__targets">
+                                        <strong>Target</strong>
                                         @forelse ($targetLabels as $target)
                                             <span>{{ ucfirst($target['type']) }}: {{ $target['name'] }}</span>
                                         @empty
@@ -903,6 +970,7 @@
                     'customerPromotions' => $customerPromotions,
                     'emptyText' => 'Nessuna assegnazione creata per questa campagna.',
                     'showSummary' => false,
+                    'compact' => true,
                 ])
             </div>
         </article>

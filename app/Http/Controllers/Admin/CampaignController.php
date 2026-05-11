@@ -16,6 +16,7 @@ use App\Services\Marketing\MarketingRunMarkerService;
 use App\Services\Marketing\MarketingReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
@@ -34,14 +35,11 @@ class CampaignController extends Controller
 
     public function index(MarketingCustomerSegmentService $segmentService)
     {
-        $campaigns = Campaign::query()
-            ->with(['model', 'promotions'])
-            ->withCount([
-                'customerPromotions',
-                'customerPromotions as sent_customer_promotions_count' => function ($query) {
-                    $query->whereNotNull('email_sent_at');
-                },
-            ])
+        $campaigns = $this->campaignListQuery()
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', 'archived');
+            })
             ->orderBy('updated_at', 'desc')
             ->simplePaginate(40);
 
@@ -50,6 +48,23 @@ class CampaignController extends Controller
             'statuses' => self::STATUSES,
             'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
+            'isArchivedView' => false,
+        ]);
+    }
+
+    public function archived(MarketingCustomerSegmentService $segmentService)
+    {
+        $campaigns = $this->campaignListQuery()
+            ->where('status', 'archived')
+            ->orderBy('updated_at', 'desc')
+            ->simplePaginate(40);
+
+        return view('admin.Campaigns.index', [
+            'campaigns' => $campaigns,
+            'statuses' => self::STATUSES,
+            'segments' => $segmentService->getSegmentOptions(),
+            'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
+            'isArchivedView' => true,
         ]);
     }
 
@@ -125,6 +140,8 @@ class CampaignController extends Controller
             'canPauseCampaign' => in_array($normalizedStatus, ['scheduled', 'running'], true),
             'canDraftCampaign' => in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true),
             'canArchiveCampaign' => in_array($normalizedStatus, ['draft', 'scheduled', 'running', 'paused', 'completed'], true),
+            'canRestoreCampaign' => $normalizedStatus === 'archived',
+            'canDestroyCampaign' => $normalizedStatus === 'archived' && ! $hasAssignments,
             'involvedCount' => $sendProgress['involved_count'],
             'sentCount' => $sendProgress['sent_count'],
             'pendingCount' => $sendProgress['pending_count'],
@@ -215,6 +232,48 @@ class CampaignController extends Controller
         return $this->updateStatus($campaign, 'archived', 'Campagna archiviata correttamente.');
     }
 
+    public function restore(Campaign $campaign)
+    {
+        if ($this->normalizedStatus($campaign->status) !== 'archived') {
+            return back()->withErrors([
+                'status' => 'Solo una campagna archiviata puo essere ripristinata.',
+            ]);
+        }
+
+        $campaign->update(['status' => 'draft']);
+        $this->refreshMarketingRunMarker();
+
+        return to_route('admin.campaigns.show', $campaign)
+            ->with('success', 'Campagna ripristinata come bozza.');
+    }
+
+    public function destroy(Campaign $campaign)
+    {
+        if ($this->normalizedStatus($campaign->status) !== 'archived') {
+            return back()->withErrors([
+                'status' => 'Archivia la campagna prima di eliminarla definitivamente.',
+            ]);
+        }
+
+        if ($campaign->customerPromotions()->exists()) {
+            return back()->withErrors([
+                'status' => 'Impossibile eliminare definitivamente: la campagna ha assegnazioni/storico collegato. Puoi archiviarla.',
+            ]);
+        }
+
+        $campaignName = $campaign->name;
+
+        DB::transaction(function () use ($campaign) {
+            $campaign->promotions()->detach();
+            $campaign->delete();
+        });
+
+        $this->refreshMarketingRunMarker();
+
+        return to_route('admin.campaigns.archived')
+            ->with('success', 'Campagna "' . $campaignName . '" eliminata definitivamente.');
+    }
+
     public function draft(Campaign $campaign)
     {
         return $this->updateStatus($campaign, 'draft', 'Campagna salvata come bozza.');
@@ -255,6 +314,18 @@ class CampaignController extends Controller
                 ->orderBy('name')
                 ->get(),
         ];
+    }
+
+    private function campaignListQuery()
+    {
+        return Campaign::query()
+            ->with(['model', 'promotions'])
+            ->withCount([
+                'customerPromotions',
+                'customerPromotions as sent_customer_promotions_count' => function ($query) {
+                    $query->whereNotNull('email_sent_at');
+                },
+            ]);
     }
 
     private function campaignData(

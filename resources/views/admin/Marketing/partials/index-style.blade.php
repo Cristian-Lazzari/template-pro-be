@@ -6,16 +6,16 @@
 
     .marketing-index-list {
         display: grid;
-        gap: 12px;
+        gap: 10px;
     }
 
     .marketing-index-row {
         display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(190px, .75fr) minmax(170px, .55fr) minmax(190px, auto);
-        gap: 14px;
-        align-items: center;
-        padding: 16px;
-        border-radius: 18px;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 1fr) minmax(150px, .5fr) minmax(150px, auto);
+        gap: 12px;
+        align-items: start;
+        padding: 13px 14px;
+        border-radius: 12px;
         border: 1px solid rgba(216, 221, 232, 0.12);
         background: rgba(216, 221, 232, 0.05);
         color: var(--c3);
@@ -26,7 +26,7 @@
     .marketing-index-block,
     .marketing-index-stats {
         display: grid;
-        gap: 8px;
+        gap: 7px;
     }
 
     .marketing-index-kicker,
@@ -36,6 +36,13 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        align-items: center;
+    }
+
+    .campaign-card__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
         align-items: center;
     }
 
@@ -49,7 +56,7 @@
     .marketing-index-title {
         margin: 0;
         color: var(--c3);
-        font-size: var(--fs-400);
+        font-size: var(--fs-300);
         line-height: 1.18;
         overflow-wrap: anywhere;
     }
@@ -64,6 +71,33 @@
         overflow-wrap: anywhere;
     }
 
+    .campaign-card__meta {
+        display: grid;
+        gap: 5px;
+    }
+
+    .campaign-meta-row {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 8px;
+        align-items: baseline;
+        color: rgba(216, 221, 232, 0.76);
+        font-size: var(--fs-200);
+        line-height: 1.35;
+    }
+
+    .campaign-meta-label {
+        color: rgba(216, 221, 232, 0.56);
+        font-size: var(--fs-100);
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .campaign-meta-value {
+        color: rgba(216, 221, 232, 0.86);
+        overflow-wrap: anywhere;
+    }
+
     .marketing-index-chip,
     .marketing-index-stat {
         display: inline-flex;
@@ -71,12 +105,12 @@
         max-width: 100%;
         gap: 6px;
         align-items: center;
-        padding: 7px 10px;
+        padding: 6px 9px;
         border-radius: 999px;
         border: 1px solid rgba(216, 221, 232, 0.12);
         background: rgba(9, 3, 51, 0.38);
         color: var(--c3);
-        font-size: var(--fs-200);
+        font-size: var(--fs-100);
         font-weight: 700;
         overflow-wrap: anywhere;
     }
@@ -101,6 +135,7 @@
 
     .marketing-index-actions {
         justify-content: flex-end;
+        align-items: stretch;
     }
 
     .marketing-index-actions form {
@@ -111,6 +146,50 @@
     .marketing-index-actions .order-detail__contact {
         max-width: 100%;
         justify-content: center;
+    }
+
+    .campaign-actions-compact {
+        display: grid;
+        gap: 7px;
+        justify-items: end;
+    }
+
+    .campaign-actions-compact__primary {
+        display: flex;
+        gap: 7px;
+        justify-content: flex-end;
+    }
+
+    .campaign-actions-compact__secondary {
+        position: relative;
+        justify-self: end;
+    }
+
+    .campaign-actions-compact__secondary summary {
+        list-style: none;
+        cursor: pointer;
+    }
+
+    .campaign-actions-compact__secondary summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .campaign-actions-compact__panel {
+        display: grid;
+        gap: 7px;
+        min-width: 150px;
+        margin-top: 7px;
+        padding: 8px;
+        border-radius: 10px;
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        background: rgba(9, 3, 51, 0.92);
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+        z-index: 2;
+    }
+
+    .campaign-actions-compact__panel form,
+    .campaign-actions-compact__panel .order-detail__contact {
+        width: 100%;
     }
 
     .marketing-index-danger {
@@ -124,12 +203,12 @@
 
     .marketing-index-progress {
         display: grid;
-        gap: 7px;
+        gap: 6px;
     }
 
     .marketing-index-progress-track {
         width: 100%;
-        height: 10px;
+        height: 7px;
         border-radius: 999px;
         overflow: hidden;
         border: 1px solid rgba(216, 221, 232, 0.12);
@@ -154,7 +233,13 @@
             align-items: stretch;
         }
 
+        .campaign-actions-compact,
         .marketing-index-actions {
+            justify-items: start;
+            justify-content: flex-start;
+        }
+
+        .campaign-actions-compact__primary {
             justify-content: flex-start;
         }
     }
@@ -165,8 +250,7 @@
             border-radius: 14px;
         }
 
-        .marketing-index-extra,
-        .marketing-index-secondary {
+        .marketing-index-extra {
             display: none !important;
         }
 
@@ -174,13 +258,23 @@
             font-size: var(--fs-300);
         }
 
-        .marketing-index-actions {
+        .campaign-actions-compact,
+        .campaign-actions-compact__primary {
+            width: 100%;
+        }
+
+        .campaign-actions-compact__primary {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .marketing-index-actions .order-detail__contact {
             width: 100%;
+        }
+
+        .campaign-meta-row {
+            grid-template-columns: 1fr;
+            gap: 2px;
         }
     }
 </style>
