@@ -109,8 +109,8 @@
 
     .campaign-row-card {
         position: relative;
-        display: grid;
-        grid-template-columns: minmax(220px, 1.35fr) minmax(150px, .65fr) minmax(160px, .7fr) minmax(150px, .7fr) minmax(132px, auto);
+        display: flex;
+        flex-wrap: wrap;
         gap: 14px;
         align-items: center;
         padding: 11px 12px;
@@ -129,12 +129,16 @@
     .campaign-row-card__identity,
     .campaign-row-card__status,
     .campaign-row-card__details,
-    .campaign-row-card__progress {
+    .campaign-row-card__progress,
+    .campaign-row-card__actions {
+        flex-basis: 0;
         min-width: 0;
     }
 
     .campaign-row-card__identity {
-        display: grid;
+        display: flex;
+        flex: 2.1 1 0;
+        flex-direction: column;
         gap: 6px;
     }
 
@@ -144,21 +148,32 @@
         font-size: var(--fs-400);
         font-weight: 900;
         line-height: 1.16;
-        overflow-wrap: anywhere;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .campaign-row-card__meta-line {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 6px 8px;
         align-items: center;
         color: rgba(216, 221, 232, 0.68);
         font-size: var(--fs-100);
         line-height: 1.25;
+        overflow: hidden;
+    }
+
+    .campaign-row-card__meta-line > span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .campaign-row-card__basis {
         display: inline-flex;
+        flex: 0 1 auto;
         max-width: 100%;
         align-items: center;
         padding: 3px 7px;
@@ -167,32 +182,45 @@
         background: rgba(45, 212, 191, 0.08);
         color: rgba(201, 255, 245, 0.9);
         font-weight: 850;
-        overflow-wrap: anywhere;
     }
 
     .campaign-row-card__status {
-        display: grid;
-        justify-items: start;
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        align-items: flex-start;
         gap: 6px;
         color: rgba(216, 221, 232, 0.66);
         font-size: var(--fs-100);
         line-height: 1.25;
     }
 
+    .campaign-row-card__status > span:not(.settings-state) {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .campaign-row-card__status .settings-state {
+        max-width: 100%;
         padding: 4px 8px;
         font-size: var(--fs-100);
         line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .campaign-row-card__details {
-        display: grid;
+        display: flex;
+        flex: 1.25 1 0;
+        flex-direction: column;
         gap: 5px;
     }
 
     .campaign-row-card__details div {
-        display: grid;
-        grid-template-columns: 58px minmax(0, 1fr);
+        display: flex;
         gap: 7px;
         align-items: baseline;
         font-size: var(--fs-100);
@@ -200,21 +228,31 @@
     }
 
     .campaign-row-card__details span {
+        flex: 0 0 auto;
         color: rgba(216, 221, 232, 0.52);
         font-weight: 900;
         text-transform: uppercase;
     }
 
     .campaign-row-card__details strong {
+        flex: 1 1 auto;
+        min-width: 0;
         color: rgba(216, 221, 232, 0.86);
         font-size: var(--fs-100);
         font-weight: 800;
-        overflow-wrap: anywhere;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .campaign-progress-compact {
-        display: grid;
+        display: flex;
+        flex-direction: column;
         gap: 6px;
+    }
+
+    .campaign-row-card__progress {
+        flex: 1.15 1 0;
     }
 
     .campaign-progress-compact__head {
@@ -250,7 +288,7 @@
     }
 
     .campaign-row-card__actions {
-        justify-self: end;
+        flex: 0 1 auto;
     }
 
     .campaign-row-card__actions.campaign-actions-compact {
@@ -285,14 +323,13 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        padding: 0;
+        padding: 8px;
         border-radius: 7px;
         border: 1px solid rgba(216, 221, 232, 0.13);
         background: rgba(9, 3, 51, 0.34);
         color: rgba(216, 221, 232, 0.78);
         cursor: pointer;
+        line-height: 1;
     }
 
     .campaign-row-card__icon-action:hover {
@@ -544,16 +581,18 @@
         }
 
         .campaign-row-card {
-            grid-template-columns: minmax(0, 1fr) minmax(140px, .45fr);
-            align-items: start;
+            align-items: flex-start;
         }
 
-        .campaign-row-card__identity {
-            grid-column: 1 / -1;
+        .campaign-row-card__identity,
+        .campaign-row-card__status,
+        .campaign-row-card__details,
+        .campaign-row-card__progress {
+            flex: 1 1 100%;
         }
 
         .campaign-row-card__actions {
-            justify-self: start;
+            flex: 1 1 auto;
         }
 
         .marketing-index-row {
@@ -591,29 +630,30 @@
         }
 
         .campaign-row-card {
-            grid-template-columns: minmax(0, 1fr);
             gap: 10px;
             padding: 11px;
         }
 
         .campaign-row-card__details {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            flex-direction: row;
+            flex-wrap: wrap;
         }
 
         .campaign-row-card__details div {
-            grid-template-columns: 1fr;
-            gap: 2px;
+            flex: 1 1 0;
+            min-width: 0;
+            gap: 4px;
         }
 
         .campaign-row-card__actions,
         .campaign-actions-compact {
-            justify-self: stretch;
-            justify-items: stretch;
+            width: 100%;
+            justify-content: flex-start;
         }
 
         .campaign-actions-compact__primary {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .campaign-actions-compact__secondary {
@@ -644,8 +684,8 @@
         }
 
         .campaign-actions-compact__primary {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .marketing-index-actions .order-detail__contact {

@@ -112,10 +112,10 @@
 
                     <article class="campaign-row-card">
                         <div class="campaign-row-card__identity">
-                            <h4 class="campaign-row-card__title">{{ $campaign->name }}</h4>
+                            <h4 class="campaign-row-card__title" title="{{ $campaign->name }}">{{ $campaign->name }}</h4>
                             <div class="campaign-row-card__meta-line">
-                                <span class="campaign-row-card__basis">{{ $consentBasisLabel }}</span>
-                                <span>{{ $segmentLabel }}</span>
+                                <span class="campaign-row-card__basis" title="{{ $consentBasisLabel }}">{{ $consentBasisLabel }}</span>
+                                <span title="{{ $segmentLabel }}">{{ $segmentLabel }}</span>
                             </div>
                         </div>
 
@@ -124,17 +124,17 @@
                                 'status' => $normalizedStatus,
                                 'label' => $statusLabel,
                             ])
-                            <span>{{ $scheduledLabel === '-' ? 'Non programmata' : $scheduledLabel }}</span>
+                            <span title="{{ $scheduledLabel === '-' ? 'Non programmata' : $scheduledLabel }}">{{ $scheduledLabel === '-' ? 'Non programmata' : $scheduledLabel }}</span>
                         </div>
 
                         <div class="campaign-row-card__details">
                             <div>
                                 <span>Modello</span>
-                                <strong>{{ $campaign->model?->name ?? '-' }}</strong>
+                                <strong title="{{ $campaign->model?->name ?? '-' }}">{{ $campaign->model?->name ?? '-' }}</strong>
                             </div>
                             <div>
                                 <span>Promo</span>
-                                <strong>{{ $campaign->promotions->count() }} collegate</strong>
+                                <strong title="{{ $campaign->promotions->count() }} collegate">{{ $campaign->promotions->count() }} collegate</strong>
                             </div>
                         </div>
 
