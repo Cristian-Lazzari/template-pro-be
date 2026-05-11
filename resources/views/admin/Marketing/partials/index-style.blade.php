@@ -253,6 +253,19 @@
         justify-self: end;
     }
 
+    .campaign-row-card__actions.campaign-actions-compact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .campaign-row-card__actions form {
+        display: flex;
+        margin: 0;
+    }
+
     .campaign-row-card__actions .order-detail__contact {
         min-height: 0;
         padding: 7px 9px;
@@ -266,6 +279,38 @@
         font-size: var(--fs-200);
         width: 1em;
         height: 1em;
+    }
+
+    .campaign-row-card__icon-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 7px;
+        border: 1px solid rgba(216, 221, 232, 0.13);
+        background: rgba(9, 3, 51, 0.34);
+        color: rgba(216, 221, 232, 0.78);
+        cursor: pointer;
+    }
+
+    .campaign-row-card__icon-action:hover {
+        border-color: rgba(216, 221, 232, 0.22);
+        background: rgba(216, 221, 232, 0.07);
+        color: var(--c3);
+    }
+
+    .campaign-row-card__icon-action--danger {
+        border-color: rgba(255, 141, 141, 0.2);
+        background: rgba(206, 59, 59, 0.08);
+        color: rgba(255, 180, 180, 0.9);
+    }
+
+    .campaign-row-card__icon-action--danger:hover {
+        border-color: rgba(255, 141, 141, 0.32);
+        background: rgba(206, 59, 59, 0.14);
+        color: rgba(255, 220, 220, 0.98);
     }
 
     .marketing-index-row {

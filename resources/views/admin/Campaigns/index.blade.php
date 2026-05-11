@@ -107,9 +107,7 @@
                         $canEdit = ! $isArchivedView && in_array($normalizedStatus, ['draft', 'paused'], true);
                         $canRestore = $isArchivedView && $normalizedStatus === 'archived';
                         $canDeletePermanently = $isArchivedView;
-                        $hasSecondaryActions = $isArchivedView
-                            ? ($canRestore || $canDeletePermanently)
-                            : in_array($normalizedStatus, ['draft', 'paused', 'scheduled', 'running', 'completed'], true);
+                        $canArchive = ! $isArchivedView && in_array($normalizedStatus, ['scheduled', 'running', 'paused', 'draft', 'completed'], true);
                     @endphp
 
                     <article class="campaign-row-card">
@@ -168,66 +166,52 @@
                                 @endif
                             </div>
 
-                            @if ($hasSecondaryActions)
-                                <details class="campaign-actions-compact__secondary">
-                                    <summary class="order-detail__contact marketing-index-muted">
-                                        <i class="bi bi-three-dots"></i>
-                                        <span>Azioni</span>
-                                    </summary>
-                                    <div class="campaign-actions-compact__panel">
-                                        @if ($canRestore)
-                                            <form class="marketing-index-secondary" action="{{ route('admin.campaigns.restore', $campaign) }}" method="POST">
-                                                @csrf
-                                                <button class="order-detail__contact" type="submit">
-                                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                                    <span>Ripristina come bozza</span>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        @if ($canDeletePermanently)
-                                            <form
-                                                class="marketing-index-secondary"
-                                                action="{{ route('admin.campaigns.destroy', $campaign) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Eliminare definitivamente questa campagna? Questa azione non è reversibile.');"
-                                            >
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="order-detail__contact marketing-index-danger" type="submit">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                    <span>Elimina definitivamente</span>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        @if (! $isArchivedView && in_array($normalizedStatus, ['draft', 'paused'], true))
-                                            <form class="marketing-index-secondary" action="{{ route('admin.campaigns.activate', $campaign) }}" method="POST">
-                                                @csrf
-                                                <button class="order-detail__contact" type="submit">
-                                                    <i class="bi bi-check2-circle"></i>
-                                                    <span>Programma</span>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        @if (! $isArchivedView && in_array($normalizedStatus, ['scheduled', 'running'], true))
-                                            <form class="marketing-index-secondary" action="{{ route('admin.campaigns.pause', $campaign) }}" method="POST">
-                                                @csrf
-                                                <button class="order-detail__contact marketing-index-muted" type="submit">
-                                                    <i class="bi bi-pause-circle"></i>
-                                                    <span>Pausa</span>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        @if (! $isArchivedView && in_array($normalizedStatus, ['scheduled', 'running', 'paused', 'draft', 'completed'], true))
-                                            <form class="marketing-index-secondary" action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
-                                                @csrf
-                                                <button class="order-detail__contact marketing-index-danger" type="submit">
-                                                    <i class="bi bi-archive-fill"></i>
-                                                    <span>Archivia</span>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </details>
+                            @if ($canArchive)
+                                <form class="marketing-index-secondary" action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
+                                    @csrf
+                                    <button
+                                        class="campaign-row-card__icon-action campaign-row-card__icon-action--danger"
+                                        type="submit"
+                                        aria-label="Archivia campagna"
+                                        title="Archivia campagna"
+                                    >
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if ($canRestore)
+                                <form class="marketing-index-secondary" action="{{ route('admin.campaigns.restore', $campaign) }}" method="POST">
+                                    @csrf
+                                    <button
+                                        class="campaign-row-card__icon-action"
+                                        type="submit"
+                                        aria-label="Ripristina come bozza"
+                                        title="Ripristina come bozza"
+                                    >
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if ($canDeletePermanently)
+                                <form
+                                    class="marketing-index-secondary"
+                                    action="{{ route('admin.campaigns.destroy', $campaign) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Eliminare definitivamente questa campagna? Questa azione non è reversibile.');"
+                                >
+                                    @csrf
+                                    @method('DELETE')
+                                    <button
+                                        class="campaign-row-card__icon-action campaign-row-card__icon-action--danger"
+                                        type="submit"
+                                        aria-label="Elimina definitivamente"
+                                        title="Elimina definitivamente"
+                                    >
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
                             @endif
                         </div>
                     </article>
