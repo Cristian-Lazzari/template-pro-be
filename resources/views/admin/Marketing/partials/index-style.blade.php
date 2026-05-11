@@ -155,9 +155,8 @@
 
     .campaign-row-card__meta-line {
         display: flex;
-        flex-wrap: nowrap;
-        gap: 6px 8px;
-        align-items: center;
+        gap: 6px;
+        align-items: flex-start;
         color: rgba(216, 221, 232, 0.68);
         font-size: var(--fs-100);
         line-height: 1.25;
@@ -183,7 +182,15 @@
         color: rgba(201, 255, 245, 0.9);
         font-weight: 850;
     }
-
+    strong.promo{
+        font-family: 'Courier New', Courier, monospace !important;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1px 3px;
+        font-size: 90% !important;
+        font-weight: 100 !important;
+        border-radius: 5px;
+        color: rgba(14, 183, 146) !important;
+    }
     .campaign-row-card__status {
         display: flex;
         flex: 1 1 0;

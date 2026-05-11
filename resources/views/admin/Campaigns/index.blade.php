@@ -113,9 +113,9 @@
                     <article class="campaign-row-card">
                         <div class="campaign-row-card__identity">
                             <h4 class="campaign-row-card__title" title="{{ $campaign->name }}">{{ $campaign->name }}</h4>
+                            <span class="campaign-row-card__basis" title="{{ $consentBasisLabel }}">{{ $consentBasisLabel }}</span>
                             <div class="campaign-row-card__meta-line">
-                                <span class="campaign-row-card__basis" title="{{ $consentBasisLabel }}">{{ $consentBasisLabel }}</span>
-                                <span title="{{ $segmentLabel }}">{{ $segmentLabel }}</span>
+                                <span class="w-100" title="{{ $segmentLabel }}">{{ $segmentLabel }}</span>
                             </div>
                         </div>
 
@@ -134,7 +134,7 @@
                             </div>
                             <div>
                                 <span>Promo</span>
-                                <strong title="{{ $campaign->promotions->count() }} collegate">{{ $campaign->promotions->count() }} collegate</strong>
+                                <strong class="promo">{{ $campaign->promotions[0]->slug }} </strong>
                             </div>
                         </div>
 
