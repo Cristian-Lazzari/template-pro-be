@@ -56,16 +56,41 @@ class PromotionController extends Controller
 
     public function index()
     {
+        return $this->indexView(false);
+    }
+
+    public function archived()
+    {
+        return $this->indexView(true);
+    }
+
+    private function indexView(bool $archived)
+    {
         $promotions = Promotion::query()
-            ->withCount('targets')
+            ->with('targets')
+            ->withCount([
+                'targets',
+                'customerPromotions as assigned_customers_count',
+                'customerPromotions as used_customers_count' => function ($query) {
+                    $query->whereNotNull('promo_used');
+                },
+            ])
+            ->when(
+                $archived,
+                fn ($query) => $query->where('status', 'archived'),
+                fn ($query) => $query->where('status', '!=', 'archived')
+            )
             ->orderBy('updated_at', 'desc')
             ->simplePaginate(40);
 
         return view('admin.Promotions.index', [
             'promotions' => $promotions,
+            'isArchivedView' => $archived,
             'statuses' => self::STATUSES,
             'caseUses' => self::CASE_USES,
             'discountTypes' => self::DISCOUNT_TYPES,
+            'targetTypes' => self::TARGET_TYPES,
+            'targetLabels' => $this->targetLabels($this->targetOptions()),
         ]);
     }
 
@@ -95,8 +120,7 @@ class PromotionController extends Controller
             return $promotion;
         });
 
-        return to_route('admin.promotions.show', $promotion)
-            ->with('success', 'Promozione creata correttamente.');
+        return $this->redirectAfterSave($request, $promotion, 'Promozione creata correttamente.');
     }
 
     public function show(Promotion $promotion, MarketingReportService $reportService)
@@ -136,8 +160,7 @@ class PromotionController extends Controller
             $this->syncTargets($promotion, $request);
         });
 
-        return to_route('admin.promotions.show', $promotion)
-            ->with('success', 'Promozione aggiornata correttamente.');
+        return $this->redirectAfterSave($request, $promotion, 'Promozione aggiornata correttamente.');
     }
 
     public function publish(Promotion $promotion)
@@ -158,6 +181,28 @@ class PromotionController extends Controller
     public function draft(Promotion $promotion)
     {
         return $this->updateStatus($promotion, 'draft', 'Promozione salvata come bozza.');
+    }
+
+    public function destroy(Promotion $promotion)
+    {
+        if ($promotion->status !== 'draft') {
+            return back()->withErrors([
+                'status' => 'Puoi eliminare direttamente solo le bozze. Per le altre promozioni usa Archivia.',
+            ]);
+        }
+
+        $promotionName = $promotion->name;
+
+        DB::transaction(function () use ($promotion) {
+            $promotion->campaigns()->detach();
+            $promotion->automations()->detach();
+            $promotion->customerPromotions()->delete();
+            $promotion->targets()->delete();
+            $promotion->delete();
+        });
+
+        return to_route('admin.promotions.index')
+            ->with('success', 'Bozza "' . $promotionName . '" eliminata insieme ai suoi collegamenti.');
     }
 
     private function formOptions(?Promotion $promotion = null): array
@@ -211,6 +256,17 @@ class PromotionController extends Controller
     private function statusFromSubmitAction(Request $request): string
     {
         return $request->input('submit_action') === 'activate' ? 'active' : 'draft';
+    }
+
+    private function redirectAfterSave(Request $request, Promotion $promotion, string $successMessage)
+    {
+        if ($request->input('submit_action') === 'draft') {
+            return to_route('admin.promotions.index')
+                ->with('success', 'Promozione salvata come bozza. Puoi completarla dalla lista promozioni.');
+        }
+
+        return to_route('admin.promotions.show', $promotion)
+            ->with('success', $successMessage);
     }
 
     private function syncTargets(Promotion $promotion, Request $request): void

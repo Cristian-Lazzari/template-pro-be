@@ -249,9 +249,24 @@ class CampaignController extends Controller
 
     public function destroy(Campaign $campaign)
     {
+        if ($this->normalizedStatus($campaign->status) === 'draft') {
+            $campaignName = $campaign->name;
+
+            DB::transaction(function () use ($campaign) {
+                $campaign->promotions()->detach();
+                $campaign->customerPromotions()->delete();
+                $campaign->delete();
+            });
+
+            $this->refreshMarketingRunMarker();
+
+            return to_route('admin.campaigns.index')
+                ->with('success', 'Bozza "' . $campaignName . '" eliminata insieme ai suoi collegamenti.');
+        }
+
         if ($this->normalizedStatus($campaign->status) !== 'archived') {
             return back()->withErrors([
-                'status' => 'Archivia la campagna prima di eliminarla definitivamente.',
+                'status' => 'Puoi eliminare direttamente solo le bozze. Per le altre campagne usa Archivia.',
             ]);
         }
 
@@ -458,14 +473,14 @@ class CampaignController extends Controller
         CampaignScheduleService $scheduleService,
         string $baseMessage
     ) {
-        $redirect = to_route('admin.campaigns.show', $campaign);
-
         if ($request->input('submit_action') !== 'activate') {
             $this->refreshMarketingRunMarker();
 
-            return $redirect->with('success', $baseMessage . ' Salvata come bozza.');
+            return to_route('admin.campaigns.index')
+                ->with('success', 'Campagna salvata come bozza. Puoi completarla dalla lista campagne.');
         }
 
+        $redirect = to_route('admin.campaigns.show', $campaign);
         $campaign->refresh();
         $result = $assignmentService->assign($campaign, 500, false);
         $this->updateEstimatedDuration($campaign, $scheduleService);

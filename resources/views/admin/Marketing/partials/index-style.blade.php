@@ -571,10 +571,463 @@
         background: linear-gradient(90deg, rgba(74, 222, 128, 0.9), rgba(45, 212, 191, 0.86));
     }
 
+    .campaign-index-board,
+    .promotion-index-board {
+        display: grid;
+        gap: 16px;
+    }
+
+    .campaign-list-render,
+    .promotion-list-render {
+        display: grid;
+        gap: 18px;
+    }
+
+    .campaign-list-row {
+        display: grid;
+        grid-template-columns:
+            minmax(270px, 1.78fr)
+            minmax(160px, 0.92fr)
+            minmax(240px, 1.2fr)
+            minmax(86px, 0.38fr)
+            minmax(150px, 0.52fr);
+        gap: 22px;
+        align-items: center;
+        min-height: 114px;
+        padding: 16px 20px;
+        border-radius: 16px;
+        background: rgba(37, 30, 82, 0.94);
+        color: var(--c3);
+    }
+
+    .campaign-list-row--draft {
+        opacity: .4;
+    }
+
+    .campaign-list-identity,
+    .campaign-list-state,
+    .campaign-list-rule,
+    .campaign-list-actions {
+        min-width: 0;
+    }
+
+    .campaign-list-identity {
+        display: grid;
+        gap: 20px;
+    }
+
+    .campaign-list-heading {
+        display: grid;
+        grid-template-columns: minmax(0, max-content) minmax(0, max-content);
+        gap: 22px;
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .campaign-list-heading h4 {
+        min-width: 0;
+        max-width: 270px;
+        margin: 0;
+        color: #ffffff;
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.08;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-list-consent {
+        display: inline-flex;
+        max-width: 220px;
+        min-height: 30px;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 16px;
+        border-radius: 999px;
+        font-size: var(--fs-100);
+        font-weight: 900;
+        line-height: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-list-consent--soft {
+        background: rgba(120, 98, 89, 0.78);
+        color: rgba(255, 184, 88, 0.98);
+    }
+
+    .campaign-list-consent--explicit,
+    .campaign-list-consent--whatsapp {
+        background: rgba(34, 82, 115, 0.78);
+        color: rgba(84, 230, 238, 0.98);
+    }
+
+    .campaign-list-identity p {
+        min-width: 0;
+        margin: 0;
+        color: #ffffff;
+        font-size: var(--fs-200);
+        font-weight: 500;
+        line-height: 1.18;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-list-state {
+        display: grid;
+        gap: 20px;
+    }
+
+    .campaign-list-status {
+        min-width: 0;
+        color: rgba(31, 201, 164, 0.98);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-list-status--draft,
+    .campaign-list-status--archived,
+    .campaign-list-status--paused {
+        color: rgba(216, 221, 232, 0.74);
+    }
+
+    .campaign-list-state span {
+        min-width: 0;
+        color: #ffffff;
+        font-size: var(--fs-300);
+        font-weight: 500;
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-list-rule {
+        display: grid;
+        gap: 22px;
+    }
+
+    .campaign-list-rule div {
+        display: grid;
+        grid-template-columns: minmax(82px, max-content) minmax(0, 1fr);
+        gap: 18px;
+        align-items: baseline;
+    }
+
+    .campaign-list-rule span {
+        color: rgba(216, 221, 232, 0.74);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.1;
+    }
+
+    .campaign-list-rule strong {
+        min-width: 0;
+        color: #ffffff;
+        font-size: var(--fs-300);
+        font-weight: 500;
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .campaign-list-promo {
+        font-family: "Courier New", Courier, monospace;
+        color: rgba(31, 211, 171, 0.96) !important;
+        font-weight: 500 !important;
+    }
+
+    .campaign-list-usage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .promotion-list-donut.campaign-list-donut {
+        width: 72px;
+        height: 72px;
+    }
+
+    .promotion-list-donut.campaign-list-donut::after {
+        inset: 13px;
+    }
+
+    .promotion-list-row {
+        display: grid;
+        grid-template-columns:
+            minmax(270px, 1.85fr)
+            minmax(160px, 0.85fr)
+            minmax(230px, 1.18fr)
+            minmax(90px, 0.42fr)
+            minmax(150px, 0.5fr);
+        gap: 22px;
+        align-items: center;
+        min-height: 122px;
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: rgba(37, 30, 82, 0.94);
+        color: var(--c3);
+    }
+
+    .promotion-list-row--draft {
+        opacity: .4;
+    }
+
+    .promotion-list-identity,
+    .promotion-list-validity,
+    .promotion-list-rule,
+    .promotion-list-actions {
+        min-width: 0;
+    }
+
+    .promotion-list-identity {
+        display: grid;
+        gap: 20px;
+    }
+
+    .promotion-list-heading,
+    .promotion-list-code {
+        display: grid;
+        grid-template-columns: minmax(0, max-content) minmax(0, max-content);
+        gap: 22px;
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .promotion-list-heading h4 {
+        min-width: 0;
+        max-width: 260px;
+        margin: 0;
+        color: #ffffff;
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.08;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .promotion-list-case {
+        display: inline-flex;
+        max-width: 220px;
+        min-height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 18px;
+        border-radius: 999px;
+        background: rgba(34, 82, 115, 0.78);
+        color: rgba(31, 211, 171, 0.96);
+        font-size: var(--fs-100);
+        font-weight: 900;
+        line-height: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .promotion-list-slug,
+    .promotion-list-reuse {
+        min-width: 0;
+        font-family: "Courier New", Courier, monospace;
+        font-size: var(--fs-200);
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .promotion-list-slug {
+        max-width: 270px;
+        color: rgba(31, 211, 171, 0.96);
+    }
+
+    .promotion-list-reuse {
+        max-width: 270px;
+        color: rgba(31, 211, 171, 0.96);
+    }
+
+    .promotion-list-reuse--off {
+        color: rgba(255, 112, 116, 0.98);
+    }
+
+    .promotion-list-validity {
+        display: grid;
+        gap: 20px;
+    }
+
+    .promotion-list-validity span,
+    .promotion-list-rule span {
+        color: rgba(216, 221, 232, 0.74);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.1;
+    }
+
+    .promotion-list-validity strong,
+    .promotion-list-rule strong {
+        min-width: 0;
+        color: #ffffff;
+        font-size: var(--fs-300);
+        font-weight: 500;
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .promotion-list-rule {
+        display: grid;
+        gap: 22px;
+    }
+
+    .promotion-list-rule div {
+        display: grid;
+        grid-template-columns: minmax(86px, max-content) minmax(0, 1fr);
+        gap: 18px;
+        align-items: baseline;
+    }
+
+    .promotion-list-usage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .promotion-list-donut {
+        position: relative;
+        display: inline-flex;
+        width: 78px;
+        height: 78px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid rgba(31, 211, 171, 0.95);
+        background: conic-gradient(
+            rgba(31, 201, 164, 0.98) var(--promotion-usage),
+            rgba(9, 3, 51, 0.84) 0
+        );
+        color: #ffffff;
+        flex: 0 0 auto;
+    }
+
+    .promotion-list-donut::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border-radius: inherit;
+        background: rgba(37, 30, 82, 0.98);
+    }
+
+    .promotion-list-donut strong {
+        position: relative;
+        z-index: 1;
+        color: #ffffff;
+        font-size: var(--fs-100);
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .promotion-list-draft-pill {
+        display: inline-flex;
+        min-width: 104px;
+        min-height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 18px;
+        border-radius: 999px;
+        background: rgba(164, 169, 190, 0.44);
+        color: #ffffff;
+        font-size: var(--fs-100);
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .promotion-list-actions {
+        display: grid;
+        gap: 10px;
+        justify-items: stretch;
+    }
+
+    .promotion-list-actions form {
+        display: flex;
+        margin: 0;
+    }
+
+    .promotion-list-action {
+        display: inline-flex;
+        width: 100%;
+        min-height: 50px;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 18px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        background: transparent;
+        font-size: var(--fs-100);
+        font-weight: 900;
+        line-height: 1.1;
+        text-align: center;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .promotion-list-action--primary {
+        border-color: rgba(31, 211, 171, 0.8);
+        background: rgba(34, 82, 115, 0.66);
+        color: rgba(31, 211, 171, 0.98);
+    }
+
+    .promotion-list-action--primary:hover {
+        background: rgba(31, 211, 171, 0.16);
+        color: rgba(215, 255, 247, 1);
+    }
+
+    .promotion-list-action--danger {
+        border-color: rgba(255, 112, 116, 0.86);
+        background: rgba(120, 53, 82, 0.6);
+        color: rgba(255, 112, 116, 1);
+    }
+
+    .promotion-list-action--danger:hover {
+        background: rgba(255, 112, 116, 0.16);
+        color: rgba(255, 226, 226, 1);
+    }
+
     .marketing-index-pager {
         display: flex;
         justify-content: center;
         margin-top: 16px;
+    }
+
+    @media (max-width: 1180px) {
+        .campaign-list-row {
+            grid-template-columns: minmax(240px, 1.3fr) minmax(140px, 0.72fr) minmax(210px, 1fr) 76px minmax(136px, 0.56fr);
+            gap: 14px;
+        }
+
+        .campaign-list-usage {
+            justify-content: flex-start;
+        }
+
+        .promotion-list-row {
+            grid-template-columns: minmax(240px, 1.35fr) minmax(130px, 0.65fr) minmax(200px, 1fr) 78px minmax(136px, 0.55fr);
+            gap: 14px;
+        }
+
+        .promotion-list-usage {
+            justify-content: flex-start;
+        }
     }
 
     @media (max-width: 920px) {
@@ -615,6 +1068,40 @@
 
         .campaign-actions-compact__primary {
             justify-content: flex-start;
+        }
+
+        .campaign-list-row {
+            grid-template-columns: minmax(0, 1fr) minmax(180px, 0.55fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .campaign-list-state,
+        .campaign-list-rule {
+            gap: 12px;
+        }
+
+        .campaign-list-actions {
+            grid-column: 1 / -1;
+            grid-template-columns: repeat(2, minmax(0, 160px));
+            justify-content: start;
+        }
+
+        .promotion-list-row {
+            grid-template-columns: minmax(0, 1fr) minmax(180px, 0.55fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .promotion-list-rule,
+        .promotion-list-validity {
+            gap: 12px;
+        }
+
+        .promotion-list-actions {
+            grid-column: 1 / -1;
+            grid-template-columns: repeat(2, minmax(0, 160px));
+            justify-content: start;
         }
     }
 
@@ -702,6 +1189,209 @@
         .campaign-meta-row {
             grid-template-columns: 1fr;
             gap: 2px;
+        }
+
+        .campaign-list-render {
+            gap: 12px;
+        }
+
+        .campaign-list-row {
+            grid-template-columns: minmax(0, 1fr);
+            min-height: 0;
+            gap: 12px;
+            padding: 13px;
+            border-radius: 14px;
+        }
+
+        .campaign-list-identity {
+            gap: 10px;
+        }
+
+        .campaign-list-heading {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+            align-items: start;
+        }
+
+        .campaign-list-heading h4,
+        .campaign-list-consent {
+            max-width: 100%;
+        }
+
+        .campaign-list-heading h4 {
+            font-size: var(--fs-300);
+            line-height: 1.16;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-list-consent {
+            justify-self: start;
+            min-height: 28px;
+            padding: 4px 11px;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .campaign-list-identity p {
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-list-state {
+            grid-template-columns: minmax(82px, max-content) minmax(0, 1fr);
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .campaign-list-rule div {
+            grid-template-columns: minmax(74px, max-content) minmax(0, 1fr);
+            gap: 12px;
+        }
+
+        .campaign-list-status,
+        .campaign-list-rule span {
+            font-size: var(--fs-100);
+            line-height: 1.2;
+        }
+
+        .campaign-list-state span,
+        .campaign-list-rule strong {
+            font-size: var(--fs-200);
+            line-height: 1.2;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-list-usage {
+            justify-content: flex-start;
+        }
+
+        .promotion-list-donut.campaign-list-donut {
+            width: 58px;
+            height: 58px;
+        }
+
+        .promotion-list-donut.campaign-list-donut::after {
+            inset: 10px;
+        }
+
+        .campaign-list-actions {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            justify-content: stretch;
+            gap: 8px;
+        }
+
+        .campaign-list-actions form {
+            min-width: 0;
+        }
+
+        .campaign-list-actions .promotion-list-action {
+            min-width: 0;
+            padding-inline: 10px;
+            white-space: normal;
+        }
+
+        .promotion-list-render {
+            gap: 12px;
+        }
+
+        .promotion-list-row {
+            grid-template-columns: minmax(0, 1fr);
+            min-height: 0;
+            gap: 12px;
+            padding: 13px;
+            border-radius: 14px;
+        }
+
+        .promotion-list-identity {
+            gap: 10px;
+        }
+
+        .promotion-list-heading {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+            align-items: start;
+        }
+
+        .promotion-list-code,
+        .promotion-list-usage {
+            display: none;
+        }
+
+        .promotion-list-heading h4,
+        .promotion-list-case {
+            max-width: 100%;
+        }
+
+        .promotion-list-heading h4 {
+            font-size: var(--fs-300);
+            line-height: 1.16;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .promotion-list-case {
+            justify-self: start;
+            min-height: 28px;
+            padding: 4px 11px;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .promotion-list-validity {
+            display: grid;
+            grid-template-columns: minmax(74px, max-content) minmax(0, 1fr);
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .promotion-list-rule div {
+            grid-template-columns: minmax(74px, max-content) minmax(0, 1fr);
+            gap: 12px;
+        }
+
+        .promotion-list-validity span,
+        .promotion-list-rule span {
+            font-size: var(--fs-100);
+            line-height: 1.2;
+        }
+
+        .promotion-list-validity strong,
+        .promotion-list-rule strong {
+            font-size: var(--fs-200);
+            line-height: 1.2;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .promotion-list-actions {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            justify-content: stretch;
+            gap: 8px;
+        }
+
+        .promotion-list-actions form {
+            min-width: 0;
+        }
+
+        .promotion-list-actions .promotion-list-action {
+            min-width: 0;
+            padding-inline: 10px;
+            white-space: normal;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .campaign-list-actions,
+        .promotion-list-actions {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .promotion-list-action {
+            min-height: 42px;
         }
     }
 </style>

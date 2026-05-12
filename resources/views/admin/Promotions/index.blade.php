@@ -8,6 +8,16 @@
     </div>
 @endif
 
+@if ($errors->any())
+    <div class="alert alert-danger dashboard-home__flash" role="alert">
+        {{ $errors->first() }}
+    </div>
+@endif
+
+@php
+    $isArchivedView = $isArchivedView ?? false;
+@endphp
+
 <div class="dash_page marketing-index-page">
     @include('admin.Marketing.partials.index-style')
 
@@ -15,7 +25,7 @@
         'items' => [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
             ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Promozioni'],
+            ['label' => $isArchivedView ? 'Promozioni archiviate' : 'Promozioni'],
         ],
     ])
 
@@ -23,121 +33,160 @@
         <div class="order-detail__meta">
             <div class="order-detail__status">
                 <span class="order-detail__status-icon order-detail__status-icon--active">
-                    <i class="bi bi-megaphone-fill"></i>
+                    <i class="bi {{ $isArchivedView ? 'bi-archive-fill' : 'bi-megaphone-fill' }}"></i>
                 </span>
                 <strong>Marketing</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">Promozioni</h1>
-            <p>Regole promozionali, validita e target collegati.</p>
+            <h1 class="menu-dashboard__title">{{ $isArchivedView ? 'Promozioni archiviate' : 'Promozioni' }}</h1>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
-            <a href="{{ route('admin.promotions.create') }}" class="order-detail__contact">
-                <i class="bi bi-cloud-plus-fill"></i>
-                <span>Crea nuova</span>
-            </a>
-            @include('admin.Marketing.partials.area-links', ['current' => 'promotions'])
+            @if ($isArchivedView)
+                <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Lista promozioni</span>
+                </a>
+            @else
+                <a href="{{ route('admin.promotions.archived') }}" class="order-detail__contact">
+                    <i class="bi bi-archive-fill"></i>
+                    <span>Archiviate</span>
+                </a>
+                <a href="{{ route('admin.promotions.create') }}" class="order-detail__contact">
+                    <i class="bi bi-cloud-plus-fill"></i>
+                    <span>Crea nuova</span>
+                </a>
+            @endif
         </div>
     </header>
 
-    <section class="order-detail__section mt-4">
-        <div class="order-detail__section-head">
-            <h3>
-                <span class="order-detail__section-icon">
-                    <i class="bi bi-list-check"></i>
-                </span>
-                Elenco promozioni
-            </h3>
-        </div>
-
+    <section class="promotion-index-board mt-4" aria-label="{{ $isArchivedView ? 'Promozioni archiviate' : 'Elenco promozioni' }}">
         @if ($promotions->count() > 0)
-            <div class="marketing-index-list">
+            <div class="promotion-list-render">
                 @foreach ($promotions as $promotion)
                     @php
-                        $discountLabel = $promotion->discount !== null
-                            ? number_format((float) $promotion->discount, 2, ',', '.')
-                            : '-';
-                        $discountType = $discountTypes[$promotion->type_discount] ?? ($promotion->type_discount ?: 'Sconto non impostato');
+                        $currencySymbol = $appCurrency['symbol'] ?? '€';
+                        $formatDecimal = static fn ($value) => number_format((float) $value, 2, ',', '.');
+                        $isDraft = $promotion->status === 'draft';
+                        $isReusable = data_get($promotion->metadata, 'reusable') === true;
+                        $assignedCount = (int) ($promotion->assigned_customers_count ?? $promotion->total_activation ?? 0);
+                        $usedCount = (int) ($promotion->used_customers_count ?? $promotion->total_used ?? 0);
+                        $usageRate = $assignedCount > 0 ? min(100, round(($usedCount / $assignedCount) * 100)) : 0;
+                        $usageLabel = $usageRate . '%';
+                        $caseUseLabel = match ($promotion->case_use) {
+                            'take_away' => 'asporto',
+                            'delivery' => 'domicilio',
+                            'generic' => 'asporto / domicilio',
+                            'table' => 'TAVOLI',
+                            default => $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: 'generica'),
+                        };
+                        $discountLabel = match ($promotion->type_discount) {
+                            'fixed' => $promotion->discount !== null ? $formatDecimal($promotion->discount) . ' ' . $currencySymbol : '-',
+                            'percentage' => $promotion->discount !== null ? $formatDecimal($promotion->discount) . ' %' : '-',
+                            'gift' => 'Omaggio',
+                            default => '-',
+                        };
+                        $validityLabel = match (true) {
+                            (bool) $promotion->permanent => 'Permanente',
+                            filled($promotion->schedule_at) && filled($promotion->expiring_at) => $promotion->schedule_at->format('d/m') . ' - ' . $promotion->expiring_at->format('d/m'),
+                            filled($promotion->schedule_at) => 'Dal ' . $promotion->schedule_at->format('d/m'),
+                            filled($promotion->expiring_at) => 'Fino al ' . $promotion->expiring_at->format('d/m'),
+                            default => '-',
+                        };
+                        $specificTargets = $promotion->targets
+                            ->filter(fn ($target) => $target->target_type !== \App\Models\PromotionTarget::TYPE_GENERIC)
+                            ->values();
+                        $firstTarget = $specificTargets->first();
+                        $targetLabel = null;
+
+                        if ($firstTarget) {
+                            $targetKey = $firstTarget->target_type . ':' . ($firstTarget->target_id ?? '');
+                            $targetLabel = $targetLabels[$targetKey]
+                                ?? (($targetTypes[$firstTarget->target_type] ?? 'Target') . ($firstTarget->target_id ? ' #' . $firstTarget->target_id : ''));
+
+                            if ($specificTargets->count() > 1) {
+                                $targetLabel .= ' +' . ($specificTargets->count() - 1);
+                            }
+                        }
+
+                        $minimumLabel = match (true) {
+                            $promotion->minimum_pretest === null => 'Nessuno',
+                            $promotion->case_use === 'table' => rtrim(rtrim(number_format((float) $promotion->minimum_pretest, 1, ',', '.'), '0'), ',') . ' ospiti',
+                            default => $formatDecimal($promotion->minimum_pretest) . ' ' . $currencySymbol,
+                        };
+                        $secondaryLabel = $targetLabel ? 'Target' : ($promotion->case_use === 'table' ? 'Minimo' : 'Target');
+                        $secondaryValue = $targetLabel ?: ($promotion->case_use === 'table' ? $minimumLabel : 'Carrello');
                     @endphp
 
-                    <article class="marketing-index-row">
-                        <div class="marketing-index-main">
-                            <div class="marketing-index-kicker">
-                                <i class="bi bi-megaphone-fill"></i>
-                                <span>Promozione</span>
-                                @include('admin.Marketing.partials.status-pill', [
-                                    'status' => $promotion->status,
-                                    'label' => $statuses[$promotion->status] ?? $promotion->status,
-                                ])
+                    <article class="promotion-list-row @if ($isDraft) promotion-list-row--draft @endif">
+                        <div class="promotion-list-identity">
+                            <div class="promotion-list-heading">
+                                <h4 title="{{ $promotion->name }}">{{ $promotion->name }}</h4>
+                                <span class="promotion-list-case" title="{{ $caseUseLabel }}">{{ $caseUseLabel }}</span>
                             </div>
 
-                            <h4 class="marketing-index-title">{{ $promotion->name }}</h4>
-
-                            <div class="marketing-index-meta">
-                                <span class="marketing-index-chip">{{ $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: 'Generica') }}</span>
-                                <span class="marketing-index-chip marketing-index-chip--accent">{{ $promotion->permanent ? 'Permanente' : 'Programmabile' }}</span>
-                                <span class="marketing-index-chip marketing-index-extra">{{ $promotion->targets_count }} target</span>
-                            </div>
-                        </div>
-
-                        <div class="marketing-index-block">
-                            <p class="marketing-index-copy">{{ $promotion->slug }}</p>
-                            <div class="marketing-index-meta marketing-index-extra">
-                                <span>Dal {{ $promotion->schedule_at?->format('d/m/Y H:i') ?? '-' }}</span>
-                                <span>Al {{ $promotion->expiring_at?->format('d/m/Y H:i') ?? '-' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="marketing-index-stats">
-                            <div class="marketing-index-stat-row">
-                                <span class="marketing-index-stat">
-                                    <strong>{{ $discountLabel }}</strong>
-                                    <span>{{ $discountType }}</span>
+                            <div class="promotion-list-code">
+                                <span class="promotion-list-slug" title="{{ $promotion->slug }}">{{ $promotion->slug }}</span>
+                                <span class="promotion-list-reuse @if (! $isReusable) promotion-list-reuse--off @endif">
+                                    {{ $isReusable ? 'RIUTILIZZABILE' : 'NON RIUTILIZZABILE' }}
                                 </span>
                             </div>
-                            <div class="marketing-index-meta marketing-index-extra">
-                                <span>{{ $promotion->total_activation }} coinvolti</span>
-                                <span>{{ $promotion->total_sent }} invii</span>
-                                <span>{{ $promotion->total_used }} usi</span>
+                        </div>
+
+                        <div class="promotion-list-validity">
+                            <span>Validità</span>
+                            <strong title="{{ $validityLabel }}">{{ $validityLabel }}</strong>
+                        </div>
+
+                        <div class="promotion-list-rule">
+                            <div>
+                                <span>Sconto</span>
+                                <strong title="{{ $discountLabel }}">{{ $discountLabel }}</strong>
+                            </div>
+                            <div>
+                                <span>{{ $secondaryLabel }}</span>
+                                <strong title="{{ $secondaryValue }}">{{ $secondaryValue }}</strong>
                             </div>
                         </div>
 
-                        <div class="marketing-index-actions">
-                            <a class="order-detail__contact" href="{{ route('admin.promotions.show', $promotion) }}">
-                                <i class="bi bi-eye-fill"></i>
-                                <span>Apri</span>
-                            </a>
-                            <a class="order-detail__contact" href="{{ route('admin.promotions.edit', $promotion) }}">
-                                <i class="bi bi-pencil-square"></i>
-                                <span>Modifica</span>
-                            </a>
-                            @if (in_array($promotion->status, ['draft', 'paused'], true))
-                                <form class="marketing-index-secondary" action="{{ route('admin.promotions.publish', $promotion) }}" method="POST">
-                                    @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-check2-circle"></i>
-                                        <span>Attiva</span>
-                                    </button>
-                                </form>
+                        <div class="promotion-list-usage">
+                            @if (! $isDraft)
+                                <div
+                                    class="promotion-list-donut"
+                                    style="--promotion-usage: {{ $usageRate }}%;"
+                                    role="img"
+                                    aria-label="{{ $usedCount }} usi su {{ $assignedCount }} assegnazioni"
+                                    title="{{ $usedCount }} usi su {{ $assignedCount }} assegnazioni"
+                                >
+                                    <strong>{{ $usageLabel }}</strong>
+                                </div>
                             @endif
-                            @if ($promotion->status === 'active')
-                                <form class="marketing-index-secondary" action="{{ route('admin.promotions.pause', $promotion) }}" method="POST">
+                        </div>
+
+                        <div class="promotion-list-actions">
+                            @if ($isDraft)
+                                <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.promotions.edit', $promotion) }}">
+                                    Completa
+                                </a>
+                                <form action="{{ route('admin.promotions.destroy', $promotion) }}" method="POST" onsubmit="return confirm('Eliminare questa bozza e i collegamenti collegati?');">
                                     @csrf
-                                    <button class="order-detail__contact marketing-index-muted" type="submit">
-                                        <i class="bi bi-pause-circle"></i>
-                                        <span>Pausa</span>
+                                    @method('DELETE')
+                                    <button class="promotion-list-action promotion-list-action--danger" type="submit">
+                                        Elimina
                                     </button>
                                 </form>
-                            @endif
-                            @if ($promotion->status !== 'archived')
-                                <form class="marketing-index-secondary" action="{{ route('admin.promotions.archive', $promotion) }}" method="POST">
-                                    @csrf
-                                    <button class="order-detail__contact marketing-index-danger" type="submit">
-                                        <i class="bi bi-archive-fill"></i>
-                                        <span>Archivia</span>
-                                    </button>
-                                </form>
+                            @else
+                                <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.promotions.show', $promotion) }}">
+                                    Apri
+                                </a>
+                                @if ($promotion->status !== 'archived')
+                                    <form action="{{ route('admin.promotions.archive', $promotion) }}" method="POST">
+                                        @csrf
+                                        <button class="promotion-list-action promotion-list-action--danger" type="submit">
+                                            Archivia
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
                         </div>
                     </article>
@@ -150,11 +199,15 @@
         @else
             <div class="dashboard-home__details-placeholder">
                 <span class="dashboard-home__details-placeholder-icon">
-                    <i class="bi bi-megaphone-fill"></i>
+                    <i class="bi {{ $isArchivedView ? 'bi-archive-fill' : 'bi-megaphone-fill' }}"></i>
                 </span>
                 <div>
-                    <strong>Nessuna promozione presente.</strong>
-                    <p>Crea la prima regola promozionale per collegarla a campagne o automazioni.</p>
+                    <strong>{{ $isArchivedView ? 'Nessuna promozione archiviata.' : 'Nessuna promozione presente.' }}</strong>
+                    <p>
+                        {{ $isArchivedView
+                            ? 'Quando archivi una promozione, la ritrovi qui.'
+                            : 'Crea la prima regola promozionale per collegarla a campagne o automazioni.' }}
+                    </p>
                 </div>
             </div>
         @endif

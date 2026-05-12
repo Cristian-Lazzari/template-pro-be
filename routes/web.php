@@ -90,10 +90,12 @@ Route::middleware(['auth', 'verified'])
 
         // Rotte promotion marketing
 
+        Route::get('promotions/archived', [PromotionController::class, 'archived'])->name('promotions.archived');
         Route::post('promotions/{promotion}/publish', [PromotionController::class, 'publish'])->name('promotions.publish');
         Route::post('promotions/{promotion}/pause',   [PromotionController::class, 'pause'])->name('promotions.pause');
         Route::post('promotions/{promotion}/archive', [PromotionController::class, 'archive'])->name('promotions.archive');
         Route::post('promotions/{promotion}/draft',   [PromotionController::class, 'draft'])->name('promotions.draft');
+        Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
 
         // Rotte campaign marketing
 
