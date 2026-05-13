@@ -7,13 +7,27 @@
 @endphp
 
  
+<header class="menu-dashboard__hero order-detail__summary">
+    <div class="order-detail__meta">
+        <div class="order-detail__status">
+            <span class="order-detail__status-icon order-detail__status-icon--warning">
+                <i class="bi bi-card-checklist"></i>
+            </span>
+            <strong>{{ __('admin.Menu') }}</strong>
+        </div>
+        <h1 class="menu-dashboard__title">{{ __('admin.Modifica_il_Menu') }}</h1>
+    </div>
+    <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+        <a href="{{ route('admin.menus.index') }}" class="order-detail__contact">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ __('admin.Annulla') }}</span>
+        </a>
+    </div>
+</header>
+
 <form class="creation"  action="{{ route('admin.menus.update', $menu) }}"  enctype="multipart/form-data"  method="POST">
     @csrf
     @method('PUT')
-    <a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">{{__('admin.Annulla')}}</a>
-    
-    <h1>{{ __('admin.Modifica_il_Menu') }}</h1>
-    
     <section class="base">
         <div class="split">
             <div>

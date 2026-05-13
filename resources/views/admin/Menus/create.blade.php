@@ -7,12 +7,26 @@
 @endphp
 
  
+<header class="menu-dashboard__hero order-detail__summary">
+    <div class="order-detail__meta">
+        <div class="order-detail__status">
+            <span class="order-detail__status-icon order-detail__status-icon--active">
+                <i class="bi bi-card-checklist"></i>
+            </span>
+            <strong>{{ __('admin.Menu') }}</strong>
+        </div>
+        <h1 class="menu-dashboard__title">{{ __('admin.Crea_un_nuovo_Menu') }}</h1>
+    </div>
+    <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+        <a href="{{ route('admin.menus.index') }}" class="order-detail__contact">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ __('admin.Annulla') }}</span>
+        </a>
+    </div>
+</header>
+
 <form class="creation"  action="{{ route('admin.menus.store') }}"  enctype="multipart/form-data"  method="POST">
-    <a class="my_btn_5 ml-auto" href="{{ route('admin.menus.index') }}">{{__('admin.Annulla')}}</a>
-    
-    <h1>{{ __('admin.Crea_un_nuovo_Menu') }}</h1>
     @csrf
-    
     <section class="base">
         <div class="split">
             <div>

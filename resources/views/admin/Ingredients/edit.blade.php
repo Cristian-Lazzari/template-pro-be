@@ -11,7 +11,24 @@ $moneyInputStep = \App\Support\Currency::inputStep();
 
  
 
-<h1>{{ __('admin.Modifica_ingrediente') }}</h1>
+<header class="menu-dashboard__hero order-detail__summary">
+    <div class="order-detail__meta">
+        <div class="order-detail__status">
+            <span class="order-detail__status-icon order-detail__status-icon--warning">
+                <i class="bi bi-basket2-fill"></i>
+            </span>
+            <strong>{{ __('admin.Ingredienti') }}</strong>
+        </div>
+        <h1 class="menu-dashboard__title">{{ __('admin.Modifica_ingrediente') }}</h1>
+    </div>
+    <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+        <a href="{{ route('admin.ingredients.index') }}" class="order-detail__contact">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ __('admin.Annulla') }}</span>
+        </a>
+    </div>
+</header>
+
 <form class="creation"  action="{{ route('admin.ingredients.update' , $ingredient) }}"  enctype="multipart/form-data"  method="POST">
     @method('PUT')
     @csrf

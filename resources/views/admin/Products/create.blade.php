@@ -16,12 +16,26 @@
 @endif
 
  
+<header class="menu-dashboard__hero order-detail__summary">
+    <div class="order-detail__meta">
+        <div class="order-detail__status">
+            <span class="order-detail__status-icon order-detail__status-icon--active">
+                <i class="bi bi-fork-knife"></i>
+            </span>
+            <strong>{{ __('admin.Prodotti') }}</strong>
+        </div>
+        <h1 class="menu-dashboard__title">{{ __('admin.Crea_nuovo_p') }}</h1>
+    </div>
+    <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+        <a href="{{ route('admin.products.index') }}" class="order-detail__contact">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ __('admin.Annulla') }}</span>
+        </a>
+    </div>
+</header>
+
 <form class="creation"  action="{{ route('admin.products.store') }}"  enctype="multipart/form-data"  method="POST">
     @csrf
-    <a class="my_btn_5 ml-auto" href="{{ route('admin.products.index') }}">{{__('admin.Annulla')}}</a>
-    
-    <h1>{{__('admin.Crea_nuovo_p')}}</h1>
-    
     <section class="base">
         <div class="split">
             <div>

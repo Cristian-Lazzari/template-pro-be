@@ -24,18 +24,23 @@
 
  
 <div class="dash_page">
-    <h1>
-        <i class="bi bi-fork-knife" style="font-size: var(--fs-500)"></i>
-        Menu
-    </h1>
-    
-    <div class="action-page">
-        <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.menus.create') }}">
-            <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
-
-            {{__('admin.Crea_nuovo')}}
-        </a>
-    </div>
+    <header class="menu-dashboard__hero order-detail__summary">
+        <div class="order-detail__meta">
+            <div class="order-detail__status">
+                <span class="order-detail__status-icon order-detail__status-icon--active">
+                    <i class="bi bi-card-checklist"></i>
+                </span>
+                <strong>{{ __('admin.Menu') }}</strong>
+            </div>
+            <h1 class="menu-dashboard__title">{{ __('admin.Menu') }}</h1>
+        </div>
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <a href="{{ route('admin.menus.create') }}" class="order-detail__contact">
+                <i class="bi bi-cloud-plus-fill"></i>
+                <span>{{ __('admin.Crea_nuovo') }}</span>
+            </a>
+        </div>
+    </header>
     <div class="menu-container">
         @if ($fix->count() == 0)
             <div class="alert alert-warning">

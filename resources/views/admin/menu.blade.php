@@ -72,7 +72,7 @@
 
             </div>
 
-            <div class="menu-dashboard__hero-actions">
+            <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
                 <a href="{{ route('admin.products.index') }}" class="order-detail__contact">
                     <x-icon name="box-seam" />
                     <span>{{ __('admin.Prodotti') }}</span>

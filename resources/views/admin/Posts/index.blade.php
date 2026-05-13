@@ -32,19 +32,27 @@
 @endif
  
 <div class="dash_page">
-    <h1>
-        <i class="bi bi-images"></i>
-        Contenuti multimediali 
-    </h1>
-
-    <div class="action-page">
-        <a class="my_btn_1 create m-1 w-auto" href="{{ route('admin.posts.create') }}">
-            <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
-            {{__('admin.Crea_nuovo')}}</a>
-        <a class="my_btn_2 btn_delete trash m-1 w-auto" href="{{ route('admin.posts.archived') }}">
-            <i class="bi bi-trash-fill" style="font-size: var(--fs-400)"></i>
-            {{__('admin.Archivio')}}</a>
-    </div>
+    <header class="menu-dashboard__hero order-detail__summary">
+        <div class="order-detail__meta">
+            <div class="order-detail__status">
+                <span class="order-detail__status-icon order-detail__status-icon--active">
+                    <i class="bi bi-images"></i>
+                </span>
+                <strong>Contenuti</strong>
+            </div>
+            <h1 class="menu-dashboard__title">Contenuti multimediali</h1>
+        </div>
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <a href="{{ route('admin.posts.archived') }}" class="order-detail__contact">
+                <i class="bi bi-archive-fill"></i>
+                <span>{{ __('admin.Archivio') }}</span>
+            </a>
+            <a href="{{ route('admin.posts.create') }}" class="order-detail__contact">
+                <i class="bi bi-cloud-plus-fill"></i>
+                <span>{{ __('admin.Crea_nuovo') }}</span>
+            </a>
+        </div>
+    </header>
     <div class="filters">
         <div class="bar">
             <input type="checkbox" class="check" id="f">

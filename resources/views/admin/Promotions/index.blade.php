@@ -82,7 +82,7 @@
                         };
                         $discountLabel = match ($promotion->type_discount) {
                             'fixed' => $promotion->discount !== null ? $formatDecimal($promotion->discount) . ' ' . $currencySymbol : '-',
-                            'percentage' => $promotion->discount !== null ? $formatDecimal($promotion->discount) . ' %' : '-',
+                            'percentage' => $promotion->discount !== null ? (int) $promotion->discount . ' %' : '-',
                             'gift' => 'Omaggio',
                             default => '-',
                         };

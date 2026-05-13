@@ -27,6 +27,7 @@ i{
     --fs-500: clamp(24px, 1.42rem + 0.95vw, 30px);
     --fs-600: clamp(28px, 1.72rem + 1.4vw, 38px);
     --fs-700: clamp(32px, 2.05rem + 3vw, 64px);
+    --admin-page-section-gap: clamp(18px, 2vw, 26px);
 }
 
 @mixin flex-layout($display: flex, $direction: row, $align: null, $justify: null, $gap: null, $wrap: null) {
@@ -369,6 +370,23 @@ textarea {
 
     }
 }
+
+.dash_page > .menu-dashboard__hero.order-detail__summary,
+.main-container-page > .menu-dashboard__hero.order-detail__summary{
+    margin-bottom: var(--admin-page-section-gap);
+}
+
+.dash_page > .menu-dashboard__hero.order-detail__summary + *,
+.main-container-page > .menu-dashboard__hero.order-detail__summary + *{
+    margin-top: 0 !important;
+}
+
+.dashboard-home > .menu-dashboard__hero.order-detail__summary,
+.catalog-index-page > .menu-dashboard__hero.order-detail__summary,
+.menu-dashboard-page > .menu-dashboard__hero.order-detail__summary{
+    margin-bottom: 0;
+}
+
 body{
     background-color: var(--c1); 
     background-size: cover;
@@ -1653,7 +1671,7 @@ button.order-detail__contact{
 .menu-dashboard-page{
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--admin-page-section-gap);
     width: 100%;
 }
 
@@ -5341,7 +5359,7 @@ svg.to_see, .bi.to_see{
     --catalog-danger-text: #ffd7df;
     max-width: 1240px;
     margin: 0 auto;
-    @include flex-layout($direction: column, $gap: 18px);
+    @include flex-layout($direction: column, $gap: var(--admin-page-section-gap));
     color: var(--c3);
 
     > h1{
@@ -7576,7 +7594,7 @@ section{
     width: min(1120px, 100%);
     margin: 0 auto;
     display: grid;
-    gap: 18px;
+    gap: var(--admin-page-section-gap);
 
     &__flash{
         @include surface-card($radius: 18px, $background: linear-gradient(145deg, var(--c2_op), rgba(216, 221, 232, 0.08)), $border-color: var(--c2_op));

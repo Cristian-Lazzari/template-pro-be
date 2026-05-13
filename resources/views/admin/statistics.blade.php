@@ -17,7 +17,7 @@
 @endphp
 
 <div class="dash_page statistics-page">
-    <header class="statistics-page__hero order-detail__summary">
+    <header class="menu-dashboard__hero order-detail__summary">
         <div class="order-detail__meta">
             <div class="order-detail__status">
                 <span class="order-detail__status-icon order-detail__status-icon--active">

@@ -26,8 +26,24 @@
 
 
 <div class="dash_page catalog-index-page">
-    <h1><i class="bi bi-basket2-fill"></i>{{__('admin.Ingredienti')}}</h1>
-    <div class="action-page catalog-index-toolbar">
+    <header class="menu-dashboard__hero order-detail__summary">
+        <div class="order-detail__meta">
+            <div class="order-detail__status">
+                <span class="order-detail__status-icon order-detail__status-icon--active">
+                    <i class="bi bi-basket2-fill"></i>
+                </span>
+                <strong>{{ __('admin.Ingredienti') }}</strong>
+            </div>
+            <h1 class="menu-dashboard__title">{{ __('admin.Ingredienti') }}</h1>
+        </div>
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <a href="{{ route('admin.ingredients.create') }}" class="order-detail__contact">
+                <i class="bi bi-cloud-plus-fill"></i>
+                <span>{{ __('admin.Crea_nuovo') }}</span>
+            </a>
+        </div>
+    </header>
+    <div class="catalog-index-toolbar">
         <div class="catalog-toolbar-search">
             <i class="bi bi-search catalog-toolbar-search__icon"></i>
             <input
@@ -40,10 +56,6 @@
                 data-catalog-empty="#ingredientsSearchEmpty"
             >
         </div>
-        <a class="catalog-action-btn catalog-action-btn--primary catalog-action-btn--with-label" href="{{ route('admin.ingredients.create') }}">
-            <i class="bi bi-cloud-plus-fill"></i>
-            {{__('admin.Crea_nuovo')}}
-        </a>
     </div>
     <div id="ingredientsSearchEmpty" class="catalog-search-empty d-none" role="status">
         {{ __('admin.Nessun_risultato_ricerca') }}

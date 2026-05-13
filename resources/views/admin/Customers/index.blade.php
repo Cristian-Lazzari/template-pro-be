@@ -745,39 +745,27 @@
         ],
     ])
 
-    <section class="order-detail order-detail--active customer-page__hero">
-        <header class="order-detail__header">
-            <div class="customer-page__hero-copy">
-                <div class="order-detail__status">
-                    <span class="order-detail__status-icon order-detail__status-icon--active">
-                        <x-icon name="people-fill" />
-                    </span>
-                    <strong>{{ __('admin.Clienti') }}</strong>
-                </div>
-
-                <div class="customer-page__hero-title">
-                    <h1>{{ __('admin.Clienti') }}</h1>
-                    <p>
-                        Qui vedi subito chi torna spesso, chi ha gia ordinato o prenotato
-                        e chi merita un attenzione in piu dopo il servizio.
-                    </p>
-                </div>
+    <header class="menu-dashboard__hero order-detail__summary">
+        <div class="order-detail__meta">
+            <div class="order-detail__status">
+                <span class="order-detail__status-icon order-detail__status-icon--active">
+                    <x-icon name="people-fill" />
+                </span>
+                <strong>{{ __('admin.Clienti') }}</strong>
             </div>
-
-            <div class="order-detail__contacts">
-                <a href="#customerProfileSettings" class="order-detail__contact">
-                    <x-icon name="sliders" />
-                    <span>Configura profilo cliente</span>
-                </a>
-
-
-                <a href="{{ route('admin.marketing') }}" class="order-detail__contact">
-                    <x-icon name="grid-1x2-fill" />
-                    <span>Area marketing</span>
-                </a>
-
-            </div>
-        </header>
+            <h1 class="menu-dashboard__title">{{ __('admin.Clienti') }}</h1>
+        </div>
+        <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
+            <a href="#customerProfileSettings" class="order-detail__contact">
+                <x-icon name="sliders" />
+                <span>Configura profilo cliente</span>
+            </a>
+            <a href="{{ route('admin.marketing') }}" class="order-detail__contact">
+                <x-icon name="grid-1x2-fill" />
+                <span>Area marketing</span>
+            </a>
+        </div>
+    </header>
 
         <div class="customer-page__summary-grid">
             <article class="customer-page__summary-card">
