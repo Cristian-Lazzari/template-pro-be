@@ -186,7 +186,7 @@ class MarketingBenvenutoSeeder extends Seeder
             [
                 'name'    => 'Marco',
                 'surname' => 'Ferretti',
-                'email'   => 'futureplus.commercile@gmial.com',
+                'email'   => 'futureplus.commerciale@gmial.com',
                 'phone'   => '3357654321',
             ],
             [
