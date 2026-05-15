@@ -269,6 +269,127 @@ class SettingController extends Controller
         return redirect()->back()->with('success', $m);   
     }
 
+    public function quickUpdate(Request $request)
+    {
+        $field = $request->input('field');
+        $value = $request->input('value');
+
+        $setting = Setting::all()->keyBy('name');
+
+        switch ($field) {
+            case 'tavoli':
+                $setting['Prenotazione Tavoli']->status = (int) $value;
+                $setting['Prenotazione Tavoli']->save();
+                break;
+
+            case 'asporto':
+                $setting['Prenotazione Asporti']->status = (int) $value;
+                $setting['Prenotazione Asporti']->save();
+                break;
+
+            case 'domicilio':
+                $setting['Possibilità di consegna a domicilio']->status = (int) $value;
+                $setting['Possibilità di consegna a domicilio']->save();
+                break;
+
+            case 'ferie':
+                $setting['Periodo di Ferie']->status = (int) $value;
+                $setting['Periodo di Ferie']->save();
+                break;
+
+            case 'promo':
+                $setting['Promozione Tavoli']->status = (int) $value;
+                $setting['Promozione Tavoli']->save();
+                break;
+
+            case 'lang':
+                $prop = json_decode($setting['Lingua']->property, true);
+                $prop['default'] = $value;
+                $setting['Lingua']->property = json_encode($prop);
+                $setting['Lingua']->save();
+                break;
+
+            case 'currency':
+                $currency = Currency::normalize($value);
+                $currencySetting = $setting['Valuta'] ?? Setting::firstOrCreate(
+                    ['name' => 'Valuta'],
+                    ['status' => 1, 'property' => json_encode(Currency::defaultDefinition())]
+                );
+                $currencySetting->property = json_encode($currency);
+                $currencySetting->save();
+                break;
+
+            case 'asporto_pay':
+                $prop = json_decode($setting['Prenotazione Asporti']->property, true);
+                $prop['pay'] = (int) $value;
+                $setting['Prenotazione Asporti']->property = json_encode($prop);
+                $setting['Prenotazione Asporti']->save();
+                break;
+
+            case 'min_price_a':
+                $prop = json_decode($setting['Prenotazione Asporti']->property, true);
+                $prop['min_price'] = Currency::parseInput($value);
+                $setting['Prenotazione Asporti']->property = json_encode($prop);
+                $setting['Prenotazione Asporti']->save();
+                break;
+
+            case 'domicilio_pay':
+                $prop = json_decode($setting['Possibilità di consegna a domicilio']->property, true);
+                $prop['pay'] = (int) $value;
+                $setting['Possibilità di consegna a domicilio']->property = json_encode($prop);
+                $setting['Possibilità di consegna a domicilio']->save();
+                break;
+
+            case 'min_price_d':
+                $prop = json_decode($setting['Possibilità di consegna a domicilio']->property, true);
+                $prop['min_price'] = Currency::parseInput($value);
+                $setting['Possibilità di consegna a domicilio']->property = json_encode($prop);
+                $setting['Possibilità di consegna a domicilio']->save();
+                break;
+
+            case 'delivery_cost':
+                $prop = json_decode($setting['Possibilità di consegna a domicilio']->property, true);
+                $prop['delivery_cost'] = Currency::parseInput($value);
+                $setting['Possibilità di consegna a domicilio']->property = json_encode($prop);
+                $setting['Possibilità di consegna a domicilio']->save();
+                break;
+
+            case 'from':
+            case 'to':
+                $prop = json_decode($setting['Periodo di Ferie']->property, true);
+                $prop[$field] = $value;
+                $setting['Periodo di Ferie']->property = json_encode($prop);
+                $setting['Periodo di Ferie']->save();
+                break;
+
+            case 'promo_table_title':
+                $prop = json_decode($setting['Promozione Tavoli']->property, true);
+                $prop['title'] = $value;
+                $setting['Promozione Tavoli']->property = json_encode($prop);
+                $setting['Promozione Tavoli']->save();
+                break;
+
+            case 'promo_table_body':
+                $prop = json_decode($setting['Promozione Tavoli']->property, true);
+                $prop['body'] = $value;
+                $setting['Promozione Tavoli']->property = json_encode($prop);
+                $setting['Promozione Tavoli']->save();
+                break;
+
+            case 'telefono':
+                $prop = json_decode($setting['Contatti']->property, true);
+                $prop['telefono'] = $value;
+                $setting['Contatti']->property = json_encode($prop);
+                $setting['Contatti']->save();
+                break;
+
+            default:
+                return response()->json(['error' => 'Campo non riconosciuto: ' . $field], 422);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     public function cancelDates(Request $request){
         $data = $request->all();
         $s = Setting::where('name', 'advanced')->first();

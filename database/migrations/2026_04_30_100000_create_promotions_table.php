@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable();
             $table->string('slug')->unique();
             $table->string('status')->default('draft')->index();
             $table->string('case_use')->nullable()->index();

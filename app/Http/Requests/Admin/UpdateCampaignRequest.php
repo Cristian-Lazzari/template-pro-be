@@ -17,13 +17,18 @@ class UpdateCampaignRequest extends FormRequest
     public function rules(): array
     {
         $segmentService = app(MarketingCustomerSegmentService::class);
+        $campaignType = $this->input('campaign_type');
+        $segmentKeys = filled($campaignType)
+            ? $segmentService->validSegmentKeysForCampaignType(Campaign::normalizeCampaignType($campaignType))
+            : $segmentService->validSegmentKeys();
 
         return [
             'name' => ['required', 'string', 'max:255'],
             'submit_action' => ['required', Rule::in(['activate', 'draft'])],
+            'campaign_type' => ['nullable', Rule::in(Campaign::campaignTypeValues())],
             'channel' => ['nullable', Rule::in(Campaign::channelValues())],
             'consent_basis' => ['nullable', Rule::in(Campaign::consentBasisValues())],
-            'segment' => ['nullable', Rule::in($segmentService->validSegmentKeys())],
+            'segment' => ['nullable', Rule::in($segmentKeys)],
             'model_id' => ['nullable', 'exists:models,id'],
             'schedule_window' => ['nullable', Rule::in(['next_available', 'today_afternoon', 'today_evening', 'tomorrow_morning', 'tomorrow_lunch', 'tomorrow_evening'])],
             'scheduled_at' => [

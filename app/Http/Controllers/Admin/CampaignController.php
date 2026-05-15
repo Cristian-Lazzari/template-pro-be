@@ -72,6 +72,7 @@ class CampaignController extends Controller
     {
         $campaign = new Campaign([
             'status' => 'draft',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
             'channel' => Campaign::CHANNEL_EMAIL,
             'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
             'segment' => 'all',
@@ -318,10 +319,11 @@ class CampaignController extends Controller
         return [
             'statuses' => self::STATUSES,
             'segments' => $segments,
+            'campaignTypeOptions' => Campaign::campaignTypeOptions(),
             'consentBasisOptions' => Campaign::consentBasisOptions(),
             'audienceCount' => $this->campaignAudienceCount($campaign),
             'audienceAvailability' => $this->campaignAudienceAvailability($audienceBuilder),
-            'audienceMatrix' => $this->campaignAudienceMatrix($audienceBuilder, array_keys($segments)),
+            'audienceMatrix' => $this->campaignAudienceMatrix($audienceBuilder, $segmentService->validSegmentKeys()),
             'scheduleWindows' => $this->campaignFormScheduleWindows(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
@@ -352,8 +354,11 @@ class CampaignController extends Controller
     {
         $data = $request->validated();
         $segmentService ??= app(MarketingCustomerSegmentService::class);
-        $data['segment'] = $segmentService->normalizeSegment($data['segment'] ?? null);
-        $data['consent_basis'] = Campaign::normalizeConsentBasis($data['consent_basis'] ?? null);
+        $data['campaign_type'] = Campaign::normalizeCampaignType(
+            ($data['campaign_type'] ?? null) ?: ($campaign?->campaign_type ?? Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING)
+        );
+        $data['segment'] = $segmentService->normalizeSegmentForCampaignType($data['segment'] ?? null, $data['campaign_type']);
+        $data['consent_basis'] = Campaign::consentBasisForCampaignType($data['campaign_type']);
         $data['channel'] = Campaign::channelForConsentBasis($data['consent_basis']);
         $metadata = is_array($campaign?->metadata) ? $campaign->metadata : [];
         $requestedAt = $request->input('scheduled_at');

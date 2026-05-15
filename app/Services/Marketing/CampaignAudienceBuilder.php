@@ -19,7 +19,11 @@ class CampaignAudienceBuilder
 
     public function queryForCampaign(Campaign $campaign): Builder
     {
-        return $this->queryForSegmentAndConsentBasis($campaign->segment, $campaign->consentBasis());
+        return $this->segmentService->queryForSegmentAndConsentBasis(
+            $campaign->segment,
+            $campaign->consentBasis(),
+            $campaign->campaignType()
+        );
     }
 
     public function countForCampaign(Campaign $campaign): int

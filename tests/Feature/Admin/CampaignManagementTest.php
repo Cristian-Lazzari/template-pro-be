@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
 use App\Models\User;
+use App\Services\Marketing\CampaignAudienceBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -35,6 +36,170 @@ class CampaignManagementTest extends TestCase
             'name' => 'Campagna da finire',
             'status' => 'draft',
         ]);
+    }
+
+    public function test_campaign_creation_with_soft_marketing_forces_soft_consent_and_accepts_base_segment(): void
+    {
+        $admin = User::factory()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.campaigns.store'), $this->campaignPayload([
+            'name' => 'Campagna soft marketing',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_SOFT_MARKETING,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'reservations',
+        ]));
+
+        $response->assertRedirect(route('admin.campaigns.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('campaigns', [
+            'name' => 'Campagna soft marketing',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_SOFT_MARKETING,
+            'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+            'segment' => 'reservations',
+        ]);
+    }
+
+    public function test_campaign_creation_with_explicit_email_marketing_forces_explicit_consent_and_accepts_base_segment(): void
+    {
+        $admin = User::factory()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.campaigns.store'), $this->campaignPayload([
+            'name' => 'Campagna consenso esplicito',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            'segment' => 'orders',
+        ]));
+
+        $response->assertRedirect(route('admin.campaigns.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('campaigns', [
+            'name' => 'Campagna consenso esplicito',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+            'segment' => 'orders',
+        ]);
+    }
+
+    public function test_campaign_creation_with_profiling_forces_explicit_consent_and_accepts_advanced_segment(): void
+    {
+        $admin = User::factory()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.campaigns.store'), $this->campaignPayload([
+            'name' => 'Campagna profilazione',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_PROFILING,
+            'consent_basis' => Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            'segment' => 'new_customers',
+        ]));
+
+        $response->assertRedirect(route('admin.campaigns.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('campaigns', [
+            'name' => 'Campagna profilazione',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_PROFILING,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'channel' => Campaign::CHANNEL_EMAIL,
+            'segment' => 'new_customers',
+        ]);
+    }
+
+    public function test_campaign_segment_validation_depends_on_campaign_type(): void
+    {
+        $admin = User::factory()->create();
+
+        $cases = [
+            [Campaign::CAMPAIGN_TYPE_SOFT_MARKETING, 'high_value_customers'],
+            [Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING, 'high_value_customers'],
+            [Campaign::CAMPAIGN_TYPE_PROFILING, 'reservations'],
+            [Campaign::CAMPAIGN_TYPE_PROFILING, 'orders'],
+            [Campaign::CAMPAIGN_TYPE_PROFILING, 'both'],
+        ];
+
+        foreach ($cases as $index => [$campaignType, $segment]) {
+            $name = sprintf('Campagna segmento non valido %d', $index);
+
+            $response = $this->actingAs($admin)->post(route('admin.campaigns.store'), $this->campaignPayload([
+                'name' => $name,
+                'campaign_type' => $campaignType,
+                'segment' => $segment,
+            ]));
+
+            $response->assertSessionHasErrors('segment');
+            $this->assertDatabaseMissing('campaigns', ['name' => $name]);
+        }
+    }
+
+    public function test_base_campaign_segments_build_expected_audiences(): void
+    {
+        $orderOnly = $this->createAudienceCustomer('campaign-order-only@example.com');
+        $reservationOnly = $this->createAudienceCustomer('campaign-reservation-only@example.com');
+        $bothChannels = $this->createAudienceCustomer('campaign-both@example.com');
+        $withoutActivity = $this->createAudienceCustomer('campaign-no-activity@example.com');
+
+        $this->createOrderForCustomer($orderOnly, ['date' => now()->subDays(5)]);
+        $this->createReservationForCustomer($reservationOnly, ['date' => now()->subDays(4)]);
+        $this->createOrderForCustomer($bothChannels, ['date' => now()->subDays(3)]);
+        $this->createReservationForCustomer($bothChannels, ['date' => now()->subDays(2)]);
+
+        $ordersAudience = $this->audienceIdsForCampaign($this->createCampaign([
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'orders',
+        ]));
+        $reservationsAudience = $this->audienceIdsForCampaign($this->createCampaign([
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'reservations',
+        ]));
+        $bothAudience = $this->audienceIdsForCampaign($this->createCampaign([
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'both',
+        ]));
+
+        $this->assertContains($orderOnly->id, $ordersAudience);
+        $this->assertContains($bothChannels->id, $ordersAudience);
+        $this->assertNotContains($reservationOnly->id, $ordersAudience);
+        $this->assertNotContains($withoutActivity->id, $ordersAudience);
+
+        $this->assertContains($reservationOnly->id, $reservationsAudience);
+        $this->assertContains($bothChannels->id, $reservationsAudience);
+        $this->assertNotContains($orderOnly->id, $reservationsAudience);
+        $this->assertNotContains($withoutActivity->id, $reservationsAudience);
+
+        $this->assertContains($bothChannels->id, $bothAudience);
+        $this->assertNotContains($orderOnly->id, $bothAudience);
+        $this->assertNotContains($reservationOnly->id, $bothAudience);
+        $this->assertNotContains($withoutActivity->id, $bothAudience);
+    }
+
+    public function test_profiling_campaign_audience_requires_profiling_consent_for_advanced_segments(): void
+    {
+        $withProfiling = $this->createAudienceCustomer('campaign-profiling-yes@example.com', [
+            'profiling_consent_at' => now(),
+        ]);
+        $withoutProfiling = $this->createAudienceCustomer('campaign-profiling-no@example.com', [
+            'profiling_consent_at' => null,
+        ]);
+        $withoutEmailConsent = $this->createAudienceCustomer('campaign-profiling-no-email@example.com', [
+            'email_marketing_consent_at' => null,
+            'profiling_consent_at' => now(),
+        ]);
+
+        $this->createOrderForCustomer($withProfiling, ['date' => now()->subDays(3)]);
+        $this->createOrderForCustomer($withoutProfiling, ['date' => now()->subDays(3)]);
+        $this->createOrderForCustomer($withoutEmailConsent, ['date' => now()->subDays(3)]);
+
+        $audience = $this->audienceIdsForCampaign($this->createCampaign([
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_PROFILING,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'new_customers',
+        ]));
+
+        $this->assertContains($withProfiling->id, $audience);
+        $this->assertNotContains($withoutProfiling->id, $audience);
+        $this->assertNotContains($withoutEmailConsent->id, $audience);
     }
 
     public function test_draft_campaign_can_be_deleted_with_connections(): void
@@ -105,10 +270,24 @@ class CampaignManagementTest extends TestCase
         return Campaign::query()->create(array_merge([
             'name' => 'Campagna test',
             'status' => 'draft',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
             'channel' => Campaign::CHANNEL_EMAIL,
             'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
             'segment' => 'all',
         ], $attributes));
+    }
+
+    private function campaignPayload(array $attributes = []): array
+    {
+        return array_merge([
+            'name' => 'Campagna test',
+            'submit_action' => 'draft',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'orders',
+            'schedule_window' => 'next_available',
+            'promotions' => [],
+        ], $attributes);
     }
 
     private function createPromotion(array $attributes = []): Promotion
@@ -136,5 +315,84 @@ class CampaignManagementTest extends TestCase
             'surname' => (string) $index,
             'email' => 'campaign-customer-' . $index . '-' . uniqid() . '@example.com',
         ]);
+    }
+
+    private function createAudienceCustomer(string $email, array $attributes = []): Customer
+    {
+        return Customer::query()->create(array_merge([
+            'name' => 'Audience',
+            'surname' => 'Customer',
+            'email' => $email,
+            'phone' => '333'.random_int(1000000, 9999999),
+            'registered_at' => now()->subMonth(),
+            'marketing_consent_at' => null,
+            'email_marketing_consent_at' => now()->subDay(),
+            'profiling_consent_at' => null,
+            'consents_updated_at' => now()->subDay(),
+        ], $attributes));
+    }
+
+    private function createOrderForCustomer(Customer $customer, array $overrides = []): int
+    {
+        $date = $overrides['date'] ?? now();
+        unset($overrides['date']);
+
+        return DB::table('orders')->insertGetId(array_merge([
+            'customer_id' => $customer->id,
+            'date_slot' => $this->formatActivityDate($date),
+            'status' => 1,
+            'name' => $customer->name,
+            'surname' => $customer->surname,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+            'checkout_session_id' => null,
+            'address' => null,
+            'address_n' => null,
+            'comune' => null,
+            'whatsapp_message_id' => null,
+            'tot_price' => 25,
+            'message' => null,
+            'news_letter' => false,
+            'notificated' => false,
+            'created_at' => $date,
+            'updated_at' => $date,
+        ], $overrides));
+    }
+
+    private function createReservationForCustomer(Customer $customer, array $overrides = []): int
+    {
+        $date = $overrides['date'] ?? now();
+        unset($overrides['date']);
+
+        return DB::table('reservations')->insertGetId(array_merge([
+            'customer_id' => $customer->id,
+            'date_slot' => $this->formatActivityDate($date),
+            'status' => 1,
+            'name' => $customer->name,
+            'surname' => $customer->surname,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+            'n_person' => json_encode(['adult' => 2, 'child' => 0]),
+            'sala' => null,
+            'message' => null,
+            'whatsapp_message_id' => null,
+            'news_letter' => false,
+            'notificated' => false,
+            'created_at' => $date,
+            'updated_at' => $date,
+        ], $overrides));
+    }
+
+    private function audienceIdsForCampaign(Campaign $campaign): array
+    {
+        return app(CampaignAudienceBuilder::class)
+            ->queryForCampaign($campaign)
+            ->pluck('id')
+            ->all();
+    }
+
+    private function formatActivityDate($date): string
+    {
+        return $date->format('d/m/Y H:i');
     }
 }

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('status')->default('draft')->index();
+            $table->string('campaign_type', 50)->default('explicit_email_marketing')->index();
             $table->string('segment')->nullable()->index();
             $table->foreignId('model_id')->nullable()->constrained('models')->nullOnDelete();
             $table->timestamp('scheduled_at')->nullable()->index();

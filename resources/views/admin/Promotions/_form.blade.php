@@ -76,7 +76,7 @@
 
     // Wizard step detection for server-side error recovery
     $hasErrors = $errors->any();
-    if ($hasErrors && $errors->hasAny(['name', 'cta', 'permanent', 'schedule_at', 'expiring_at', 'metadata.reusable'])) {
+    if ($hasErrors && $errors->hasAny(['name', 'description', 'cta', 'permanent', 'schedule_at', 'expiring_at', 'metadata.reusable'])) {
         $initialStep = 1;
     } elseif ($hasErrors && $errors->has('case_use')) {
         $initialStep = 2;
@@ -541,6 +541,23 @@
                             </p>
                             @error('cta') <p class="error">{{ $message }}</p> @enderror
                         </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="label_c" for="description">
+                            <i class="bi bi-text-paragraph"></i>
+                            Descrizione
+                        </label>
+                        <p>
+                            <textarea
+                                name="description"
+                                id="description"
+                                rows="3"
+                                placeholder="Descrizione interna della promozione (opzionale)"
+                                autocomplete="off"
+                            >{{ old('description', $promotion->description) }}</textarea>
+                        </p>
+                        @error('description') <p class="error">{{ $message }}</p> @enderror
                     </div>
                 </section>
 

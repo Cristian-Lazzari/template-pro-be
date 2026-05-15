@@ -17,9 +17,14 @@ class Campaign extends EloquentModel
     public const CONSENT_BASIS_SOFT_EMAIL_MARKETING = 'soft_email_marketing';
     public const CONSENT_BASIS_WHATSAPP_MARKETING = 'whatsapp_marketing';
 
+    public const CAMPAIGN_TYPE_SOFT_MARKETING = 'soft_marketing';
+    public const CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING = 'explicit_email_marketing';
+    public const CAMPAIGN_TYPE_PROFILING = 'profiling';
+
     protected $fillable = [
         'name',
         'status',
+        'campaign_type',
         'channel',
         'consent_basis',
         'segment',
@@ -108,12 +113,33 @@ class Campaign extends EloquentModel
         return array_keys(self::consentBasisOptions());
     }
 
+    public static function campaignTypeOptions(): array
+    {
+        return [
+            self::CAMPAIGN_TYPE_SOFT_MARKETING => 'Soft marketing',
+            self::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING => 'Email marketing con consenso esplicito',
+            self::CAMPAIGN_TYPE_PROFILING => 'Profilazione',
+        ];
+    }
+
+    public static function campaignTypeValues(): array
+    {
+        return array_keys(self::campaignTypeOptions());
+    }
+
     public static function channelValues(): array
     {
         return [
             self::CHANNEL_EMAIL,
             self::CHANNEL_WHATSAPP,
         ];
+    }
+
+    public static function normalizeCampaignType(?string $campaignType): string
+    {
+        return in_array($campaignType, self::campaignTypeValues(), true)
+            ? $campaignType
+            : self::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING;
     }
 
     public static function normalizeConsentBasis(?string $consentBasis): string
@@ -123,11 +149,29 @@ class Campaign extends EloquentModel
             : self::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING;
     }
 
+    public static function consentBasisForCampaignType(?string $campaignType): string
+    {
+        return match (self::normalizeCampaignType($campaignType)) {
+            self::CAMPAIGN_TYPE_SOFT_MARKETING => self::CONSENT_BASIS_SOFT_EMAIL_MARKETING,
+            default => self::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+        };
+    }
+
     public static function channelForConsentBasis(?string $consentBasis): string
     {
         return self::normalizeConsentBasis($consentBasis) === self::CONSENT_BASIS_WHATSAPP_MARKETING
             ? self::CHANNEL_WHATSAPP
             : self::CHANNEL_EMAIL;
+    }
+
+    public function campaignType(): string
+    {
+        return self::normalizeCampaignType($this->campaign_type);
+    }
+
+    public function campaignTypeLabel(): string
+    {
+        return self::campaignTypeOptions()[$this->campaignType()];
     }
 
     public function consentBasis(): string
