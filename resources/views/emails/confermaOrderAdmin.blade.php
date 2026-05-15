@@ -229,31 +229,52 @@
 
         @php
             $appliedPromotions = $content_mail['promotions'] ?? [];
+            $mailTo = $content_mail['to'] ?? null;
         @endphp
-        @if (($content_mail['to'] ?? null) === 'admin' && !empty($appliedPromotions))
-            <div style="margin: 18px 0; padding: 14px; border: 1px solid #159478; border-radius: 8px; background-color: #f2fbf8;">
-                <h3 style="color: #04001d; font-size: 18px; margin: 0 0 10px;">Promozione applicata</h3>
-                @foreach ($appliedPromotions as $promotion)
-                    <div style="margin: 10px 0;">
-                        <p style="color: #04001d; font-size: 16px; margin: 4px 0;"><strong>{{ $promotion['promotion_name'] }}</strong></p>
-                        <p style="color: #04001d; font-size: 15px; margin: 4px 0;">{{ $promotion['label'] }}</p>
-                        <p style="color: #04001d; opacity: .8; font-size: 14px; margin: 4px 0;">Tipo: {{ $promotion['type_label'] }}</p>
+        @if (!empty($appliedPromotions))
+            @if ($mailTo === 'admin')
+                {{-- Box promozione per il ristoratore --}}
+                <div style="margin: 18px 0; padding: 16px; border: 2px solid #159478; border-left: 5px solid #159478; border-radius: 8px; background-color: #f0faf6;">
+                    <p style="color: #159478; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 8px;">&#127873; Promozione applicata</p>
+                    @foreach ($appliedPromotions as $promotion)
+                        <div style="margin: 8px 0;">
+                            <p style="color: #04001d; font-size: 16px; font-weight: 700; margin: 4px 0;">{{ $promotion['promotion_name'] }}</p>
+                            <p style="color: #04001d; font-size: 14px; margin: 4px 0; opacity: .8;">{{ $promotion['type_label'] }}</p>
+                            @if (($promotion['discount_amount'] ?? 0) > 0)
+                                <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Sconto: <strong>{{ \App\Support\Currency::formatCents($promotion['discount_amount']) }}</strong></p>
+                            @elseif (($promotion['type_discount'] ?? '') === 'gift')
+                                <p style="color: #04001d; font-size: 15px; margin: 4px 0;"><strong>Omaggio applicato</strong></p>
+                            @endif
+                            @if (($content_mail['type'] ?? null) === 'or')
+                                <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Totale ordine già scontato: <strong>{{ \App\Support\Currency::formatCents($content_mail['total_price']) }}</strong></p>
+                            @endif
+                            @if (!empty($promotion['affected_items']))
+                                <p style="color: #04001d; opacity: .7; font-size: 13px; margin: 8px 0 0;">
+                                    Dettagli: {{ collect($promotion['affected_items'])->map(fn ($item) => $item['name'] ?? $item['label'] ?? $item['type'] ?? null)->filter()->implode(', ') }}
+                                </p>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                {{-- Box promozione per il cliente --}}
+                <div style="margin: 18px 0; padding: 16px; border: 2px solid #159478; border-left: 5px solid #159478; border-radius: 8px; background-color: #f0faf6;">
+                    <p style="color: #159478; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 8px;">&#127873; La tua offerta è attiva</p>
+                    @foreach ($appliedPromotions as $promotion)
+                        <p style="color: #04001d; font-size: 16px; font-weight: 700; margin: 4px 0;">{{ $promotion['promotion_name'] }}</p>
                         @if (($promotion['discount_amount'] ?? 0) > 0)
-                            <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Sconto applicato: <strong>{{ \App\Support\Currency::formatCents($promotion['discount_amount']) }}</strong></p>
-                        @elseif (($promotion['type_discount'] ?? '') === 'gift')
-                            <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Omaggio applicato</p>
-                        @endif
-                        @if (($content_mail['type'] ?? null) === 'or')
-                            <p style="color: #04001d; font-size: 15px; margin: 4px 0;">Totale ordine già scontato: <strong>{{ \App\Support\Currency::formatCents($content_mail['total_price']) }}</strong></p>
-                        @endif
-                        @if (!empty($promotion['affected_items']))
-                            <p style="color: #04001d; opacity: .8; font-size: 13px; margin: 8px 0 0;">
-                                Dettagli: {{ collect($promotion['affected_items'])->map(fn ($item) => $item['name'] ?? $item['label'] ?? $item['type'] ?? null)->filter()->implode(', ') }}
+                            <p style="color: #04001d; font-size: 15px; margin: 6px 0;">
+                                Hai uno sconto di <strong>{{ \App\Support\Currency::formatCents($promotion['discount_amount']) }}</strong> su questa prenotazione.
                             </p>
+                        @elseif (($promotion['type_discount'] ?? '') === 'gift')
+                            <p style="color: #04001d; font-size: 15px; margin: 6px 0;"><strong>Il tuo omaggio è stato registrato.</strong></p>
+                        @else
+                            <p style="color: #04001d; font-size: 15px; margin: 6px 0;">{{ $promotion['label'] }}</p>
                         @endif
-                    </div>
-                @endforeach
-            </div>
+                    @endforeach
+                    <p style="color: #04001d; font-size: 13px; opacity: .7; margin: 10px 0 0;">L'offerta verrà applicata al momento della tua visita.</p>
+                </div>
+            @endif
         @endif
 
         <!-- Messaggio opzionale -->

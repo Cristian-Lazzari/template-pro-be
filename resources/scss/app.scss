@@ -3699,6 +3699,10 @@ button.order-detail__contact{
         color: var(--c3) !important;
         text-shadow: 0 0 10px rgba(255, 0, 0, 0.473);
     }
+    .status.promo-badge{
+        color: #fcd34d !important;
+        text-shadow: 0 0 10px rgba(245, 158, 11, .5);
+    }
     //box-shadow: inset 10px 10px 30px var(--c2) !important;
 }
 svg.null, svg.okk, .bi.null, .bi.okk{
@@ -3827,6 +3831,10 @@ svg.to_see, .bi.to_see{
         }
         .refound{
             color: #e3342f;
+        }
+        .promo-badge{
+            color: #f59e0b;
+            text-shadow: 0 0 10px rgba(245, 158, 11, .35);
         }
 
         .top{

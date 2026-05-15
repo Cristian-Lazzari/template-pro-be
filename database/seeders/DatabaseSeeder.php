@@ -20,9 +20,11 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             SettingsTableSeeder::class,
             AllergensFromConfigSeeder::class,
-            
+
             //PostsTableSeeder::class,
             Ecce35MenuSeeder::class,
+            MarketingPromotionSeeder::class,
+            MarketingBenvenutoSeeder::class,
         ]);
     }
 }

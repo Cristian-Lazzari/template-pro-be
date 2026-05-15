@@ -27,7 +27,7 @@ class OrderController extends Controller
 
     protected function statusF( $c_a, $id){
 
-        $order = Order::where('id', $id)->with('products')->firstOrFail();
+        $order = Order::where('id', $id)->with('products', 'customerPromotions.promotion')->firstOrFail();
         $message = '';
         if($c_a){
             if($order->status == 2 || $order->status == 0){
@@ -156,11 +156,12 @@ class OrderController extends Controller
             'status' => $order->status,
             'cart' => $cart_mail,
             'total_price' => $order->tot_price,
+            'promotions' => app(PromotionNotificationFormatter::class)->forOrder($order),
 
             'property_adv' => $property_adv,
         ];
 
-       
+
         $mail = new confermaOrdineAdmin($bodymail);
         Mail::to($order['email'])->send($mail);
 

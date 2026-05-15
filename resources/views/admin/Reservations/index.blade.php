@@ -127,7 +127,7 @@
                     @endif
 
                     @if ($promotionSummary['has_promotion'] ?? false)
-                        <div class="promo status paid" title="{{ $promotionSummary['name'] ?? 'Promozione applicata' }}">
+                        <div class="status promo-badge" title="{{ $promotionSummary['name'] ?? 'Promozione applicata' }}">
                             <i class="bi bi-gift-fill"></i>
                             {{ $promotionSummary['badge_label'] ?? 'Promo' }}
                         </div>

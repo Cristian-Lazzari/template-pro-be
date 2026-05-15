@@ -365,7 +365,9 @@ class ReservationController extends Controller
                             ],
                             [
                                 'type' => 'text',
-                                'text' => $sala_mess,  
+                                'text' => $reservationPromotionText
+                                    ? trim($sala_mess) . ($sala_mess !== ' ' ? ' | ' : '') . str_replace("\n", ' - ', $reservationPromotionText)
+                                    : $sala_mess,
                             ],
                             [
                                 'type' => 'text',
