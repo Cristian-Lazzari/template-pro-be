@@ -425,7 +425,7 @@ class OrderController extends Controller
                 }
                 if ($promotionWhatsappText) {
                     $info .= "\n" . $promotionWhatsappText . "\n";
-                    $type_mess .= "\n" . $promotionWhatsappText;
+                    $type_mess .= ' | ' . str_replace("\n", ' - ', $promotionWhatsappText);
                 }
                 $info = 'Contenuto della notifica: *_' . $t . "_* \n\n" . $info . "\n\n" .
                     "📞 Chiama: " . $newOrder->phone . "\n\n" .

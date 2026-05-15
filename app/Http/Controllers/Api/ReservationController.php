@@ -286,7 +286,6 @@ class ReservationController extends Controller
         }
         if ($reservationPromotionText) {
             $info .= "\n" . $reservationPromotionText . "\n";
-            $guest .= ' | ' . str_replace("\n", ' - ', $reservationPromotionText);
         }
         $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $newRes->id;
         $info = "Contenuto della notifica: *_Prenotazione tavolo_* \n\n" . $info . "\n\n" .
