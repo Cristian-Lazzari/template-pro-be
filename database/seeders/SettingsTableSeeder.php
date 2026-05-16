@@ -10,6 +10,51 @@ class SettingsTableSeeder extends Seeder
 {
     public function run()
     {
+        $advancedDefaults = [
+            'too' => 0,
+            'dt' => 0,
+            'services' => 4, // 2 tavoli, 3 asporto, 4 tutti
+            'menu_fix_set' => 1,
+            'too_1' => 'tipo 1',
+            'too_2' => 'tipo 2',
+            'sala_1' => 'Interno',
+            'sala_2' => 'Esterno',
+            'delay_res' => '00:30',
+            'delay_or' => '00:30',
+            'p_iva' => '',
+            'r_sociale' => '',
+            'times_start' => '12:00',
+            'times_end' => '23:30',
+            'max_day_res' => '30',
+            'times_interval' => 20,
+            'c_rea' => '',
+            'c_sociale' => '',
+            'c_ateco' => '',
+            'u_imprese' => '',
+            'method' => [],
+            'set_time' => [
+                'tavoli',
+                'asporto',
+                'domicilio',
+            ],
+            'week_set' => [
+                1 => [],
+                2 => [],
+                3 => [],
+                4 => [],
+                5 => [],
+                6 => [],
+                7 => [],
+            ],
+            'day_off' => [],
+            'time_blocked' => [],
+            'max_asporto' => 0,
+            'max_domicilio' => 0,
+            'max_table' => 0,
+            'max_table_1' => 0,
+            'max_table_2' => 0,
+        ];
+
         $settings = [
             [
                 'name' => 'Prenotazione Tavoli',  
@@ -95,51 +140,8 @@ class SettingsTableSeeder extends Seeder
             ],
             [
                 'name' => 'advanced',
-                'property' => [
-                    'too' => false,
-                    'dt' => false,
-                    'services' => 4, //1 niente // 2 tavoli // 3 asporto // 4 tutti
-                    
-                    'menu_fix_set' => 1,
-                    'too_1' => 'tipo 1',
-                    'too_2' => 'tipo 2',
-                    'sala_1' => 'Interno',
-                    'sala_2' => 'Esterno',
-                    'delay_res' => '30',
-                    'delay_or' => '30',
-                    'p_iva' => '',
-                    'r_sociale' => '',
-                    'times_start' => '12:00',
-                    'times_end' => '23:30',
-                    'max_day_res' => '30',
-                    'times_interval' => 20,
-                    'c_rea' => '',
-                    'c_sociale' => '',
-                    'c_ateco' => '',
-                    'u_imprese' => '',
-                    'method' => [],
-                    'set_time'=> [
-                        'tavoli',
-                        'asporto',
-                        'domicilio',
-                    ],
-                    'week_set' => [
-                        1 => [],
-                        2 => [],
-                        3 => [],
-                        4 => [],
-                        5 => [],
-                        6 => [],
-                        7 => [],
-                    ],
-                    'day_off' => [],
-                    'time_blocked' => [],
-                    'max_asporto' => 0,
-                    'max_domicilio' => 0,
-                    'max_table' => 0,
-                    'max_table_1' => 0,
-                    'max_table_2' => 0,
-                ]
+                'status' => 1,
+                'property' => $advancedDefaults,
             ],
             [
                 'name' => 'Lingua',
