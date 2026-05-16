@@ -110,7 +110,6 @@ class CustomerAccessService
 
         if ($emailMarketingEnabled === true) {
             $customer->email_marketing_consent_at = $now;
-            $customer->marketing_consent_at = $customer->marketing_consent_at ?: $now;
             $acceptedAnyConsent = true;
         }
 
@@ -204,7 +203,6 @@ class CustomerAccessService
             'surname' => $this->preferredValue($attributes['surname'] ?? null, $guestProfile['surname'] ?? '', ''),
             'email' => $email,
             'phone' => $this->nullIfEmpty($this->preferredValue($attributes['phone'] ?? null, $guestProfile['phone'] ?? null, null)),
-            'marketing_consent_at' => $marketingConsentAt,
             'email_marketing_consent_at' => $marketingConsentAt,
             'email_verified_at' => now(),
         ];
@@ -336,14 +334,14 @@ class CustomerAccessService
     private function syncMarketingConsentFromNewsletter(Customer $customer, bool $newsletterOptIn): void
     {
         $historicalConsentAt = $this->guestMarketingConsentAt($customer->email);
-        $marketingConsentAt = $customer->marketing_consent_at ?: $historicalConsentAt;
+        $emailMarketingConsentAt = $customer->email_marketing_consent_at ?: $historicalConsentAt;
 
-        if ($newsletterOptIn && !$marketingConsentAt) {
-            $marketingConsentAt = now();
+        if ($newsletterOptIn && ! $emailMarketingConsentAt) {
+            $emailMarketingConsentAt = now();
         }
 
-        if ($marketingConsentAt !== $customer->marketing_consent_at) {
-            $customer->marketing_consent_at = $marketingConsentAt;
+        if ($emailMarketingConsentAt !== $customer->email_marketing_consent_at) {
+            $customer->email_marketing_consent_at = $emailMarketingConsentAt;
             $customer->save();
         }
     }

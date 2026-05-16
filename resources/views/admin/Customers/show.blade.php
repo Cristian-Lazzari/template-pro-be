@@ -223,16 +223,6 @@
         ),
     ];
 
-    if (!empty($customer->marketing_consent_at)) {
-        $consentItems[] = $legacyConsentItem(
-            'Newsletter (vecchio campo)',
-            'Legacy',
-            'warning',
-            $customer->marketing_consent_at,
-            ['Campo storico mantenuto per compatibilita.']
-        );
-    }
-
     $timelineItems = [
         [
             'label' => 'Profilo creato',

@@ -275,9 +275,9 @@ class MarketingBenvenutoSeeder extends Seeder
             'surname'              => $profile['surname'],
             'email'                => Customer::normalizeEmail($profile['email']),
             'phone'                => $profile['phone'],
-            'registered_at'        => $registeredAt,
-            'email_verified_at'    => $registeredAt,
-            'marketing_consent_at' => $registeredAt,
+            'registered_at'             => $registeredAt,
+            'email_verified_at'         => $registeredAt,
+            'email_marketing_consent_at' => $registeredAt,
             'created_at'           => $registeredAt,
             'updated_at'           => $now,
         ]);

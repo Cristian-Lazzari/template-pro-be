@@ -20,7 +20,6 @@ class Customer extends Authenticatable
         'age',
         'profile_answers',
         'registered_at',
-        'marketing_consent_at',
         'email_marketing_consent_at',
         'whatsapp_marketing_consent_at',
         'profiling_consent_at',
@@ -43,7 +42,6 @@ class Customer extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'registered_at' => 'datetime',
-        'marketing_consent_at' => 'datetime',
         'email_marketing_consent_at' => 'datetime',
         'whatsapp_marketing_consent_at' => 'datetime',
         'profiling_consent_at' => 'datetime',
@@ -159,21 +157,9 @@ class Customer extends Authenticatable
         return 'no_marketing';
     }
 
-    public function emailMarketingConsentAt(bool $allowLegacyFallback = false)
+    public function emailMarketingConsentAt(): mixed
     {
-        if ($this->email_marketing_consent_at) {
-            return $this->email_marketing_consent_at;
-        }
-
-        if (
-            $allowLegacyFallback
-            && $this->marketing_consent_at
-            && $this->consents_updated_at === null
-        ) {
-            return $this->marketing_consent_at;
-        }
-
-        return null;
+        return $this->email_marketing_consent_at;
     }
 
     public function hasSoftEmailMarketingOptOut(): bool

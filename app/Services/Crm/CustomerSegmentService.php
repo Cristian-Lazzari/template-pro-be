@@ -189,7 +189,6 @@ class CustomerSegmentService
             'email',
             'phone',
             'registered_at',
-            'marketing_consent_at',
             'profiling_consent_at',
             'created_at',
             'updated_at',

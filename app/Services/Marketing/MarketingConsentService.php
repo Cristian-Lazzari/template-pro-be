@@ -48,29 +48,7 @@ class MarketingConsentService
     public function applyExplicitEmailMarketingConsent(Builder $query): Builder
     {
         if ($this->hasCustomerColumn('email_marketing_consent_at')) {
-            $emailMarketingColumn = $this->qualifyCustomerColumn($query, 'email_marketing_consent_at');
-
-            return $query->where(function (Builder $nested) use ($query, $emailMarketingColumn) {
-                $nested->whereNotNull($emailMarketingColumn);
-
-                if ($this->hasCustomerColumn('marketing_consent_at')) {
-                    $legacyMarketingColumn = $this->qualifyCustomerColumn($query, 'marketing_consent_at');
-
-                    $nested->orWhere(function (Builder $legacy) use ($query, $emailMarketingColumn, $legacyMarketingColumn) {
-                        $legacy
-                            ->whereNull($emailMarketingColumn)
-                            ->whereNotNull($legacyMarketingColumn);
-
-                        if ($this->hasCustomerColumn('consents_updated_at')) {
-                            $legacy->whereNull($this->qualifyCustomerColumn($query, 'consents_updated_at'));
-                        }
-                    });
-                }
-            });
-        }
-
-        if ($this->hasCustomerColumn('marketing_consent_at')) {
-            return $query->whereNotNull($this->qualifyCustomerColumn($query, 'marketing_consent_at'));
+            return $query->whereNotNull($this->qualifyCustomerColumn($query, 'email_marketing_consent_at'));
         }
 
         return $query->whereNull($this->qualifyCustomerColumn($query, 'id'))->whereNotNull($this->qualifyCustomerColumn($query, 'id'));
@@ -100,12 +78,7 @@ class MarketingConsentService
             return false;
         }
 
-        if ($customer->email_marketing_consent_at !== null) {
-            return true;
-        }
-
-        return $customer->marketing_consent_at !== null
-            && $customer->consents_updated_at === null;
+        return $customer->email_marketing_consent_at !== null;
     }
 
     public function customerHasEmailMarketingConsent(?Customer $customer): bool

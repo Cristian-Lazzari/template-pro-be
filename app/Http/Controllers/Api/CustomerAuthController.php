@@ -284,7 +284,6 @@ class CustomerAuthController extends Controller
         if (array_key_exists('email_marketing_enabled', $payload)) {
             if ($payload['email_marketing_enabled']) {
                 $customer->email_marketing_consent_at = $now;
-                $customer->marketing_consent_at = $customer->marketing_consent_at ?: $now;
             } else {
                 $customer->email_marketing_consent_at = null;
             }
