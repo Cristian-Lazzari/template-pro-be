@@ -22,13 +22,20 @@ class CampaignAudienceBuilder
         return $this->segmentService->queryForSegmentAndConsentBasis(
             $campaign->segment,
             $campaign->consentBasis(),
-            $campaign->campaignType()
+            $campaign->campaign_type === null ? null : $campaign->campaignType()
         );
     }
 
     public function countForCampaign(Campaign $campaign): int
     {
         return $this->queryForCampaign($campaign)->count();
+    }
+
+    public function availableForCampaign(Campaign $campaign): int
+    {
+        return $this->segmentService
+            ->queryAvailableForCampaignType($campaign->campaignType(), $campaign->consentBasis())
+            ->count();
     }
 
     public function getCustomersForCampaign(Campaign $campaign, int $limit = self::MAX_CUSTOMERS_LIMIT): Collection
@@ -45,14 +52,14 @@ class CampaignAudienceBuilder
         return $this->segmentService->queryForSegment($segment);
     }
 
-    public function queryForSegmentAndConsentBasis(?string $segment, ?string $consentBasis): Builder
+    public function queryForSegmentAndConsentBasis(?string $segment, ?string $consentBasis, ?string $campaignType = null): Builder
     {
-        return $this->segmentService->queryForSegmentAndConsentBasis($segment, $consentBasis);
+        return $this->segmentService->queryForSegmentAndConsentBasis($segment, $consentBasis, $campaignType);
     }
 
-    public function countForSegmentAndConsentBasis(?string $segment, ?string $consentBasis): int
+    public function countForSegmentAndConsentBasis(?string $segment, ?string $consentBasis, ?string $campaignType = null): int
     {
-        return $this->queryForSegmentAndConsentBasis($segment, $consentBasis)->count();
+        return $this->queryForSegmentAndConsentBasis($segment, $consentBasis, $campaignType)->count();
     }
 
     public function contactableTotalForConsentBasis(?string $consentBasis): int

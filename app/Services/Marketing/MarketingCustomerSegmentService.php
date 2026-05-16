@@ -92,6 +92,19 @@ class MarketingCustomerSegmentService
         return $this->applyDefaultOrder($query);
     }
 
+    public function queryAvailableForCampaignType(?string $campaignType, ?string $consentBasis): Builder
+    {
+        $query = Customer::query();
+
+        $this->marketingConsentService->applyCampaignAudienceEligibility($query, $consentBasis);
+
+        if (Campaign::normalizeCampaignType($campaignType) === Campaign::CAMPAIGN_TYPE_PROFILING) {
+            $this->applyProfilingConsent($query);
+        }
+
+        return $this->applyDefaultOrder($query);
+    }
+
     public function isValidSegment(?string $segment): bool
     {
         $segment = trim((string) $segment);
@@ -130,6 +143,17 @@ class MarketingCustomerSegmentService
         return array_key_exists($segment, self::BASE_SEGMENT_OPTIONS)
             ? $segment
             : array_key_first(self::BASE_SEGMENT_OPTIONS);
+    }
+
+    public function isValidSegmentForCampaignType(?string $segment, ?string $campaignType): bool
+    {
+        $segment = self::LEGACY_SEGMENT_MAP[trim((string) $segment)] ?? trim((string) $segment);
+
+        if ($segment === '') {
+            return true;
+        }
+
+        return in_array($segment, $this->validSegmentKeysForCampaignType($campaignType), true);
     }
 
     public function validSegmentKeys(): array

@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
 use App\Models\User;
+use App\Services\Marketing\CampaignAssignmentService;
 use App\Services\Marketing\CampaignAudienceBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -200,6 +201,98 @@ class CampaignManagementTest extends TestCase
         $this->assertContains($withProfiling->id, $audience);
         $this->assertNotContains($withoutProfiling->id, $audience);
         $this->assertNotContains($withoutEmailConsent->id, $audience);
+    }
+
+    public function test_campaign_audience_preview_uses_assignment_logic_for_profiling_segments(): void
+    {
+        $admin = User::factory()->create();
+        $promotion = $this->createPromotion();
+        $matched = $this->createAudienceCustomer('campaign-preview-profiling-match@example.com', [
+            'profiling_consent_at' => now(),
+        ]);
+        $availableOutsideSegment = $this->createAudienceCustomer('campaign-preview-profiling-available@example.com', [
+            'profiling_consent_at' => now(),
+        ]);
+        $withoutProfiling = $this->createAudienceCustomer('campaign-preview-profiling-missing@example.com', [
+            'profiling_consent_at' => null,
+        ]);
+        $withoutEmailConsent = $this->createAudienceCustomer('campaign-preview-profiling-no-email@example.com', [
+            'email_marketing_consent_at' => null,
+            'profiling_consent_at' => now(),
+        ]);
+
+        $this->createOrderForCustomer($matched, ['date' => now()->subDays(3)]);
+        $this->createOrderForCustomer($withoutProfiling, ['date' => now()->subDays(3)]);
+        $this->createOrderForCustomer($withoutEmailConsent, ['date' => now()->subDays(3)]);
+
+        $response = $this->actingAs($admin)->getJson(route('admin.campaigns.audience-preview', [
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_PROFILING,
+            'segment' => 'new_customers',
+            'promotions' => [$promotion->id],
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('matched', 1)
+            ->assertJsonPath('available', 2)
+            ->assertJsonPath('campaign_type', Campaign::CAMPAIGN_TYPE_PROFILING)
+            ->assertJsonPath('consent_basis', Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING)
+            ->assertJsonPath('segment', 'new_customers');
+
+        $campaign = $this->createCampaign([
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_PROFILING,
+            'consent_basis' => Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'new_customers',
+        ]);
+        $campaign->promotions()->attach($promotion);
+        $assignmentPreview = app(CampaignAssignmentService::class)->assign($campaign, 500, true);
+
+        $this->assertSame($assignmentPreview['assigned_count'], $response->json('matched'));
+        $this->assertFalse(in_array($availableOutsideSegment->id, $this->audienceIdsForCampaign($campaign), true));
+    }
+
+    public function test_campaign_audience_preview_handles_soft_and_explicit_email_rules(): void
+    {
+        $admin = User::factory()->create();
+        $promotion = $this->createPromotion();
+        $softOnly = $this->createAudienceCustomer('campaign-preview-soft-only@example.com', [
+            'email_marketing_consent_at' => null,
+            'marketing_consent_at' => null,
+        ]);
+        $explicit = $this->createAudienceCustomer('campaign-preview-explicit@example.com');
+        $optedOut = $this->createAudienceCustomer('campaign-preview-soft-optout@example.com', [
+            'email_marketing_consent_at' => null,
+            'marketing_consent_at' => null,
+            'soft_email_marketing_unsubscribed_at' => now(),
+        ]);
+
+        $this->createOrderForCustomer($softOnly, ['date' => now()->subDays(2)]);
+        $this->createOrderForCustomer($explicit, ['date' => now()->subDays(2)]);
+        $this->createOrderForCustomer($optedOut, ['date' => now()->subDays(2)]);
+
+        $softResponse = $this->actingAs($admin)->getJson(route('admin.campaigns.audience-preview', [
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_SOFT_MARKETING,
+            'segment' => 'orders',
+            'promotions' => [$promotion->id],
+        ]));
+
+        $softResponse
+            ->assertOk()
+            ->assertJsonPath('matched', 2)
+            ->assertJsonPath('available', 2)
+            ->assertJsonPath('consent_basis', Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING);
+
+        $explicitResponse = $this->actingAs($admin)->getJson(route('admin.campaigns.audience-preview', [
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'orders',
+            'promotions' => [$promotion->id],
+        ]));
+
+        $explicitResponse
+            ->assertOk()
+            ->assertJsonPath('matched', 1)
+            ->assertJsonPath('available', 1)
+            ->assertJsonPath('consent_basis', Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING);
     }
 
     public function test_draft_campaign_can_be_deleted_with_connections(): void

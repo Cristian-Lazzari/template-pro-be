@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified'])
 
         // Rotte campaign marketing
 
+        Route::get('campaigns/audience-preview', [CampaignController::class, 'audiencePreview'])->name('campaigns.audience-preview');
         Route::get('campaigns/archived', [CampaignController::class, 'archived'])->name('campaigns.archived');
         Route::post('campaigns/{campaign}/activate', [CampaignController::class, 'activate'])->name('campaigns.activate');
         Route::post('campaigns/{campaign}/pause',    [CampaignController::class, 'pause'])->name('campaigns.pause');

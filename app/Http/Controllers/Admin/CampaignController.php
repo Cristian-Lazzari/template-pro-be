@@ -9,7 +9,6 @@ use App\Models\Campaign;
 use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\CampaignAssignmentService;
-use App\Services\Marketing\CampaignAudienceBuilder;
 use App\Services\Marketing\CampaignScheduleService;
 use App\Services\Marketing\MarketingCustomerSegmentService;
 use App\Services\Marketing\MarketingRunMarkerService;
@@ -19,6 +18,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class CampaignController extends Controller
 {
@@ -302,6 +303,71 @@ class CampaignController extends Controller
         return back()->with('audience_preview', $result);
     }
 
+    public function audiencePreview(
+        Request $request,
+        CampaignAssignmentService $assignmentService,
+        MarketingCustomerSegmentService $segmentService
+    ) {
+        $data = $request->validate([
+            'campaign_id' => ['nullable', 'integer', 'exists:campaigns,id'],
+            'campaign_type' => ['nullable', Rule::in(Campaign::campaignTypeValues())],
+            'consent_basis' => ['nullable', Rule::in(Campaign::consentBasisValues())],
+            'segment' => ['nullable', 'string'],
+            'promotions' => ['nullable', 'array'],
+            'promotions.*' => ['integer', 'exists:promotions,id'],
+        ]);
+        $campaignType = Campaign::normalizeCampaignType(
+            ($data['campaign_type'] ?? null) ?: Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING
+        );
+        $requestedSegment = trim((string) ($data['segment'] ?? ''));
+
+        if ($requestedSegment === '') {
+            return response()->json([
+                'matched' => 0,
+                'available' => 0,
+                'message' => 'Seleziona un segmento per vedere la stima.',
+            ]);
+        }
+
+        if (! $segmentService->isValidSegmentForCampaignType($requestedSegment, $campaignType)) {
+            throw ValidationException::withMessages([
+                'segment' => 'Il segmento selezionato non e valido per il tipo di campagna.',
+            ]);
+        }
+
+        $consentBasis = Campaign::consentBasisForCampaignType($campaignType);
+        $campaign = isset($data['campaign_id'])
+            ? Campaign::query()->findOrFail($data['campaign_id'])
+            : new Campaign(['status' => 'draft']);
+
+        $campaign->forceFill([
+            'campaign_type' => $campaignType,
+            'channel' => Campaign::channelForConsentBasis($consentBasis),
+            'consent_basis' => $consentBasis,
+            'segment' => $segmentService->normalizeSegmentForCampaignType($requestedSegment, $campaignType),
+        ]);
+
+        $result = $assignmentService->previewSelection(
+            $campaign,
+            array_values((array) ($data['promotions'] ?? []))
+        );
+
+        return response()->json([
+            'matched' => (int) ($result['matched_count'] ?? 0),
+            'available' => (int) ($result['available_count'] ?? 0),
+            'assignable' => (int) ($result['assignable_count'] ?? 0),
+            'customers_checked' => (int) ($result['customers_checked'] ?? 0),
+            'promotions_count' => (int) ($result['promotions_count'] ?? 0),
+            'can_assign' => (bool) ($result['can_assign'] ?? false),
+            'failure_reason' => $result['failure_reason'] ?? null,
+            'message' => $this->audiencePreviewMessage($result),
+            'campaign_type' => $campaignType,
+            'consent_basis' => $consentBasis,
+            'segment' => $campaign->segment,
+            'available_label' => $this->audiencePreviewAvailableLabel($campaignType),
+        ]);
+    }
+
     public function prepareAssignments(Campaign $campaign, CampaignAssignmentService $assignmentService)
     {
         $result = $assignmentService->assign($campaign, 500, false);
@@ -313,7 +379,6 @@ class CampaignController extends Controller
     private function formOptions(?Campaign $campaign = null): array
     {
         $segmentService = app(MarketingCustomerSegmentService::class);
-        $audienceBuilder = app(CampaignAudienceBuilder::class);
         $segments = $segmentService->getSegmentOptions();
 
         return [
@@ -321,9 +386,7 @@ class CampaignController extends Controller
             'segments' => $segments,
             'campaignTypeOptions' => Campaign::campaignTypeOptions(),
             'consentBasisOptions' => Campaign::consentBasisOptions(),
-            'audienceCount' => $this->campaignAudienceCount($campaign),
-            'audienceAvailability' => $this->campaignAudienceAvailability($audienceBuilder),
-            'audienceMatrix' => $this->campaignAudienceMatrix($audienceBuilder, $segmentService->validSegmentKeys()),
+            'audiencePreviewUrl' => route('admin.campaigns.audience-preview'),
             'scheduleWindows' => $this->campaignFormScheduleWindows(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
@@ -400,70 +463,30 @@ class CampaignController extends Controller
         return $scheduleWindows;
     }
 
-    private function campaignAudienceCount(?Campaign $campaign): ?int
+    private function audiencePreviewMessage(array $result): ?string
     {
-        if (! $campaign?->exists) {
-            return null;
+        if (($result['failure_reason'] ?? null) === 'Campaign must have at least one promotion.') {
+            return 'Seleziona almeno una promozione per stimare i destinatari effettivi.';
         }
 
-        try {
-            return app(CampaignAudienceBuilder::class)->countForCampaign($campaign);
-        } catch (\Throwable $exception) {
-            Log::warning('Unable to count campaign audience.', [
-                'campaign_id' => $campaign->getKey(),
-                'error' => $exception->getMessage(),
-            ]);
-
-            return null;
+        if (($result['failure_reason'] ?? null) !== null) {
+            return 'Non e possibile calcolare la preview audience con la selezione corrente.';
         }
+
+        if ((int) ($result['matched_count'] ?? 0) === 0) {
+            return 'Nessun cliente raggiungibile con segmento, consenso e promozioni selezionati.';
+        }
+
+        return null;
     }
 
-    private function campaignAudienceAvailability(CampaignAudienceBuilder $audienceBuilder): array
+    private function audiencePreviewAvailableLabel(string $campaignType): string
     {
-        try {
-            return $audienceBuilder->availabilityByConsentBasis();
-        } catch (\Throwable $exception) {
-            Log::warning('Unable to count campaign audience availability.', [
-                'error' => $exception->getMessage(),
-            ]);
-
-            return $this->emptyAudienceAvailability();
-        }
-    }
-
-    private function campaignAudienceMatrix(CampaignAudienceBuilder $audienceBuilder, array $segments): array
-    {
-        try {
-            return $audienceBuilder->matrixForSegments($segments);
-        } catch (\Throwable $exception) {
-            Log::warning('Unable to count campaign audience matrix.', [
-                'error' => $exception->getMessage(),
-            ]);
-
-            return [];
-        }
-    }
-
-    private function emptyAudienceAvailability(): array
-    {
-        $availability = [];
-
-        foreach (Campaign::consentBasisValues() as $consentBasis) {
-            $availability[$consentBasis] = [
-                'eligible' => 0,
-                'total' => 0,
-                'label' => match ($consentBasis) {
-                    Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => 'Soft email marketing',
-                    Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp marketing',
-                    default => 'Email marketing esplicito',
-                },
-                'total_label' => $consentBasis === Campaign::CONSENT_BASIS_WHATSAPP_MARKETING
-                    ? 'Totale: clienti con telefono'
-                    : 'Totale: clienti con email valida',
-            ];
-        }
-
-        return $availability;
+        return match ($campaignType) {
+            Campaign::CAMPAIGN_TYPE_SOFT_MARKETING => 'Clienti con email valida senza opt-out soft',
+            Campaign::CAMPAIGN_TYPE_PROFILING => 'Clienti con email, consenso marketing e profilazione',
+            default => 'Clienti con email e consenso esplicito',
+        };
     }
 
     private function statusFromSubmitAction(Request $request): string

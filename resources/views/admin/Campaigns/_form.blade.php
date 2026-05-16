@@ -48,22 +48,7 @@
         \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp marketing, non ancora attivo',
     ];
     $selectedConsentBasisLabel = $consentBasisPreviewLabels[$selectedConsentBasis] ?? 'Email marketing con consenso esplicito';
-    $audienceAvailability = $audienceAvailability ?? [];
-    $audienceMatrix = $audienceMatrix ?? [];
-    $defaultAudienceAvailability = [
-        'eligible' => 0,
-        'total' => 0,
-        'label' => $consentBasisPreviewLabels[$selectedConsentBasis] ?? 'Email marketing esplicito',
-        'total_label' => $selectedConsentBasis === \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING
-            ? 'Totale: clienti con telefono'
-            : 'Totale: clienti con email valida',
-    ];
-    $selectedAudienceAvailability = array_merge(
-        $defaultAudienceAvailability,
-        $audienceAvailability[$selectedConsentBasis] ?? []
-    );
-    $selectedAudienceEstimate = (int) data_get($audienceMatrix, $selectedConsentBasis . '.' . $selectedSegment, 0);
-    $formatAudienceNumber = fn ($value) => number_format((int) $value, 0, ',', '.');
+    $audiencePreviewUrl = $audiencePreviewUrl ?? route('admin.campaigns.audience-preview');
     $selectedScheduleWindow = array_key_exists($selectedScheduleWindow, $scheduleWindows)
         ? $selectedScheduleWindow
         : 'next_available';
@@ -522,6 +507,19 @@
         display: none;
     }
 
+    .campaign-preview-status-note {
+        color: rgba(216, 221, 232, 0.62);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        line-height: 1.35;
+    }
+
+    .campaign-preview-status-note.is-warning,
+    .campaign-preview-status-note.is-error {
+        color: #ffb4a8;
+        font-weight: 800;
+    }
+
     .campaign-preview-chips {
         display: flex;
         flex-wrap: wrap;
@@ -556,7 +554,14 @@
     </div>
 @endif
 
-<form class="creation marketing-form-shell campaign-form-shell mt-4" action="{{ $action }}" method="POST" data-campaign-form>
+<form
+    class="creation marketing-form-shell campaign-form-shell mt-4"
+    action="{{ $action }}"
+    method="POST"
+    data-campaign-form
+    data-audience-preview-url="{{ $audiencePreviewUrl }}"
+    data-campaign-id="{{ $campaign->exists ? $campaign->getKey() : '' }}"
+>
     @csrf
     @if ($method !== 'POST')
         @method($method)
@@ -834,19 +839,14 @@
 
                     <div class="campaign-preview-metrics">
                         <div class="campaign-preview-metric">
-                            <span class="campaign-preview-label">Audience</span>
-                            <strong data-preview-audience-count>{{ $formatAudienceNumber($selectedAudienceEstimate) }}</strong>
-                            <small
-                                class="campaign-preview-warning{{ $selectedAudienceEstimate === 0 ? '' : ' is-hidden' }}"
-                                data-preview-audience-warning
-                            >Nessun contatto disponibile</small>
+                            <span class="campaign-preview-label">Audience stimata</span>
+                            <strong data-preview-audience-count>Audience stimata: calcolo...</strong>
+                            <small class="campaign-preview-status-note" data-preview-audience-status>Ricalcolo dinamico in corso.</small>
                         </div>
                         <div class="campaign-preview-metric">
                             <span class="campaign-preview-label">Disponibili</span>
-                            <strong data-preview-availability-count>
-                                {{ $formatAudienceNumber($selectedAudienceAvailability['eligible'] ?? 0) }} / {{ $formatAudienceNumber($selectedAudienceAvailability['total'] ?? 0) }}
-                            </strong>
-                            <small data-preview-availability-context>{{ $selectedAudienceAvailability['total_label'] ?? '' }}</small>
+                            <strong data-preview-availability-count>Calcolo...</strong>
+                            <small data-preview-availability-context>{{ $selectedConsentBasisLabel }}</small>
                         </div>
                     </div>
 
@@ -979,8 +979,8 @@
             mailModel: 'Non selezionato',
             schedule: 'Da definire',
         };
-        const audienceAvailability = @json($audienceAvailability ?? []);
-        const audienceMatrix = @json($audienceMatrix ?? []);
+        const audiencePreviewUrl = form.dataset.audiencePreviewUrl || '';
+        const campaignId = form.dataset.campaignId || '';
         const nameInput = form.querySelector('#name');
         const previewName = form.querySelector('[data-preview-campaign-name]');
         const campaignTypeInput = form.querySelector('[data-campaign-type-select]');
@@ -993,7 +993,7 @@
         const availabilityCount = form.querySelector('[data-preview-availability-count]');
         const availabilityContext = form.querySelector('[data-preview-availability-context]');
         const audienceCount = form.querySelector('[data-preview-audience-count]');
-        const audienceWarning = form.querySelector('[data-preview-audience-warning]');
+        const audienceStatus = form.querySelector('[data-preview-audience-status]');
         const mailModelSelect = form.querySelector('[data-mail-model-select]');
         const mailModelLabel = form.querySelector('[data-preview-mail-model]');
         const scheduleSelect = form.querySelector('[data-schedule-window-select]');
@@ -1009,6 +1009,8 @@
         const btnSubmit = form.querySelector('[data-wiz-submit]');
         let currentStep = {{ $initialStep }};
         const totalSteps = 5;
+        let audiencePreviewRequestId = 0;
+        let audiencePreviewController = null;
 
         const selectedOption = (select) => select?.options[select.selectedIndex] || null;
         const numberFormatter = new Intl.NumberFormat('it-IT');
@@ -1064,35 +1066,157 @@
             }
         };
 
-        const syncAudienceState = () => {
-            const consentBasis = consentInput?.value || 'explicit_email_marketing';
-            const segment = segmentSelect?.value || 'all';
-            const availability = audienceAvailability[consentBasis] || {
-                eligible: 0,
-                total: 0,
-                total_label: consentBasis === 'whatsapp_marketing'
-                    ? 'Totale: clienti con telefono'
-                    : 'Totale: clienti con email valida',
-            };
-            const estimated = Number(audienceMatrix?.[consentBasis]?.[segment] || 0);
-
-            if (availabilityCount) {
-                availabilityCount.textContent = `${formatNumber(availability.eligible)} / ${formatNumber(availability.total)}`;
-            }
-
-            if (availabilityContext) {
-                availabilityContext.textContent = availability.total_label || '';
-            }
-
-            if (!audienceCount) {
+        const setAudienceStatus = (message, tone = '') => {
+            if (!audienceStatus) {
                 return;
             }
 
-            audienceCount.textContent = formatNumber(estimated);
+            audienceStatus.textContent = message || '';
+            audienceStatus.classList.toggle('is-warning', tone === 'warning');
+            audienceStatus.classList.toggle('is-error', tone === 'error');
+        };
 
-            if (audienceWarning) {
-                audienceWarning.classList.toggle('is-hidden', estimated !== 0);
+        const selectedPromotionIds = () => Array.from(promotionInputs)
+            .filter((input) => input.checked)
+            .map((input) => input.value)
+            .filter(Boolean);
+
+        const setAudiencePreviewState = (state, payload = {}) => {
+            if (state === 'empty') {
+                if (audienceCount) {
+                    audienceCount.textContent = 'Audience stimata: seleziona un segmento';
+                }
+
+                if (availabilityCount) {
+                    availabilityCount.textContent = '0 disponibili';
+                }
+
+                if (availabilityContext) {
+                    availabilityContext.textContent = '';
+                }
+
+                setAudienceStatus('Scegli un segmento per vedere la stima.', 'warning');
+                return;
             }
+
+            if (state === 'loading') {
+                if (audienceCount) {
+                    audienceCount.textContent = 'Audience stimata: calcolo...';
+                }
+
+                if (availabilityCount) {
+                    availabilityCount.textContent = 'Calcolo...';
+                }
+
+                setAudienceStatus('Ricalcolo dinamico in corso.');
+                return;
+            }
+
+            if (state === 'error') {
+                if (audienceCount) {
+                    audienceCount.textContent = 'Audience stimata: non disponibile';
+                }
+
+                if (availabilityCount) {
+                    availabilityCount.textContent = 'Errore';
+                }
+
+                setAudienceStatus('Impossibile ricalcolare l’audience. Riprova tra poco.', 'error');
+                return;
+            }
+
+            const matched = Number(payload.matched || 0);
+            const available = Number(payload.available || 0);
+
+            if (audienceCount) {
+                audienceCount.textContent = `Audience stimata: ${formatNumber(matched)} clienti su ${formatNumber(available)} disponibili`;
+            }
+
+            if (availabilityCount) {
+                availabilityCount.textContent = `${formatNumber(available)} disponibili`;
+            }
+
+            if (availabilityContext) {
+                availabilityContext.textContent = payload.available_label || consentBasisLabels[payload.consent_basis] || '';
+            }
+
+            if (payload.message) {
+                setAudienceStatus(payload.message, matched === 0 || payload.can_assign === false ? 'warning' : '');
+                return;
+            }
+
+            setAudienceStatus('Stima allineata alle regole di assegnazione.');
+        };
+
+        const requestAudiencePreview = () => {
+            const segment = segmentSelect?.value || '';
+
+            if (!segment) {
+                audiencePreviewRequestId++;
+
+                if (audiencePreviewController) {
+                    audiencePreviewController.abort();
+                }
+
+                setAudiencePreviewState('empty');
+                return;
+            }
+
+            if (!audiencePreviewUrl) {
+                setAudiencePreviewState('error');
+                return;
+            }
+
+            const requestId = ++audiencePreviewRequestId;
+
+            if (audiencePreviewController) {
+                audiencePreviewController.abort();
+            }
+
+            audiencePreviewController = window.AbortController ? new AbortController() : null;
+            const params = new URLSearchParams();
+            params.set('segment', segment);
+            params.set('campaign_type', campaignTypeInput?.value || 'explicit_email_marketing');
+            params.set('consent_basis', consentInput?.value || 'explicit_email_marketing');
+
+            if (campaignId) {
+                params.set('campaign_id', campaignId);
+            }
+
+            selectedPromotionIds().forEach((promotionId) => {
+                params.append('promotions[]', promotionId);
+            });
+
+            setAudiencePreviewState('loading');
+
+            fetch(`${audiencePreviewUrl}?${params.toString()}`, {
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                signal: audiencePreviewController?.signal,
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Audience preview failed');
+                    }
+
+                    return response.json();
+                })
+                .then((payload) => {
+                    if (requestId !== audiencePreviewRequestId) {
+                        return;
+                    }
+
+                    setAudiencePreviewState('ready', payload || {});
+                })
+                .catch((error) => {
+                    if (error.name === 'AbortError' || requestId !== audiencePreviewRequestId) {
+                        return;
+                    }
+
+                    setAudiencePreviewState('error');
+                });
         };
 
         const segmentOptionsForCampaignType = (campaignType) => (
@@ -1123,7 +1247,7 @@
 
             segmentSelect.value = nextValue;
             syncSegment();
-            syncAudienceState();
+            requestAudiencePreview();
         };
 
         const syncCampaignType = (campaignType) => {
@@ -1252,7 +1376,7 @@
             syncName();
             syncConsent();
             syncSegment();
-            syncAudienceState();
+            requestAudiencePreview();
             syncMailModel();
             syncSchedule();
             syncPromotions();
@@ -1268,12 +1392,15 @@
         });
         segmentSelect?.addEventListener('change', () => {
             syncSegment();
-            syncAudienceState();
+            requestAudiencePreview();
         });
         mailModelSelect?.addEventListener('change', syncMailModel);
         scheduleSelect?.addEventListener('change', syncSchedule);
         scheduledAtInput?.addEventListener('input', syncSchedule);
-        promotionInputs.forEach((input) => input.addEventListener('change', syncPromotions));
+        promotionInputs.forEach((input) => input.addEventListener('change', () => {
+            syncPromotions();
+            requestAudiencePreview();
+        }));
         btnNext?.addEventListener('click', () => {
             if (currentStep >= totalSteps) {
                 return;

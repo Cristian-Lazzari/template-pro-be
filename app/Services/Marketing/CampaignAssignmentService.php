@@ -4,6 +4,8 @@ namespace App\Services\Marketing;
 
 use App\Models\Campaign;
 use App\Models\CustomerPromotion;
+use App\Models\Promotion;
+use Illuminate\Support\Collection;
 use Throwable;
 
 class CampaignAssignmentService
@@ -20,6 +22,7 @@ class CampaignAssignmentService
     public function preview(Campaign $campaign, int $limit = 500): array
     {
         $result = $this->basePreviewReport($campaign);
+        $result = $this->withAudienceAvailability($campaign, $result);
 
         $failureReason = $this->getFailureReason($campaign);
 
@@ -36,31 +39,39 @@ class CampaignAssignmentService
         $result['customers_checked'] = $customers->count();
         $result['promotions_count'] = $promotions->count();
 
-        foreach ($customers as $customer) {
-            foreach ($promotions as $promotion) {
-                try {
-                    if ($this->hasOpenAssignment($customer->getKey(), $promotion->getKey(), $campaign->getKey())) {
-                        $result['already_assigned_count']++;
+        return $this->evaluateAssignments($campaign, $customers, $promotions, $result, 'assignable_count', false, false);
+    }
 
-                        continue;
-                    }
+    public function previewSelection(Campaign $campaign, array $promotionIds, int $limit = 500): array
+    {
+        $promotionIds = collect($promotionIds)
+            ->filter(fn ($promotionId) => filled($promotionId))
+            ->map(fn ($promotionId) => (int) $promotionId)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        $promotions = $promotionIds === []
+            ? collect()
+            : Promotion::query()
+                ->whereKey($promotionIds)
+                ->orderBy('id')
+                ->get();
+        $result = $this->basePreviewReport($campaign, $promotions->count());
+        $result = $this->withAudienceAvailability($campaign, $result);
 
-                    $failure = $this->eligibilityService->getFailureReason($promotion, $customer);
+        if ($promotions->isEmpty()) {
+            $result['failure_reason'] = 'Campaign must have at least one promotion.';
 
-                    if ($failure !== null) {
-                        $result['skipped_count']++;
-
-                        continue;
-                    }
-
-                    $result['assignable_count']++;
-                } catch (Throwable $exception) {
-                    $this->addError($result, $customer->getKey(), $promotion->getKey(), $exception);
-                }
-            }
+            return $result;
         }
 
-        return $result;
+        $customers = $this->audienceBuilder->getCustomersForCampaign($campaign, $limit);
+
+        $result['can_assign'] = true;
+        $result['customers_checked'] = $customers->count();
+
+        return $this->evaluateAssignments($campaign, $customers, $promotions, $result, 'assignable_count', false, false);
     }
 
     public function assign(Campaign $campaign, int $limit = 500, bool $dryRun = true): array
@@ -82,50 +93,7 @@ class CampaignAssignmentService
         $result['customers_checked'] = $customers->count();
         $result['promotions_count'] = $promotions->count();
 
-        foreach ($customers as $customer) {
-            foreach ($promotions as $promotion) {
-                try {
-                    if ($this->hasOpenAssignment($customer->getKey(), $promotion->getKey(), $campaign->getKey())) {
-                        $result['already_assigned_count']++;
-
-                        continue;
-                    }
-
-                    $failure = $this->eligibilityService->getFailureReason($promotion, $customer);
-
-                    if ($failure !== null) {
-                        $result['skipped_count']++;
-
-                        continue;
-                    }
-
-                    if ($dryRun) {
-                        $result['assigned_count']++;
-
-                        continue;
-                    }
-
-                    $customerPromotion = $this->customerPromotionService->assignToCustomer(
-                        $customer,
-                        $promotion,
-                        $campaign,
-                        null,
-                        $this->assignmentMetadata($campaign)
-                    );
-
-                    if ($customerPromotion->wasRecentlyCreated) {
-                        $result['assigned_count']++;
-                    } else {
-                        $result['already_assigned_count']++;
-                    }
-                } catch (Throwable $exception) {
-                    $result['skipped_count']++;
-                    $this->addError($result, $customer->getKey(), $promotion->getKey(), $exception);
-                }
-            }
-        }
-
-        return $result;
+        return $this->evaluateAssignments($campaign, $customers, $promotions, $result, 'assigned_count', ! $dryRun, true);
     }
 
     public function canAssign(Campaign $campaign): bool
@@ -150,15 +118,19 @@ class CampaignAssignmentService
         return null;
     }
 
-    private function basePreviewReport(Campaign $campaign): array
+    private function basePreviewReport(Campaign $campaign, ?int $promotionsCount = null): array
     {
         return [
             'mode' => 'preview',
-            'campaign_id' => $campaign->getKey(),
+            'campaign_id' => $campaign->exists ? $campaign->getKey() : null,
             'can_assign' => false,
             'failure_reason' => null,
             'customers_checked' => 0,
-            'promotions_count' => $campaign->exists ? $campaign->promotions()->count() : 0,
+            'promotions_count' => $promotionsCount ?? ($campaign->exists ? $campaign->promotions()->count() : 0),
+            'available_count' => 0,
+            'available' => 0,
+            'matched_count' => 0,
+            'matched' => 0,
             'assignable_count' => 0,
             'already_assigned_count' => 0,
             'skipped_count' => 0,
@@ -193,6 +165,10 @@ class CampaignAssignmentService
 
     private function hasOpenAssignment($customerId, $promotionId, $campaignId): bool
     {
+        if ($campaignId === null) {
+            return false;
+        }
+
         return CustomerPromotion::query()
             ->where('customer_id', $customerId)
             ->where('promotion_id', $promotionId)
@@ -209,6 +185,81 @@ class CampaignAssignmentService
             'campaign_segment' => $campaign->segment,
             'assigned_by_service' => true,
         ];
+    }
+
+    private function withAudienceAvailability(Campaign $campaign, array $result): array
+    {
+        $result['available_count'] = $this->audienceBuilder->availableForCampaign($campaign);
+        $result['available'] = $result['available_count'];
+
+        return $result;
+    }
+
+    private function evaluateAssignments(
+        Campaign $campaign,
+        Collection $customers,
+        Collection $promotions,
+        array $result,
+        string $successKey,
+        bool $writeAssignments,
+        bool $countErrorsAsSkipped
+    ): array {
+        $matchedCustomerIds = [];
+
+        foreach ($customers as $customer) {
+            foreach ($promotions as $promotion) {
+                try {
+                    if ($this->hasOpenAssignment($customer->getKey(), $promotion->getKey(), $campaign->getKey())) {
+                        $result['already_assigned_count']++;
+
+                        continue;
+                    }
+
+                    $failure = $this->eligibilityService->getFailureReason($promotion, $customer);
+
+                    if ($failure !== null) {
+                        $result['skipped_count']++;
+
+                        continue;
+                    }
+
+                    $matchedCustomerIds[(int) $customer->getKey()] = true;
+
+                    if (! $writeAssignments) {
+                        $result[$successKey]++;
+
+                        continue;
+                    }
+
+                    $customerPromotion = $this->customerPromotionService->assignToCustomer(
+                        $customer,
+                        $promotion,
+                        $campaign,
+                        null,
+                        $this->assignmentMetadata($campaign)
+                    );
+
+                    if ($customerPromotion->wasRecentlyCreated) {
+                        $result[$successKey]++;
+                    } else {
+                        $result['already_assigned_count']++;
+                    }
+                } catch (Throwable $exception) {
+                    if ($countErrorsAsSkipped) {
+                        $result['skipped_count']++;
+                    }
+
+                    $this->addError($result, $customer->getKey(), $promotion->getKey(), $exception);
+                }
+            }
+        }
+
+        if (array_key_exists('matched_count', $result)) {
+            $result['matched_count'] = count($matchedCustomerIds);
+            $result['matched'] = $result['matched_count'];
+        }
+
+        return $result;
     }
 
     private function addError(array &$result, $customerId, $promotionId, Throwable $exception): void
