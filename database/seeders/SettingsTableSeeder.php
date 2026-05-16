@@ -11,8 +11,8 @@ class SettingsTableSeeder extends Seeder
     public function run()
     {
         $advancedDefaults = [
-            'too' => 0,
-            'dt' => 0,
+            'too' => false,
+            'dt' => false,
             'services' => 4, // 2 tavoli, 3 asporto, 4 tutti
             'menu_fix_set' => 1,
             'too_1' => 'tipo 1',
