@@ -71,24 +71,27 @@ class SettingController extends Controller
         $adv = Setting::where('name', 'advanced')->first();
         if($adv){
   
-            $property =json_decode($adv->property, 1);
+            $property = json_decode($adv->property, true) ?: [];
+            $services = (int) $request->input('services', $property['services'] ?? 4);
+            $too = (int) $request->input('too', $property['too'] ?? 0);
+            $dt = (int) $request->input('dt', $property['dt'] ?? 0);
 
-            if($property['services'] !==  $request->services ||
-                $property['too'] !==  $request->too ||
-                $property['dt'] !==  $request->dt ){
+            if((int) ($property['services'] ?? 4) !== $services ||
+                (int) ($property['too'] ?? 0) !== $too ||
+                (int) ($property['dt'] ?? 0) !== $dt ){
                 // Pulisco le tabelle
                 DB::table('dates')->truncate(); 
             }
 
-            $property['too'] = $request->services == 2 ? 0 : $request->too;
-            $property['dt'] = $request->services == 3 ? 0 : $request->dt;
-            $property['services'] = $request->services;
-            $property['menu_fix_set'] = $request->menu_fix_set;
+            $property['too'] = $services === 2 ? 0 : $too;
+            $property['dt'] = $services === 3 ? 0 : $dt;
+            $property['services'] = $services;
+            $property['menu_fix_set'] = (int) $request->input('menu_fix_set', $property['menu_fix_set'] ?? 1);
             
-            $property['too_1'] = $request->too_1;
-            $property['too_2'] = $request->too_2;
-            $property['sala_1'] = $request->sala_1;
-            $property['sala_2'] = $request->sala_2;
+            $property['too_1'] = $request->input('too_1', $property['too_1'] ?? '');
+            $property['too_2'] = $request->input('too_2', $property['too_2'] ?? '');
+            $property['sala_1'] = $request->input('sala_1', $property['sala_1'] ?? '');
+            $property['sala_2'] = $request->input('sala_2', $property['sala_2'] ?? '');
             
             $property['p_iva'] = $request->p_iva;
             $property['r_sociale'] = $request->r_sociale;
@@ -98,17 +101,17 @@ class SettingController extends Controller
             $property['u_imprese'] = $request->u_imprese;
             $property['method'] = $request->method ? $request->method : [];
             $property['set_time'] = [];
-            if($request->dt && in_array($request->services, [2,4])){
-                $property['set_time'][] = $request->sala_1;
-                $property['set_time'][] = $request->sala_2;
-            }elseif(in_array($request->services, [2,4])){
+            if($property['dt'] && in_array($services, [2,4], true)){
+                $property['set_time'][] = $property['sala_1'];
+                $property['set_time'][] = $property['sala_2'];
+            }elseif(in_array($services, [2,4], true)){
                 $property['set_time'][] = 'tavoli';
             }
-            if($request->too && in_array($request->services, [3,4])){
-                $property['set_time'][] = $request->too_1;
-                $property['set_time'][] = $request->too_2;   
+            if($property['too'] && in_array($services, [3,4], true)){
+                $property['set_time'][] = $property['too_1'];
+                $property['set_time'][] = $property['too_2'];
                 $property['set_time'][] = 'domicilio';
-            }elseif(in_array($request->services, [4,3])){
+            }elseif(in_array($services, [4,3], true)){
                 $property['set_time'][] = 'asporto';
                 $property['set_time'][] = 'domicilio';
             }

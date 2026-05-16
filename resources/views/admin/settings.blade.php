@@ -10,7 +10,9 @@
 @endif
 @php
 $pack = ['', 'Essentials', 'Work on', 'Boost up', 'Prova gratuita', 'Boost up+'];
-$adv = json_decode($setting['advanced']->property, 1);
+$subscription = (int) config('configurazione.subscription', 1);
+$adv = json_decode($setting['advanced']->property, 1) ?: [];
+$paymentMethods = is_array($adv['method'] ?? null) ? $adv['method'] : [];
 
 $tavoliStatus   = (int) $setting['Prenotazione Tavoli']['status'];
 $asportoStatus  = (int) $setting['Prenotazione Asporti']['status'];
@@ -53,6 +55,9 @@ $servicesState = match ((string) ($adv['services'] ?? '4')) {
     '4' => ['label' => 'Tutti',   'tone' => 'active'],
     default => ['label' => 'Custom', 'tone' => 'warning'],
 };
+$takeawayTypeState = ((int) ($adv['too'] ?? 0)) === 1
+    ? ['label' => 'Separato', 'tone' => 'active']
+    : ['label' => 'Unico',    'tone' => 'neutral'];
 $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
     ? ['label' => 'Attiva', 'tone' => 'active']
     : ['label' => 'Off',    'tone' => 'off'];
@@ -757,7 +762,7 @@ $toneClass = fn(string $tone) => match($tone) {
                 </a>
                 <div class="stt-mobile-strip__brand-text">
                     <span class="stt-mobile-strip__name">{{ config('configurazione.APP_NAME') }}</span>
-                    <span class="stt-mobile-strip__pack">{{ $pack[config('configurazione.subscription')] }}</span>
+                    <span class="stt-mobile-strip__pack">{{ $pack[$subscription] ?? 'Attivo' }}</span>
                 </div>
             </div>
         </div>
@@ -806,7 +811,7 @@ $toneClass = fn(string $tone) => match($tone) {
                         </div>
 
                         {{-- Domicilio (solo piano > 1) --}}
-                        @if (config('configurazione.subscription') > 1)
+                        @if ($subscription > 1)
                         <div class="stt-op-card {{ $toneClass($domicilioState['tone']) }}"
                              data-stt-toggle="domicilio" data-stt-max="1"
                              role="button" tabindex="0"
@@ -903,7 +908,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                     <span class="stt-state stt-state--{{ $asportoState['tone'] }}" data-stt-badge="asporto">{{ $asportoState['label'] }}</span>
                                 </div>
                             </div>
-                            @if (config('configurazione.subscription') > 2)
+                            @if ($subscription > 2)
                             <div class="stt-field">
                                 <span class="stt-field-lbl">Pagamento accettato</span>
                                 <div class="stt-pay-row" data-stt-pay="asporto_pay">
@@ -919,7 +924,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                 </div>
                             </div>
                             @endif
-                            @if (config('configurazione.subscription') > 1)
+                            @if ($subscription > 1)
                             <div class="stt-field">
                                 <span class="stt-field-lbl">{{ __('admin.Prezzo_minimo') }}</span>
                                 <input type="number" class="stt-input"
@@ -932,7 +937,7 @@ $toneClass = fn(string $tone) => match($tone) {
                         </div>
 
                         {{-- Domicilio --}}
-                        @if (config('configurazione.subscription') > 1)
+                        @if ($subscription > 1)
                         <div class="stt-card">
                             <div class="stt-svc-head">
                                 <span class="stt-svc-title"><i class="bi bi-bicycle me-1"></i>Domicilio</span>
@@ -941,7 +946,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                     <span class="stt-state stt-state--{{ $domicilioState['tone'] }}" data-stt-badge="domicilio">{{ $domicilioState['label'] }}</span>
                                 </div>
                             </div>
-                            @if (config('configurazione.subscription') > 2)
+                            @if ($subscription > 2)
                             <div class="stt-field">
                                 <span class="stt-field-lbl">Pagamento accettato</span>
                                 <div class="stt-pay-row" data-stt-pay="domicilio_pay">
@@ -1059,13 +1064,13 @@ $toneClass = fn(string $tone) => match($tone) {
                                         aria-selected="false" data-loc-tab="contatti">
                                     <i class="bi bi-person-lines-fill"></i>{{ __('admin.set_3') }}
                                 </button>
-                                @if (config('configurazione.subscription') > 1)
+                                @if ($subscription > 1)
                                 <button type="button" class="loc-tab" role="tab"
                                         aria-selected="false" data-loc-tab="comuni">
                                     <i class="bi bi-map"></i>{{ __('admin.set_4') }}
                                 </button>
                                 @endif
-                                @if (config('configurazione.subscription') > 2)
+                                @if ($subscription > 2)
                                 <button type="button" class="loc-tab" role="tab"
                                         aria-selected="false" data-loc-tab="whatsapp">
                                     <i class="bi bi-whatsapp"></i>{{ __('admin.set_5') }}
@@ -1185,7 +1190,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
 
                             {{-- Pannello: Comuni consegna --}}
-                            @if (config('configurazione.subscription') > 1)
+                            @if ($subscription > 1)
                             <div class="loc-panel" id="loc-panel-comuni" role="tabpanel">
                                 @php
                                 if (is_string($setting['Comuni per il domicilio']['property'])) {
@@ -1214,7 +1219,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             @endif
 
                             {{-- Pannello: WhatsApp numeri --}}
-                            @if (config('configurazione.subscription') > 2)
+                            @if ($subscription > 2)
                             <div class="loc-panel" id="loc-panel-whatsapp" role="tabpanel">
                                 @php
                                 if (is_string($setting['wa']['property'])) {
@@ -1270,7 +1275,7 @@ $toneClass = fn(string $tone) => match($tone) {
                     </a>
                     <a class="stt-pack-link" href="https://future-plus.it/#pacchetti">
                         <img class="stt-pack-link__icon" src="https://future-plus.it/img/favicon.png" alt="">
-                        {{ __('admin.Pacchetto') }}: {{ $pack[config('configurazione.subscription')] }}
+                        {{ __('admin.Pacchetto') }}: {{ $pack[$subscription] ?? 'Attivo' }}
                     </a>
                 </div>
 
@@ -1311,15 +1316,15 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
                             <div class="adv-radio-group">
                                 <label class="adv-radio-label">
-                                    <input @checked($adv['menu_fix_set']== '0') type="radio" name="menu_fix_set" value="0">
+                                    <input @checked(($adv['menu_fix_set'] ?? '0') == '0') type="radio" name="menu_fix_set" value="0">
                                     <span>{{__('admin.Menu_fisso')}}</span>
                                 </label>
                                 <label class="adv-radio-label">
-                                    <input @checked($adv['menu_fix_set']== '1') type="radio" name="menu_fix_set" value="1">
+                                    <input @checked(($adv['menu_fix_set'] ?? '0') == '1') type="radio" name="menu_fix_set" value="1">
                                     <span>{{__('admin.Tutti')}}</span>
                                 </label>
                                 <label class="adv-radio-label">
-                                    <input @checked($adv['menu_fix_set']== '2') type="radio" name="menu_fix_set" value="2">
+                                    <input @checked(($adv['menu_fix_set'] ?? '0') == '2') type="radio" name="menu_fix_set" value="2">
                                     <span>{{__('admin.Menu_alla_carta')}}</span>
                                 </label>
                             </div>
@@ -1336,19 +1341,53 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
                             <div class="adv-radio-group">
                                 <label class="adv-radio-label">
-                                    <input class="critical-radio1" @checked($adv['services']== '3') type="radio" name="services" value="3">
+                                    <input class="critical-radio1" @checked(($adv['services'] ?? '4') == '3') type="radio" name="services" value="3">
                                     <span>{{__('admin.Asporto')}}</span>
                                 </label>
                                 <label class="adv-radio-label">
-                                    <input class="critical-radio1" @checked($adv['services']== '4') type="radio" name="services" value="4">
+                                    <input class="critical-radio1" @checked(($adv['services'] ?? '4') == '4') type="radio" name="services" value="4">
                                     <span>{{__('admin.Tutti')}}</span>
                                 </label>
                                 <label class="adv-radio-label">
-                                    <input class="critical-radio1" @checked($adv['services']== '2') type="radio" name="services" value="2">
+                                    <input class="critical-radio1" @checked(($adv['services'] ?? '4') == '2') type="radio" name="services" value="2">
                                     <span>{{__('admin.Tavoli')}}</span>
                                 </label>
                             </div>
-                            <input type="hidden" id="attivo-originale1" value="{{$adv['services']}}">
+                            <input type="hidden" id="attivo-originale1" value="{{ $adv['services'] ?? 4 }}">
+                        </div>
+
+                        {{-- Tipologie asporto --}}
+                        <div class="adv-block">
+                            <div class="adv-block__head">
+                                <span class="adv-block__title">
+                                    <i class="bi bi-bag-check"></i>
+                                    {{ __('admin.Tipo') }} {{ __('admin.Asporto') }}
+                                </span>
+                                <span class="adv-badge adv-badge--{{ $takeawayTypeState['tone'] }}">{{ $takeawayTypeState['label'] }}</span>
+                            </div>
+                            <div class="adv-radio-group adv-radio-group--spaced">
+                                <label class="adv-radio-label">
+                                    <input class="critical-radio2" @checked(($adv['too'] ?? 0) == 0) type="radio" name="too" value="0">
+                                    <span>Unico</span>
+                                </label>
+                                <label class="adv-radio-label">
+                                    <input class="critical-radio2" @checked(($adv['too'] ?? 0) == 1) type="radio" name="too" value="1">
+                                    <span>Separato</span>
+                                </label>
+                            </div>
+                            <input type="hidden" id="attivo-originale2" value="{{ $adv['too'] ?? 0 }}">
+                            <div class="adv-pair adv-pair--flush">
+                                <div class="adv-field">
+                                    <label>Tipo 1</label>
+                                    <input type="text" name="too_1" value="{{ $adv['too_1'] ?? '' }}"
+                                           placeholder="Es: Asporto">
+                                </div>
+                                <div class="adv-field">
+                                    <label>Tipo 2</label>
+                                    <input type="text" name="too_2" value="{{ $adv['too_2'] ?? '' }}"
+                                           placeholder="Es: Domicilio">
+                                </div>
+                            </div>
                         </div>
 
                         {{-- Doppia sala --}}
@@ -1362,24 +1401,24 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
                             <div class="adv-radio-group adv-radio-group--spaced">
                                 <label class="adv-radio-label">
-                                    <input class="critical-radio3" @checked($adv['dt']== 0) type="radio" name="dt" value="0">
+                                    <input class="critical-radio3" @checked(($adv['dt'] ?? 0) == 0) type="radio" name="dt" value="0">
                                     <span>Off</span>
                                 </label>
                                 <label class="adv-radio-label">
-                                    <input class="critical-radio3" @checked($adv['dt']== 1) type="radio" name="dt" value="1">
+                                    <input class="critical-radio3" @checked(($adv['dt'] ?? 0) == 1) type="radio" name="dt" value="1">
                                     <span>On</span>
                                 </label>
                             </div>
-                            <input type="hidden" id="attivo-originale3" value="{{$adv['dt']}}">
+                            <input type="hidden" id="attivo-originale3" value="{{ $adv['dt'] ?? 0 }}">
                             <div class="adv-pair adv-pair--flush">
                                 <div class="adv-field">
                                     <label>{{__('admin.Sala_1')}}</label>
-                                    <input type="text" name="sala_1" value="{{$adv['sala_1']}}"
+                                    <input type="text" name="sala_1" value="{{ $adv['sala_1'] ?? '' }}"
                                            placeholder="Es: Sala principale">
                                 </div>
                                 <div class="adv-field">
                                     <label>{{__('admin.Sala_2')}}</label>
-                                    <input type="text" name="sala_2" value="{{$adv['sala_2']}}"
+                                    <input type="text" name="sala_2" value="{{ $adv['sala_2'] ?? '' }}"
                                            placeholder="Es: Sala eventi">
                                 </div>
                             </div>
@@ -1396,22 +1435,22 @@ $toneClass = fn(string $tone) => match($tone) {
                         <div class="adv-legal-grid">
                             <div class="adv-field">
                                 <label>{{__('admin.Ragione_sociale')}}</label>
-                                <input type="text" name="r_sociale" value="{{$adv['r_sociale']}}"
+                                <input type="text" name="r_sociale" value="{{ $adv['r_sociale'] ?? '' }}"
                                        placeholder="Ristorante SRL">
                             </div>
                             <div class="adv-field">
                                 <label>{{__('admin.Piva')}}</label>
-                                <input type="text" name="p_iva" value="{{$adv['p_iva']}}"
+                                <input type="text" name="p_iva" value="{{ $adv['p_iva'] ?? '' }}"
                                        placeholder="IT00000000000">
                             </div>
                             <div class="adv-field">
                                 <label>{{__('admin.Codice_rea')}}</label>
-                                <input type="text" name="c_rea" value="{{$adv['c_rea']}}"
+                                <input type="text" name="c_rea" value="{{ $adv['c_rea'] ?? '' }}"
                                        placeholder="AN-000000">
                             </div>
                             <div class="adv-field">
                                 <label>{{__('admin.Capitale_sociale')}}</label>
-                                <input type="number" name="c_sociale" value="{{$adv['c_sociale']}}"
+                                <input type="number" name="c_sociale" value="{{ $adv['c_sociale'] ?? '' }}"
                                        placeholder="10000">
                             </div>
                             <div class="adv-field">
@@ -1421,7 +1460,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
                             <div class="adv-field">
                                 <label>{{__('admin.Iscrizione_imprese')}}</label>
-                                <input type="text" name="u_imprese" value="{{$adv['u_imprese']}}"
+                                <input type="text" name="u_imprese" value="{{ $adv['u_imprese'] ?? '' }}"
                                        placeholder="RI-00000">
                             </div>
                         </div>
@@ -1499,7 +1538,7 @@ $toneClass = fn(string $tone) => match($tone) {
         </div>
     </div>
 
-    @if (config('configurazione.subscription') > 2)
+    @if ($subscription > 1)
         <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop1Label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <form action="{{ route('admin.settings.updateAree')}}" method="POST" class="w-100">
@@ -1560,7 +1599,9 @@ $toneClass = fn(string $tone) => match($tone) {
                 </form>
             </div>
         </div>
+    @endif
 
+    @if ($subscription > 2)
         <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop2Label" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <form action="{{ route('admin.settings.numbers')}}" method="POST" class="w-100">
@@ -1572,7 +1613,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             <label for="numbers_primary">1# {{__('admin.Numero')}}</label>
                             <input name="numbers[]" id="numbers_primary" type="text" placeholder="39000111000">
                         </div>
-                        @if (config('configurazione.subscription') == 5)
+                        @if ($subscription == 5)
                             <div class="dashboard-action-modal__field">
                                 <label for="numbers_secondary">2# {{__('admin.Numero')}}</label>
                                 <input name="numbers[]" id="numbers_secondary" type="text" placeholder="39000111000">
