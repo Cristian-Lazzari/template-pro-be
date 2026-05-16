@@ -103,7 +103,7 @@ $toneClass = fn(string $tone) => match($tone) {
     /* ═══════════════════════════════════════════════════════
        SETTINGS PAGE — Design System v2
        Variabili CSS centralizzate + classi semantiche
-       Prefissi: stt- (generale), adv- (modale avanzate), loc- (dettagli locale)
+       Prefissi: stt- (generale), ops- (modale avanzate), loc- (dettagli locale)
     ═══════════════════════════════════════════════════════ */
 
     :root {
@@ -532,38 +532,38 @@ $toneClass = fn(string $tone) => match($tone) {
 
     /* ═══════════════════════════════════════
        MODALE IMPOSTAZIONI AVANZATE
-       Prefisso: adv-
+       Prefisso: ops-
     ═══════════════════════════════════════ */
-    .adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
-    @media(max-width:640px){.adv-grid{grid-template-columns:1fr}}
+    .ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+    @media(max-width:640px){.ops-grid{grid-template-columns:1fr}}
 
     /* Card singola blocco avanzate */
-    .adv-block{
+    .ops-card{
         background:rgba(255,255,255,.03);
         border:1px solid var(--stt-border-subtle);
         border-radius:var(--stt-radius-md);
         padding:1.1rem 1.25rem
     }
-    .adv-block__head{
+    .ops-card__head{
         display:flex;align-items:center;justify-content:space-between;
         margin-bottom:.85rem;padding-bottom:.7rem;
         border-bottom:1px solid var(--stt-border-subtle)
     }
-    .adv-block__title{font-size:13px;font-weight:700;color:var(--stt-text-primary);display:flex;align-items:center;gap:.4rem}
-    .adv-block__title i{color:var(--stt-accent);font-size:14px}
-    .adv-badge{
+    .ops-card__title{font-size:13px;font-weight:700;color:var(--stt-text-primary);display:flex;align-items:center;gap:.4rem}
+    .ops-card__title i{color:var(--stt-accent);font-size:14px}
+    .ops-badge{
         display:inline-flex;align-items:center;
         padding:.2rem .65rem;border-radius:var(--stt-radius-pill);
         font-size:11px;font-weight:700;letter-spacing:.04em
     }
-    .adv-badge--active{background:var(--stt-active-dim);color:var(--stt-active);border:1px solid var(--stt-active-border)}
-    .adv-badge--warning{background:var(--stt-warning-dim);color:var(--stt-warning);border:1px solid var(--stt-warning-border)}
-    .adv-badge--off{background:var(--stt-error-dim);color:var(--stt-error);border:1px solid var(--stt-error-border)}
-    .adv-badge--neutral{background:rgba(255,255,255,.06);color:var(--stt-text-dim);border:1px solid var(--stt-border-subtle)}
+    .ops-badge--active{background:var(--stt-active-dim);color:var(--stt-active);border:1px solid var(--stt-active-border)}
+    .ops-badge--warning{background:var(--stt-warning-dim);color:var(--stt-warning);border:1px solid var(--stt-warning-border)}
+    .ops-badge--off{background:var(--stt-error-dim);color:var(--stt-error);border:1px solid var(--stt-error-border)}
+    .ops-badge--neutral{background:rgba(255,255,255,.06);color:var(--stt-text-dim);border:1px solid var(--stt-border-subtle)}
 
     /* Radio pills all'interno dei blocchi */
-    .adv-radio-group{display:flex;flex-wrap:wrap;gap:.4rem}
-    .adv-radio-label{
+    .ops-radio-group{display:flex;flex-wrap:wrap;gap:.4rem}
+    .ops-radio-label{
         display:inline-flex;align-items:center;gap:.35rem;
         padding:.45rem .85rem;border-radius:var(--stt-radius-pill);
         border:1.5px solid var(--stt-border-subtle);
@@ -571,22 +571,22 @@ $toneClass = fn(string $tone) => match($tone) {
         font-size:13px;font-weight:600;cursor:pointer;
         transition:all .15s;min-height:var(--stt-touch)
     }
-    .adv-radio-label:hover{border-color:rgba(45,212,191,.35);color:var(--stt-text-primary)}
-    .adv-radio-label input[type="radio"]{display:none}
-    .adv-radio-label:has(input:checked){
+    .ops-radio-label:hover{border-color:rgba(45,212,191,.35);color:var(--stt-text-primary)}
+    .ops-radio-label input[type="radio"]{display:none}
+    .ops-radio-label:has(input:checked){
         border-color:var(--stt-accent);
         background:var(--stt-accent-dim);
         color:var(--stt-accent)
     }
     /* Fallback per browser senza :has() */
-    .adv-radio-label input:checked + span{color:var(--stt-accent)}
+    .ops-radio-label input:checked + span{color:var(--stt-accent)}
 
     /* Input coppie (sale, dati legali) */
-    .adv-pair{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:.75rem}
-    @media(max-width:480px){.adv-pair{grid-template-columns:1fr}}
-    .adv-field{display:flex;flex-direction:column;gap:.3rem}
-    .adv-field label{font-size:11px;font-weight:700;color:var(--stt-text-muted);text-transform:uppercase;letter-spacing:.07em}
-    .adv-field input{
+    .ops-pair{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:.75rem}
+    @media(max-width:480px){.ops-pair{grid-template-columns:1fr}}
+    .ops-field{display:flex;flex-direction:column;gap:.3rem}
+    .ops-field label{font-size:11px;font-weight:700;color:var(--stt-text-muted);text-transform:uppercase;letter-spacing:.07em}
+    .ops-field input{
         background:var(--stt-bg-elevated);
         border:1.5px solid var(--stt-border-subtle);
         border-radius:var(--stt-radius-md);
@@ -595,36 +595,36 @@ $toneClass = fn(string $tone) => match($tone) {
         transition:border-color .15s;
         min-height:var(--stt-touch);width:100%
     }
-    .adv-field input:focus{outline:none;border-color:var(--stt-accent);background:rgba(255,255,255,.07)}
-    .adv-field input::placeholder{color:rgba(255,255,255,.2)}
+    .ops-field input:focus{outline:none;border-color:var(--stt-accent);background:rgba(255,255,255,.07)}
+    .ops-field input::placeholder{color:rgba(255,255,255,.2)}
 
     /* Blocco info legali — occupa intera riga */
-    .adv-legal{
+    .ops-legal{
         background:rgba(255,255,255,.03);
         border:1px solid var(--stt-border-subtle);
         border-radius:var(--stt-radius-md);
         padding:1.1rem 1.25rem;margin-bottom:1rem
     }
-    .adv-legal__title{
+    .ops-legal__title{
         font-size:12px;font-weight:700;color:var(--stt-accent);
         text-transform:uppercase;letter-spacing:.08em;
         margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem
     }
-    .adv-legal__title i{font-size:14px}
-    .adv-legal-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
-    @media(max-width:480px){.adv-legal-grid{grid-template-columns:1fr}}
+    .ops-legal__title i{font-size:14px}
+    .ops-legal-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+    @media(max-width:480px){.ops-legal-grid{grid-template-columns:1fr}}
 
     /* Metodi di pagamento */
-    .adv-methods-label{
+    .ops-methods-label{
         font-size:12px;font-weight:700;color:var(--stt-text-muted);
         text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem
     }
-    .adv-methods-wrap{display:flex;flex-wrap:wrap;gap:.5rem}
-    .adv-method-item{position:relative}
-    .adv-method-item input[type="checkbox"]{
+    .ops-methods-wrap{display:flex;flex-wrap:wrap;gap:.5rem}
+    .ops-method-item{position:relative}
+    .ops-method-item input[type="checkbox"]{
         position:absolute;opacity:0;width:1px;height:1px
     }
-    .adv-method-item label{
+    .ops-method-item label{
         display:flex;align-items:center;justify-content:center;
         padding:.45rem .6rem;
         border-radius:var(--stt-radius-sm);
@@ -633,14 +633,14 @@ $toneClass = fn(string $tone) => match($tone) {
         cursor:pointer;transition:all .15s;
         min-width:52px;min-height:var(--stt-touch)
     }
-    .adv-method-item label:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.08)}
-    .adv-method-item input:checked + label{
+    .ops-method-item label:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.08)}
+    .ops-method-item input:checked + label{
         border-color:var(--stt-accent);background:var(--stt-accent-dim)
     }
-    .adv-method-item label .bi{font-size:20px;color:var(--stt-text-dim)}
-    .adv-method-item input:checked + label .bi{color:var(--stt-accent)}
+    .ops-method-item label .bi{font-size:20px;color:var(--stt-text-dim)}
+    .ops-method-item input:checked + label .bi{color:var(--stt-accent)}
     .payment-icon{display:block;filter:brightness(.85)}
-    .adv-method-item input:checked + label .payment-icon{filter:brightness(1)}
+    .ops-method-item input:checked + label .payment-icon{filter:brightness(1)}
 
     /* ── Modale impostazioni avanzate — dimensioni ── */
     .settings-modal-dialog{
@@ -666,7 +666,7 @@ $toneClass = fn(string $tone) => match($tone) {
     }
 
     /* Warning critico */
-    .adv-warning{
+    .ops-warning{
         display:none;text-align:center;
         padding:.75rem 1rem;margin-top:.75rem;
         background:var(--stt-error-dim);
@@ -675,7 +675,7 @@ $toneClass = fn(string $tone) => match($tone) {
         color:var(--stt-error);font-size:14px;font-weight:600
     }
 
-    .settings-page :is(.menu-dashboard__hero,.stt-wrap,.stt-layout,.stt-main,.stt-section,.stt-card,.stt-card-flush,.stt-services-grid,.stt-locale-grid,.stt-two-col,.loc-panel,.adv-grid,.adv-block,.adv-legal,.dashboard-action-modal__content){min-width:0}
+    .settings-page :is(.menu-dashboard__hero,.stt-wrap,.stt-layout,.stt-main,.stt-section,.stt-card,.stt-card-flush,.stt-services-grid,.stt-locale-grid,.stt-two-col,.loc-panel,.ops-grid,.ops-card,.ops-legal,.dashboard-action-modal__content){min-width:0}
     .dash_page.settings-page{width:100%;max-width:100%;gap:clamp(14px,2vw,20px)}
     .stt-layout{width:100%;grid-template-columns:minmax(0,1fr) minmax(220px,260px)}
     .stt-main{width:100%;min-width:0}
@@ -699,7 +699,7 @@ $toneClass = fn(string $tone) => match($tone) {
     .loc-day-row{min-width:0}
     .loc-day-lbl{min-width:76px}
     .loc-map-preview{display:block;width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-bottom:1rem}
-    .loc-address-list span,.stt-note,.adv-field input,.stt-input{overflow-wrap:anywhere}
+    .loc-address-list span,.stt-note,.ops-field input,.stt-input{overflow-wrap:anywhere}
     .loc-actions .my_btn_1{flex:1 1 160px}
     .loc-submit-bar{gap:.75rem}
     .loc-submit-bar .my_btn_1{margin-left:0}
@@ -709,15 +709,15 @@ $toneClass = fn(string $tone) => match($tone) {
     .stt-empty-state{color:var(--stt-text-muted);font-style:italic}
     .stt-sublabel--social{margin-top:1rem;margin-bottom:.65rem}
     .stt-wa-icon{color:var(--stt-active)}
-    .adv-grid,.adv-legal-grid,.adv-pair{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
-    .adv-block--wide{grid-column:1/-1}
-    .adv-radio-group--spaced{margin-bottom:.85rem}
-    .adv-pair--flush{margin-top:0}
-    .adv-legal--methods{margin-top:0}
-    .adv-methods-label{margin-bottom:.75rem}
-    .adv-methods-label .bi{color:var(--stt-accent)}
-    .adv-methods-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr))}
-    .adv-method-item label{width:100%;min-width:0}
+    .ops-grid,.ops-legal-grid,.ops-pair{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+    .ops-card--wide{grid-column:1/-1}
+    .ops-radio-group--spaced{margin-bottom:.85rem}
+    .ops-pair--flush{margin-top:0}
+    .ops-legal--methods{margin-top:0}
+    .ops-methods-label{margin-bottom:.75rem}
+    .ops-methods-label .bi{color:var(--stt-accent)}
+    .ops-methods-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr))}
+    .ops-method-item label{width:100%;min-width:0}
     .payment-icon{max-width:100%;height:auto}
     .settings-modal-dialog{max-width:min(1080px,calc(100vw - 24px))!important;width:min(1080px,calc(100vw - 24px))!important}
     .settings-basic-modal .check_c{display:flex;flex-wrap:wrap;gap:.5rem;min-width:0}
@@ -739,7 +739,7 @@ $toneClass = fn(string $tone) => match($tone) {
         .loc-submit-bar{align-items:stretch;flex-direction:column;padding:1rem}
         .loc-submit-bar .my_btn_1{width:100%}
         .settings-modal-dialog{width:calc(100vw - 12px)!important;max-width:calc(100vw - 12px)!important;margin:.5rem auto!important}
-        .adv-block,.adv-legal{padding:1rem}
+        .ops-card,.ops-legal{padding:1rem}
     }
     @media(max-width:380px){
         .stt-card{padding:.9rem}
@@ -1303,27 +1303,27 @@ $toneClass = fn(string $tone) => match($tone) {
                     </x-slot>
 
                     {{-- ── Blocchi configurazione avanzata ── --}}
-                    <div class="adv-grid">
+                    <div class="ops-grid">
 
                         {{-- Gestione menu --}}
-                        <div class="adv-block">
-                            <div class="adv-block__head">
-                                <span class="adv-block__title">
+                        <div class="ops-card">
+                            <div class="ops-card__head">
+                                <span class="ops-card__title">
                                     <i class="bi bi-journal-text"></i>
                                     {{__('admin.Gestione_menu')}}
                                 </span>
-                                <span class="adv-badge adv-badge--{{ $menuFixState['tone'] }}">{{ $menuFixState['label'] }}</span>
+                                <span class="ops-badge ops-badge--{{ $menuFixState['tone'] }}">{{ $menuFixState['label'] }}</span>
                             </div>
-                            <div class="adv-radio-group">
-                                <label class="adv-radio-label">
+                            <div class="ops-radio-group">
+                                <label class="ops-radio-label">
                                     <input @checked(($adv['menu_fix_set'] ?? '0') == '0') type="radio" name="menu_fix_set" value="0">
                                     <span>{{__('admin.Menu_fisso')}}</span>
                                 </label>
-                                <label class="adv-radio-label">
+                                <label class="ops-radio-label">
                                     <input @checked(($adv['menu_fix_set'] ?? '0') == '1') type="radio" name="menu_fix_set" value="1">
                                     <span>{{__('admin.Tutti')}}</span>
                                 </label>
-                                <label class="adv-radio-label">
+                                <label class="ops-radio-label">
                                     <input @checked(($adv['menu_fix_set'] ?? '0') == '2') type="radio" name="menu_fix_set" value="2">
                                     <span>{{__('admin.Menu_alla_carta')}}</span>
                                 </label>
@@ -1331,24 +1331,24 @@ $toneClass = fn(string $tone) => match($tone) {
                         </div>
 
                         {{-- Servizi attivi --}}
-                        <div class="adv-block">
-                            <div class="adv-block__head">
-                                <span class="adv-block__title">
+                        <div class="ops-card">
+                            <div class="ops-card__head">
+                                <span class="ops-card__title">
                                     <i class="bi bi-grid-3x3-gap"></i>
                                     {{__('admin.Servizi_attivi')}}
                                 </span>
-                                <span class="adv-badge adv-badge--{{ $servicesState['tone'] }}">{{ $servicesState['label'] }}</span>
+                                <span class="ops-badge ops-badge--{{ $servicesState['tone'] }}">{{ $servicesState['label'] }}</span>
                             </div>
-                            <div class="adv-radio-group">
-                                <label class="adv-radio-label">
+                            <div class="ops-radio-group">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio1" @checked(($adv['services'] ?? '4') == '3') type="radio" name="services" value="3">
                                     <span>{{__('admin.Asporto')}}</span>
                                 </label>
-                                <label class="adv-radio-label">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio1" @checked(($adv['services'] ?? '4') == '4') type="radio" name="services" value="4">
                                     <span>{{__('admin.Tutti')}}</span>
                                 </label>
-                                <label class="adv-radio-label">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio1" @checked(($adv['services'] ?? '4') == '2') type="radio" name="services" value="2">
                                     <span>{{__('admin.Tavoli')}}</span>
                                 </label>
@@ -1357,32 +1357,32 @@ $toneClass = fn(string $tone) => match($tone) {
                         </div>
 
                         {{-- Tipologie asporto --}}
-                        <div class="adv-block">
-                            <div class="adv-block__head">
-                                <span class="adv-block__title">
+                        <div class="ops-card">
+                            <div class="ops-card__head">
+                                <span class="ops-card__title">
                                     <i class="bi bi-bag-check"></i>
                                     {{ __('admin.Tipo') }} {{ __('admin.Asporto') }}
                                 </span>
-                                <span class="adv-badge adv-badge--{{ $takeawayTypeState['tone'] }}">{{ $takeawayTypeState['label'] }}</span>
+                                <span class="ops-badge ops-badge--{{ $takeawayTypeState['tone'] }}">{{ $takeawayTypeState['label'] }}</span>
                             </div>
-                            <div class="adv-radio-group adv-radio-group--spaced">
-                                <label class="adv-radio-label">
+                            <div class="ops-radio-group ops-radio-group--spaced">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio2" @checked(($adv['too'] ?? 0) == 0) type="radio" name="too" value="0">
                                     <span>Unico</span>
                                 </label>
-                                <label class="adv-radio-label">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio2" @checked(($adv['too'] ?? 0) == 1) type="radio" name="too" value="1">
                                     <span>Separato</span>
                                 </label>
                             </div>
                             <input type="hidden" id="attivo-originale2" value="{{ $adv['too'] ?? 0 }}">
-                            <div class="adv-pair adv-pair--flush">
-                                <div class="adv-field">
+                            <div class="ops-pair ops-pair--flush">
+                                <div class="ops-field">
                                     <label>Tipo 1</label>
                                     <input type="text" name="too_1" value="{{ $adv['too_1'] ?? '' }}"
                                            placeholder="Es: Asporto">
                                 </div>
-                                <div class="adv-field">
+                                <div class="ops-field">
                                     <label>Tipo 2</label>
                                     <input type="text" name="too_2" value="{{ $adv['too_2'] ?? '' }}"
                                            placeholder="Es: Domicilio">
@@ -1391,32 +1391,32 @@ $toneClass = fn(string $tone) => match($tone) {
                         </div>
 
                         {{-- Doppia sala --}}
-                        <div class="adv-block adv-block--wide">
-                            <div class="adv-block__head">
-                                <span class="adv-block__title">
+                        <div class="ops-card ops-card--wide">
+                            <div class="ops-card__head">
+                                <span class="ops-card__title">
                                     <i class="bi bi-layout-split"></i>
                                     {{__('admin.Doppia_sala')}}
                                 </span>
-                                <span class="adv-badge adv-badge--{{ $doubleRoomState['tone'] }}">{{ $doubleRoomState['label'] }}</span>
+                                <span class="ops-badge ops-badge--{{ $doubleRoomState['tone'] }}">{{ $doubleRoomState['label'] }}</span>
                             </div>
-                            <div class="adv-radio-group adv-radio-group--spaced">
-                                <label class="adv-radio-label">
+                            <div class="ops-radio-group ops-radio-group--spaced">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio3" @checked(($adv['dt'] ?? 0) == 0) type="radio" name="dt" value="0">
                                     <span>Off</span>
                                 </label>
-                                <label class="adv-radio-label">
+                                <label class="ops-radio-label">
                                     <input class="critical-radio3" @checked(($adv['dt'] ?? 0) == 1) type="radio" name="dt" value="1">
                                     <span>On</span>
                                 </label>
                             </div>
                             <input type="hidden" id="attivo-originale3" value="{{ $adv['dt'] ?? 0 }}">
-                            <div class="adv-pair adv-pair--flush">
-                                <div class="adv-field">
+                            <div class="ops-pair ops-pair--flush">
+                                <div class="ops-field">
                                     <label>{{__('admin.Sala_1')}}</label>
                                     <input type="text" name="sala_1" value="{{ $adv['sala_1'] ?? '' }}"
                                            placeholder="Es: Sala principale">
                                 </div>
-                                <div class="adv-field">
+                                <div class="ops-field">
                                     <label>{{__('admin.Sala_2')}}</label>
                                     <input type="text" name="sala_2" value="{{ $adv['sala_2'] ?? '' }}"
                                            placeholder="Es: Sala eventi">
@@ -1427,38 +1427,38 @@ $toneClass = fn(string $tone) => match($tone) {
                     </div>
 
                     {{-- ── Info legali ── --}}
-                    <div class="adv-legal">
-                        <p class="adv-legal__title">
+                    <div class="ops-legal">
+                        <p class="ops-legal__title">
                             <i class="bi bi-file-earmark-text"></i>
                             {{__('admin.Info_legali')}}
                         </p>
-                        <div class="adv-legal-grid">
-                            <div class="adv-field">
+                        <div class="ops-legal-grid">
+                            <div class="ops-field">
                                 <label>{{__('admin.Ragione_sociale')}}</label>
                                 <input type="text" name="r_sociale" value="{{ $adv['r_sociale'] ?? '' }}"
                                        placeholder="Ristorante SRL">
                             </div>
-                            <div class="adv-field">
+                            <div class="ops-field">
                                 <label>{{__('admin.Piva')}}</label>
                                 <input type="text" name="p_iva" value="{{ $adv['p_iva'] ?? '' }}"
                                        placeholder="IT00000000000">
                             </div>
-                            <div class="adv-field">
+                            <div class="ops-field">
                                 <label>{{__('admin.Codice_rea')}}</label>
                                 <input type="text" name="c_rea" value="{{ $adv['c_rea'] ?? '' }}"
                                        placeholder="AN-000000">
                             </div>
-                            <div class="adv-field">
+                            <div class="ops-field">
                                 <label>{{__('admin.Capitale_sociale')}}</label>
                                 <input type="number" name="c_sociale" value="{{ $adv['c_sociale'] ?? '' }}"
                                        placeholder="10000">
                             </div>
-                            <div class="adv-field">
+                            <div class="ops-field">
                                 <label>{{__('admin.Codice_ateco')}}</label>
                                 <input type="text" name="c_ateco" value="{{$adv['c_ateco'] ?? ''}}"
                                        placeholder="56.10.11">
                             </div>
-                            <div class="adv-field">
+                            <div class="ops-field">
                                 <label>{{__('admin.Iscrizione_imprese')}}</label>
                                 <input type="text" name="u_imprese" value="{{ $adv['u_imprese'] ?? '' }}"
                                        placeholder="RI-00000">
@@ -1467,55 +1467,55 @@ $toneClass = fn(string $tone) => match($tone) {
                     </div>
 
                     {{-- ── Metodi di pagamento accettati ── --}}
-                    <div class="adv-legal adv-legal--methods">
-                        <p class="adv-methods-label">
+                    <div class="ops-legal ops-legal--methods">
+                        <p class="ops-methods-label">
                             <i class="bi bi-credit-card me-1"></i>
                             {{__('admin.Metodi_pagamento')}}
                         </p>
-                        <div class="adv-methods-wrap">
-                            <div class="adv-method-item">
+                        <div class="ops-methods-wrap">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_1" value="1"
                                        @if (in_array(1, $adv['method'])) checked @endif>
                                 <label for="m_1" title="American Express">
                                     <svg class="payment-icon" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-american_express" viewBox="0 0 38 24" width="38" height="24"><title id="pi-american_express">American Express</title><path fill="#000" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3Z" opacity=".07"></path><path fill="#006FCF" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32Z"></path><path fill="#FFF" d="M22.012 19.936v-8.421L37 11.528v2.326l-1.732 1.852L37 17.573v2.375h-2.766l-1.47-1.622-1.46 1.628-9.292-.02Z"></path><path fill="#006FCF" d="M23.013 19.012v-6.57h5.572v1.513h-3.768v1.028h3.678v1.488h-3.678v1.01h3.768v1.531h-5.572Z"></path><path fill="#006FCF" d="m28.557 19.012 3.083-3.289-3.083-3.282h2.386l1.884 2.083 1.89-2.082H37v.051l-3.017 3.23L37 18.92v.093h-2.307l-1.917-2.103-1.898 2.104h-2.321Z"></path><path fill="#FFF" d="M22.71 4.04h3.614l1.269 2.881V4.04h4.46l.77 2.159.771-2.159H37v8.421H19l3.71-8.421Z"></path><path fill="#006FCF" d="m23.395 4.955-2.916 6.566h2l.55-1.315h2.98l.55 1.315h2.05l-2.904-6.566h-2.31Zm.25 3.777.875-2.09.873 2.09h-1.748Z"></path><path fill="#006FCF" d="M28.581 11.52V4.953l2.811.01L32.84 9l1.456-4.046H37v6.565l-1.74.016v-4.51l-1.644 4.494h-1.59L30.35 7.01v4.51h-1.768Z"></path></svg>
                                 </label>
                             </div>
-                            <div class="adv-method-item">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_2" value="2"
                                        @if (in_array(2, $adv['method'])) checked @endif>
                                 <label for="m_2" title="Apple Pay">
                                     <svg class="payment-icon" version="1.1" xmlns="http://www.w3.org/2000/svg" role="img" x="0" y="0" width="38" height="24" viewBox="0 0 165.521 105.965" xml:space="preserve" aria-labelledby="pi-apple_pay"><title id="pi-apple_pay">Apple Pay</title><path fill="#000" d="M150.698 0H14.823c-.566 0-1.133 0-1.698.003-.477.004-.953.009-1.43.022-1.039.028-2.087.09-3.113.274a10.51 10.51 0 0 0-2.958.975 9.932 9.932 0 0 0-4.35 4.35 10.463 10.463 0 0 0-.975 2.96C.113 9.611.052 10.658.024 11.696a70.22 70.22 0 0 0-.022 1.43C0 13.69 0 14.256 0 14.823v76.318c0 .567 0 1.132.002 1.699.003.476.009.953.022 1.43.028 1.036.09 2.084.275 3.11a10.46 10.46 0 0 0 .974 2.96 9.897 9.897 0 0 0 1.83 2.52 9.874 9.874 0 0 0 2.52 1.83c.947.483 1.917.79 2.96.977 1.025.183 2.073.245 3.112.273.477.011.953.017 1.43.02.565.004 1.132.004 1.698.004h135.875c.565 0 1.132 0 1.697-.004.476-.002.952-.009 1.431-.02 1.037-.028 2.085-.09 3.113-.273a10.478 10.478 0 0 0 2.958-.977 9.955 9.955 0 0 0 4.35-4.35c.483-.947.789-1.917.974-2.96.186-1.026.246-2.074.274-3.11.013-.477.02-.954.022-1.43.004-.567.004-1.132.004-1.699V14.824c0-.567 0-1.133-.004-1.699a63.067 63.067 0 0 0-.022-1.429c-.028-1.038-.088-2.085-.274-3.112a10.4 10.4 0 0 0-.974-2.96 9.94 9.94 0 0 0-4.35-4.35A10.52 10.52 0 0 0 156.939.3c-1.028-.185-2.076-.246-3.113-.274a71.417 71.417 0 0 0-1.431-.022C151.83 0 151.263 0 150.698 0z"></path><path fill="#FFF" d="M150.698 3.532l1.672.003c.452.003.905.008 1.36.02.793.022 1.719.065 2.583.22.75.135 1.38.34 1.984.648a6.392 6.392 0 0 1 2.804 2.807c.306.6.51 1.226.645 1.983.154.854.197 1.783.218 2.58.013.45.019.9.02 1.36.005.557.005 1.113.005 1.671v76.318c0 .558 0 1.114-.004 1.682-.002.45-.008.9-.02 1.35-.022.796-.065 1.725-.221 2.589a6.855 6.855 0 0 1-.645 1.975 6.397 6.397 0 0 1-2.808 2.807c-.6.306-1.228.511-1.971.645-.881.157-1.847.2-2.574.22-.457.01-.912.017-1.379.019-.555.004-1.113.004-1.669.004H14.801c-.55 0-1.1 0-1.66-.004a74.993 74.993 0 0 1-1.35-.018c-.744-.02-1.71-.064-2.584-.22a6.938 6.938 0 0 1-1.986-.65 6.337 6.337 0 0 1-1.622-1.18 6.355 6.355 0 0 1-1.178-1.623 6.935 6.935 0 0 1-.646-1.985c-.156-.863-.2-1.788-.22-2.578a66.088 66.088 0 0 1-.02-1.355l-.003-1.327V14.474l.002-1.325a66.7 66.7 0 0 1 .02-1.357c.022-.792.065-1.717.222-2.587a6.924 6.924 0 0 1 .646-1.981c.304-.598.7-1.144 1.18-1.623a6.386 6.386 0 0 1 1.624-1.18 6.96 6.96 0 0 1 1.98-.646c.865-.155 1.792-.198 2.586-.22.452-.012.905-.017 1.354-.02l1.677-.003h135.875"></path><g><g><path fill="#000" d="M43.508 35.77c1.404-1.755 2.356-4.112 2.105-6.52-2.054.102-4.56 1.355-6.012 3.112-1.303 1.504-2.456 3.959-2.156 6.266 2.306.2 4.61-1.152 6.063-2.858"></path><path fill="#000" d="M45.587 39.079c-3.35-.2-6.196 1.9-7.795 1.9-1.6 0-4.049-1.8-6.698-1.751-3.447.05-6.645 2-8.395 5.1-3.598 6.2-.95 15.4 2.55 20.45 1.699 2.5 3.747 5.25 6.445 5.151 2.55-.1 3.549-1.65 6.647-1.65 3.097 0 3.997 1.65 6.696 1.6 2.798-.05 4.548-2.5 6.247-5 1.95-2.85 2.747-5.6 2.797-5.75-.05-.05-5.396-2.101-5.446-8.251-.05-5.15 4.198-7.6 4.398-7.751-2.399-3.548-6.147-3.948-7.447-4.048"></path></g><g><path fill="#000" d="M78.973 32.11c7.278 0 12.347 5.017 12.347 12.321 0 7.33-5.173 12.373-12.529 12.373h-8.058V69.62h-5.822V32.11h14.062zm-8.24 19.807h6.68c5.07 0 7.954-2.729 7.954-7.46 0-4.73-2.885-7.434-7.928-7.434h-6.706v14.894z"></path><path fill="#000" d="M92.764 61.847c0-4.809 3.665-7.564 10.423-7.98l7.252-.442v-2.08c0-3.04-2.001-4.704-5.562-4.704-2.938 0-5.07 1.507-5.51 3.82h-5.252c.157-4.86 4.731-8.395 10.918-8.395 6.654 0 10.995 3.483 10.995 8.89v18.663h-5.38v-4.497h-.13c-1.534 2.937-4.914 4.782-8.579 4.782-5.406 0-9.175-3.222-9.175-8.057zm17.675-2.417v-2.106l-6.472.416c-3.64.234-5.536 1.585-5.536 3.95 0 2.288 1.975 3.77 5.068 3.77 3.95 0 6.94-2.522 6.94-6.03z"></path><path fill="#000" d="M120.975 79.652v-4.496c.364.051 1.247.103 1.715.103 2.573 0 4.029-1.09 4.913-3.899l.52-1.663-9.852-27.293h6.082l6.863 22.146h.13l6.862-22.146h5.927l-10.216 28.67c-2.34 6.577-5.017 8.735-10.683 8.735-.442 0-1.872-.052-2.261-.157z"></path></g></g></svg>
                                 </label>
                             </div>
-                            <div class="adv-method-item">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_3" value="3"
                                        @if (in_array(3, $adv['method'])) checked @endif>
                                 <label for="m_3" title="Google Pay">
                                     <svg class="payment-icon" xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 38 24" width="38" height="24" aria-labelledby="pi-google_pay"><title id="pi-google_pay">Google Pay</title><path d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z" fill="#000" opacity=".07"></path><path d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32" fill="#FFF"></path><path d="M18.093 11.976v3.2h-1.018v-7.9h2.691a2.447 2.447 0 0 1 1.747.692 2.28 2.28 0 0 1 .11 3.224l-.11.116c-.47.447-1.098.69-1.747.674l-1.673-.006zm0-3.732v2.788h1.698c.377.012.741-.135 1.005-.404a1.391 1.391 0 0 0-1.005-2.354l-1.698-.03zm6.484 1.348c.65-.03 1.286.188 1.778.613.445.43.682 1.03.65 1.649v3.334h-.969v-.766h-.049a1.93 1.93 0 0 1-1.673.931 2.17 2.17 0 0 1-1.496-.533 1.667 1.667 0 0 1-.613-1.324 1.606 1.606 0 0 1 .613-1.336 2.746 2.746 0 0 1 1.698-.515c.517-.02 1.03.093 1.49.331v-.208a1.134 1.134 0 0 0-.417-.901 1.416 1.416 0 0 0-.98-.368 1.545 1.545 0 0 0-1.319.717l-.895-.564a2.488 2.488 0 0 1 2.182-1.06zM23.29 13.52a.79.79 0 0 0 .337.662c.223.176.5.269.785.263.429-.001.84-.17 1.146-.472.305-.286.478-.685.478-1.103a2.047 2.047 0 0 0-1.324-.374 1.716 1.716 0 0 0-1.03.294.883.883 0 0 0-.392.73zm9.286-3.75l-3.39 7.79h-1.048l1.281-2.728-2.224-5.062h1.103l1.612 3.885 1.569-3.885h1.097z" fill="#5F6368"></path><path d="M13.986 11.284c0-.308-.024-.616-.073-.92h-4.29v1.747h2.451a2.096 2.096 0 0 1-.9 1.373v1.134h1.464a4.433 4.433 0 0 0 1.348-3.334z" fill="#4285F4"></path><path d="M9.629 15.721a4.352 4.352 0 0 0 3.01-1.097l-1.466-1.14a2.752 2.752 0 0 1-4.094-1.44H5.577v1.17a4.53 4.53 0 0 0 4.052 2.507z" fill="#34A853"></path><path d="M7.079 12.05a2.709 2.709 0 0 1 0-1.735v-1.17H5.577a4.505 4.505 0 0 0 0 4.075l1.502-1.17z" fill="#FBBC04"></path><path d="M9.629 8.44a2.452 2.452 0 0 1 1.74.68l1.3-1.293a4.37 4.37 0 0 0-3.065-1.183 4.53 4.53 0 0 0-4.027 2.5l1.502 1.171a2.715 2.715 0 0 1 2.55-1.875z" fill="#EA4335"></path></svg>
                                 </label>
                             </div>
-                            <div class="adv-method-item">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_4" value="4"
                                        @if (in_array(4, $adv['method'])) checked @endif>
                                 <label for="m_4" title="Maestro">
                                     <svg class="payment-icon" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg" width="38" height="24" role="img" aria-labelledby="pi-maestro"><title id="pi-maestro">Maestro</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"></path><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"></path><circle fill="#EB001B" cx="15" cy="12" r="7"></circle><circle fill="#00A2E5" cx="23" cy="12" r="7"></circle><path fill="#7375CF" d="M22 12c0-2.4-1.2-4.5-3-5.7-1.8 1.3-3 3.4-3 5.7s1.2 4.5 3 5.7c1.8-1.2 3-3.3 3-5.7z"></path></svg>
                                 </label>
                             </div>
-                            <div class="adv-method-item">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_5" value="5"
                                        @if (in_array(5, $adv['method'])) checked @endif>
                                 <label for="m_5" title="Mastercard">
                                     <svg class="payment-icon" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg" role="img" width="38" height="24" aria-labelledby="pi-master"><title id="pi-master">Mastercard</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"></path><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"></path><circle fill="#EB001B" cx="15" cy="12" r="7"></circle><circle fill="#F79E1B" cx="23" cy="12" r="7"></circle><path fill="#FF5F00" d="M22 12c0-2.4-1.2-4.5-3-5.7-1.8 1.3-3 3.4-3 5.7s1.2 4.5 3 5.7c1.8-1.2 3-3.3 3-5.7z"></path></svg>
                                 </label>
                             </div>
-                            <div class="adv-method-item">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_6" value="6"
                                        @if (in_array(6, $adv['method'])) checked @endif>
                                 <label for="m_6" title="Visa">
                                     <svg class="payment-icon" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg" role="img" width="38" height="24" aria-labelledby="pi-visa"><title id="pi-visa">Visa</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"></path><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"></path><path d="M28.3 10.1H28c-.4 1-.7 1.5-1 3h1.9c-.3-1.5-.3-2.2-.6-3zm2.9 5.9h-1.7c-.1 0-.1 0-.2-.1l-.2-.9-.1-.2h-2.4c-.1 0-.2 0-.2.2l-.3.9c0 .1-.1.1-.1.1h-2.1l.2-.5L27 8.7c0-.5.3-.7.8-.7h1.5c.1 0 .2 0 .2.2l1.4 6.5c.1.4.2.7.2 1.1.1.1.1.1.1.2zm-13.4-.3l.4-1.8c.1 0 .2.1.2.1.7.3 1.4.5 2.1.4.2 0 .5-.1.7-.2.5-.2.5-.7.1-1.1-.2-.2-.5-.3-.8-.5-.4-.2-.8-.4-1.1-.7-1.2-1-.8-2.4-.1-3.1.6-.4.9-.8 1.7-.8 1.2 0 2.5 0 3.1.2h.1c-.1.6-.2 1.1-.4 1.7-.5-.2-1-.4-1.5-.4-.3 0-.6 0-.9.1-.2 0-.3.1-.4.2-.2.2-.2.5 0 .7l.5.4c.4.2.8.4 1.1.6.5.3 1 .8 1.1 1.4.2.9-.1 1.7-.9 2.3-.5.4-.7.6-1.4.6-1.4 0-2.5.1-3.4-.2-.1.2-.1.2-.2.1zm-3.5.3c.1-.7.1-.7.2-1 .5-2.2 1-4.5 1.4-6.7.1-.2.1-.3.3-.3H18c-.2 1.2-.4 2.1-.7 3.2-.3 1.5-.6 3-1 4.5 0 .2-.1.2-.3.2M5 8.2c0-.1.2-.2.3-.2h3.4c.5 0 .9.3 1 .8l.9 4.4c0 .1 0 .1.1.2 0-.1.1-.1.1-.1l2.1-5.1c-.1-.1 0-.2.1-.2h2.1c0 .1 0 .1-.1.2l-3.1 7.3c-.1.2-.1.3-.2.4-.1.1-.3 0-.5 0H9.7c-.1 0-.2 0-.2-.2L7.9 9.5c-.2-.2-.5-.5-.9-.6-.6-.3-1.7-.5-1.9-.5L5 8.2z" fill="#142688"></path></svg>
                                 </label>
                             </div>
-                            <div class="adv-method-item">
+                            <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_7" value="7"
                                        @if (in_array(7, $adv['method'])) checked @endif>
                                 <label for="m_7" title="{{ __('admin.Contanti') ?? 'Contanti' }}">
@@ -1525,7 +1525,7 @@ $toneClass = fn(string $tone) => match($tone) {
                         </div>
                     </div>
 
-                    <div id="critical-warning" class="adv-warning">
+                    <div id="critical-warning" class="ops-warning">
                         {{__('admin.Warning_reset_disponibilita')}}
                     </div>
 

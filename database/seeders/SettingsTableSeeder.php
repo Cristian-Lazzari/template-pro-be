@@ -48,11 +48,11 @@ class SettingsTableSeeder extends Seeder
             ],
             'day_off' => [],
             'time_blocked' => [],
-            'max_asporto' => 0,
-            'max_domicilio' => 0,
-            'max_table' => 0,
-            'max_table_1' => 0,
-            'max_table_2' => 0,
+            'max_asporto' => 10,
+            'max_domicilio' => 10,
+            'max_table' => 10,
+            'max_table_1' => 10,
+            'max_table_2' => 10,
         ];
 
         $settings = [
