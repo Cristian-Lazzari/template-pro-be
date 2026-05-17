@@ -761,6 +761,7 @@ class OrderController extends Controller
 
         $cartForPromotion = array_merge($cart, [
             'case_use' => isset($data['comune']) ? 'delivery' : 'take_away',
+            'date_slot' => $data['date_slot'] ?? null,
         ]);
 
         $evaluation = $this->orderPromotionApplicationService->evaluate($customer, $cartForPromotion, $customerPromotionId);

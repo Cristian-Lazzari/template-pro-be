@@ -16,9 +16,15 @@ class OrderPromotionApplicationService
 {
     private const ORDER_CASES = ['generic', 'take_away', 'delivery'];
 
+    public function __construct(
+        private PromotionAvailabilityService $promotionAvailabilityService,
+    ) {
+    }
+
     public function evaluate(Customer $customer, array $cart, ?int $customerPromotionId = null): array
     {
         $cartSnapshot = $this->buildCartSnapshot($cart);
+        $validAt = $this->promotionDateTimeFromCart($cart);
 
         if ($cartSnapshot['error'] !== null) {
             return $this->result(
@@ -34,14 +40,14 @@ class OrderPromotionApplicationService
         }
 
         if ($customerPromotionId === null) {
-            return $this->findBestApplicableFromSnapshot($customer, $cart, $cartSnapshot);
+            return $this->findBestApplicableFromSnapshot($customer, $cart, $cartSnapshot, $validAt);
         }
 
         $customerPromotion = CustomerPromotion::query()
             ->with(['promotion.targets'])
             ->find($customerPromotionId);
 
-        return $this->evaluateCustomerPromotion($customer, $cart, $cartSnapshot, $customerPromotion);
+        return $this->evaluateCustomerPromotion($customer, $cart, $cartSnapshot, $customerPromotion, $validAt);
     }
 
     public function findBestApplicable(Customer $customer, array $cart): array
@@ -61,10 +67,10 @@ class OrderPromotionApplicationService
             );
         }
 
-        return $this->findBestApplicableFromSnapshot($customer, $cart, $cartSnapshot);
+        return $this->findBestApplicableFromSnapshot($customer, $cart, $cartSnapshot, $this->promotionDateTimeFromCart($cart));
     }
 
-    private function findBestApplicableFromSnapshot(Customer $customer, array $cart, array $cartSnapshot): array
+    private function findBestApplicableFromSnapshot(Customer $customer, array $cart, array $cartSnapshot, Carbon $validAt): array
     {
         $results = CustomerPromotion::query()
             ->with(['promotion.targets'])
@@ -79,7 +85,8 @@ class OrderPromotionApplicationService
                 $customer,
                 $cart,
                 $cartSnapshot,
-                $customerPromotion
+                $customerPromotion,
+                $validAt
             ))
             ->filter(fn (array $result) => $result['applicable'])
             ->sortByDesc(fn (array $result) => $result['discount_amount'])
@@ -105,7 +112,8 @@ class OrderPromotionApplicationService
         Customer $customer,
         array $cart,
         array $cartSnapshot,
-        ?CustomerPromotion $customerPromotion
+        ?CustomerPromotion $customerPromotion,
+        Carbon $validAt
     ): array {
         $baseSubtotal = $cartSnapshot['subtotal'];
 
@@ -123,7 +131,7 @@ class OrderPromotionApplicationService
             return $this->result(false, 'promotion_not_found', $customerPromotion, null, 0, $baseSubtotal, [], null);
         }
 
-        $failureReason = $this->validateAvailability($customer, $customerPromotion, $promotion, $baseSubtotal, $cart);
+        $failureReason = $this->validateAvailability($customer, $customerPromotion, $promotion, $baseSubtotal, $cart, $validAt);
 
         if ($failureReason !== null) {
             return $this->result(
@@ -170,7 +178,8 @@ class OrderPromotionApplicationService
         CustomerPromotion $customerPromotion,
         Promotion $promotion,
         float $subtotal,
-        array $cart
+        array $cart,
+        Carbon $validAt
     ): ?array {
         if ($customerPromotion->status === 'used' || $this->customerPromotionUsedAt($customerPromotion) !== null) {
             return ['reason' => 'customer_promotion_already_used'];
@@ -196,6 +205,12 @@ class OrderPromotionApplicationService
 
         if (! $this->isOrderCaseUseCompatible($promotion, $cart)) {
             return ['reason' => 'invalid_case_use'];
+        }
+
+        $availabilityReason = $this->promotionAvailabilityService->unavailableReason($promotion, $validAt);
+
+        if ($availabilityReason !== null) {
+            return ['reason' => $availabilityReason];
         }
 
         $minimumRequired = $promotion->minimum_pretest !== null
@@ -723,6 +738,17 @@ class OrderPromotionApplicationService
         }
 
         return null;
+    }
+
+    private function promotionDateTimeFromCart(array $cart): Carbon
+    {
+        foreach (['date_slot', 'scheduled_at', 'pickup_at', 'delivery_at'] as $key) {
+            if (! empty($cart[$key])) {
+                return $this->promotionAvailabilityService->resolveDateTime($cart[$key]);
+            }
+        }
+
+        return $this->promotionAvailabilityService->resolveDateTime(null);
     }
 
     private function normalizeOrderCaseUse(string $caseUse): string

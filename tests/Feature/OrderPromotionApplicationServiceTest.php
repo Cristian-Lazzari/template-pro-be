@@ -146,6 +146,32 @@ class OrderPromotionApplicationServiceTest extends TestCase
         $this->assertEquals(10.0, $result['subtotal']);
     }
 
+    public function test_recurring_day_and_time_limits_block_order_promotion(): void
+    {
+        $customer = $this->createCustomer('order-availability@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 10);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'valid_weekdays' => [1],
+            'valid_from_time' => '07:00',
+            'valid_to_time' => '08:00',
+        ], [
+            ['type' => PromotionTarget::TYPE_PRODUCT, 'id' => $productId],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+
+        $result = $this->service()->evaluate($customer, $this->cart([
+            $this->cartProduct($productId),
+        ], [], [
+            'date_slot' => '2026-05-11 09:00',
+        ]), $customerPromotion->id);
+
+        $this->assertFalse($result['applicable']);
+        $this->assertSame('promotion_not_available_at_time', $result['reason']);
+    }
+
     public function test_gift_product_discounts_one_target_unit(): void
     {
         $customer = $this->createCustomer('gift-product@example.com');

@@ -92,6 +92,24 @@ class ReservationPromotionApplicationServiceTest extends TestCase
         $this->assertSame('minimum_not_reached', $result['reason']);
     }
 
+    public function test_recurring_day_limit_blocks_reservation_promotion(): void
+    {
+        $customer = $this->createCustomer('reservation-availability@example.com');
+        $promotion = $this->createPromotion([
+            'case_use' => 'table',
+            'valid_weekdays' => [1],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+
+        $result = $this->service()->evaluate($customer, $customerPromotion->id, [
+            'people' => 2,
+            'date_slot' => '10/05/2026 20:00',
+        ]);
+
+        $this->assertFalse($result['applicable']);
+        $this->assertSame('promotion_not_available_on_day', $result['reason']);
+    }
+
     public function test_reusable_table_promotion_creates_fresh_assignment_after_reservation_use(): void
     {
         $customer = $this->createCustomer('reservation-reusable@example.com');

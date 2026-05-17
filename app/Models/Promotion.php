@@ -23,6 +23,9 @@ class Promotion extends Model
         'permanent',
         'schedule_at',
         'expiring_at',
+        'valid_weekdays',
+        'valid_from_time',
+        'valid_to_time',
         'total_activation',
         'total_sent',
         'total_used',
@@ -35,6 +38,7 @@ class Promotion extends Model
         'permanent' => 'boolean',
         'schedule_at' => 'datetime',
         'expiring_at' => 'datetime',
+        'valid_weekdays' => 'array',
         'metadata' => 'array',
     ];
 

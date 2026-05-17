@@ -23,6 +23,9 @@ return new class extends Migration
                 $table->boolean('permanent')->default(false)->index();
                 $table->timestamp('schedule_at')->nullable()->index();
                 $table->timestamp('expiring_at')->nullable()->index();
+                $table->json('valid_weekdays')->nullable();
+                $table->time('valid_from_time')->nullable();
+                $table->time('valid_to_time')->nullable();
                 $table->unsignedInteger('total_activation')->default(0);
                 $table->unsignedInteger('total_sent')->default(0);
                 $table->unsignedInteger('total_used')->default(0);

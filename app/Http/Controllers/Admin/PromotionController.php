@@ -219,6 +219,7 @@ class PromotionController extends Controller
             'targetOptions' => $targetOptions,
             'specificTargetOptions' => $specificTargetOptions,
             'targetLabels' => $this->targetLabels($targetOptions),
+            'weekdayLabels' => $this->weekdayLabels(),
         ];
     }
 
@@ -239,6 +240,9 @@ class PromotionController extends Controller
             $data['schedule_at'] = null;
             $data['expiring_at'] = null;
         }
+        $data['valid_weekdays'] = $this->validWeekdaysData((array) $request->input('valid_weekdays', []));
+        $data['valid_from_time'] = $this->timeData($request->input('valid_from_time'));
+        $data['valid_to_time'] = $this->timeData($request->input('valid_to_time'));
         $metadata['reusable'] = $request->boolean('metadata.reusable');
         $data['metadata'] = $metadata;
         $data['status'] = $this->statusFromSubmitAction($request);
@@ -251,6 +255,39 @@ class PromotionController extends Controller
         );
 
         return $data;
+    }
+
+    private function validWeekdaysData(array $weekdays): ?array
+    {
+        $weekdays = collect($weekdays)
+            ->map(fn ($day) => (int) $day)
+            ->filter(fn ($day) => $day >= 1 && $day <= 7)
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        return count($weekdays) > 0 && count($weekdays) < 7 ? $weekdays : null;
+    }
+
+    private function timeData($value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value !== '' ? $value : null;
+    }
+
+    private function weekdayLabels(): array
+    {
+        return [
+            1 => 'Lunedì',
+            2 => 'Martedì',
+            3 => 'Mercoledì',
+            4 => 'Giovedì',
+            5 => 'Venerdì',
+            6 => 'Sabato',
+            7 => 'Domenica',
+        ];
     }
 
     private function statusFromSubmitAction(Request $request): string

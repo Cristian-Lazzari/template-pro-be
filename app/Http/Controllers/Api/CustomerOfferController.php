@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
 use App\Models\PromotionTarget;
+use App\Services\Marketing\PromotionAvailabilityService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,7 @@ class CustomerOfferController extends Controller
         $minimum = $promotion->minimum_pretest !== null ? (float) $promotion->minimum_pretest : null;
         $startsAt = $promotion->schedule_at;
         $expiringAt = $promotion->expiring_at;
+        $availability = app(PromotionAvailabilityService::class)->payload($promotion);
 
         return [
             'id' => $customerPromotion->getKey(),
@@ -73,6 +75,12 @@ class CustomerOfferController extends Controller
             'discount' => $promotion->discount !== null ? (float) $promotion->discount : null,
             'minimum_pretest' => $minimum,
             'minimum_required' => $minimum,
+            'valid_weekdays' => $availability['valid_weekdays'],
+            'valid_from_time' => $availability['valid_from_time'],
+            'valid_to_time' => $availability['valid_to_time'],
+            'availability' => $availability,
+            'is_available_now' => $availability['is_available_now'],
+            'availability_unavailable_reason' => $availability['unavailable_reason'],
             'status' => $status,
             'assignment_status' => $customerPromotion->status,
             'starts_at' => $startsAt?->toISOString(),

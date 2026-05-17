@@ -3,6 +3,15 @@
     $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
     $scheduleValue = $previewPermanent ? '' : old('schedule_at', $promotion->schedule_at?->format('Y-m-d\TH:i'));
     $expiringValue = $previewPermanent ? '' : old('expiring_at', $promotion->expiring_at?->format('Y-m-d\TH:i'));
+    $defaultWeekdays = array_keys($weekdayLabels ?? []);
+    $selectedWeekdays = collect((array) old('valid_weekdays', $promotion->valid_weekdays ?: $defaultWeekdays))
+        ->map(fn ($day) => (int) $day)
+        ->filter(fn ($day) => in_array($day, $defaultWeekdays, true))
+        ->unique()
+        ->values()
+        ->all();
+    $validFromValue = old('valid_from_time', $promotion->valid_from_time ? substr((string) $promotion->valid_from_time, 0, 5) : '');
+    $validToValue = old('valid_to_time', $promotion->valid_to_time ? substr((string) $promotion->valid_to_time, 0, 5) : '');
 
     $targetConfigs = [
         'product' => [
@@ -76,7 +85,7 @@
 
     // Wizard step detection for server-side error recovery
     $hasErrors = $errors->any();
-    if ($hasErrors && $errors->hasAny(['name', 'description', 'cta', 'permanent', 'schedule_at', 'expiring_at', 'metadata.reusable'])) {
+    if ($hasErrors && $errors->hasAny(['name', 'description', 'cta', 'permanent', 'schedule_at', 'expiring_at', 'valid_weekdays', 'valid_weekdays.*', 'valid_from_time', 'valid_to_time', 'metadata.reusable'])) {
         $initialStep = 1;
     } elseif ($hasErrors && $errors->has('case_use')) {
         $initialStep = 2;
@@ -114,6 +123,15 @@
         $targetCount === 1         => $targetConfigs[$targetType]['singular'],
         default                    => $targetCount . ' ' . ($targetConfigs[$targetType]['plural'] ?? ''),
     };
+
+    $availabilitySummary = count($selectedWeekdays) === 0 || count($selectedWeekdays) === 7
+        ? 'Tutti i giorni'
+        : collect($selectedWeekdays)->map(fn ($day) => $weekdayLabels[$day] ?? $day)->implode(', ');
+    if ($validFromValue || $validToValue) {
+        $availabilitySummary .= ' · ' . trim(($validFromValue ?: '00:00') . ' - ' . ($validToValue ?: '23:59'));
+    } else {
+        $availabilitySummary .= ' · Qualsiasi ora';
+    }
 @endphp
 
 @include('admin.Marketing.partials.form-style')
@@ -449,6 +467,54 @@
     .promo-wiz__panel [data-items] {
         margin-top: 16px;
     }
+
+    .promo-availability-note {
+        margin: 0 0 12px;
+        color: rgba(216, 221, 232, 0.66);
+        font-size: var(--fs-200);
+        line-height: 1.5;
+    }
+
+    .promo-days {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+        gap: 8px;
+    }
+
+    .promo-day {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .promo-day input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 1px;
+        height: 1px;
+    }
+
+    .promo-day span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 10px;
+        border-radius: 9px;
+        border: 1.5px solid rgba(216, 221, 232, 0.1);
+        background: rgba(216, 221, 232, 0.04);
+        color: var(--c3);
+        font-size: var(--fs-200);
+        font-weight: 700;
+        text-align: center;
+        transition: border-color .15s, background .15s;
+    }
+
+    .promo-day input:checked + span {
+        border-color: rgba(14, 183, 146, 0.5);
+        background: rgba(14, 183, 146, 0.14);
+        color: rgba(142, 246, 219, 0.92);
+    }
 </style>
 
 @if ($errors->any())
@@ -639,6 +705,68 @@
                                 >
                             </p>
                             @error('expiring_at') <p class="error">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                </section>
+
+                <section class="order-detail__section">
+                    <div class="order-detail__section-head">
+                        <h3>
+                            <span class="order-detail__section-icon"><i class="bi bi-clock-history"></i></span>
+                            Disponibilità ricorrente
+                        </h3>
+                    </div>
+                    <p class="promo-availability-note">
+                        Se non imposti limiti, la promozione sarà disponibile tutti i giorni e a qualsiasi ora.
+                        Lascia selezionati tutti i giorni per non limitare il calendario.
+                    </p>
+
+                    <div class="promo-days" aria-label="Giorni validi della promozione">
+                        @foreach ($weekdayLabels as $day => $label)
+                            <label class="promo-day">
+                                <input
+                                    type="checkbox"
+                                    name="valid_weekdays[]"
+                                    value="{{ $day }}"
+                                    @checked(in_array((int) $day, $selectedWeekdays, true))
+                                >
+                                <span>{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @error('valid_weekdays') <p class="error mt-2">{{ $message }}</p> @enderror
+                    @error('valid_weekdays.*') <p class="error mt-2">{{ $message }}</p> @enderror
+
+                    <div class="split mt-3">
+                        <div>
+                            <label class="label_c" for="valid_from_time">
+                                <i class="bi bi-clock"></i>
+                                Ora inizio validità
+                            </label>
+                            <p>
+                                <input
+                                    type="time"
+                                    name="valid_from_time"
+                                    id="valid_from_time"
+                                    value="{{ $validFromValue }}"
+                                >
+                            </p>
+                            @error('valid_from_time') <p class="error">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="label_c" for="valid_to_time">
+                                <i class="bi bi-clock-fill"></i>
+                                Ora fine validità
+                            </label>
+                            <p>
+                                <input
+                                    type="time"
+                                    name="valid_to_time"
+                                    id="valid_to_time"
+                                    value="{{ $validToValue }}"
+                                >
+                            </p>
+                            @error('valid_to_time') <p class="error">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </section>
@@ -997,6 +1125,10 @@
                         <div class="marketing-form-preview__fact">
                             <span>Permanente</span>
                             <strong data-preview-perm>{{ $previewPermanent ? 'Sì' : 'No' }}</strong>
+                        </div>
+                        <div class="marketing-form-preview__fact">
+                            <span>Disponibilità</span>
+                            <strong>{{ $availabilitySummary }}</strong>
                         </div>
                     </div>
 

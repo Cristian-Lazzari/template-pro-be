@@ -12,6 +12,11 @@ class ReservationPromotionApplicationService
 {
     private const RESERVATION_CASES = ['generic', 'table'];
 
+    public function __construct(
+        private PromotionAvailabilityService $promotionAvailabilityService,
+    ) {
+    }
+
     public function evaluate(Customer $customer, ?int $customerPromotionId = null, array $reservationData = []): array
     {
         if ($customerPromotionId === null) {
@@ -119,6 +124,15 @@ class ReservationPromotionApplicationService
 
         if (! $this->isReservationCaseUseCompatible($promotion)) {
             return ['reason' => 'invalid_case_use'];
+        }
+
+        $availabilityReason = $this->promotionAvailabilityService->unavailableReason(
+            $promotion,
+            $reservationData['date_slot'] ?? null
+        );
+
+        if ($availabilityReason !== null) {
+            return ['reason' => $availabilityReason];
         }
 
         $minimumRequired = $promotion->minimum_pretest !== null

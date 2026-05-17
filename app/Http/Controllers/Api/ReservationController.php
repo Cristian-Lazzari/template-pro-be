@@ -483,9 +483,18 @@ class ReservationController extends Controller
             ? (int) $reservationData['customer_promotion_id']
             : null;
 
-        $evaluation = $customerPromotionId
-            ? $this->reservationPromotionApplicationService->evaluate($customer, $customerPromotionId, $reservationData)
-            : $this->reservationPromotionApplicationService->findBestApplicable($customer, $reservationData);
+        if (! $customerPromotionId) {
+            return [
+                'applicable' => false,
+                'reason' => 'no_promotion_requested',
+                'customer_promotion' => null,
+                'promotion' => null,
+                'discount_amount' => 0.0,
+                'affected_items' => [],
+            ];
+        }
+
+        $evaluation = $this->reservationPromotionApplicationService->evaluate($customer, $customerPromotionId, $reservationData);
 
         if ($customerPromotionId && ! ($evaluation['applicable'] ?? false)) {
             Log::warning('(ReservationController) Promozione cliente non applicata alla prenotazione', [
