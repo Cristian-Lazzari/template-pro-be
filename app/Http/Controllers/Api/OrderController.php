@@ -740,18 +740,32 @@ class OrderController extends Controller
             ];
         }
 
+        $rawId = $data['customer_promotion_id'] ?? null;
+        $customerPromotionId = ($rawId !== null && $rawId !== '' && $rawId !== 0)
+            ? (int) $rawId
+            : null;
+
+        if ($customerPromotionId === null) {
+            return [
+                'applicable' => false,
+                'reason' => 'no_promotion_requested',
+                'customer_promotion' => null,
+                'promotion' => null,
+                'discount_amount' => 0.0,
+                'subtotal' => 0.0,
+                'total' => 0.0,
+                'affected_items' => [],
+                'minimum_required' => null,
+            ];
+        }
+
         $cartForPromotion = array_merge($cart, [
             'case_use' => isset($data['comune']) ? 'delivery' : 'take_away',
         ]);
-        $customerPromotionId = isset($data['customer_promotion_id'])
-            ? (int) $data['customer_promotion_id']
-            : null;
 
-        $evaluation = $customerPromotionId
-            ? $this->orderPromotionApplicationService->evaluate($customer, $cartForPromotion, $customerPromotionId)
-            : $this->orderPromotionApplicationService->findBestApplicable($customer, $cartForPromotion);
+        $evaluation = $this->orderPromotionApplicationService->evaluate($customer, $cartForPromotion, $customerPromotionId);
 
-        if ($customerPromotionId && ! ($evaluation['applicable'] ?? false)) {
+        if (! ($evaluation['applicable'] ?? false)) {
             Log::warning('(OrderController) Promozione cliente non applicata all\'ordine', [
                 'customer_id' => $customer->getKey(),
                 'customer_promotion_id' => $customerPromotionId,
