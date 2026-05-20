@@ -265,6 +265,43 @@ class OrderPromotionCheckoutTest extends TestCase
         $this->assertSame(1, $customerPromotion->metadata['affected_items'][0]['gift_quantity'] ?? null);
     }
 
+    public function test_takeaway_order_minimum_uses_discounted_total_after_promotion(): void
+    {
+        $customer = $this->createCustomer('takeaway-discounted-minimum@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 20);
+        $this->setOrderMinimum('Prenotazione Asporti', 18);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+        ], [
+            ['type' => PromotionTarget::TYPE_PRODUCT, 'id' => $productId],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+        $slot = $this->availableSlot();
+
+        $response = $this->actingAsCustomer($customer)
+            ->postJson('/api/orders', $this->orderPayload($customer, $slot, [
+                'customer_promotion_id' => $customerPromotion->id,
+                'cart' => $this->cart([
+                    $this->cartProduct($productId),
+                ]),
+            ]));
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => false,
+                'minimum_required' => 18,
+                'minimum_missing' => 3,
+                'minimum_checked_total' => 15,
+            ]);
+
+        $this->assertSame(0, Order::query()->count());
+        $customerPromotion->refresh();
+        $this->assertNull($customerPromotion->order_id);
+        $this->assertNull($customerPromotion->promo_used);
+    }
+
     private function fakeOrderNotificationSideEffects(): void
     {
         $controller = Mockery::mock(OrderController::class, [
@@ -427,6 +464,17 @@ class OrderPromotionCheckoutTest extends TestCase
             'tracking_token' => (string) Str::uuid(),
             'status' => 'assigned',
         ], $attributes));
+    }
+
+    private function setOrderMinimum(string $settingName, float $minimum): void
+    {
+        $setting = \App\Models\Setting::query()->where('name', $settingName)->firstOrFail();
+        $property = json_decode($setting->property, true) ?: [];
+        $property['min_price'] = $minimum;
+
+        $setting->update([
+            'property' => json_encode($property),
+        ]);
     }
 
     private function cart(array $products = [], array $menus = []): array

@@ -242,6 +242,29 @@ class OrderController extends Controller
             if (($promotionEvaluation['applicable'] ?? false) === true) {
                 $total_price = Currency::roundAmount($promotionEvaluation['total']);
             }
+
+            $orderCaseUse = isset($data['comune']) ? 'delivery' : 'take_away';
+            $minimumFailure = $this->discountedOrderMinimumFailure($orderCaseUse, $total_price);
+
+            if ($minimumFailure !== null) {
+                return $this->orderFailureResponse(
+                    $request,
+                    $minimumFailure['message'],
+                    [
+                        'minimum_required' => $minimumFailure['minimum_required'],
+                        'minimum_missing' => $minimumFailure['minimum_missing'],
+                        'minimum_checked_total' => $minimumFailure['minimum_checked_total'],
+                    ],
+                    [
+                        'error_type' => 'order_minimum_not_reached',
+                        'details' => [
+                            'case_use' => $orderCaseUse,
+                            'minimum_required' => $minimumFailure['minimum_required'],
+                            'minimum_checked_total' => $minimumFailure['minimum_checked_total'],
+                        ],
+                    ]
+                );
+            }
             
     
             $newOrder = new Order();
@@ -823,6 +846,39 @@ class OrderController extends Controller
         }
 
         return false;
+    }
+
+    private function discountedOrderMinimumFailure(string $caseUse, float $discountedItemsTotal): ?array
+    {
+        $settingName = $caseUse === 'delivery'
+            ? 'Possibilità di consegna a domicilio'
+            : 'Prenotazione Asporti';
+
+        $setting = Setting::where('name', $settingName)->first();
+        $property = json_decode($setting?->property ?? '[]', true);
+
+        if (! is_array($property)) {
+            $property = [];
+        }
+
+        $minimumRequired = Currency::roundAmount($property['min_price'] ?? 0);
+        $discountedItemsTotal = Currency::roundAmount($discountedItemsTotal);
+
+        if ($minimumRequired <= 0 || $discountedItemsTotal >= $minimumRequired) {
+            return null;
+        }
+
+        $minimumMissing = Currency::roundAmount($minimumRequired - $discountedItemsTotal);
+        $serviceLabel = $caseUse === 'delivery'
+            ? 'con consegna a domicilio'
+            : 'da asporto';
+
+        return [
+            'message' => 'Per ordinare ' . $serviceLabel . ' bisogna avere un totale scontato di almeno ' . Currency::formatCents($minimumRequired) . '.',
+            'minimum_required' => $minimumRequired,
+            'minimum_missing' => $minimumMissing,
+            'minimum_checked_total' => $discountedItemsTotal,
+        ];
     }
 
     private function orderFailureResponse(Request $request, string $message, array $response = [], array $context = [], int $status = 200)

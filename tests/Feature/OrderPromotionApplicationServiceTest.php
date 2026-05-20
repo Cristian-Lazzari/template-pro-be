@@ -42,7 +42,8 @@ class OrderPromotionApplicationServiceTest extends TestCase
         $this->assertEquals(23.0, $result['total']);
         $this->assertCount(1, $result['affected_items']);
         $this->assertSame($targetProductId, $result['affected_items'][0]['id']);
-        $this->assertEquals(20.0, $result['affected_items'][0]['applicable_amount']);
+        $this->assertEquals(10.0, $result['affected_items'][0]['applicable_amount']);
+        $this->assertSame(1, $result['affected_items'][0]['discounted_quantity']);
     }
 
     public function test_category_percentage_discount_applies_to_products_in_category(): void
@@ -71,6 +72,39 @@ class OrderPromotionApplicationServiceTest extends TestCase
         $this->assertEquals(28.0, $result['total']);
         $this->assertCount(1, $result['affected_items']);
         $this->assertSame($targetProductId, $result['affected_items'][0]['id']);
+    }
+
+    public function test_category_percentage_discount_applies_to_one_matching_unit_only(): void
+    {
+        $customer = $this->createCustomer('category-single-unit@example.com');
+        $targetCategoryId = $this->createCategory();
+        $otherCategoryId = $this->createCategory();
+        $expensiveProductId = $this->createProduct($targetCategoryId, 20);
+        $otherTargetProductId = $this->createProduct($targetCategoryId, 15);
+        $otherProductId = $this->createProduct($otherCategoryId, 10);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'percentage',
+            'discount' => 10,
+        ], [
+            ['type' => PromotionTarget::TYPE_CATEGORY, 'id' => $targetCategoryId],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+
+        $result = $this->service()->evaluate($customer, $this->cart([
+            $this->cartProduct($expensiveProductId, 2),
+            $this->cartProduct($otherTargetProductId),
+            $this->cartProduct($otherProductId),
+        ]), $customerPromotion->id);
+
+        $this->assertTrue($result['applicable']);
+        $this->assertEquals(65.0, $result['subtotal']);
+        $this->assertEquals(2.0, $result['discount_amount']);
+        $this->assertEquals(63.0, $result['total']);
+        $this->assertCount(1, $result['affected_items']);
+        $this->assertSame($expensiveProductId, $result['affected_items'][0]['id']);
+        $this->assertEquals(20.0, $result['affected_items'][0]['applicable_amount']);
+        $this->assertEquals(40.0, $result['affected_items'][0]['line_total']);
+        $this->assertSame(1, $result['affected_items'][0]['discounted_quantity']);
     }
 
     public function test_menu_fixed_discount_applies_to_target_menu(): void
@@ -144,6 +178,58 @@ class OrderPromotionApplicationServiceTest extends TestCase
         $this->assertSame('minimum_not_reached', $result['reason']);
         $this->assertEquals(20.0, $result['minimum_required']);
         $this->assertEquals(10.0, $result['subtotal']);
+    }
+
+    public function test_order_minimum_pretest_is_checked_against_discounted_total(): void
+    {
+        $customer = $this->createCustomer('discounted-minimum@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 22);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'minimum_pretest' => 20,
+        ], [
+            ['type' => PromotionTarget::TYPE_GENERIC, 'id' => null],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+
+        $result = $this->service()->evaluate($customer, $this->cart([
+            $this->cartProduct($productId),
+        ]), $customerPromotion->id);
+
+        $this->assertFalse($result['applicable']);
+        $this->assertSame('minimum_not_reached', $result['reason']);
+        $this->assertEquals(22.0, $result['subtotal']);
+        $this->assertEquals(22.0, $result['total']);
+        $this->assertEquals(20.0, $result['minimum_required']);
+        $this->assertEquals(17.0, $result['minimum_checked_total']);
+        $this->assertEquals(3.0, $result['minimum_missing']);
+    }
+
+    public function test_order_minimum_pretest_allows_discounted_total_that_reaches_minimum(): void
+    {
+        $customer = $this->createCustomer('discounted-minimum-ok@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 25);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'minimum_pretest' => 20,
+        ], [
+            ['type' => PromotionTarget::TYPE_GENERIC, 'id' => null],
+        ]);
+        $customerPromotion = $this->assignPromotion($customer, $promotion);
+
+        $result = $this->service()->evaluate($customer, $this->cart([
+            $this->cartProduct($productId),
+        ]), $customerPromotion->id);
+
+        $this->assertTrue($result['applicable']);
+        $this->assertEquals(25.0, $result['subtotal']);
+        $this->assertEquals(5.0, $result['discount_amount']);
+        $this->assertEquals(20.0, $result['total']);
+        $this->assertEquals(0.0, $result['minimum_missing']);
     }
 
     public function test_recurring_day_and_time_limits_block_order_promotion(): void

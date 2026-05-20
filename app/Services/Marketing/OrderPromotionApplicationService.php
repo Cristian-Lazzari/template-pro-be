@@ -131,7 +131,7 @@ class OrderPromotionApplicationService
             return $this->result(false, 'promotion_not_found', $customerPromotion, null, 0, $baseSubtotal, [], null);
         }
 
-        $failureReason = $this->validateAvailability($customer, $customerPromotion, $promotion, $baseSubtotal, $cart, $validAt);
+        $failureReason = $this->validateAvailability($customer, $customerPromotion, $promotion, $cart, $validAt);
 
         if ($failureReason !== null) {
             return $this->result(
@@ -161,6 +161,22 @@ class OrderPromotionApplicationService
             );
         }
 
+        $minimumFailure = $this->validateDiscountedMinimum($promotion, $baseSubtotal, $application['discount_amount']);
+
+        if ($minimumFailure !== null) {
+            return $this->result(
+                false,
+                $minimumFailure['reason'],
+                $customerPromotion,
+                $promotion,
+                0,
+                $baseSubtotal,
+                [],
+                $minimumFailure['minimum_required'],
+                $minimumFailure['minimum_checked_total']
+            );
+        }
+
         return $this->result(
             true,
             null,
@@ -177,7 +193,6 @@ class OrderPromotionApplicationService
         Customer $customer,
         CustomerPromotion $customerPromotion,
         Promotion $promotion,
-        float $subtotal,
         array $cart,
         Carbon $validAt
     ): ?array {
@@ -213,22 +228,34 @@ class OrderPromotionApplicationService
             return ['reason' => $availabilityReason];
         }
 
-        $minimumRequired = $promotion->minimum_pretest !== null
-            ? Currency::roundAmount($promotion->minimum_pretest)
-            : null;
-
-        if ($minimumRequired !== null && $subtotal < $minimumRequired) {
-            return [
-                'reason' => 'minimum_not_reached',
-                'minimum_required' => $minimumRequired,
-            ];
-        }
-
         if (! $promotion->isReusable() && $this->customerAlreadyUsedPromotion($promotion, $customer)) {
             return ['reason' => 'promotion_already_used_by_customer'];
         }
 
         return null;
+    }
+
+    private function validateDiscountedMinimum(Promotion $promotion, float $subtotal, float $discountAmount): ?array
+    {
+        $minimumRequired = $promotion->minimum_pretest !== null
+            ? Currency::roundAmount($promotion->minimum_pretest)
+            : null;
+
+        if ($minimumRequired === null) {
+            return null;
+        }
+
+        $discountedTotal = Currency::roundAmount(max(0, $subtotal - $discountAmount));
+
+        if ($discountedTotal >= $minimumRequired) {
+            return null;
+        }
+
+        return [
+            'reason' => 'minimum_not_reached',
+            'minimum_required' => $minimumRequired,
+            'minimum_checked_total' => $discountedTotal,
+        ];
     }
 
     private function calculateDiscount(Promotion $promotion, array $items): array
@@ -253,7 +280,18 @@ class OrderPromotionApplicationService
             ];
         }
 
-        $affectedTotal = Currency::roundAmount($affectedItems->sum('line_total'));
+        $discountItem = $this->singleDiscountableItem($affectedItems);
+
+        if (! $discountItem) {
+            return [
+                'applicable' => false,
+                'reason' => 'no_matching_items',
+                'discount_amount' => 0.0,
+                'affected_items' => [],
+            ];
+        }
+
+        $affectedTotal = Currency::roundAmount(min($discountItem['unit_price'], $discountItem['line_total']));
         $discountValue = Currency::roundAmount($promotion->discount);
 
         if ($discountType === 'fixed') {
@@ -282,7 +320,9 @@ class OrderPromotionApplicationService
             'applicable' => true,
             'reason' => null,
             'discount_amount' => $discountAmount,
-            'affected_items' => $this->affectedItemPayloads($affectedItems, $discountAmount, $affectedTotal, $promotion),
+            'affected_items' => [
+                $this->affectedSingleUnitPayload($discountItem, $discountAmount, $promotion),
+            ],
         ];
     }
 
@@ -298,7 +338,9 @@ class OrderPromotionApplicationService
         }
 
         $giftTargets = $targets->filter(
-            fn (PromotionTarget $target) => $target->isProductTarget() || $target->isMenuTarget()
+            fn (PromotionTarget $target) => $target->isProductTarget()
+                || $target->isMenuTarget()
+                || $target->isCategoryTarget()
         );
 
         if ($giftTargets->isEmpty()) {
@@ -321,9 +363,16 @@ class OrderPromotionApplicationService
             ];
         }
 
-        $giftItem = $affectedItems
-            ->sortByDesc('unit_price')
-            ->first();
+        $giftItem = $this->singleDiscountableItem($affectedItems);
+
+        if (! $giftItem) {
+            return [
+                'applicable' => false,
+                'reason' => 'no_matching_items',
+                'discount_amount' => 0.0,
+                'affected_items' => [],
+            ];
+        }
 
         $discountAmount = Currency::roundAmount($giftItem['unit_price']);
 
@@ -341,12 +390,25 @@ class OrderPromotionApplicationService
             'reason' => null,
             'discount_amount' => $discountAmount,
             'affected_items' => [
-                array_merge($this->affectedItemPayload($giftItem, $promotion), [
-                    'discount_amount' => $discountAmount,
-                    'gift_quantity' => 1,
-                ]),
+                $this->affectedSingleUnitPayload($giftItem, $discountAmount, $promotion, true),
             ],
         ];
+    }
+
+    private function singleDiscountableItem(Collection $items): ?array
+    {
+        return $items
+            ->filter(fn (array $item) => ($item['unit_price'] ?? 0) > 0 && ($item['line_total'] ?? 0) > 0)
+            ->sort(function (array $left, array $right) {
+                return [
+                    Currency::roundAmount($right['unit_price'] ?? 0),
+                    Currency::roundAmount($right['line_total'] ?? 0),
+                ] <=> [
+                    Currency::roundAmount($left['unit_price'] ?? 0),
+                    Currency::roundAmount($left['line_total'] ?? 0),
+                ];
+            })
+            ->first();
     }
 
     private function matchingItems(Collection $targets, array $items): Collection
@@ -621,6 +683,26 @@ class OrderPromotionApplicationService
             ->all();
     }
 
+    private function affectedSingleUnitPayload(array $item, float $discountAmount, Promotion $promotion, bool $isGift = false): array
+    {
+        $applicableAmount = Currency::roundAmount(min($item['unit_price'], $item['line_total']));
+        $discountAmount = Currency::roundAmount(min($discountAmount, $applicableAmount));
+
+        $payload = array_merge($this->affectedItemPayload($item, $promotion), [
+            'applicable_amount' => $applicableAmount,
+            'discounted_quantity' => $discountAmount > 0 ? 1 : 0,
+            'discount_amount' => $discountAmount,
+            'preview_total' => Currency::roundAmount(max(0, $item['line_total'] - $discountAmount)),
+        ]);
+
+        if ($isGift) {
+            $payload['gift_quantity'] = $discountAmount > 0 ? 1 : 0;
+            $payload['is_gift'] = true;
+        }
+
+        return $payload;
+    }
+
     private function affectedItemPayload(array $item, ?Promotion $promotion = null): array
     {
         $payload = [
@@ -671,10 +753,15 @@ class OrderPromotionApplicationService
         float $discountAmount,
         float $subtotal,
         array $affectedItems,
-        ?float $minimumRequired
+        ?float $minimumRequired,
+        ?float $minimumCheckedTotal = null
     ): array {
         $discountAmount = Currency::roundAmount(min($discountAmount, $subtotal));
         $subtotal = Currency::roundAmount($subtotal);
+        $minimumMissingBase = $minimumCheckedTotal ?? $subtotal;
+        $minimumMissing = $minimumRequired !== null
+            ? Currency::roundAmount(max(0, $minimumRequired - $minimumMissingBase))
+            : 0.0;
 
         return [
             'applicable' => $applicable,
@@ -686,6 +773,10 @@ class OrderPromotionApplicationService
             'total' => Currency::roundAmount(max(0, $subtotal - $discountAmount)),
             'affected_items' => $affectedItems,
             'minimum_required' => $minimumRequired,
+            'minimum_missing' => $minimumMissing,
+            'minimum_checked_total' => $minimumCheckedTotal !== null
+                ? Currency::roundAmount($minimumCheckedTotal)
+                : null,
         ];
     }
 
