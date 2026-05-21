@@ -366,9 +366,63 @@
 
     .question-item__footer {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr);
         gap: 12px;
         align-items: center;
+    }
+
+    .question-delete-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 0 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 141, 141, 0.2);
+        background: rgba(206, 59, 59, 0.08);
+        color: rgba(255, 180, 180, 0.9);
+        font-size: var(--fs-200);
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+    }
+
+    .question-delete-button:hover,
+    .question-delete-button:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(255, 141, 141, 0.32);
+        background: rgba(206, 59, 59, 0.14);
+        color: rgba(255, 220, 220, 0.98);
+    }
+
+    .question-delete-button:focus-visible {
+        outline: 2px solid rgba(255, 141, 141, 0.34);
+        outline-offset: 3px;
+    }
+
+    .question-delete-button svg {
+        display: block;
+        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+    }
+
+    .question-delete-button--icon {
+        justify-self: end;
+        width: 42px;
+        min-width: 42px;
+        padding: 0;
+    }
+
+    .question-item__switch-delete {
+        flex: 0 0 auto;
+        margin-left: auto;
+    }
+
+    .question-item__switch-delete span {
+        white-space: nowrap;
     }
 
     .customer-page__actions {
@@ -627,7 +681,9 @@
 
     .question-item__switch-copy {
         display: grid;
+        flex: 1 1 auto;
         gap: 2px;
+        min-width: 0;
     }
 
     .question-item__switch-copy strong {
@@ -746,8 +802,24 @@
             grid-template-columns: 1fr;
         }
 
+        .question-delete-button--icon {
+            justify-self: start;
+        }
+
+        [data-question-item] label.question-item__switch,
+        [data-question-item] label.question-item-switch {
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .question-item__switch-delete {
+            width: 100%;
+            margin-left: 0;
+        }
+
         .customer-page__button,
         .customer-page__button--ghost,
+        .question-item__switch-delete,
         .customer-page__settings-toggle,
         .customer-card__meta-row .order-detail__contact {
             width: 100%;
@@ -906,22 +978,30 @@
                                         <div class="question-option-row" data-question-option data-option-index="{{ $optionIndex }}">
                                             <input type="hidden" name="questions[{{ $index }}][options][{{ $optionIndex }}][key]" value="{{ $option['key'] ?? '' }}">
                                             <input type="text" name="questions[{{ $index }}][options][{{ $optionIndex }}][label]" value="{{ $option['label'] ?? '' }}" placeholder="Testo risposta" required>
-                                            <button type="button" class="customer-page__button--ghost" data-remove-option>Rimuovi risposta</button>
+                                            <button type="button" class="question-delete-button question-delete-button--icon" data-remove-option aria-label="Elimina risposta" title="Elimina risposta">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10l-.5-.5h-3L6 1H2.5Zm3.5 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V6Z"/>
+                                                </svg>
+                                            </button>
                                         </div>
                                     @endforeach
                                 </div>
 
                                 <div class="question-item__footer">
-                                    <label class="question-item__switch">
+                                    <label class="question-item__switch question-item-switch">
                                         <input type="checkbox" name="questions[{{ $index }}][required]" value="1" @checked(($question['required'] ?? false))>
                                         <span class="question-item__switch-ui" aria-hidden="true"></span>
                                         <div class="question-item__switch-copy">
                                             <strong>Da compilare sempre</strong>
                                             <small>Attivala solo se la risposta ti serve davvero.</small>
                                         </div>
+                                        <button type="button" class="question-delete-button question-item__switch-delete" data-remove-question aria-label="Elimina domanda">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+                                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10l-.5-.5h-3L6 1H2.5Zm3.5 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V6Z"/>
+                                            </svg>
+                                            <span>Elimina domanda</span>
+                                        </button>
                                     </label>
-
-                                    <button type="button" class="customer-page__button--ghost" data-remove-question>Rimuovi</button>
                                 </div>
                             </div>
                         @endforeach
@@ -1010,6 +1090,7 @@
                 return Number(item.dataset.questionIndex || -1);
             })) + 1
             : 0;
+        const trashIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10l-.5-.5h-3L6 1H2.5Zm3.5 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V6Z"/></svg>';
 
         function questionIndex() {
             const index = nextQuestionIndex;
@@ -1032,7 +1113,7 @@
             wrapper.innerHTML = `
                 <input type="hidden" name="questions[${questionIndex}][options][${index}][key]" value="">
                 <input type="text" name="questions[${questionIndex}][options][${index}][label]" value="" placeholder="Testo risposta" required>
-                <button type="button" class="customer-page__button--ghost" data-remove-option>Rimuovi risposta</button>
+                <button type="button" class="question-delete-button question-delete-button--icon" data-remove-option aria-label="Elimina risposta" title="Elimina risposta">${trashIconSvg}</button>
             `;
 
             return wrapper;
@@ -1065,15 +1146,18 @@
                     </div>
                 </div>
                 <div class="question-item__footer">
-                    <label class="question-item__switch">
+                    <label class="question-item__switch question-item-switch">
                         <input type="checkbox" name="questions[${index}][required]" value="1">
                         <span class="question-item__switch-ui" aria-hidden="true"></span>
                         <div class="question-item__switch-copy">
                             <strong>Da compilare sempre</strong>
                             <small>Attivala solo se la risposta ti serve davvero.</small>
                         </div>
+                        <button type="button" class="question-delete-button question-item__switch-delete" data-remove-question aria-label="Elimina domanda">
+                            ${trashIconSvg}
+                            <span>Elimina domanda</span>
+                        </button>
                     </label>
-                    <button type="button" class="customer-page__button--ghost" data-remove-question>Rimuovi</button>
                 </div>
             `;
 
@@ -1111,6 +1195,8 @@
             const removeOptionButton = event.target.closest('[data-remove-option]');
 
             if (removeButton) {
+                event.preventDefault();
+                event.stopPropagation();
                 const item = removeButton.closest('[data-question-item]');
                 item?.remove();
                 return;
@@ -1128,6 +1214,8 @@
             }
 
             if (removeOptionButton) {
+                event.preventDefault();
+                event.stopPropagation();
                 const option = removeOptionButton.closest('[data-question-option]');
                 option?.remove();
             }

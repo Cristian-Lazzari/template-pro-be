@@ -169,3 +169,274 @@ require __DIR__ . '/auth.php';
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleStripeWebhook']);
 
 //Route::get('/notifica',        [AdminPageController::class, 'sendNotification']);
+
+// ============================================================
+// ROTTE DI ANTEPRIMA EMAIL — solo ambienti non-produzione
+// Parametri query:
+//   ?status=0  → annullato  (default ordine: 2 = in attesa)
+//   ?status=1  → confermato (default prenotazione: 1)
+//   ?delivery=1 → mostra variante consegna a domicilio (solo ordini)
+// URL:
+//   /dev/mail-preview/order/admin
+//   /dev/mail-preview/order/user
+//   /dev/mail-preview/reservation/admin
+//   /dev/mail-preview/reservation/user
+// ============================================================
+if (app()->environment('local', 'staging', 'development')) {
+
+    Route::prefix('dev/mail-preview')->name('dev.mail.')->group(function () {
+
+        // ---------- helper: costruisce mock stdClass ----------
+        $mk = function (array $props): object {
+            $obj = new \stdClass();
+            foreach ($props as $k => $v) { $obj->$k = $v; }
+            return $obj;
+        };
+
+        // ---------- mock carrello ordine ----------
+        // Le immagini sono file reali presi da storage/app/public/uploads/
+        $buildCart = function () use ($mk): array {
+            $categoryPrimo  = $mk(['name' => 'Primi piatti']);
+            $categorySecond = $mk(['name' => 'Secondi piatti']);
+            $categoryDolci  = $mk(['name' => 'Dolci']);
+
+            // Prodotto 1: pizza con foto, ingrediente rimosso e aggiunto
+            $p1Pivot = $mk(['quantity' => 2, 'remove' => '["Origano"]', 'add' => '[]', 'option' => '[]']);
+            $p1Add   = $mk(['name' => 'Doppia mozzarella', 'price' => 150]);
+            $p1 = $mk([
+                'name'     => 'Pizza Margherita',
+                'price'    => 1200,
+                'image'    => 'uploads/0j3wdjau1FKCkayonqd5JjkxaAKLT8LLQYO6gw8v.png',
+                'pivot'    => $p1Pivot,
+                'r_option' => collect([]),
+                'r_add'    => collect([$p1Add]),
+            ]);
+
+            // Prodotto 2: carbonara con foto e opzione
+            $p2Pivot  = $mk(['quantity' => 1, 'remove' => '[]', 'add' => '[]', 'option' => '[]']);
+            $p2Option = $mk(['name' => 'Senza pepe', 'price' => 0]);
+            $p2 = $mk([
+                'name'     => 'Pasta alla Carbonara',
+                'price'    => 1400,
+                'image'    => 'uploads/1Ff9Ru1AAgGQi08MqJUUgfiNNdgzMuYgwoxrxcgJ.png',
+                'pivot'    => $p2Pivot,
+                'r_option' => collect([$p2Option]),
+                'r_add'    => collect([]),
+            ]);
+
+            // Menu fisso con foto e scelte
+            $menuSubP1 = $mk(['id' => 1, 'name' => 'Tagliolini al tartufo', 'category' => $categoryPrimo,  'pivot' => $mk(['label' => 'Primo',  'extra_price' => 200])]);
+            $menuSubP2 = $mk(['id' => 2, 'name' => 'Filetto di manzo',      'category' => $categorySecond, 'pivot' => $mk(['label' => 'Secondo', 'extra_price' => 0])]);
+            $menuSubP3 = $mk(['id' => 3, 'name' => 'Tiramisù artigianale',  'category' => $categoryDolci,  'pivot' => $mk(['label' => 'Dolce',  'extra_price' => 0])]);
+            $menuPivot = $mk(['quantity' => 1, 'choices' => json_encode([1, 2, 3])]);
+            $menu = $mk([
+                'name'       => 'Menu Degustazione Chef',
+                'price'      => 4500,
+                'image'      => 'uploads/2VSuSNLEM3cmtbzoZQzOIMp2fz51TqzeYyl71GFN.png',
+                'fixed_menu' => '2',
+                'pivot'      => $menuPivot,
+                'products'   => collect([$menuSubP1, $menuSubP2, $menuSubP3]),
+            ]);
+
+            return [
+                'menus'    => collect([$menu]),
+                'products' => collect([$p1, $p2]),
+            ];
+        };
+
+        // ---------- ORDINE — ADMIN ----------
+        Route::get('order/admin', function () use ($mk, $buildCart) {
+            $status   = (int) request('status', 2);
+            $delivery = (bool) request('delivery', 0);
+
+            $content_mail = [
+                'type'     => 'or',
+                'to'       => 'admin',
+                'status'   => $status,
+                'order_id' => 42,
+
+                'title'    => 'Mario Rossi ha appena fatto un ordine ' . ($delivery ? 'a domicilio' : 'd\'asporto'),
+                'subtitle' => '',
+
+                'name'       => 'Mario',
+                'surname'    => 'Rossi',
+                'email'      => 'mario.rossi@example.com',
+                'phone'      => '3391234567',
+                'admin_phone'=> '0612345678',
+                'date_slot'  => '20/07/2025 20:30',
+                'message'    => 'Per favore, pizza ben cotta e tagliata in 8 spicchi.',
+
+                'cart'        => $buildCart(),
+                'total_price' => 8300,
+
+                'comune'       => $delivery ? 'Roma'      : null,
+                'address'      => $delivery ? 'Via Veneto' : null,
+                'address_n'    => $delivery ? '123'        : null,
+                'delivery_cost'=> $delivery ? 250          : 0,
+
+                'whatsapp_message_id' => null,
+
+                'promotions' => [[
+                    'promotion_name' => 'Sconto Benvenuto',
+                    'type_label'     => 'Sconto percentuale – 10%',
+                    'type_discount'  => 'percentage',
+                    'discount_amount'=> 830,
+                    'affected_items' => [],
+                ]],
+
+                'property_adv' => ['dt' => false, 'sala_1' => 'Sala Nord', 'sala_2' => 'Sala Sud'],
+            ];
+
+            return view('emails.confermaOrderAdmin', compact('content_mail'));
+        })->name('order.admin');
+
+        // ---------- ORDINE — UTENTE ----------
+        Route::get('order/user', function () use ($mk, $buildCart) {
+            $status   = (int) request('status', 1);
+            $delivery = (bool) request('delivery', 0);
+
+            $content_mail = [
+                'type'     => 'or',
+                'to'       => 'user',
+                'status'   => $status,
+                'order_id' => 42,
+
+                'title'    => $status == 1
+                    ? 'Ciao Mario, il tuo ordine è stato confermato!'
+                    : ($status == 0
+                        ? 'Ci dispiace, il tuo ordine è stato annullato'
+                        : 'Ciao Mario, grazie per aver ordinato tramite il nostro sito'),
+                'subtitle' => $status == 6
+                    ? 'Il tuo rimborso verrà elaborato in 5-10 giorni lavorativi'
+                    : ($status == 2 ? 'Il tuo ordine è nella nostra coda, a breve riceverai l\'esito' : ''),
+
+                'name'       => 'Mario',
+                'surname'    => 'Rossi',
+                'email'      => 'mario.rossi@example.com',
+                'phone'      => '3391234567',
+                'admin_phone'=> '0612345678',
+                'date_slot'  => '20/07/2025 20:30',
+                'message'    => null,
+
+                'cart'        => $buildCart(),
+                'total_price' => 8300,
+
+                'comune'       => $delivery ? 'Roma'      : null,
+                'address'      => $delivery ? 'Via Veneto' : null,
+                'address_n'    => $delivery ? '123'        : null,
+                'delivery_cost'=> $delivery ? 250          : 0,
+
+                'whatsapp_message_id' => 'wamid.test123',
+
+                'promotions' => [[
+                    'promotion_name' => 'Sconto Benvenuto',
+                    'type_label'     => 'Sconto percentuale – 10%',
+                    'type_discount'  => 'percentage',
+                    'discount_amount'=> 830,
+                    'affected_items' => [],
+                ]],
+
+                'property_adv' => ['dt' => false, 'sala_1' => 'Sala Nord', 'sala_2' => 'Sala Sud'],
+            ];
+
+            // Simula la subscription per mostrare il pulsante annulla
+            config(['configurazione.subscription' => 3]);
+
+            return view('emails.confermaOrderAdmin', compact('content_mail'));
+        })->name('order.user');
+
+        // ---------- PRENOTAZIONE — ADMIN ----------
+        Route::get('reservation/admin', function () use ($mk) {
+            $status = (int) request('status', 2);
+
+            $content_mail = [
+                'type'     => 'res',
+                'to'       => 'admin',
+                'status'   => $status,
+                'res_id'   => 17,
+
+                'title'    => 'Nuova prenotazione da Giulia Bianchi',
+                'subtitle' => '',
+
+                'name'       => 'Giulia',
+                'surname'    => 'Bianchi',
+                'email'      => 'giulia.bianchi@example.com',
+                'phone'      => '3476543210',
+                'admin_phone'=> '0612345678',
+                'date_slot'  => '25/07/2025 13:00',
+                'message'    => 'Siamo celiaci, confermate che avete opzioni senza glutine?',
+
+                'sala'     => 1,
+                'n_person' => json_encode(['adult' => 3, 'child' => 1]),
+
+                'whatsapp_message_id' => null,
+
+                'promotions' => [[
+                    'promotion_name' => 'Pranzo di Famiglia',
+                    'type_label'     => 'Omaggio',
+                    'type_discount'  => 'gift',
+                    'discount_amount'=> 0,
+                    'affected_items' => [['name' => 'Dessert per bambini']],
+                ]],
+
+                'property_adv' => [
+                    'dt'     => true,
+                    'sala_1' => 'Sala Principale',
+                    'sala_2' => 'Terrazza Esterna',
+                ],
+            ];
+
+            return view('emails.confermaOrderAdmin', compact('content_mail'));
+        })->name('reservation.admin');
+
+        // ---------- PRENOTAZIONE — UTENTE ----------
+        Route::get('reservation/user', function () use ($mk) {
+            $status = (int) request('status', 1);
+
+            $content_mail = [
+                'type'     => 'res',
+                'to'       => 'user',
+                'status'   => $status,
+                'res_id'   => 17,
+
+                'title'    => $status == 1
+                    ? 'Giulia, la tua prenotazione è confermata!'
+                    : 'Ci dispiace, la tua prenotazione è stata annullata',
+                'subtitle' => $status == 1 ? 'Ti aspettiamo!' : '',
+
+                'name'       => 'Giulia',
+                'surname'    => 'Bianchi',
+                'email'      => 'giulia.bianchi@example.com',
+                'phone'      => '3476543210',
+                'admin_phone'=> '0612345678',
+                'date_slot'  => '25/07/2025 13:00',
+                'message'    => 'Siamo celiaci, confermate che avete opzioni senza glutine?',
+
+                'sala'     => 1,
+                'n_person' => json_encode(['adult' => 3, 'child' => 1]),
+
+                'whatsapp_message_id' => 'wamid.test456',
+
+                'promotions' => [[
+                    'promotion_name' => 'Pranzo di Famiglia',
+                    'type_label'     => 'Omaggio',
+                    'type_discount'  => 'gift',
+                    'discount_amount'=> 0,
+                    'affected_items' => [],
+                ]],
+
+                'property_adv' => [
+                    'dt'     => true,
+                    'sala_1' => 'Sala Principale',
+                    'sala_2' => 'Terrazza Esterna',
+                ],
+            ];
+
+            // Simula subscription per mostrare pulsante annulla
+            config(['configurazione.subscription' => 3]);
+
+            return view('emails.confermaOrderAdmin', compact('content_mail'));
+        })->name('reservation.user');
+
+    });
+}
