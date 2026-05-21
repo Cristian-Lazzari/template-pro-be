@@ -196,7 +196,7 @@ class CustomerController extends Controller
 
                 $questionAnswers[] = [
                     'label' => $question['label'] ?? $key,
-                    'value' => $value,
+                    'value' => $this->formatQuestionAnswer($value, $question),
                 ];
             }
         }
@@ -208,7 +208,7 @@ class CustomerController extends Controller
             'email' => $lastKnownProfile['email'] ?? $normalizedEmail,
             'phone' => $lastKnownProfile['phone'] ?? null,
             'gender' => null,
-            'age' => null,
+            'birthday' => null,
             'registered_at' => null,
             'email_verified_at' => null,
             'created_at' => $latestActivity,
@@ -250,6 +250,21 @@ class CustomerController extends Controller
             'hasCustomerRecord' => $customer !== null,
             'hasSoftEmailMarketingUnsubscribeField' => $hasSoftEmailMarketingUnsubscribeField,
         ];
+    }
+
+    private function formatQuestionAnswer($value, array $question): string
+    {
+        $labelsByKey = collect($question['options'] ?? [])
+            ->filter(fn ($option) => is_array($option) && isset($option['key']))
+            ->mapWithKeys(fn ($option) => [(string) $option['key'] => (string) ($option['label'] ?? $option['key'])])
+            ->all();
+
+        $values = is_array($value) ? $value : [$value];
+
+        return collect($values)
+            ->map(fn ($item) => $labelsByKey[(string) $item] ?? (string) $item)
+            ->filter()
+            ->join(', ');
     }
 
     private function lastKnownGuestProfile(string $normalizedEmail): array

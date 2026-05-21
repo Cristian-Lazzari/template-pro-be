@@ -379,7 +379,7 @@ class CustomerSegmentServiceTest extends TestCase
             'email' => 'registered-'.uniqid().'@example.com',
             'phone' => '333'.random_int(1000000, 9999999),
             'gender' => null,
-            'age' => null,
+            'birthday' => null,
             'profile_answers' => [],
             'registered_at' => now()->subMonth(),
             'marketing_consent_at' => null,

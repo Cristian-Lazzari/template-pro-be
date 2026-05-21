@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 class CustomerProfileSettingsService
 {
     private const SETTING_NAME = 'customer_profile';
+    private const QUESTION_TYPE_SINGLE = 'single_choice';
+    private const QUESTION_TYPE_MULTIPLE = 'multiple_choice';
 
     private const STATIC_CONSENT_TEXTS = [
         'marketing_consent_text' => 'Acconsento a ricevere via email novità, offerte e promozioni del ristorante.',
@@ -62,16 +64,36 @@ class CustomerProfileSettingsService
                 continue;
             }
 
-            $value = $answers[$key];
-            if (is_string($value)) {
-                $value = trim($value);
-            }
-
-            if ($value === null || $value === '' || $value === []) {
+            $optionKeys = $this->questionOptionKeys($question);
+            if ($optionKeys === []) {
                 continue;
             }
 
-            $normalized[$key] = $value;
+            $value = $answers[$key];
+
+            if (($question['type'] ?? self::QUESTION_TYPE_SINGLE) === self::QUESTION_TYPE_MULTIPLE) {
+                $selected = is_array($value) ? $value : [$value];
+                $selected = array_values(array_unique(array_filter(array_map(function ($item) use ($optionKeys) {
+                    $item = trim((string) $item);
+
+                    return in_array($item, $optionKeys, true) ? $item : null;
+                }, $selected))));
+
+                if ($selected === []) {
+                    continue;
+                }
+
+                $normalized[$key] = $selected;
+
+                continue;
+            }
+
+            $selected = trim((string) $value);
+            if ($selected === '' || ! in_array($selected, $optionKeys, true)) {
+                continue;
+            }
+
+            $normalized[$key] = $selected;
         }
 
         return $normalized;
@@ -83,7 +105,7 @@ class CustomerProfileSettingsService
             trim((string) $customer->name) === ''
             || trim((string) $customer->surname) === ''
             || trim((string) $customer->gender) === ''
-            || !$customer->age
+            || !$customer->birthday
         ) {
             return false;
         }
@@ -100,8 +122,7 @@ class CustomerProfileSettingsService
                 return false;
             }
 
-            $value = $answers[$key];
-            if ($value === null || $value === '' || $value === []) {
+            if (! $this->hasValidAnswer($answers[$key], $question)) {
                 return false;
             }
         }
@@ -176,12 +197,13 @@ class CustomerProfileSettingsService
             $normalizedQuestion = [
                 'key' => $key,
                 'label' => $label,
-                'placeholder' => $this->sanitizeText($question['placeholder'] ?? ''),
+                'type' => $this->normalizeQuestionType($question['type'] ?? null),
                 'required' => filter_var($question['required'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'options' => $this->normalizeQuestionOptions($question['options'] ?? []),
             ];
 
-            if (isset($question['options']) && is_array($question['options'])) {
-                $normalizedQuestion['options'] = array_values($question['options']);
+            if (count($normalizedQuestion['options']) < 2) {
+                continue;
             }
 
             $normalized[] = $normalizedQuestion;
@@ -190,8 +212,88 @@ class CustomerProfileSettingsService
         return array_values($normalized);
     }
 
-    private function sanitizeText($value): string
+    private function normalizeQuestionType($value): string
     {
-        return trim((string) $value);
+        return match ((string) $value) {
+            'multiple', 'checkbox', self::QUESTION_TYPE_MULTIPLE => self::QUESTION_TYPE_MULTIPLE,
+            default => self::QUESTION_TYPE_SINGLE,
+        };
+    }
+
+    private function normalizeQuestionOptions($options): array
+    {
+        if (! is_array($options)) {
+            return [];
+        }
+
+        $normalized = [];
+        $usedKeys = [];
+
+        foreach ($options as $index => $option) {
+            if (is_array($option)) {
+                $label = trim((string) ($option['label'] ?? $option['value'] ?? ''));
+                $baseKey = trim((string) ($option['key'] ?? ''));
+            } else {
+                $label = trim((string) $option);
+                $baseKey = '';
+            }
+
+            if ($label === '') {
+                continue;
+            }
+
+            $baseKey = $baseKey !== '' ? Str::slug($baseKey, '_') : Str::slug($label, '_');
+            $baseKey = $baseKey !== '' ? $baseKey : 'option_' . ($index + 1);
+
+            $key = $baseKey;
+            $suffix = 2;
+            while (in_array($key, $usedKeys, true)) {
+                $key = $baseKey . '_' . $suffix;
+                $suffix++;
+            }
+
+            $usedKeys[] = $key;
+            $normalized[] = [
+                'key' => $key,
+                'label' => $label,
+            ];
+        }
+
+        return array_values($normalized);
+    }
+
+    private function questionOptionKeys(array $question): array
+    {
+        return collect($question['options'] ?? [])
+            ->filter(fn ($option) => is_array($option) && isset($option['key']))
+            ->map(fn ($option) => (string) $option['key'])
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function hasValidAnswer($value, array $question): bool
+    {
+        $optionKeys = $this->questionOptionKeys($question);
+
+        if ($optionKeys === []) {
+            return false;
+        }
+
+        if (($question['type'] ?? self::QUESTION_TYPE_SINGLE) === self::QUESTION_TYPE_MULTIPLE) {
+            if (! is_array($value) || $value === []) {
+                return false;
+            }
+
+            foreach ($value as $item) {
+                if (! in_array((string) $item, $optionKeys, true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return is_string($value) && in_array($value, $optionKeys, true);
     }
 }

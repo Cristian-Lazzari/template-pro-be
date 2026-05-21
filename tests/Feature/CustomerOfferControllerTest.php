@@ -19,8 +19,8 @@ class CustomerOfferControllerTest extends TestCase
     public function test_auth_offers_returns_enriched_promotion_payload_and_all_targets(): void
     {
         $customer = $this->createCustomer('offers-enriched@example.com');
-        $categoryId = $this->createCategory('Pizze speciali');
-        $productId = $this->createProduct($categoryId, 'Margherita special', 12);
+        $categoryId = $this->createCategory('Pizze speciali', 'public/uploads/category.jpg');
+        $productId = $this->createProduct($categoryId, 'Margherita special', 12, 'public/uploads/product.jpg');
         $promotion = $this->createPromotion([
             'name' => 'Promo speciale',
             'type_discount' => 'percentage',
@@ -53,17 +53,23 @@ class CustomerOfferControllerTest extends TestCase
             ->assertJsonPath('available.0.permanent', false)
             ->assertJsonPath('available.0.target_type', PromotionTarget::TYPE_PRODUCT)
             ->assertJsonPath('available.0.target_id', $productId)
+            ->assertJsonPath('available.0.target_image', 'public/uploads/product.jpg')
+            ->assertJsonPath('available.0.image', 'public/uploads/product.jpg')
             ->assertJsonPath('available.0.product_name', 'Margherita special')
+            ->assertJsonPath('available.0.product_image', 'public/uploads/product.jpg')
             ->assertJsonPath('available.0.category_name', null)
             ->assertJsonPath('available.0.targets.0.type', PromotionTarget::TYPE_PRODUCT)
             ->assertJsonPath('available.0.targets.0.id', $productId)
             ->assertJsonPath('available.0.targets.0.name', 'Margherita special')
+            ->assertJsonPath('available.0.targets.0.image', 'public/uploads/product.jpg')
             ->assertJsonPath('available.0.targets.1.type', PromotionTarget::TYPE_CATEGORY)
             ->assertJsonPath('available.0.targets.1.id', $categoryId)
             ->assertJsonPath('available.0.targets.1.name', 'Pizze speciali')
+            ->assertJsonPath('available.0.targets.1.image', 'public/uploads/category.jpg')
             ->assertJsonPath('available.0.targets.2.type', PromotionTarget::TYPE_GENERIC)
             ->assertJsonPath('available.0.targets.2.id', null)
-            ->assertJsonPath('available.0.targets.2.name', 'Tutto l\'ordine');
+            ->assertJsonPath('available.0.targets.2.name', 'Tutto l\'ordine')
+            ->assertJsonPath('available.0.targets.2.image', null);
     }
 
     public function test_auth_offers_keeps_used_and_expired_out_of_available(): void
@@ -162,11 +168,11 @@ class CustomerOfferControllerTest extends TestCase
         ]);
     }
 
-    private function createCategory(string $name): int
+    private function createCategory(string $name, ?string $icon = null): int
     {
         $categoryId = $this->insertRow('categories', [
             'name' => $name,
-            'icon' => null,
+            'icon' => $icon,
         ]);
 
         $this->insertRow('category_translations', [
@@ -179,14 +185,14 @@ class CustomerOfferControllerTest extends TestCase
         return $categoryId;
     }
 
-    private function createProduct(int $categoryId, string $name, float $price): int
+    private function createProduct(int $categoryId, string $name, float $price, ?string $image = null): int
     {
         $productId = $this->insertRow('products', [
             'category_id' => $categoryId,
             'name' => $name,
             'price' => $price,
             'old_price' => null,
-            'image' => null,
+            'image' => $image,
             'description' => null,
             'allergens' => null,
             'slot_plate' => null,

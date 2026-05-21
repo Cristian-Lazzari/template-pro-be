@@ -185,7 +185,7 @@ class MarketingConsentTest extends TestCase
         $builder = app(CampaignAudienceBuilder::class);
 
         $this->assertNull($privacyOnly->gender);
-        $this->assertNull($privacyOnly->age);
+        $this->assertNull($privacyOnly->birthday);
         $this->assertSame(1, $builder->countForSegmentAndConsentBasis('all', Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING));
         $this->assertSame(0, $builder->countForSegmentAndConsentBasis('all', Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING));
     }

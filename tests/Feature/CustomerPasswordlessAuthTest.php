@@ -268,7 +268,7 @@ class CustomerPasswordlessAuthTest extends TestCase
             'surname' => 'Rossi',
             'phone' => '3339876543',
             'gender' => 'male',
-            'age' => 34,
+            'birthday' => '1992-05-21',
             'profile_answers' => [],
             'marketing_enabled' => true,
             'profiling_enabled' => true,
@@ -337,6 +337,82 @@ class CustomerPasswordlessAuthTest extends TestCase
         $this->assertNotNull($customer->privacy_accepted_at);
         $this->assertSame('privacy-v2', $customer->privacy_accepted_version);
         $this->assertNotNull($customer->consents_updated_at);
+    }
+
+    public function test_profile_questions_accept_only_configured_choice_answers(): void
+    {
+        Setting::query()->updateOrCreate(
+            ['name' => 'customer_profile'],
+            [
+                'status' => 1,
+                'property' => json_encode([
+                    'questions' => [
+                        [
+                            'key' => 'piatto_preferito',
+                            'label' => 'Piatto preferito',
+                            'type' => 'single_choice',
+                            'required' => true,
+                            'options' => [
+                                ['key' => 'pizza', 'label' => 'Pizza'],
+                                ['key' => 'pasta', 'label' => 'Pasta'],
+                            ],
+                        ],
+                        [
+                            'key' => 'occasioni',
+                            'label' => 'Occasioni',
+                            'type' => 'multiple_choice',
+                            'required' => false,
+                            'options' => [
+                                ['key' => 'pranzo', 'label' => 'Pranzo'],
+                                ['key' => 'cena', 'label' => 'Cena'],
+                            ],
+                        ],
+                    ],
+                ]),
+            ]
+        );
+
+        $customer = Customer::query()->create([
+            'name' => 'Choice',
+            'surname' => 'Customer',
+            'email' => 'choice-customer@example.com',
+            'phone' => '3331112222',
+        ]);
+        $token = $customer->createToken('customer-api')->plainTextToken;
+
+        $payload = [
+            'name' => 'Choice',
+            'surname' => 'Customer',
+            'phone' => '3331112222',
+            'gender' => 'prefer_not_to_say',
+            'birthday' => '1990-01-15',
+            'profile_answers' => [
+                'piatto_preferito' => 'testo_libero_non_configurato',
+                'occasioni' => ['cena'],
+            ],
+        ];
+
+        $this->putJson('/api/auth/profile', $payload, [
+            'Authorization' => 'Bearer ' . $token,
+        ])->assertStatus(422);
+
+        $payload['profile_answers'] = [
+            'piatto_preferito' => 'pizza',
+            'occasioni' => ['cena', 'testo_libero_non_configurato'],
+        ];
+
+        $this->putJson('/api/auth/profile', $payload, [
+            'Authorization' => 'Bearer ' . $token,
+        ])
+            ->assertOk()
+            ->assertJsonPath('customer.profile_answers.piatto_preferito', 'pizza')
+            ->assertJsonPath('customer.profile_answers.occasioni.0', 'cena');
+
+        $customer->refresh();
+        $this->assertSame([
+            'piatto_preferito' => 'pizza',
+            'occasioni' => ['cena'],
+        ], $customer->profile_answers);
     }
 
     public function test_account_update_consents_false_revokes_optional_consents_only(): void
@@ -473,8 +549,12 @@ class CustomerPasswordlessAuthTest extends TestCase
                         [
                             'key' => 'piatto_preferito',
                             'label' => 'Piatto preferito',
-                            'placeholder' => 'Scrivi qui',
+                            'type' => 'single_choice',
                             'required' => true,
+                            'options' => [
+                                ['key' => 'pizza', 'label' => 'Pizza'],
+                                ['key' => 'pasta', 'label' => 'Pasta'],
+                            ],
                         ],
                     ],
                 ]),
@@ -493,7 +573,9 @@ class CustomerPasswordlessAuthTest extends TestCase
         );
         $this->assertSame('piatto_preferito', $settings['questions'][0]['key']);
         $this->assertSame('Piatto preferito', $settings['questions'][0]['label']);
+        $this->assertSame('single_choice', $settings['questions'][0]['type']);
         $this->assertTrue($settings['questions'][0]['required']);
+        $this->assertSame('pizza', $settings['questions'][0]['options'][0]['key']);
     }
 
     public function test_admin_profile_settings_update_ignores_consent_text_fields(): void
@@ -519,8 +601,12 @@ class CustomerPasswordlessAuthTest extends TestCase
                     [
                         'key' => '',
                         'label' => 'Allergie o preferenze',
-                        'placeholder' => 'Es. senza glutine',
+                        'type' => 'multiple_choice',
                         'required' => '1',
+                        'options' => [
+                            ['key' => '', 'label' => 'Senza glutine'],
+                            ['key' => '', 'label' => 'Vegetariano'],
+                        ],
                     ],
                 ],
             ])
@@ -532,6 +618,8 @@ class CustomerPasswordlessAuthTest extends TestCase
         $this->assertSame('Testo profilazione precedente', $property['profiling_consent_text']);
         $this->assertArrayNotHasKey('email_marketing_label', $property);
         $this->assertSame('allergie_o_preferenze', $property['questions'][0]['key']);
+        $this->assertSame('multiple_choice', $property['questions'][0]['type']);
+        $this->assertSame('senza_glutine', $property['questions'][0]['options'][0]['key']);
         $this->assertTrue($property['questions'][0]['required']);
     }
 

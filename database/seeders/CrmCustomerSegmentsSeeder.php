@@ -314,7 +314,7 @@ class CrmCustomerSegmentsSeeder extends Seeder
             'email' => $attributes['email'],
             'phone' => $attributes['phone'] ?? null,
             'gender' => $attributes['gender'] ?? null,
-            'age' => $attributes['age'] ?? null,
+            'birthday' => $attributes['birthday'] ?? null,
             'profile_answers' => $attributes['profile_answers'] ?? [],
             'registered_at' => $attributes['registered_at'] ?? null,
             'email_marketing_consent_at' => $attributes['email_marketing_consent_at'] ?? null,

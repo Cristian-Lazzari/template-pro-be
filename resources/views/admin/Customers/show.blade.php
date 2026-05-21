@@ -102,7 +102,7 @@
         ['label' => 'Email', 'value' => $customer->email ?: '-'],
         ['label' => 'Telefono', 'value' => $customer->phone ?: '-'],
         ['label' => 'Sesso', 'value' => $customer->gender ?: '-'],
-        ['label' => 'Eta', 'value' => $customer->age ?: '-'],
+        ['label' => 'Data di nascita', 'value' => $customer->birthday ? $formatHumanDate($customer->birthday) : '-'],
     ];
 
     $consentStatusItem = static function (

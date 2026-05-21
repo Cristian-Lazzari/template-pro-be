@@ -66,13 +66,12 @@ return new class extends Migration
                 ->value('id');
 
             if (!$customerId) {
-                $customerId = DB::table('customers')->insertGetId([
+                $customerData = [
                     'name' => $latest->name ?? '',
                     'surname' => $latest->surname ?? '',
                     'email' => $emailKey,
                     'phone' => $latest->phone,
                     'gender' => null,
-                    'age' => null,
                     'profile_answers' => null,
                     'registered_at' => null,
                     'marketing_consent_at' => $marketingConsentAt,
@@ -80,7 +79,15 @@ return new class extends Migration
                     'email_verified_at' => null,
                     'created_at' => $latest->created_at ?? now(),
                     'updated_at' => $latest->created_at ?? now(),
-                ]);
+                ];
+
+                if (Schema::hasColumn('customers', 'birthday')) {
+                    $customerData['birthday'] = null;
+                } elseif (Schema::hasColumn('customers', 'age')) {
+                    $customerData['age'] = null;
+                }
+
+                $customerId = DB::table('customers')->insertGetId($customerData);
             } else {
                 $customer = DB::table('customers')
                     ->select(['name', 'surname', 'phone', 'marketing_consent_at'])

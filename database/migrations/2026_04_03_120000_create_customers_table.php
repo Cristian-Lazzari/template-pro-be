@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('email', 100)->unique();
             $table->string('phone', 20)->nullable();
             $table->string('gender', 20)->nullable();
-            $table->unsignedTinyInteger('age')->nullable();
+            $table->date('birthday')->nullable();
             $table->json('profile_answers')->nullable();
             $table->timestamp('registered_at')->nullable();
             $table->timestamp('marketing_consent_at')->nullable();

@@ -92,13 +92,18 @@ class CustomerOfferController extends Controller
             'redeemed_at' => $usedAt?->toISOString(),
             'cta_path' => $this->ctaPath($promotion),
             'cta_label' => $this->ctaLabel($promotion),
+            'image' => $target['target_image'],
             'targets' => $targets,
             'target_type' => $target['target_type'],
             'target_id' => $target['target_id'],
             'target_name' => $target['target_name'],
+            'target_image' => $target['target_image'],
             'product_name' => $target['product_name'],
+            'product_image' => $target['product_image'],
             'menu_name' => $target['menu_name'],
+            'menu_image' => $target['menu_image'],
             'category_name' => $target['category_name'],
+            'category_image' => $target['category_image'],
         ];
     }
 
@@ -243,9 +248,13 @@ class CustomerOfferController extends Controller
             'target_type' => null,
             'target_id' => null,
             'target_name' => null,
+            'target_image' => null,
             'product_name' => null,
+            'product_image' => null,
             'menu_name' => null,
+            'menu_image' => null,
             'category_name' => null,
+            'category_image' => null,
         ];
 
         $target = collect($targets)->first(fn (array $target) => $target['type'] !== PromotionTarget::TYPE_GENERIC)
@@ -258,13 +267,17 @@ class CustomerOfferController extends Controller
         $payload['target_type'] = $target['type'];
         $payload['target_id'] = $target['id'];
         $payload['target_name'] = $target['name'];
+        $payload['target_image'] = $target['image'] ?? null;
 
         if ($target['type'] === PromotionTarget::TYPE_PRODUCT) {
             $payload['product_name'] = $target['name'];
+            $payload['product_image'] = $target['image'] ?? null;
         } elseif ($target['type'] === PromotionTarget::TYPE_MENU) {
             $payload['menu_name'] = $target['name'];
+            $payload['menu_image'] = $target['image'] ?? null;
         } elseif ($target['type'] === PromotionTarget::TYPE_CATEGORY) {
             $payload['category_name'] = $target['name'];
+            $payload['category_image'] = $target['image'] ?? null;
         }
 
         return $payload;
@@ -286,6 +299,7 @@ class CustomerOfferController extends Controller
                 'type' => PromotionTarget::TYPE_GENERIC,
                 'id' => null,
                 'name' => 'Tutto l\'ordine',
+                'image' => null,
             ];
         }
 
@@ -311,6 +325,7 @@ class CustomerOfferController extends Controller
             'type' => $target->target_type,
             'id' => (int) $target->target_id,
             'name' => $name,
+            'image' => $this->targetImage($target),
         ];
     }
 
@@ -372,5 +387,34 @@ class CustomerOfferController extends Controller
         }
 
         return null;
+    }
+
+    private function targetImage(PromotionTarget $target): ?string
+    {
+        $config = match ($target->target_type) {
+            PromotionTarget::TYPE_PRODUCT => [
+                'table' => 'products',
+                'image_column' => 'image',
+            ],
+            PromotionTarget::TYPE_MENU => [
+                'table' => 'menus',
+                'image_column' => 'image',
+            ],
+            PromotionTarget::TYPE_CATEGORY => [
+                'table' => 'categories',
+                'image_column' => 'icon',
+            ],
+            default => null,
+        };
+
+        if (! $config || ! Schema::hasTable($config['table']) || ! Schema::hasColumn($config['table'], $config['image_column'])) {
+            return null;
+        }
+
+        $image = DB::table($config['table'])
+            ->where('id', $target->target_id)
+            ->value($config['image_column']);
+
+        return is_string($image) && trim($image) !== '' ? trim($image) : null;
     }
 }

@@ -287,7 +287,8 @@
     .customer-page__field input,
     .customer-page__field select,
     .customer-page__field textarea,
-    [data-question-item] input[type="text"] {
+    [data-question-item] input[type="text"],
+    [data-question-item] select {
         width: 100%;
         min-height: 48px;
         padding: 12px 14px;
@@ -333,8 +334,34 @@
 
     .question-item__fields {
         display: grid;
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1.4fr) minmax(180px, .6fr);
         gap: 12px;
+    }
+
+    .question-item__options {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .question-item__options-head,
+    .question-option-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .question-item__options-head span {
+        color: rgba(216, 221, 232, 0.72);
+        font-size: var(--fs-200);
+        font-weight: 700;
+    }
+
+    .question-option-row button,
+    .question-item__options-head button {
+        min-height: 40px;
+        white-space: nowrap;
     }
 
     .question-item__footer {
@@ -714,6 +741,11 @@
             grid-template-columns: 1fr;
         }
 
+        .question-item__options-head,
+        .question-option-row {
+            grid-template-columns: 1fr;
+        }
+
         .customer-page__button,
         .customer-page__button--ghost,
         .customer-page__settings-toggle,
@@ -799,8 +831,8 @@
                 <p class="order-detail__time">Consensi e questionario</p>
                 <p class="order-detail__date">
                     Qui imposti i messaggi che il cliente legge quando lascia i suoi dati
-                    e scegli poche domande che ti aiutano davvero a lavorare meglio, per esempio preferenze,
-                    ricorrenze o esigenze da ricordare.
+                    e scegli poche domande a risposta singola o multipla. Per ogni domanda prepara gia
+                    le risposte selezionabili dal cliente.
                 </p>
             </div>
 
@@ -835,7 +867,7 @@
 
                     <div class="customer-page__actions" style="margin-bottom: 14px;">
                         <div class="customer-page__settings-copy">
-                            I testi privacy e consensi sono standardizzati e non modificabili.
+                            I testi privacy e consensi sono standardizzati; le domande accettano solo risposte predefinite.
                         </div>
 
                         <button type="button" class="customer-page__button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>
@@ -843,18 +875,40 @@
 
                     <div id="customerQuestionList" class="question-list">
                         @foreach (($profileSettings['questions'] ?? []) as $index => $question)
-                            <div class="dashboard-action-modal__detail" data-question-item>
+                            @php
+                                $questionType = $question['type'] ?? 'single_choice';
+                                $questionOptions = is_array($question['options'] ?? null) ? $question['options'] : [];
+                            @endphp
+                            <div class="dashboard-action-modal__detail" data-question-item data-question-index="{{ $index }}">
                                 <input type="hidden" name="questions[{{ $index }}][key]" value="{{ $question['key'] ?? '' }}">
                                 <div class="question-item__fields">
                                     <label class="question-item__field">
                                         <span>Domanda</span>
-                                        <input type="text" name="questions[{{ $index }}][label]" value="{{ $question['label'] ?? '' }}">
+                                        <input type="text" name="questions[{{ $index }}][label]" value="{{ $question['label'] ?? '' }}" required>
                                     </label>
 
                                     <label class="question-item__field">
-                                        <span>Placeholder</span>
-                                        <input type="text" name="questions[{{ $index }}][placeholder]" value="{{ $question['placeholder'] ?? '' }}">
+                                        <span>Tipo risposta</span>
+                                        <select name="questions[{{ $index }}][type]">
+                                            <option value="single_choice" @selected($questionType === 'single_choice')>Risposta singola</option>
+                                            <option value="multiple_choice" @selected($questionType === 'multiple_choice')>Risposta multipla</option>
+                                        </select>
                                     </label>
+                                </div>
+
+                                <div class="question-item__options" data-question-options>
+                                    <div class="question-item__options-head">
+                                        <span>Risposte disponibili</span>
+                                        <button type="button" class="customer-page__button--ghost" data-add-option>Aggiungi risposta</button>
+                                    </div>
+
+                                    @foreach ($questionOptions as $optionIndex => $option)
+                                        <div class="question-option-row" data-question-option data-option-index="{{ $optionIndex }}">
+                                            <input type="hidden" name="questions[{{ $index }}][options][{{ $optionIndex }}][key]" value="{{ $option['key'] ?? '' }}">
+                                            <input type="text" name="questions[{{ $index }}][options][{{ $optionIndex }}][label]" value="{{ $option['label'] ?? '' }}" placeholder="Testo risposta" required>
+                                            <button type="button" class="customer-page__button--ghost" data-remove-option>Rimuovi risposta</button>
+                                        </div>
+                                    @endforeach
                                 </div>
 
                                 <div class="question-item__footer">
@@ -943,6 +997,7 @@
         const typeSelect = document.getElementById('customerType');
         const segmentSelect = document.getElementById('customerSegment');
         const resultsContainer = document.getElementById('customerResults');
+        const profileSettingsForm = document.getElementById('customerProfileSettings');
         const questionList = document.getElementById('customerQuestionList');
         const addQuestionButton = document.getElementById('addCustomerQuestion');
         const profileSettingsToggle = document.getElementById('customerProfileSettingsToggle');
@@ -950,26 +1005,64 @@
         const profileSettingsAnchors = Array.from(document.querySelectorAll('[href="#customerProfileSettings"]'));
         let filterTimeout = null;
         let activeRequest = null;
+        let nextQuestionIndex = questionList
+            ? Math.max(-1, ...Array.from(questionList.querySelectorAll('[data-question-item]')).map(function (item) {
+                return Number(item.dataset.questionIndex || -1);
+            })) + 1
+            : 0;
 
         function questionIndex() {
-            return questionList.querySelectorAll('[data-question-item]').length;
+            const index = nextQuestionIndex;
+            nextQuestionIndex += 1;
+
+            return index;
+        }
+
+        function optionIndex(questionItem) {
+            return Math.max(-1, ...Array.from(questionItem.querySelectorAll('[data-question-option]')).map(function (item) {
+                return Number(item.dataset.optionIndex || -1);
+            })) + 1;
+        }
+
+        function createOptionItem(questionIndex, index) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'question-option-row';
+            wrapper.dataset.questionOption = '1';
+            wrapper.dataset.optionIndex = String(index);
+            wrapper.innerHTML = `
+                <input type="hidden" name="questions[${questionIndex}][options][${index}][key]" value="">
+                <input type="text" name="questions[${questionIndex}][options][${index}][label]" value="" placeholder="Testo risposta" required>
+                <button type="button" class="customer-page__button--ghost" data-remove-option>Rimuovi risposta</button>
+            `;
+
+            return wrapper;
         }
 
         function createQuestionItem(index) {
             const wrapper = document.createElement('div');
             wrapper.className = 'dashboard-action-modal__detail';
             wrapper.dataset.questionItem = '1';
+            wrapper.dataset.questionIndex = String(index);
             wrapper.innerHTML = `
                 <input type="hidden" name="questions[${index}][key]" value="">
                 <div class="question-item__fields">
                     <label class="question-item__field">
                         <span>Domanda</span>
-                        <input type="text" name="questions[${index}][label]" value="">
+                        <input type="text" name="questions[${index}][label]" value="" required>
                     </label>
                     <label class="question-item__field">
-                        <span>Placeholder</span>
-                        <input type="text" name="questions[${index}][placeholder]" value="">
+                        <span>Tipo risposta</span>
+                        <select name="questions[${index}][type]">
+                            <option value="single_choice" selected>Risposta singola</option>
+                            <option value="multiple_choice">Risposta multipla</option>
+                        </select>
                     </label>
+                </div>
+                <div class="question-item__options" data-question-options>
+                    <div class="question-item__options-head">
+                        <span>Risposte disponibili</span>
+                        <button type="button" class="customer-page__button--ghost" data-add-option>Aggiungi risposta</button>
+                    </div>
                 </div>
                 <div class="question-item__footer">
                     <label class="question-item__switch">
@@ -984,6 +1077,10 @@
                 </div>
             `;
 
+            const options = wrapper.querySelector('[data-question-options]');
+            options?.appendChild(createOptionItem(index, 0));
+            options?.appendChild(createOptionItem(index, 1));
+
             return wrapper;
         }
 
@@ -991,14 +1088,49 @@
             questionList.appendChild(createQuestionItem(questionIndex()));
         });
 
+        profileSettingsForm?.addEventListener('submit', function (event) {
+            const invalidQuestion = Array.from(questionList?.querySelectorAll('[data-question-item]') ?? []).find(function (item) {
+                const optionLabels = Array.from(item.querySelectorAll('[data-question-option] input[type="text"]'))
+                    .filter(function (input) {
+                        return input.value.trim() !== '';
+                    });
+
+                return optionLabels.length < 2;
+            });
+
+            if (invalidQuestion) {
+                event.preventDefault();
+                invalidQuestion.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                window.alert('Ogni domanda deve avere almeno due risposte disponibili.');
+            }
+        });
+
         questionList?.addEventListener('click', function (event) {
             const removeButton = event.target.closest('[data-remove-question]');
-            if (!removeButton) {
+            const addOptionButton = event.target.closest('[data-add-option]');
+            const removeOptionButton = event.target.closest('[data-remove-option]');
+
+            if (removeButton) {
+                const item = removeButton.closest('[data-question-item]');
+                item?.remove();
                 return;
             }
 
-            const item = removeButton.closest('[data-question-item]');
-            item?.remove();
+            if (addOptionButton) {
+                const item = addOptionButton.closest('[data-question-item]');
+                const options = item?.querySelector('[data-question-options]');
+                if (!item || !options) {
+                    return;
+                }
+
+                options.appendChild(createOptionItem(item.dataset.questionIndex, optionIndex(item)));
+                return;
+            }
+
+            if (removeOptionButton) {
+                const option = removeOptionButton.closest('[data-question-option]');
+                option?.remove();
+            }
         });
 
         function openProfileSettings() {

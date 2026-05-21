@@ -135,7 +135,7 @@ class CustomerAuthController extends Controller
             'surname' => ['required', 'string', 'max:50'],
             'phone' => ['nullable', 'string', 'max:20'],
             'gender' => ['required', 'string', 'max:20'],
-            'age' => ['required', 'integer', 'min:1', 'max:120'],
+            'birthday' => ['required', 'date_format:Y-m-d', 'after_or_equal:1900-01-01', 'before_or_equal:today'],
             'profile_answers' => ['nullable', 'array'],
             'marketing_enabled' => ['nullable', 'boolean'],
             'email_marketing_enabled' => ['nullable', 'boolean'],
@@ -150,7 +150,7 @@ class CustomerAuthController extends Controller
         $customer->surname = trim((string) $data['surname']);
         $customer->phone = $this->nullableTrimmed($data['phone'] ?? null);
         $customer->gender = trim((string) $data['gender']);
-        $customer->age = (int) $data['age'];
+        $customer->birthday = $data['birthday'];
         $customer->profile_answers = $this->customerProfileSettingsService->normalizeAnswers(
             $data['profile_answers'] ?? [],
             $questions
