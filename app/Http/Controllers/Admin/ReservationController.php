@@ -224,7 +224,10 @@ class ReservationController extends Controller
                 $promotionRate = $customerPromotion->promotion?->discount;
 
                 if ($typeDiscount === 'percentage' && $promotionRate !== null) {
-                    $discountValueLabel = '−' . rtrim(rtrim(number_format((float) $promotionRate, 2, ',', ''), '0'), ',') . '%';
+                    $discountValueLabel = rtrim(rtrim(number_format((float) $promotionRate, 2, ',', ''), '0'), ',') . '%';
+                } elseif ($typeDiscount === 'fixed') {
+                    $raw = $discountAmount > 0 ? $discountAmount : (float) ($promotionRate ?? 0);
+                    $discountValueLabel = $raw > 0 ? Currency::formatCents($raw) : null;
                 } elseif ($typeDiscount !== 'gift' && $discountAmount > 0) {
                     $discountValueLabel = Currency::formatCents($discountAmount);
                 } else {
@@ -237,6 +240,7 @@ class ReservationController extends Controller
                     'name' => $formatted['promotion_name']
                         ?? $customerPromotion->promotion?->name
                         ?? __('admin.promotion_notification.promotion') . ' #' . $customerPromotion->promotion_id,
+                    'type_discount' => $typeDiscount,
                     'type_label' => $formatted['type_label']
                         ?? $this->promotionTypeLabel($customerPromotion->promotion?->type_discount),
                     'discount_value_label' => $discountValueLabel,

@@ -154,21 +154,14 @@
                             <div class="promo-card__header">
                                 <div class="promo-card__title">
                                     <strong class="promo-card__name">{{ $promotion['name'] ?? __('admin.common.promotion') }}</strong>
-                                    @if (!empty($promotion['type_label']))
+                                    @if (!blank($promotion['discount_value_label'] ?? null))
+                                        <span class="promo-card__type-badge">{{ $promotion['discount_value_label'] }}</span>
+                                    @elseif (($promotion['type_discount'] ?? '') === 'gift' && !empty($promotion['type_label']))
                                         <span class="promo-card__type-badge">{{ $promotion['type_label'] }}</span>
                                     @endif
                                 </div>
                                 <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
                             </div>
-
-                            @if (!blank($promotion['discount_value_label'] ?? null))
-                                <div class="promo-card__breakdown">
-                                    <div class="promo-card__row promo-card__row--discount">
-                                        <span>{{ __('admin.components.order_detail.discount') }}</span>
-                                        <strong>{{ $promotion['discount_value_label'] }}</strong>
-                                    </div>
-                                </div>
-                            @endif
 
                             @if (!empty($promotion['affected_items']))
                                 <div class="promo-card__items">
