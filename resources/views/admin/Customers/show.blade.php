@@ -493,20 +493,6 @@
                     <span>{{ __('admin.customers.marketing_area') }}</span>
                 </a>
 
-                <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
-                    <x-icon name="envelope-paper-fill" />
-                    <span>{{ __('admin.customers.campaigns_marketing') }}</span>
-                </a>
-
-                <a href="{{ route('admin.automations.index') }}" class="order-detail__contact">
-                    <x-icon name="lightning-charge-fill" />
-                    <span>{{ __('admin.customers.automations_marketing') }}</span>
-                </a>
-
-                <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
-                    <x-icon name="megaphone-fill" />
-                    <span>{{ __('admin.marketing.area_links.promotions') }}</span>
-                </a>
             </div>
         </header>
 

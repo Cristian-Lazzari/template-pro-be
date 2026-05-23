@@ -1,10 +1,10 @@
 @php
     $metrics = [
         ['label' => __('admin.marketing.customer_promotions_table.involved'), 'value' => $report['involved_count'] ?? 0],
-        ['label' => __('admin.marketing.customer_promotions_table.sent'), 'value' => $report['sent_count'] ?? 0],
+        ['label' => __('admin.marketing.customer_promotions_table.sent_metric'), 'value' => $report['sent_count'] ?? 0],
         ['label' => __('admin.marketing.customer_promotions_table.opens'), 'value' => $report['opened_count'] ?? 0],
         ['label' => __('admin.marketing.customer_promotions_table.clicks'), 'value' => $report['clicked_count'] ?? 0],
-        ['label' => __('admin.marketing.customer_promotions_table.used'), 'value' => $report['used_count'] ?? 0],
+        ['label' => __('admin.marketing.customer_promotions_table.used_metric'), 'value' => $report['used_count'] ?? 0],
         ['label' => __('admin.marketing.customer_promotions_table.orders'), 'value' => $report['order_conversion_count'] ?? 0],
         ['label' => __('admin.marketing.customer_promotions_table.reservations'), 'value' => $report['reservation_conversion_count'] ?? 0],
         ['label' => __('admin.marketing.customer_promotions_table.discount_label'), 'value' => number_format((float) ($report['discount_total'] ?? 0), 2, ',', '.')],

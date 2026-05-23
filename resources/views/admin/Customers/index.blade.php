@@ -606,10 +606,7 @@
         align-items: center;
         gap: 8px;
         min-height: 34px;
-        padding: 0 12px;
         border-radius: 999px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(216, 221, 232, 0.06);
         color: var(--c3);
         font-size: var(--fs-200);
         font-weight: 700;
