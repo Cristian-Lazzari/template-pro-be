@@ -197,7 +197,6 @@
                     :title="__('admin.availability_modal_title')"
                     :eyebrow="__('admin.availability_modal_eyebrow')"
                     tone="mint"
-                    :description="__('admin.availability_modal_description')"
                 >
                     <x-slot name="titleIcon">
                         <i class="bi bi-arrow-repeat"></i>
