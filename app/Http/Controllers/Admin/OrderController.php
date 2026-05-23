@@ -229,7 +229,16 @@ class OrderController extends Controller
                 }
             }
         }
-        $delivery_cost = $order->tot_price - $cart_price;
+        $promotionMeta = $order->customerPromotions
+            ->filter(fn ($cp) => (int) $cp->order_id === (int) $order->getKey())
+            ->map(fn ($cp) => is_array($cp->metadata) ? $cp->metadata : [])
+            ->first(fn ($meta) => array_key_exists('subtotal_after_discount', $meta));
+
+        if ($promotionMeta !== null) {
+            $delivery_cost = max(0, $order->tot_price - $promotionMeta['subtotal_after_discount']);
+        } else {
+            $delivery_cost = max(0, $order->tot_price - $cart_price);
+        }
 
         $times_start = '01:00';
         $times_end = '23:59';

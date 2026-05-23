@@ -17,7 +17,7 @@
     "isEntry": true,
     "css": [
       "../public/build/assets/app.75a37c8c.css",
-      "../public/build/assets/app.e55bff31.css"
+      "../public/build/assets/app.41a6e090.css"
     ],
     "assets": [
       "assets/bootstrap-icons.6c757103.woff2",
@@ -29,7 +29,7 @@
     "src": "resources/js/app.css"
   },
   "resources/scss/app.scss": {
-    "file": "../public/build/assets/app.e55bff31.css",
+    "file": "../public/build/assets/app.41a6e090.css",
     "src": "resources/scss/app.scss",
     "isEntry": true
   }

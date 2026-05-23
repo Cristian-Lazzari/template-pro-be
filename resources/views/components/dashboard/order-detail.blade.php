@@ -166,49 +166,63 @@
 
                 <div class="order-detail__items">
                     @foreach ($promotions as $promotion)
-                        <article class="order-detail__item">
-                            <div class="order-detail__item-top">
-                                <span class="order-detail__qty">{{ __('admin.common.promo') }}</span>
-                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? __('admin.common.promotion') }}</strong>
+                        <div class="promo-card">
+                            <div class="promo-card__header">
+                                <div class="promo-card__title">
+                                    <strong class="promo-card__name">{{ $promotion['name'] ?? __('admin.common.promotion') }}</strong>
+                                    @if (!empty($promotion['type_label']))
+                                        <span class="promo-card__type-badge">{{ $promotion['type_label'] }}</span>
+                                    @endif
+                                </div>
                                 <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
                             </div>
 
-                            <div class="order-detail__detail-groups">
-                                @foreach ([
-                                    ['label' => __('admin.components.order_detail.discount_type'), 'value' => $promotion['type_label'] ?? null],
-                                    ['label' => __('admin.components.order_detail.discount'), 'value' => $promotion['discount_amount_label'] ?? null],
-                                    ['label' => __('admin.components.order_detail.subtotal_before_discount'), 'value' => $promotion['subtotal_before_discount_label'] ?? null],
-                                    ['label' => __('admin.components.order_detail.discounted_subtotal'), 'value' => $promotion['subtotal_after_discount_label'] ?? null],
-                                    ['label' => __('admin.components.order_detail.total_after_discount'), 'value' => $promotion['total_after_discount_label'] ?? null],
-                                    ['label' => __('admin.components.order_detail.customer_promotion'), 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
-                                ] as $row)
-                                    @if (!blank($row['value']))
-                                        <div class="order-detail__detail-group">
-                                            <span>{{ $row['label'] }}</span>
-                                            <div class="order-detail__detail-values">
-                                                <small>{{ $row['value'] }}</small>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
+                            <div class="promo-card__breakdown">
+                                @if (!blank($promotion['subtotal_before_discount_label'] ?? null))
+                                    <div class="promo-card__row">
+                                        <span>{{ __('admin.components.order_detail.subtotal_before_discount') }}</span>
+                                        <span>{{ $promotion['subtotal_before_discount_label'] }}</span>
+                                    </div>
+                                @endif
 
-                                @if (!empty($promotion['affected_items']))
-                                    <div class="order-detail__detail-group">
-                                        <span>{{ __('admin.components.order_detail.affected_rows') }}</span>
-                                        <div class="order-detail__detail-values">
-                                            @foreach ($promotion['affected_items'] as $affectedItem)
-                                                <small>
-                                                    {{ $affectedItem['label'] ?? __('admin.common.element') }}
-                                                    @if (!empty($affectedItem['details']))
-                                                        · {{ implode(' · ', $affectedItem['details']) }}
-                                                    @endif
-                                                </small>
-                                            @endforeach
-                                        </div>
+                                @if (!blank($promotion['discount_amount_label'] ?? null))
+                                    <div class="promo-card__row promo-card__row--discount">
+                                        <span>{{ __('admin.components.order_detail.discount') }}</span>
+                                        <strong>− {{ $promotion['discount_amount_label'] }}</strong>
+                                    </div>
+                                @endif
+
+                                @if (!blank($promotion['subtotal_after_discount_label'] ?? null))
+                                    <div class="promo-card__row">
+                                        <span>{{ __('admin.components.order_detail.discounted_subtotal') }}</span>
+                                        <span>{{ $promotion['subtotal_after_discount_label'] }}</span>
+                                    </div>
+                                @endif
+
+                                @if (!blank($promotion['total_after_discount_label'] ?? null))
+                                    <div class="promo-card__row promo-card__row--total">
+                                        <span>{{ __('admin.components.order_detail.total_after_discount') }}</span>
+                                        <strong>{{ $promotion['total_after_discount_label'] }}</strong>
                                     </div>
                                 @endif
                             </div>
-                        </article>
+
+                            @if (!empty($promotion['affected_items']))
+                                <div class="promo-card__items">
+                                    <p class="promo-card__items-title">{{ __('admin.components.order_detail.affected_rows') }}</p>
+                                    <ul class="promo-card__items-list">
+                                        @foreach ($promotion['affected_items'] as $affectedItem)
+                                            <li class="promo-card__items-entry">
+                                                <span>{{ $affectedItem['label'] ?? __('admin.common.element') }}</span>
+                                                @if (!empty($affectedItem['details']))
+                                                    <span class="promo-card__items-detail">{{ implode(' · ', $affectedItem['details']) }}</span>
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
                     @endforeach
                 </div>
             </section>

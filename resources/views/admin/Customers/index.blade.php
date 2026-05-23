@@ -21,8 +21,10 @@
         linear-gradient(145deg, rgba(216, 221, 232, 0.1), rgba(216, 221, 232, 0.03)),
         rgba(9, 3, 51, 0.84);
         position: sticky;
+        backdrop-filter: blur(12px);
         top: 10px;
     }
+
 
     .customer-page__alerts,
     .customer-page__hero,
@@ -263,10 +265,10 @@
         align-items: center;
         gap: 0;
         min-height: 44px;
-        padding: 0 10px 0 0;
+        padding: 0 0 0 10px   !important;
         border-radius: 14px;
         border: 1px solid rgba(216, 221, 232, 0.16);
-        background: rgba(9, 3, 51, 0.56);
+        background: rgba(9, 3, 51, 0.91);
         overflow: hidden;
     }
 

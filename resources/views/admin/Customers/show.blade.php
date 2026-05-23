@@ -408,6 +408,30 @@
         }
     }
 
+    .customer-detail__section--divided {
+        padding-top: 22px;
+        margin-top: 22px;
+        border-top: 1px solid rgba(216, 221, 232, 0.1);
+    }
+
+
+    .customer-detail__guest-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    @media (max-width: 500px) {
+        .customer-detail-page .order-detail {
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+        }
+
+    }
+
     @media (max-width: 720px) {
         .customer-detail__stat-grid,
         .customer-detail__info-grid {
@@ -539,9 +563,10 @@
         </div>
     </article>
 
-    <div class="customer-detail__grid">
-        <article class="order-detail">
-            <div class="order-detail__body">
+    <article class="order-detail">
+        <div class="order-detail__body">
+
+            <div class="customer-detail__grid">
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
@@ -561,12 +586,7 @@
                         @endforeach
                     </div>
                 </section>
-            </div>
-        </article>
 
-
-        <article class="order-detail">
-            <div class="order-detail__body">
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
@@ -594,14 +614,9 @@
                     </div>
                 </section>
             </div>
-        </article>
 
-    </div>
-
-    @if (!empty($questionAnswers))
-        <article class="order-detail">
-            <div class="order-detail__body">
-                <section class="order-detail__section">
+            @if (!empty($questionAnswers))
+                <section class="order-detail__section customer-detail__section--divided">
                     <div class="order-detail__section-head">
                         <h3>
                             <span class="order-detail__section-icon">
@@ -622,13 +637,9 @@
                         @endforeach
                     </div>
                 </section>
-            </div>
-        </article>
-    @endif
+            @endif
 
-    <div class="customer-detail__grid" id="customer-history">
-        <article class="order-detail">
-            <div class="order-detail__body">
+            <div class="customer-detail__grid" id="customer-history">
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
@@ -655,7 +666,6 @@
                                     <div class="order-detail__detail-values">
                                         <small>{{ !empty($order->comune) ? __('admin.common.delivery') : __('admin.common.takeaway') }}</small>
                                         <small>{{ \App\Support\Currency::formatCents($order->tot_price ?? 0) }}</small>
-                                        <small>{{ __('admin.customers.historical_marketing', ['value' => $order->news_letter ? __('admin.common.yes') : __('admin.common.no')]) }}</small>
                                     </div>
 
                                     <div class="customer-detail__activity-footer">
@@ -671,11 +681,7 @@
                         <p class="customer-detail__empty">{{ __('admin.customers.no_orders') }}</p>
                     @endif
                 </section>
-            </div>
-        </article>
 
-        <article class="order-detail">
-            <div class="order-detail__body">
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
@@ -692,7 +698,8 @@
                                 @php
                                     $status = $reservationStatuses[$reservation->status] ?? ['label' => __('admin.customers.status_update'), 'tone' => 'warning'];
                                     $guests = json_decode($reservation->n_person, true);
-                                    $totalGuests = (int) ($guests['adult'] ?? 0) + (int) ($guests['child'] ?? 0);
+                                    $adults = (int) ($guests['adult'] ?? 0);
+                                    $children = (int) ($guests['child'] ?? 0);
                                 @endphp
                                 <article class="customer-detail__activity-item">
                                     <div class="customer-detail__activity-head">
@@ -704,9 +711,24 @@
                                     </div>
 
                                     <div class="order-detail__detail-values">
-                                        <small>{{ __('admin.customers.guests_count', ['count' => $totalGuests]) }}</small>
-                                        <small>{{ $reservation->sala ?: __('admin.customers.room_not_indicated') }}</small>
-                                        <small>{{ __('admin.customers.historical_marketing', ['value' => $reservation->news_letter ? __('admin.common.yes') : __('admin.common.no')]) }}</small>
+                                        @if ($adults > 0)
+                                            <small class="customer-detail__guest-pill">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>
+                                                {{ $adults }} {{ $adults === 1 ? 'adulto' : 'adulti' }}
+                                            </small>
+                                        @endif
+                                        @if ($children > 0)
+                                            <small class="customer-detail__guest-pill">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/><path d="m5.93 6.704-.846 8.451a.768.768 0 0 0 1.523.203l.81-4.865a.59.59 0 0 1 1.165 0l.81 4.865a.768.768 0 0 0 1.523-.203l-.845-8.451A1.5 1.5 0 0 1 10.5 5.5L13 2.284A.796.796 0 0 0 11.72 1.31L9 3.5 6.28 1.31a.796.796 0 0 0-1.28.974L7.5 5.5a1.5 1.5 0 0 1-1.57 1.204"/></svg>
+                                                {{ $children }} {{ $children === 1 ? 'bambino' : 'bambini' }}
+                                            </small>
+                                        @endif
+                                        @if ($adults === 0 && $children === 0)
+                                            <small>{{ __('admin.customers.guests_count', ['count' => 0]) }}</small>
+                                        @endif
+                                        @if (!empty($reservation->sala))
+                                            <small>{{ $reservation->sala }}</small>
+                                        @endif
                                     </div>
 
                                     <div class="customer-detail__activity-footer">
@@ -723,7 +745,8 @@
                     @endif
                 </section>
             </div>
-        </article>
-    </div>
+
+        </div>
+    </article>
 </div>
 @endsection
