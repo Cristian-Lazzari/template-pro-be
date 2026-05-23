@@ -219,6 +219,17 @@ class ReservationController extends Controller
                 $formatted = $formattedPromotions->get($customerPromotion->getKey(), []);
                 $metadata = is_array($customerPromotion->metadata) ? $customerPromotion->metadata : [];
                 $affectedItems = $formatted['affected_items'] ?? ($metadata['affected_items'] ?? []);
+                $typeDiscount = (string) ($formatted['type_discount'] ?? ($customerPromotion->promotion?->type_discount ?? ''));
+                $discountAmount = (float) ($customerPromotion->discount_amount ?? ($formatted['discount_amount'] ?? 0));
+                $promotionRate = $customerPromotion->promotion?->discount;
+
+                if ($typeDiscount === 'percentage' && $promotionRate !== null) {
+                    $discountValueLabel = '−' . rtrim(rtrim(number_format((float) $promotionRate, 2, ',', ''), '0'), ',') . '%';
+                } elseif ($typeDiscount !== 'gift' && $discountAmount > 0) {
+                    $discountValueLabel = Currency::formatCents($discountAmount);
+                } else {
+                    $discountValueLabel = null;
+                }
 
                 return [
                     'customer_promotion_id' => $customerPromotion->getKey(),
@@ -228,6 +239,7 @@ class ReservationController extends Controller
                         ?? __('admin.promotion_notification.promotion') . ' #' . $customerPromotion->promotion_id,
                     'type_label' => $formatted['type_label']
                         ?? $this->promotionTypeLabel($customerPromotion->promotion?->type_discount),
+                    'discount_value_label' => $discountValueLabel,
                     'affected_items' => $this->formatAffectedItems(is_array($affectedItems) ? $affectedItems : []),
                 ];
             })

@@ -161,6 +161,15 @@
                                 <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
                             </div>
 
+                            @if (!blank($promotion['discount_value_label'] ?? null))
+                                <div class="promo-card__breakdown">
+                                    <div class="promo-card__row promo-card__row--discount">
+                                        <span>{{ __('admin.components.order_detail.discount') }}</span>
+                                        <strong>{{ $promotion['discount_value_label'] }}</strong>
+                                    </div>
+                                </div>
+                            @endif
+
                             @if (!empty($promotion['affected_items']))
                                 <div class="promo-card__items">
                                     <p class="promo-card__items-title">{{ __('admin.components.reservation_detail.promotion_details') }}</p>
