@@ -35,14 +35,14 @@
                     <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
-                <p><input value="{{ old('name', $menu->name) }}"  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                <p><input value="{{ old('name', $menu->name) }}"  type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div class="price_input">
                 <label class="label_c" for="price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p><input value="{{ old('price', \App\Support\Currency::formatForInput($menu->price)) }}" step="{{ $moneyInputStep }}" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>{{ $appCurrency['symbol'] }}</span></p>
+                <p><input value="{{ old('price', \App\Support\Currency::formatForInput($menu->price)) }}" step="{{ $moneyInputStep }}" type="number" name="price" id="price" placeholder="{{ __('admin.products.price_placeholder') }}"><span>{{ $appCurrency['symbol'] }}</span></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -58,7 +58,7 @@
                 <label class="label_c" for="old_price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo_barrato')}}</label>
-                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('old_price', \App\Support\Currency::formatForInput($menu->old_price)) }}" type="number" name="old_price" id="old_price" step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "></p>
+                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('old_price', \App\Support\Currency::formatForInput($menu->old_price)) }}" type="number" name="old_price" id="old_price" step="{{ $moneyInputStep }}" placeholder="{{ __('admin.products.price_placeholder') }}"></p>
                 @error('old_price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -105,9 +105,9 @@
         <h2>{{ __('admin.Tipo_di_Menu') }}</h2>
         @php
             $types= [
-                0 => 'Menu fisso',
-                1 => 'Combo statico',
-                2 => 'Menu custom'
+                0 => __('admin.Menu_fisso'),
+                1 => __('admin.Combo_statico'),
+                2 => __('admin.Menu_custom')
             ];
         @endphp
         <div class="radio-inputs">
@@ -120,7 +120,7 @@
     <section id="section_fix" class="cont_i d-none">
         <h2>
             <i class="bi bi-ui-checks-grid"></i>
-            Abbina Prodotti</h2>
+            {{ __('admin.Abbina_Prodotti') }}</h2>
         <div class="check_c">
             
                 @foreach($products as $c)
@@ -162,6 +162,7 @@
 <script defer>
     //document.addEventListener("DOMContentLoaded", function () {
     const categories = @json($products);
+    const fieldNamePlaceholder = @json(__('admin.catalog.field_name'));
     let number_field = 0
 
     function aggiungiCampo() {
@@ -176,7 +177,7 @@
         div.classList.add('campo-opzione');
         div.innerHTML = `
             <div class="mb-2 d-flex justify-content-between gap-2">
-                <input type="text" name="choice[${number_field}][label]" placeholder="Nome del campo">
+                <input type="text" name="choice[${number_field}][label]" placeholder="${fieldNamePlaceholder}">
                 <button type="button" class="btn btn-danger" onclick="this.closest('.campo-opzione').remove(); number_field--">{{ __('admin.Rimuovi') }}</button>
             </div>
             <div class="check_c small"> 

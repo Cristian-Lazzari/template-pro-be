@@ -1,13 +1,13 @@
 @php
     $accountLabels = [
-        'guest' => 'Ospite',
-        'registered' => 'Registrato',
+        'guest' => __('admin.customers.guest'),
+        'registered' => __('admin.customers.registered'),
     ];
 
     $marketingLabels = [
-        'no_marketing' => 'No marketing',
-        'soft_marketing' => 'Soft marketing',
-        'full' => 'Full marketing',
+        'no_marketing' => __('admin.customers.no_marketing'),
+        'soft_marketing' => __('admin.customers.soft_marketing'),
+        'full' => __('admin.customers.full_marketing'),
     ];
 @endphp
 
@@ -15,7 +15,7 @@
     @foreach ($customers as $customer)
         @php
             $displayName = trim(($customer->name ?? '') . ' ' . ($customer->surname ?? ''))
-                ?: ($customer->email ?? $customer->phone ?? 'Cliente senza contatto');
+                ?: ($customer->email ?? $customer->phone ?? __('admin.customers.customer_without_contact'));
             $accountTone = $customer->account_state === 'registered' ? 'active' : 'warning';
             $marketingTone = match ($customer->marketing_state) {
                 'full' => 'active',
@@ -60,7 +60,7 @@
                     <div class="customer-card__title">
                         <h2>{{ $displayName }}</h2>
                         <p>
-                            Ultimo movimento:
+                            {{ __('admin.customers.last_movement') }}
                             {{ $customer->last_activity_at ? $customer->last_activity_at->format('d/m/Y H:i') : '-' }}
                         </p>
                     </div>
@@ -96,23 +96,23 @@
                     </div>
 
                     <p class="customer-card__summary">
-                        <strong>{{ $customer->orders_count }}</strong> ordini
+                        <strong>{{ $customer->orders_count }}</strong> {{ __('admin.customers.orders_label') }}
                         <span aria-hidden="true">•</span>
-                        <strong>{{ $customer->reservations_count }}</strong> prenotazioni
+                        <strong>{{ $customer->reservations_count }}</strong> {{ __('admin.customers.reservations_label') }}
                         <span aria-hidden="true">•</span>
-                        <strong>{{ $customer->interactions_count }}</strong> interazioni
+                        <strong>{{ $customer->interactions_count }}</strong> {{ __('admin.customers.interactions_label') }}
                     </p>
 
                     <div class="customer-card__metrics">
                         @if ($customer->customer_score !== null)
                             <span class="customer-card__score">
-                                <x-dashboard.state-pill :tone="$scoreTone">Score {{ $customer->customer_score }}</x-dashboard.state-pill>
+                                <x-dashboard.state-pill :tone="$scoreTone">{{ __('admin.customers.score', ['score' => $customer->customer_score]) }}</x-dashboard.state-pill>
                             </span>
                         @endif
 
                         @if (($customer->total_spent ?? 0) > 0)
                             <span class="customer-card__score">
-                                Spesa {{ \App\Support\Currency::formatAmount($customer->total_spent) }}
+                                {{ __('admin.customers.spent', ['amount' => \App\Support\Currency::formatAmount($customer->total_spent)]) }}
                             </span>
                         @endif
                     </div>
@@ -122,7 +122,7 @@
                     <div class="customer-card__action">
                         <a class="customer-page__button" href="{{ $customer->detail_url }}">
                             <x-icon name="arrow-up-right-circle-fill" />
-                            <span>Apri</span>
+                            <span>{{ __('admin.common.open') }}</span>
                         </a>
                     </div>
                 @endif
@@ -138,7 +138,7 @@
                 <x-icon name="search" />
             </span>
             <strong>{{ __('admin.Nessun_cliente_trovato') }}</strong>
-            <p>Prova con un altro nome oppure allarga il filtro per vedere piu clienti.</p>
+            <p>{{ __('admin.customers.no_results_hint_more') }}</p>
         </div>
     </div>
 @endif

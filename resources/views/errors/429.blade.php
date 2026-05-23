@@ -1,5 +1,5 @@
 @extends('errors.minimal')
 
-@section('title', __('Troppe richieste'))
+@section('title', __('admin.errors.429_title'))
 @section('code', '429')
-@section('message', __('Hai effettuato troppe richieste in poco tempo. Attendi qualche istante e riprova.'))
+@section('message', __('admin.errors.429_message'))

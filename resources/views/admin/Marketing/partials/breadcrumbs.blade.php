@@ -3,7 +3,7 @@
 @endphp
 
 @if (! empty($items))
-    <nav class="public-breadcrumbs" aria-label="Breadcrumb">
+    <nav class="public-breadcrumbs" aria-label="{{ __('admin.marketing.shared.breadcrumb_aria') }}">
         @foreach ($items as $item)
             @php
                 $isLast = $loop->last;

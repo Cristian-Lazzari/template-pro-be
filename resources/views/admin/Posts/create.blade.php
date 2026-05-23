@@ -9,10 +9,10 @@
 <header class="menu-dashboard__hero order-detail__summary">
     <div class="order-detail__meta">
         <div class="order-detail__status">
-            <span class="order-detail__status-icon order-detail__status-icon--active">
-                <i class="bi bi-images"></i>
-            </span>
-            <strong>Contenuti</strong>
+                <span class="order-detail__status-icon order-detail__status-icon--active">
+                    <i class="bi bi-images"></i>
+                </span>
+            <strong>{{ __('admin.content.contents') }}</strong>
         </div>
         <h1 class="menu-dashboard__title">{{ __('admin.Crea_nuovo_ps') }}</h1>
     </div>
@@ -32,7 +32,7 @@
             <label class="label_c" for="title">
                 <i class="bi bi-type"></i>
                 {{__('admin.Titolo')}}</label>
-            <input class="w-100" value="{{ old('title') }}" type="text" name="title" id="title" placeholder=" Inserisci il titolo">
+            <input class="w-100" value="{{ old('title') }}" type="text" name="title" id="title" placeholder="{{ __('admin.posts.title_placeholder') }}">
             @error('title') <p class="error">{{ $message }}</p> @enderror
         </p>
 
@@ -78,15 +78,15 @@
             <div class="desc">
                 <label class="label_c" for="hashtag">
                     <i class="bi bi-hash"></i>
-                    Hashtag *</label>
+                    {{ __('admin.Hashtag_') }}</label>
                 <textarea name="hashtag" id="hashtag" cols="1" rows="2"  >{{ old('hashtag') }}</textarea>
                 
             </div>
             <div>
                 <label class="label_c" for="link">
                     <i class="bi bi-link-45deg"></i>                      
-                    Link IG *</label>
-                <p><input value="{{ old('link') }}" type="text" name="link" id="link" placeholder=" Inserisci il link"></p>
+                    {{ __('admin.Link_IG_') }}</label>
+                <p><input value="{{ old('link') }}" type="text" name="link" id="link" placeholder="{{ __('admin.posts.link_placeholder') }}"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror
             </div>
             

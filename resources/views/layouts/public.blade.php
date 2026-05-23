@@ -14,21 +14,21 @@
     <header class="public-header">
         <div class="public-header__bar">
             <a class="public-brand" href="{{ route('guest.home') }}">
-                <span class="public-brand__eyebrow">Backoffice Guide</span>
-                <strong>{{ config('configurazione.APP_NAME', 'Gestionale') }}</strong>
+                <span class="public-brand__eyebrow">{{ __('admin.public.layout.brand_eyebrow') }}</span>
+                <strong>{{ config('configurazione.APP_NAME', __('admin.public.layout.app_fallback')) }}</strong>
             </a>
 
-            <nav class="public-nav" aria-label="Navigazione pubblica">
-                <a href="{{ route('guest.home') }}">Home</a>
-                <a href="{{ route('guest.documentation') }}">Documentazione</a>
-                <a href="{{ route('guest.updates') }}">Aggiornamenti</a>
-                <a class="public-nav__login" href="{{ route('login') }}">Accedi</a>
+            <nav class="public-nav" aria-label="{{ __('admin.public.layout.navigation_aria') }}">
+                <a href="{{ route('guest.home') }}">{{ __('admin.public.layout.home') }}</a>
+                <a href="{{ route('guest.documentation') }}">{{ __('admin.public.layout.documentation') }}</a>
+                <a href="{{ route('guest.updates') }}">{{ __('admin.public.layout.updates') }}</a>
+                <a class="public-nav__login" href="{{ route('login') }}">{{ __('admin.public.layout.login') }}</a>
             </nav>
         </div>
 
         <div class="public-hero">
             <div class="public-hero__copy">
-                <p class="public-kicker">@yield('kicker', 'Supporto pubblico')</p>
+                <p class="public-kicker">@yield('kicker', __('admin.public.layout.fallback_title'))</p>
                 <h1>@yield('headline')</h1>
                 <p class="public-lead">@yield('lead')</p>
             </div>

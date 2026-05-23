@@ -13,22 +13,22 @@
         $statusColor  = '#b91c1c';
         $statusBg     = '#fef2f2';
         $statusBorder = '#fca5a5';
-        $statusLabel  = 'Annullato';
+        $statusLabel  = __('admin.emails.status_cancelled');
     } elseif ($status == 1) {
         $statusColor  = '#15803d';
         $statusBg     = '#f0fdf4';
         $statusBorder = '#86efac';
-        $statusLabel  = 'Confermato';
+        $statusLabel  = __('admin.emails.status_confirmed');
     } elseif ($status == 6) {
         $statusColor  = '#b45309';
         $statusBg     = '#fffbeb';
         $statusBorder = '#fcd34d';
-        $statusLabel  = 'Rimborsato';
+        $statusLabel  = __('admin.emails.status_refunded');
     } else {
         $statusColor  = '#b45309';
         $statusBg     = '#fffbeb';
         $statusBorder = '#fcd34d';
-        $statusLabel  = 'In attesa';
+        $statusLabel  = __('admin.emails.status_pending');
     }
 
     $appName  = config('configurazione.APP_NAME', config('app.name'));
@@ -150,7 +150,7 @@
                         <td style="padding:24px 40px 10px;">
                             <p style="color:#6b7280; font-size:10px; text-transform:uppercase;
                                        letter-spacing:0.10em; font-weight:700; margin:0;">
-                                Riepilogo ordine
+                                {{ __('admin.emails.order_summary') }}
                             </p>
                         </td>
                     </tr>
@@ -177,7 +177,7 @@
                                                     <p style="color:#0f0b2e; font-size:15px; font-weight:700; margin:0 0 2px;">
                                                         {{ $i->name }}
                                                     </p>
-                                                    <p style="color:#9ca3af; font-size:11px; margin:0;">Menu</p>
+                                                    <p style="color:#9ca3af; font-size:11px; margin:0;">{{ __('admin.common.menu') }}</p>
                                                 </td>
                                                 <td valign="top" align="right" style="white-space:nowrap; padding-left:10px;">
                                                     @if ($i->pivot->quantity > 1)
@@ -288,7 +288,7 @@
                                                     <p style="color:#0f0b2e; font-size:15px; font-weight:700; margin:0 0 2px;">
                                                         {{ $i->name }}
                                                     </p>
-                                                    <p style="color:#9ca3af; font-size:11px; margin:0;">Prodotto</p>
+                                                    <p style="color:#9ca3af; font-size:11px; margin:0;">{{ __('admin.common.product') }}</p>
                                                 </td>
                                                 <td valign="top" align="right" style="white-space:nowrap; padding-left:10px;">
                                                     @if ($i->pivot->quantity > 1)
@@ -549,9 +549,9 @@
                                                letter-spacing:0.10em; margin:0 0 10px;">
                                         &#127873;
                                         @if ($mailTo === 'admin')
-                                            Promozione applicata
+                                            {{ __('admin.emails.promotion_applied') }}
                                         @else
-                                            La tua offerta &egrave; attiva
+                                            {{ __('admin.emails.active_offer') }}
                                         @endif
                                     </p>
 
@@ -568,7 +568,7 @@
                                                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                                     <tr>
                                                         <td>
-                                                            <p style="color:#4b5563; font-size:13px; margin:0;">Sconto applicato</p>
+                                                            <p style="color:#4b5563; font-size:13px; margin:0;">{{ __('admin.emails.applied_discount') }}</p>
                                                         </td>
                                                         <td align="right">
                                                             <p style="color:#15803d; font-size:16px; font-weight:800;
@@ -580,7 +580,7 @@
                                                 </table>
                                             @elseif (($promotion['type_discount'] ?? '') === 'gift')
                                                 <p style="color:#0f0b2e; font-size:13px; font-weight:700; margin:4px 0;">
-                                                    Omaggio applicato
+                                                    {{ __('admin.emails.gift_applied') }}
                                                 </p>
                                             @endif
                                             @if (($content_mail['type'] ?? null) === 'or')
@@ -588,7 +588,7 @@
                                                        style="margin-top:8px; border-top:1px solid #bbf7d0;">
                                                     <tr>
                                                         <td style="padding-top:8px;">
-                                                            <p style="color:#4b5563; font-size:12px; margin:0;">Totale ordine gi&agrave; scontato</p>
+                                                            <p style="color:#4b5563; font-size:12px; margin:0;">{{ __('admin.emails.discounted_order_total') }}</p>
                                                         </td>
                                                         <td align="right" style="padding-top:8px;">
                                                             <p style="color:#15803d; font-size:16px; font-weight:800;
@@ -601,19 +601,17 @@
                                             @endif
                                             @if (!empty($promotion['affected_items']))
                                                 <p style="color:#6b7280; font-size:11px; margin:8px 0 0;">
-                                                    Dettagli: {{ collect($promotion['affected_items'])->map(fn ($item) => $item['name'] ?? $item['label'] ?? $item['type'] ?? null)->filter()->implode(', ') }}
+                                                    {{ __('admin.emails.details') }} {{ collect($promotion['affected_items'])->map(fn ($item) => $item['name'] ?? $item['label'] ?? $item['type'] ?? null)->filter()->implode(', ') }}
                                                 </p>
                                             @endif
                                         @else
                                             @if (($promotion['discount_amount'] ?? 0) > 0)
                                                 <p style="color:#0f0b2e; font-size:14px; margin:4px 0;">
-                                                    Hai uno sconto di
-                                                    <strong style="color:#15803d;">{{ \App\Support\Currency::formatCents($promotion['discount_amount']) }}</strong>
-                                                    su questa prenotazione.
+                                                    {!! __('admin.emails.discount_on_reservation_html', ['amount' => '<strong style="color:#15803d;">' . e(\App\Support\Currency::formatCents($promotion['discount_amount'])) . '</strong>']) !!}
                                                 </p>
                                             @elseif (($promotion['type_discount'] ?? '') === 'gift')
                                                 <p style="color:#0f0b2e; font-size:14px; font-weight:700; margin:4px 0;">
-                                                    Il tuo omaggio &egrave; stato registrato.
+                                                    {{ __('admin.emails.gift_registered') }}
                                                 </p>
                                             @else
                                                 <p style="color:#0f0b2e; font-size:14px; margin:4px 0;">
@@ -621,7 +619,7 @@
                                                 </p>
                                             @endif
                                             <p style="color:#6b7280; font-size:12px; margin:8px 0 0;">
-                                                L&rsquo;offerta verr&agrave; applicata al momento della tua visita.
+                                                {{ __('admin.emails.offer_applied_on_visit') }}
                                             </p>
                                         @endif
                                     @endforeach
@@ -667,7 +665,7 @@
                            style="display:block; text-align:center; padding:14px 20px; background-color:#159478;
                                   color:#ffffff; font-size:15px; font-weight:700; text-decoration:none;
                                   border-radius:9px; margin-bottom:8px;">
-                            &#128222; Chiama {{ $content_mail['name'] }}
+                            &#128222; {{ __('admin.emails.call_name', ['name' => $content_mail['name']]) }}
                         </a>
                         @if ($content_mail['type'] == 'or')
                             <a href="{{ config('configurazione.APP_URL') }}/admin/orders/{{ $content_mail['order_id'] }}"

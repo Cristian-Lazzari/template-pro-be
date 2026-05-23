@@ -35,7 +35,7 @@ class SettingController extends Controller
             foreach ($setting['property']  as $k) {
                 if($k['cap'] == $request->cap){
                     $isnew = false;
-                    $m = 'L\'area inserita era già presente! Non puoi avere due aree uguali o con lo stesso cap!';
+                    $m = __('admin.controllers.settings.duplicate_area_full');
                     return redirect()->back()->with('success', $m); 
                 }
             }
@@ -61,7 +61,7 @@ class SettingController extends Controller
                 $setting->save();
             }
         }
-        $m = 'Gli indirizzi sono stati aggiornati correttamente';
+        $m = __('admin.controllers.settings.addresses_updated');
 
         return redirect()->back()->with('success', $m); 
     }
@@ -118,9 +118,9 @@ class SettingController extends Controller
             $adv->property = json_encode($property);
 
             $adv->update();
-            $m = 'Le impostazioni sono state ggiornate correttamente';
+            $m = __('admin.controllers.settings.settings_updated');
         }else{
-            $m = 'ERRORE 404!';
+            $m = __('admin.controllers.settings.not_found');
         }
         return redirect()->back()->with('success', $m); 
     }
@@ -141,7 +141,7 @@ class SettingController extends Controller
         $setting->property = json_encode($old_p);
         $setting->update();
 
-        $m = 'I numeri sono stati aggiornati correttamente';
+        $m = __('admin.controllers.settings.numbers_updated');
     
         return redirect()->back()->with('success', $m); 
     }
@@ -267,7 +267,7 @@ class SettingController extends Controller
 
        
         
-        $m = 'Le impostazioni sono state ggiornate correttamente';
+        $m = __('admin.controllers.settings.settings_updated');
 
         return redirect()->back()->with('success', $m);   
     }
@@ -387,7 +387,7 @@ class SettingController extends Controller
                 break;
 
             default:
-                return response()->json(['error' => 'Campo non riconosciuto: ' . $field], 422);
+                return response()->json(['error' => __('admin.controllers.settings.unknown_field', ['field' => $field])], 422);
         }
 
         return response()->json(['success' => true]);
@@ -403,7 +403,7 @@ class SettingController extends Controller
         $s->property = json_encode($adv);
         $s->update();
         
-        return redirect()->route('admin.dashboard')->with('message', 'Le date sono state modificate correttamente');
+        return redirect()->route('admin.dashboard')->with('message', __('admin.controllers.settings.dates_updated'));
 
     }
 }

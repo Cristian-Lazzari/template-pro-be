@@ -7,22 +7,22 @@
     $objectValue = old('object', $model->object);
     $headingValue = old('heading', $model->heading);
     $senderValue = old('sender', $model->sender);
-    $previewHeading = $headingValue ?: 'Titolo della promozione';
-    $previewObject = $objectValue ?: 'Oggetto della mail';
+    $previewHeading = $headingValue ?: __('admin.marketing.mailer.preview_heading');
+    $previewObject = $objectValue ?: __('admin.marketing.mailer.preview_object');
     $previewBody = trim((string) $bodyHtmlValue) !== ''
         ? $bodyHtmlValue
-        : '<p>Ciao {{ customer_first_name }}, abbiamo preparato una promozione per te.</p>';
-    $previewEnding = $endingValue ?: 'A presto';
+        : __('admin.marketing.mailer.preview_body');
+    $previewEnding = $endingValue ?: __('admin.marketing.mailer.preview_ending');
 
     $variableGroups = [
-        'Cliente' => [
+        __('admin.marketing.mailer.variable_group_customer') => [
             'customer_name',
             'customer_first_name',
             'customer_last_name',
             'customer_email',
             'customer_phone',
         ],
-        'Promozione' => [
+        __('admin.marketing.mailer.variable_group_promotion') => [
             'promotion_name',
             'promotion_discount',
             'promotion_discount_label',
@@ -31,13 +31,13 @@
             'promotion_expiring_at',
             'promotion_cta',
         ],
-        'Target' => [
+        __('admin.marketing.mailer.variable_group_target') => [
             'product_name',
             'menu_name',
             'category_name',
             'post_title',
         ],
-        'Campagna' => [
+        __('admin.marketing.mailer.variable_group_campaign') => [
             'campaign_name',
             'tracking_click_url',
         ],
@@ -231,7 +231,7 @@
 
 @if ($errors->any())
     <div class="alert alert-danger">
-        Controlla i campi evidenziati prima di salvare.
+        {{ __('admin.marketing.mailer.check_fields') }}
     </div>
 @endif
 
@@ -251,7 +251,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="card-text" />
                         </span>
-                        Informazioni modello
+                        {{ __('admin.marketing.mailer.model_info') }}
                     </h3>
                 </div>
 
@@ -259,10 +259,10 @@
                     <div>
                         <label class="label_c" for="name">
                             <x-icon name="type" />
-                            Nome modello
+                            {{ __('admin.marketing.mailer.model_name') }}
                         </label>
                         <p>
-                            <input value="{{ old('name', $model->name) }}" type="text" name="name" id="name" placeholder="Es. Promo clienti inattivi">
+                            <input value="{{ old('name', $model->name) }}" type="text" name="name" id="name" placeholder="{{ __('admin.marketing.mailer.name_placeholder') }}">
                         </p>
                         @error('name') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -270,13 +270,13 @@
                     <div>
                         <label class="label_c" for="status">
                             <x-icon name="toggle-on" />
-                            Stato
+                            {{ __('admin.marketing.mailer.status') }}
                         </label>
                         <p>
                             <select name="status" id="status">
-                                <option value="draft" @selected($statusValue === 'draft')>Bozza</option>
-                                <option value="active" @selected($statusValue === 'active')>Attivo</option>
-                                <option value="archived" @selected($statusValue === 'archived')>Archiviato</option>
+                                <option value="draft" @selected($statusValue === 'draft')>{{ __('admin.marketing.mailer.draft') }}</option>
+                                <option value="active" @selected($statusValue === 'active')>{{ __('admin.marketing.mailer.active') }}</option>
+                                <option value="archived" @selected($statusValue === 'archived')>{{ __('admin.marketing.mailer.archived') }}</option>
                             </select>
                         </p>
                         @error('status') <p class="error">{{ $message }}</p> @enderror
@@ -287,10 +287,10 @@
                     <div>
                         <label class="label_c" for="object">
                             <x-icon name="envelope-fill" />
-                            Oggetto email
+                            {{ __('admin.marketing.mailer.email_subject') }}
                         </label>
                         <p>
-                            <input value="{{ $objectValue }}" type="text" name="object" id="object" placeholder="Es. Una promozione pensata per te">
+                            <input value="{{ $objectValue }}" type="text" name="object" id="object" placeholder="{{ __('admin.marketing.mailer.object_placeholder') }}">
                         </p>
                         @error('object') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -298,10 +298,10 @@
                     <div>
                         <label class="label_c" for="sender">
                             <x-icon name="person-lines-fill" />
-                            Mittente
+                            {{ __('admin.marketing.mailer.sender') }}
                         </label>
                         <p>
-                            <input value="{{ $senderValue }}" type="text" name="sender" id="sender" placeholder="Es. Il team del ristorante">
+                            <input value="{{ $senderValue }}" type="text" name="sender" id="sender" placeholder="{{ __('admin.marketing.mailer.sender_placeholder') }}">
                         </p>
                         @error('sender') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -314,17 +314,17 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="file-earmark-richtext-fill" />
                         </span>
-                        Contenuto email
+                        {{ __('admin.marketing.mailer.email_content') }}
                     </h3>
                 </div>
 
                 <div>
                     <label class="label_c" for="heading">
                         <x-icon name="type-h1" />
-                        Titolo principale
+                        {{ __('admin.marketing.mailer.main_title') }}
                     </label>
                     <p>
-                        <input value="{{ $headingValue }}" type="text" name="heading" id="heading" placeholder="Es. Ti aspetta una sorpresa">
+                        <input value="{{ $headingValue }}" type="text" name="heading" id="heading" placeholder="{{ __('admin.marketing.mailer.heading_placeholder') }}">
                     </p>
                     @error('heading') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -332,10 +332,10 @@
                 <div>
                     <label class="label_c" for="body_html">
                         <x-icon name="body-text" />
-                        Corpo HTML
+                        {{ __('admin.marketing.mailer.html_body') }}
                     </label>
                     <p>
-                        <textarea name="body_html" id="body_html" rows="12" placeholder="Scrivi il contenuto. Puoi usare @{{ customer_name }} e gli altri placeholder.">{{ $bodyHtmlValue }}</textarea>
+                        <textarea name="body_html" id="body_html" rows="12" placeholder="{{ __('admin.marketing.mailer.html_body_placeholder') }}">{{ $bodyHtmlValue }}</textarea>
                     </p>
                     @error('body_html') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -343,10 +343,10 @@
                 <div>
                     <label class="label_c" for="body_text">
                         <x-icon name="text-left" />
-                        Versione testo
+                        {{ __('admin.marketing.mailer.text_version') }}
                     </label>
                     <p>
-                        <textarea name="body_text" id="body_text" rows="6" placeholder="Versione solo testo opzionale.">{{ $bodyTextValue }}</textarea>
+                        <textarea name="body_text" id="body_text" rows="6" placeholder="{{ __('admin.marketing.mailer.text_version_placeholder') }}">{{ $bodyTextValue }}</textarea>
                     </p>
                     @error('body_text') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -354,10 +354,10 @@
                 <div>
                     <label class="label_c" for="ending">
                         <x-icon name="chat-quote-fill" />
-                        Chiusura
+                        {{ __('admin.marketing.mailer.ending') }}
                     </label>
                     <p>
-                        <textarea name="ending" id="ending" rows="4" placeholder="Es. A presto, il tuo ristorante.">{{ $endingValue }}</textarea>
+                        <textarea name="ending" id="ending" rows="4" placeholder="{{ __('admin.marketing.mailer.ending_placeholder') }}">{{ $endingValue }}</textarea>
                     </p>
                     @error('ending') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -366,11 +366,11 @@
                     <div>
                         <label class="label_c" for="img_1">
                             <x-icon name="image-fill" />
-                            Immagine superiore
+                            {{ __('admin.marketing.mailer.top_image') }}
                         </label>
                         <p><input type="file" id="img_1" name="img_1"></p>
                         @if ($model->img_1)
-                            <p class="menu-dashboard__copy">Immagine presente: {{ basename($model->img_1) }}</p>
+                            <p class="menu-dashboard__copy">{{ __('admin.marketing.mailer.image_present', ['name' => basename($model->img_1)]) }}</p>
                         @endif
                         @error('img_1') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -378,11 +378,11 @@
                     <div>
                         <label class="label_c" for="img_2">
                             <x-icon name="image-fill" />
-                            Immagine inferiore
+                            {{ __('admin.marketing.mailer.bottom_image') }}
                         </label>
                         <p><input type="file" id="img_2" name="img_2"></p>
                         @if ($model->img_2)
-                            <p class="menu-dashboard__copy">Immagine presente: {{ basename($model->img_2) }}</p>
+                            <p class="menu-dashboard__copy">{{ __('admin.marketing.mailer.image_present', ['name' => basename($model->img_2)]) }}</p>
                         @endif
                         @error('img_2') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -397,12 +397,12 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="braces" />
                         </span>
-                        Variabili disponibili
+                        {{ __('admin.marketing.mailer.available_variables') }}
                     </h3>
                 </div>
 
                 <p class="menu-dashboard__copy">
-                    Le variabili verranno sostituite automaticamente quando il modello viene usato in una campagna o automazione.
+                    {{ __('admin.marketing.mailer.variables_help') }}
                 </p>
 
                 <div class="mail-model-variable-list">
@@ -425,7 +425,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="eye-fill" />
                         </span>
-                        Anteprima struttura
+                        {{ __('admin.marketing.mailer.structure_preview') }}
                     </h3>
                 </div>
 
@@ -437,10 +437,10 @@
                         <div class="mail-model-preview__body">
                             {!! $previewBody !!}
                         </div>
-                        <a class="mail-model-preview__cta" href="#">Scopri la promozione</a>
+                        <a class="mail-model-preview__cta" href="#">{{ __('admin.marketing.mailer.preview_cta') }}</a>
                         <p>{{ $previewEnding }}</p>
                         <div class="mail-model-preview__footer">
-                            Footer e tracking saranno aggiunti nella mail reale.
+                            {{ __('admin.marketing.mailer.preview_footer') }}
                         </div>
                     </div>
                 </div>
@@ -452,15 +452,15 @@
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <button class="order-detail__contact" type="submit">
                 <x-icon name="check2-circle" />
-                <span>{{ $isEdit ? 'Salva modello' : 'Crea modello' }}</span>
+                <span>{{ $isEdit ? __('admin.marketing.mailer.save_model') : __('admin.marketing.mailer.create_model') }}</span>
             </button>
             <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.index') }}">
                 <x-icon name="arrow-left-circle-fill" />
-                <span>Annulla</span>
+                <span>{{ __('admin.common.cancel') }}</span>
             </a>
         </div>
         <p class="menu-dashboard__copy mt-3">
-            Il modello resta collegabile a campagne e automazioni. L'invio email non parte da questa pagina.
+            {{ __('admin.marketing.mailer.model_form_note') }}
         </p>
     </section>
 </form>

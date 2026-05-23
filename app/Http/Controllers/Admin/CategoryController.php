@@ -69,7 +69,7 @@ class CategoryController extends Controller
             ]);
         }
         
-        $m = 'La categoria "' . $data['name'] . '" è stata creata correttamente';
+        $m = __('admin.controllers.category.created_named', ['name' => $data['name']]);
         return to_route('admin.categories.index')->with('category_success', $m);   
     }
     
@@ -79,7 +79,7 @@ class CategoryController extends Controller
         $ids = array_values(array_filter((array) $request->input('new_order')));
 
         if ($ids === []) {
-            return to_route('admin.categories.index')->with('category_success', 'Nessun elemento da riordinare');
+            return to_route('admin.categories.index')->with('category_success', __('admin.controllers.category.no_reorder_items'));
         }
 
         $invertito = array_reverse($ids);
@@ -98,7 +98,7 @@ class CategoryController extends Controller
         }
         
         //dd($ids);
-        $m = 'Ordine aggiornato correttamente';
+        $m = __('admin.controllers.category.order_updated');
     
         return to_route('admin.categories.index')->with('category_success', $m);   
     }
@@ -108,7 +108,7 @@ class CategoryController extends Controller
         $ids = array_values(array_filter((array) $request->input('new_order_p')));
 
         if ($ids === []) {
-            return to_route('admin.categories.index')->with('category_success', 'Nessun elemento da riordinare');
+            return to_route('admin.categories.index')->with('category_success', __('admin.controllers.category.no_reorder_items'));
         }
 
         //$invertito = array_reverse($ids);
@@ -128,7 +128,7 @@ class CategoryController extends Controller
         }
         
       //  dd($ids);
-        $m = 'Ordine aggiornato correttamente';
+        $m = __('admin.controllers.category.order_updated');
     
         return to_route('admin.categories.index')->with('category_success', $m);   
     }
@@ -184,7 +184,7 @@ class CategoryController extends Controller
         }
         $category->update();
         
-        $m = 'La categoria "' . $data['name'] . '" è stata modificata correttamente';
+        $m = __('admin.controllers.category.updated_named', ['name' => $data['name']]);
         return to_route('admin.categories.index')->with('category_success', $m);
  
     }
@@ -197,7 +197,7 @@ class CategoryController extends Controller
         }
         
         $category->delete();
-        $m = ' "' . $category->name . '" è stata eliminata e rimossa dai prodotti correttamente';
+        $m = __('admin.controllers.category.deleted_with_products_named', ['name' => $category->name]);
         return to_route('admin.categories.index')->with('delete_success', $m);
     }
     public function show($id)

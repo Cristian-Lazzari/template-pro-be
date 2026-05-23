@@ -17,17 +17,17 @@
 @php
     $isArchivedView = $isArchivedView ?? false;
     $campaignIndexStatusLabels = [
-        'draft' => 'Bozza',
-        'scheduled' => 'Programmata',
-        'running' => 'IN CORSO',
-        'completed' => 'Completata',
-        'paused' => 'In pausa',
-        'archived' => 'Archiviata',
+        'draft' => __('admin.marketing.campaigns.status_draft'),
+        'scheduled' => __('admin.marketing.campaigns.status_scheduled'),
+        'running' => __('admin.marketing.campaigns.status_running_upper'),
+        'completed' => __('admin.marketing.campaigns.status_completed'),
+        'paused' => __('admin.marketing.campaigns.status_paused'),
+        'archived' => __('admin.marketing.campaigns.status_archived'),
     ];
     $campaignConsentShortLabels = [
-        \App\Models\Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING => 'Consenso esplicito',
-        \App\Models\Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => 'Email soft-spam',
-        \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp',
+        \App\Models\Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING => __('admin.marketing.campaigns.consent_explicit_short'),
+        \App\Models\Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => __('admin.marketing.campaigns.consent_soft_short'),
+        \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => __('admin.marketing.campaigns.consent_whatsapp_short'),
     ];
     $campaignConsentTones = [
         \App\Models\Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING => 'explicit',
@@ -45,18 +45,22 @@
         $time = $date->format('H:i');
 
         if ($date->isToday()) {
-            return 'Oggi ore ' . $time;
+            return __('admin.marketing.campaigns.today_at', ['time' => $time]);
         }
 
         if ($date->isYesterday()) {
-            return 'Ieri ore ' . $time;
+            return __('admin.marketing.campaigns.yesterday_at', ['time' => $time]);
         }
 
         if ($date->isTomorrow()) {
-            return 'Domani ore ' . $time;
+            return __('admin.marketing.campaigns.tomorrow_at', ['time' => $time]);
         }
 
-        return ucfirst($date->locale('it')->isoFormat('dddd')) . ' ' . $date->format('d/m') . ' ore ' . $time;
+        return __('admin.marketing.campaigns.weekday_at', [
+            'day' => ucfirst($date->locale(app()->getLocale())->isoFormat('dddd')),
+            'date' => $date->format('d/m'),
+            'time' => $time,
+        ]);
     };
 @endphp
 
@@ -65,9 +69,9 @@
 
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => $isArchivedView ? 'Campagne archiviate' : 'Campagne'],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => $isArchivedView ? __('admin.marketing.campaigns.archived_title') : __('admin.marketing.campaigns.plural')],
         ],
     ])
 
@@ -77,32 +81,32 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <i class="bi {{ $isArchivedView ? 'bi-archive-fill' : 'bi-envelope-paper-fill' }}"></i>
                 </span>
-                <strong>Marketing</strong>
+                <strong>{{ __('admin.marketing.area_links.marketing') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">{{ $isArchivedView ? 'Campagne archiviate' : 'Campagne' }}</h1>
+            <h1 class="menu-dashboard__title">{{ $isArchivedView ? __('admin.marketing.campaigns.archived_title') : __('admin.marketing.campaigns.plural') }}</h1>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             @if ($isArchivedView)
                 <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
                     <i class="bi bi-arrow-left"></i>
-                    <span>Lista campagne</span>
+                    <span>{{ __('admin.marketing.campaigns.list') }}</span>
                 </a>
             @else
                 <a href="{{ route('admin.campaigns.archived') }}" class="order-detail__contact">
                     <i class="bi bi-archive-fill"></i>
-                    <span>Archiviate</span>
+                    <span>{{ __('admin.marketing.campaigns.archived') }}</span>
                 </a>
                 <a href="{{ route('admin.campaigns.create') }}" class="order-detail__contact">
                     <i class="bi bi-cloud-plus-fill"></i>
-                    <span>Crea nuova</span>
+                    <span>{{ __('admin.marketing.campaigns.create_new') }}</span>
                 </a>
             @endif
         </div>
     </header>
 
-    <section class="campaign-index-board mt-4" aria-label="{{ $isArchivedView ? 'Campagne archiviate' : 'Elenco campagne' }}">
+    <section class="campaign-index-board mt-4" aria-label="{{ $isArchivedView ? __('admin.marketing.campaigns.archived_aria') : __('admin.marketing.campaigns.list_aria') }}">
         @if ($campaigns->count() > 0)
             <div class="campaign-list-render">
                 @foreach ($campaigns as $campaign)
@@ -130,7 +134,7 @@
                             'high_spending_customers' => 'high_value_customers',
                         ];
                         $normalizedSegment = $legacySegmentMap[$campaign->segment] ?? ($campaign->segment ?: 'all');
-                        $segmentLabel = $segments[$normalizedSegment] ?? ($campaign->segment ?: 'Segmento non definito');
+                        $segmentLabel = $segments[$normalizedSegment] ?? ($campaign->segment ?: __('admin.marketing.campaigns.undefined_segment'));
                         $consentBasis = $campaign->consentBasis();
                         $consentBasisLabel = $campaignConsentShortLabels[$consentBasis] ?? $campaign->consentBasisLabel();
                         $consentBasisTone = $campaignConsentTones[$consentBasis] ?? 'explicit';
@@ -165,11 +169,11 @@
 
                         <div class="campaign-list-rule">
                             <div>
-                                <span>Promo</span>
+                                <span>{{ __('admin.common.promo') }}</span>
                                 <strong class="campaign-list-promo" title="{{ $promoSlug }}">{{ $promoSlug }}</strong>
                             </div>
                             <div>
-                                <span>Modello</span>
+                                <span>{{ __('admin.marketing.campaigns.model') }}</span>
                                 <strong title="{{ $modelName }}">{{ $modelName }}</strong>
                             </div>
                         </div>
@@ -180,8 +184,8 @@
                                     class="promotion-list-donut campaign-list-donut"
                                     style="--promotion-usage: {{ $progressPercentage }}%;"
                                     role="img"
-                                    aria-label="{{ $sentAssignments }} email inviate su {{ $totalAssignments }}"
-                                    title="{{ $sentAssignments }} email inviate su {{ $totalAssignments }}"
+                                    aria-label="{{ __('admin.marketing.campaigns.sent_email_ratio', ['sent' => $sentAssignments, 'total' => $totalAssignments]) }}"
+                                    title="{{ __('admin.marketing.campaigns.sent_email_ratio', ['sent' => $sentAssignments, 'total' => $totalAssignments]) }}"
                                 >
                                     <strong>{{ $progressPercentage }}%</strong>
                                 </div>
@@ -191,25 +195,25 @@
                         <div class="promotion-list-actions campaign-list-actions">
                             @if ($isDraft && ! $isArchivedView)
                                 <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.campaigns.edit', $campaign) }}">
-                                    Completa
+                                    {{ __('admin.marketing.campaigns.complete') }}
                                 </a>
-                                <form action="{{ route('admin.campaigns.destroy', $campaign) }}" method="POST" onsubmit="return confirm('Eliminare questa bozza e i collegamenti collegati?');">
+                                <form action="{{ route('admin.campaigns.destroy', $campaign) }}" method="POST" onsubmit="return confirm(@js(__('admin.marketing.campaigns.delete_draft_confirm')));">
                                     @csrf
                                     @method('DELETE')
                                     <button class="promotion-list-action promotion-list-action--danger" type="submit">
-                                        Elimina
+                                        {{ __('admin.common.delete') }}
                                     </button>
                                 </form>
                             @else
                                 <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.campaigns.show', $campaign) }}">
-                                    Apri
+                                    {{ __('admin.marketing.campaigns.open') }}
                                 </a>
 
                                 @if ($canRestore)
                                     <form action="{{ route('admin.campaigns.restore', $campaign) }}" method="POST">
                                         @csrf
                                         <button class="promotion-list-action promotion-list-action--primary" type="submit">
-                                            Ripristina
+                                            {{ __('admin.marketing.campaigns.restore') }}
                                         </button>
                                     </form>
                                 @endif
@@ -218,7 +222,7 @@
                                     <form action="{{ route('admin.campaigns.archive', $campaign) }}" method="POST">
                                         @csrf
                                         <button class="promotion-list-action promotion-list-action--danger" type="submit">
-                                            Archivia
+                                            {{ __('admin.marketing.campaigns.archive') }}
                                         </button>
                                     </form>
                                 @endif
@@ -227,12 +231,12 @@
                                     <form
                                         action="{{ route('admin.campaigns.destroy', $campaign) }}"
                                         method="POST"
-                                        onsubmit="return confirm('Eliminare definitivamente questa campagna? Questa azione non è reversibile.');"
+                                        onsubmit="return confirm(@js(__('admin.marketing.campaigns.delete_forever_confirm')));"
                                     >
                                         @csrf
                                         @method('DELETE')
                                         <button class="promotion-list-action promotion-list-action--danger" type="submit">
-                                            Elimina
+                                            {{ __('admin.common.delete') }}
                                         </button>
                                     </form>
                                 @endif
@@ -251,11 +255,11 @@
                     <i class="bi bi-envelope-paper-fill"></i>
                 </span>
                 <div>
-                    <strong>{{ $isArchivedView ? 'Nessuna campagna archiviata.' : 'Nessuna campagna presente.' }}</strong>
+                    <strong>{{ $isArchivedView ? __('admin.marketing.campaigns.no_archived_campaigns') : __('admin.marketing.campaigns.no_campaigns') }}</strong>
                     <p>
                         {{ $isArchivedView
-                            ? 'Quando archivi una campagna, la ritrovi qui.'
-                            : 'Crea una campagna per preparare assegnazioni cliente-promozione.' }}
+                            ? __('admin.marketing.campaigns.archived_empty_text')
+                            : __('admin.marketing.campaigns.empty_text') }}
                     </p>
                 </div>
             </div>

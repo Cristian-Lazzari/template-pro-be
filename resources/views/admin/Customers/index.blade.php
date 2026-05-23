@@ -844,8 +844,8 @@
 
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Clienti'],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.nav.customers')],
         ],
     ])
 
@@ -862,11 +862,11 @@
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="#customerProfileSettings" class="order-detail__contact">
                 <x-icon name="sliders" />
-                <span>Configura profilo cliente</span>
+                <span>{{ __('admin.customers.profile_configuration') }}</span>
             </a>
             <a href="{{ route('admin.marketing') }}" class="order-detail__contact">
                 <x-icon name="grid-1x2-fill" />
-                <span>Area marketing</span>
+                <span>{{ __('admin.customers.marketing_area') }}</span>
             </a>
         </div>
     </header>
@@ -899,12 +899,10 @@
 
         <div class="order-detail__summary ">
             <div class="order-detail__meta">
-                <p class="order-detail__code">Profilazione cliente</p>
-                <p class="order-detail__time">Consensi e questionario</p>
+                <p class="order-detail__code">{{ __('admin.customers.customer_profiling') }}</p>
+                <p class="order-detail__time">{{ __('admin.customers.profile_settings_subtitle') }}</p>
                 <p class="order-detail__date">
-                    Qui imposti i messaggi che il cliente legge quando lascia i suoi dati
-                    e scegli poche domande a risposta singola o multipla. Per ogni domanda prepara gia
-                    le risposte selezionabili dal cliente.
+                    {{ __('admin.customers.profile_settings_description') }}
                 </p>
             </div>
 
@@ -918,8 +916,8 @@
                     aria-expanded="{{ $profileSettingsExpanded ? 'true' : 'false' }}"
                     aria-controls="customerProfileSettingsContent"
                 >
-                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--closed">Espandi</span>
-                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--open">Chiudi</span>
+                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--closed">{{ __('admin.customers.expand') }}</span>
+                    <span class="customer-page__settings-toggle-text customer-page__settings-toggle-text--open">{{ __('admin.common.close') }}</span>
                     <i class="bi bi-chevron-down" aria-hidden="true"></i>
                 </button>
             </div>
@@ -933,16 +931,16 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="patch-question-fill" />
                             </span>
-                            Domande personalizzate
+                            {{ __('admin.customers.custom_questions') }}
                         </h3>
                     </div>
 
                     <div class="customer-page__actions" style="margin-bottom: 14px;">
                         <div class="customer-page__settings-copy">
-                            I testi privacy e consensi sono standardizzati; le domande accettano solo risposte predefinite.
+                            {{ __('admin.customers.standard_privacy_copy') }}
                         </div>
 
-                        <button type="button" class="customer-page__button--ghost" id="addCustomerQuestion">Aggiungi domanda</button>
+                        <button type="button" class="customer-page__button--ghost" id="addCustomerQuestion">{{ __('admin.customers.add_question') }}</button>
                     </div>
 
                     <div id="customerQuestionList" class="question-list">
@@ -955,30 +953,30 @@
                                 <input type="hidden" name="questions[{{ $index }}][key]" value="{{ $question['key'] ?? '' }}">
                                 <div class="question-item__fields">
                                     <label class="question-item__field">
-                                        <span>Domanda</span>
+                                        <span>{{ __('admin.customers.question') }}</span>
                                         <input type="text" name="questions[{{ $index }}][label]" value="{{ $question['label'] ?? '' }}" required>
                                     </label>
 
                                     <label class="question-item__field">
-                                        <span>Tipo risposta</span>
+                                        <span>{{ __('admin.customers.answer_type') }}</span>
                                         <select name="questions[{{ $index }}][type]">
-                                            <option value="single_choice" @selected($questionType === 'single_choice')>Risposta singola</option>
-                                            <option value="multiple_choice" @selected($questionType === 'multiple_choice')>Risposta multipla</option>
+                                            <option value="single_choice" @selected($questionType === 'single_choice')>{{ __('admin.customers.single_answer') }}</option>
+                                            <option value="multiple_choice" @selected($questionType === 'multiple_choice')>{{ __('admin.customers.multiple_answer') }}</option>
                                         </select>
                                     </label>
                                 </div>
 
                                 <div class="question-item__options" data-question-options>
                                     <div class="question-item__options-head">
-                                        <span>Risposte disponibili</span>
-                                        <button type="button" class="customer-page__button--ghost" data-add-option>Aggiungi risposta</button>
+                                        <span>{{ __('admin.customers.available_answers') }}</span>
+                                        <button type="button" class="customer-page__button--ghost" data-add-option>{{ __('admin.customers.add_answer') }}</button>
                                     </div>
 
                                     @foreach ($questionOptions as $optionIndex => $option)
                                         <div class="question-option-row" data-question-option data-option-index="{{ $optionIndex }}">
                                             <input type="hidden" name="questions[{{ $index }}][options][{{ $optionIndex }}][key]" value="{{ $option['key'] ?? '' }}">
-                                            <input type="text" name="questions[{{ $index }}][options][{{ $optionIndex }}][label]" value="{{ $option['label'] ?? '' }}" placeholder="Testo risposta" required>
-                                            <button type="button" class="question-delete-button question-delete-button--icon" data-remove-option aria-label="Elimina risposta" title="Elimina risposta">
+                                            <input type="text" name="questions[{{ $index }}][options][{{ $optionIndex }}][label]" value="{{ $option['label'] ?? '' }}" placeholder="{{ __('admin.customers.answer_text_placeholder') }}" required>
+                                            <button type="button" class="question-delete-button question-delete-button--icon" data-remove-option aria-label="{{ __('admin.customers.delete_answer') }}" title="{{ __('admin.customers.delete_answer') }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
                                                     <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10l-.5-.5h-3L6 1H2.5Zm3.5 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V6Z"/>
                                                 </svg>
@@ -992,14 +990,14 @@
                                         <input type="checkbox" name="questions[{{ $index }}][required]" value="1" @checked(($question['required'] ?? false))>
                                         <span class="question-item__switch-ui" aria-hidden="true"></span>
                                         <div class="question-item__switch-copy">
-                                            <strong>Da compilare sempre</strong>
-                                            <small>Attivala solo se la risposta ti serve davvero.</small>
+                                            <strong>{{ __('admin.customers.required_always') }}</strong>
+                                            <small>{{ __('admin.customers.required_hint') }}</small>
                                         </div>
-                                        <button type="button" class="question-delete-button question-item__switch-delete" data-remove-question aria-label="Elimina domanda">
+                                        <button type="button" class="question-delete-button question-item__switch-delete" data-remove-question aria-label="{{ __('admin.customers.delete_question') }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
                                                 <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10l-.5-.5h-3L6 1H2.5Zm3.5 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V6Z"/>
                                             </svg>
-                                            <span>Elimina domanda</span>
+                                            <span>{{ __('admin.customers.delete_question') }}</span>
                                         </button>
                                     </label>
                                 </div>
@@ -1009,7 +1007,7 @@
                 </section>
 
                 <div class="customer-page__actions">
-                    <button type="submit" class="customer-page__button">Salva configurazione</button>
+                    <button type="submit" class="customer-page__button">{{ __('admin.customers.save_configuration') }}</button>
                 </div>
             </div>
         </div>
@@ -1037,7 +1035,7 @@
                     <span class="customer-page__filter-icon" aria-hidden="true">
                         <x-icon name="funnel-fill" />
                     </span>
-                    <select id="customerType" name="type" aria-label="Vista rapida">
+                    <select id="customerType" name="type" aria-label="{{ __('admin.customers.quick_view') }}">
                         <option value="all" @selected($selectedType === 'all')>{{ __('admin.Tutti') }}</option>
                         <option value="orders" @selected($selectedType === 'orders')>{{ __('admin.Con_ordini') }}</option>
                         <option value="reservations" @selected($selectedType === 'reservations')>{{ __('admin.Con_prenotazioni') }}</option>
@@ -1049,8 +1047,8 @@
                     <span class="customer-page__filter-icon" aria-hidden="true">
                         <x-icon name="bullseye" />
                     </span>
-                    <select id="customerSegment" name="segment" aria-label="Segmento CRM">
-                        <option value="">Tutti i segmenti</option>
+                    <select id="customerSegment" name="segment" aria-label="{{ __('admin.customers.crm_segment') }}">
+                        <option value="">{{ __('admin.customers.all_segments') }}</option>
                         @foreach ($segmentOptions as $segmentKey => $segment)
                             <option value="{{ $segmentKey }}" @selected($selectedSegment === $segmentKey)>
                                 {{ $segment['label'] }}
@@ -1091,6 +1089,20 @@
             })) + 1
             : 0;
         const trashIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10l-.5-.5h-3L6 1H2.5Zm3.5 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V6Z"/></svg>';
+        const i18n = {
+            answerTextPlaceholder: @json(__('admin.customers.answer_text_placeholder')),
+            deleteAnswer: @json(__('admin.customers.delete_answer')),
+            question: @json(__('admin.customers.question')),
+            answerType: @json(__('admin.customers.answer_type')),
+            singleAnswer: @json(__('admin.customers.single_answer')),
+            multipleAnswer: @json(__('admin.customers.multiple_answer')),
+            availableAnswers: @json(__('admin.customers.available_answers')),
+            addAnswer: @json(__('admin.customers.add_answer')),
+            requiredAlways: @json(__('admin.customers.required_always')),
+            requiredHint: @json(__('admin.customers.required_hint')),
+            deleteQuestion: @json(__('admin.customers.delete_question')),
+            minAnswersAlert: @json(__('admin.customers.min_answers_alert')),
+        };
 
         function questionIndex() {
             const index = nextQuestionIndex;
@@ -1112,8 +1124,8 @@
             wrapper.dataset.optionIndex = String(index);
             wrapper.innerHTML = `
                 <input type="hidden" name="questions[${questionIndex}][options][${index}][key]" value="">
-                <input type="text" name="questions[${questionIndex}][options][${index}][label]" value="" placeholder="Testo risposta" required>
-                <button type="button" class="question-delete-button question-delete-button--icon" data-remove-option aria-label="Elimina risposta" title="Elimina risposta">${trashIconSvg}</button>
+                <input type="text" name="questions[${questionIndex}][options][${index}][label]" value="" placeholder="${i18n.answerTextPlaceholder}" required>
+                <button type="button" class="question-delete-button question-delete-button--icon" data-remove-option aria-label="${i18n.deleteAnswer}" title="${i18n.deleteAnswer}">${trashIconSvg}</button>
             `;
 
             return wrapper;
@@ -1128,21 +1140,21 @@
                 <input type="hidden" name="questions[${index}][key]" value="">
                 <div class="question-item__fields">
                     <label class="question-item__field">
-                        <span>Domanda</span>
+                        <span>${i18n.question}</span>
                         <input type="text" name="questions[${index}][label]" value="" required>
                     </label>
                     <label class="question-item__field">
-                        <span>Tipo risposta</span>
+                        <span>${i18n.answerType}</span>
                         <select name="questions[${index}][type]">
-                            <option value="single_choice" selected>Risposta singola</option>
-                            <option value="multiple_choice">Risposta multipla</option>
+                            <option value="single_choice" selected>${i18n.singleAnswer}</option>
+                            <option value="multiple_choice">${i18n.multipleAnswer}</option>
                         </select>
                     </label>
                 </div>
                 <div class="question-item__options" data-question-options>
                     <div class="question-item__options-head">
-                        <span>Risposte disponibili</span>
-                        <button type="button" class="customer-page__button--ghost" data-add-option>Aggiungi risposta</button>
+                        <span>${i18n.availableAnswers}</span>
+                        <button type="button" class="customer-page__button--ghost" data-add-option>${i18n.addAnswer}</button>
                     </div>
                 </div>
                 <div class="question-item__footer">
@@ -1150,12 +1162,12 @@
                         <input type="checkbox" name="questions[${index}][required]" value="1">
                         <span class="question-item__switch-ui" aria-hidden="true"></span>
                         <div class="question-item__switch-copy">
-                            <strong>Da compilare sempre</strong>
-                            <small>Attivala solo se la risposta ti serve davvero.</small>
+                            <strong>${i18n.requiredAlways}</strong>
+                            <small>${i18n.requiredHint}</small>
                         </div>
-                        <button type="button" class="question-delete-button question-item__switch-delete" data-remove-question aria-label="Elimina domanda">
+                        <button type="button" class="question-delete-button question-item__switch-delete" data-remove-question aria-label="${i18n.deleteQuestion}">
                             ${trashIconSvg}
-                            <span>Elimina domanda</span>
+                            <span>${i18n.deleteQuestion}</span>
                         </button>
                     </label>
                 </div>
@@ -1185,7 +1197,7 @@
             if (invalidQuestion) {
                 event.preventDefault();
                 invalidQuestion.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                window.alert('Ogni domanda deve avere almeno due risposte disponibili.');
+                window.alert(i18n.minAnswersAlert);
             }
         });
 

@@ -4,30 +4,30 @@
 
 @php
     $customerDisplayName = trim(($customer->name ?? '') . ' ' . ($customer->surname ?? '')) ?: $customer->email;
-    $customerReference = $customer->id ? '#C' . $customer->id : 'Profilo aggregato';
+    $customerReference = $customer->id ? '#C' . $customer->id : __('admin.customers.profile_aggregate');
     $locale = app()->getLocale() ?: 'it';
 
     $accountLabels = [
-        'guest' => 'Ospite',
-        'registered' => 'Registrato',
+        'guest' => __('admin.customers.guest'),
+        'registered' => __('admin.customers.registered'),
     ];
 
     $orderStatuses = [
-        0 => ['label' => 'Annullato', 'tone' => 'off'],
-        1 => ['label' => 'Confermato', 'tone' => 'active'],
-        2 => ['label' => 'In attesa', 'tone' => 'warning'],
-        3 => ['label' => 'Pagato, in attesa', 'tone' => 'warning'],
-        5 => ['label' => 'Confermato e pagato', 'tone' => 'active'],
-        6 => ['label' => 'Rimborsato', 'tone' => 'off'],
+        0 => ['label' => __('admin.customers.status_cancelled_m'), 'tone' => 'off'],
+        1 => ['label' => __('admin.customers.status_confirmed_m'), 'tone' => 'active'],
+        2 => ['label' => __('admin.customers.status_pending'), 'tone' => 'warning'],
+        3 => ['label' => __('admin.customers.status_paid_pending_m'), 'tone' => 'warning'],
+        5 => ['label' => __('admin.customers.status_confirmed_paid_m'), 'tone' => 'active'],
+        6 => ['label' => __('admin.customers.status_refunded_m'), 'tone' => 'off'],
     ];
 
     $reservationStatuses = [
-        0 => ['label' => 'Annullata', 'tone' => 'off'],
-        1 => ['label' => 'Confermata', 'tone' => 'active'],
-        2 => ['label' => 'In attesa', 'tone' => 'warning'],
-        3 => ['label' => 'Pagata, in attesa', 'tone' => 'warning'],
-        5 => ['label' => 'Confermata e pagata', 'tone' => 'active'],
-        6 => ['label' => 'Rimborsata', 'tone' => 'off'],
+        0 => ['label' => __('admin.customers.status_cancelled_f'), 'tone' => 'off'],
+        1 => ['label' => __('admin.customers.status_confirmed_f'), 'tone' => 'active'],
+        2 => ['label' => __('admin.customers.status_pending'), 'tone' => 'warning'],
+        3 => ['label' => __('admin.customers.status_paid_pending_f'), 'tone' => 'warning'],
+        5 => ['label' => __('admin.customers.status_confirmed_paid_f'), 'tone' => 'active'],
+        6 => ['label' => __('admin.customers.status_refunded_f'), 'tone' => 'off'],
     ];
 
     $accountTone = match ($accountState) {
@@ -64,45 +64,48 @@
             return $fallback;
         }
 
-        return $formatHumanDate($carbon) . ' alle ' . $carbon->format('H:i');
+        return __('admin.customers.datetime_at', [
+            'date' => $formatHumanDate($carbon),
+            'time' => $carbon->format('H:i'),
+        ]);
     };
 
     $latestActivity = $toCarbon($stats['latest_activity_at'] ?? null);
     $latestActivityTime = $latestActivity?->format('H:i') ?? '--:--';
     $latestActivityDate = $latestActivity
         ? $formatHumanDate($latestActivity)
-        : 'nessuna attivita recente';
+        : __('admin.customers.no_recent_activity');
 
     $statItems = [
         [
-            'label' => 'Ordini',
+            'label' => __('admin.customers.orders'),
             'value' => $stats['orders_count'],
-            'helper' => 'collegati a questo profilo',
+            'helper' => __('admin.customers.linked_to_profile'),
         ],
         [
-            'label' => 'Prenotazioni',
+            'label' => __('admin.customers.reservations'),
             'value' => $stats['reservations_count'],
-            'helper' => 'tracciate nello storico cliente',
+            'helper' => __('admin.customers.tracked_in_customer_history'),
         ],
         [
-            'label' => 'Interazioni',
+            'label' => __('admin.customers.interactions'),
             'value' => $stats['interactions_count'],
-            'helper' => 'somma di ordini e prenotazioni',
+            'helper' => __('admin.customers.orders_and_reservations_sum'),
         ],
         [
-            'label' => 'Speso online',
+            'label' => __('admin.customers.online_spend'),
             'value' => \App\Support\Currency::formatCents($stats['total_spent_cents'] ?? 0),
-            'helper' => 'totale ordini non annullati',
+            'helper' => __('admin.customers.non_cancelled_orders_total'),
         ],
     ];
 
     $profileItems = [
-        ['label' => 'Nome', 'value' => $customer->name ?: '-'],
-        ['label' => 'Cognome', 'value' => $customer->surname ?: '-'],
-        ['label' => 'Email', 'value' => $customer->email ?: '-'],
-        ['label' => 'Telefono', 'value' => $customer->phone ?: '-'],
-        ['label' => 'Sesso', 'value' => $customer->gender ?: '-'],
-        ['label' => 'Data di nascita', 'value' => $customer->birthday ? $formatHumanDate($customer->birthday) : '-'],
+        ['label' => __('admin.common.name'), 'value' => $customer->name ?: '-'],
+        ['label' => __('admin.customers.surname'), 'value' => $customer->surname ?: '-'],
+        ['label' => __('admin.common.email'), 'value' => $customer->email ?: '-'],
+        ['label' => __('admin.common.phone'), 'value' => $customer->phone ?: '-'],
+        ['label' => __('admin.customers.gender'), 'value' => $customer->gender ?: '-'],
+        ['label' => __('admin.customers.birth_date'), 'value' => $customer->birthday ? $formatHumanDate($customer->birthday) : '-'],
     ];
 
     $consentStatusItem = static function (
@@ -118,7 +121,7 @@
         $itemDetails = [];
 
         if (!empty($date)) {
-            $itemDetails[] = 'Dal ' . $formatHumanDateTime($date);
+            $itemDetails[] = __('admin.customers.from_date', ['date' => $formatHumanDateTime($date)]);
         }
 
         foreach ($details as $detail) {
@@ -155,7 +158,7 @@
         }
 
         if (!empty($date)) {
-            $itemDetails[] = 'Dal ' . $formatHumanDateTime($date);
+            $itemDetails[] = __('admin.customers.from_date', ['date' => $formatHumanDateTime($date)]);
         }
 
         return [
@@ -170,13 +173,13 @@
         $enabled = empty($unsubscribedAt);
 
         return [
-            'label' => 'Soft email marketing',
+            'label' => __('admin.customers.soft_email_marketing'),
             'tone' => $enabled ? 'active' : 'off',
-            'badge' => $enabled ? 'Attivo' : 'Disattivato',
+            'badge' => $enabled ? __('admin.common.active') : __('admin.common.deactivated'),
             'details' => [
                 $enabled
-                    ? 'Disponibile finche il cliente non annulla l\'iscrizione.'
-                    : 'Annullato il ' . $formatHumanDateTime($unsubscribedAt),
+                    ? __('admin.customers.available_until_unsubscribe')
+                    : __('admin.customers.cancelled_on', ['date' => $formatHumanDateTime($unsubscribedAt)]),
             ],
         ];
     };
@@ -186,63 +189,63 @@
 
     $consentItems = [
         $consentStatusItem(
-            'Privacy',
+            __('admin.customers.privacy'),
             !empty($customer->privacy_accepted_at),
-            'Accettata',
-            'Non presente',
+            __('admin.customers.accepted'),
+            __('admin.customers.not_present'),
             $customer->privacy_accepted_at ?? null,
         ),
         $consentStatusItem(
-            'Email marketing',
+            __('admin.customers.email_marketing'),
             !empty($customer->email_marketing_consent_at),
-            'Attivo',
-            'Non attivo',
+            __('admin.common.active'),
+            __('admin.common.inactive'),
             $customer->email_marketing_consent_at ?? null
         ),
         $softEmailMarketingItem($softEmailMarketingUnsubscribedAt),
         $consentStatusItem(
-            'WhatsApp marketing',
+            __('admin.customers.whatsapp_marketing'),
             !empty($customer->whatsapp_marketing_consent_at),
-            'Attivo',
-            'Non attivo',
+            __('admin.common.active'),
+            __('admin.common.inactive'),
             $customer->whatsapp_marketing_consent_at ?? null
         ),
         $consentStatusItem(
-            'Profilazione',
+            __('admin.customers.profiling'),
             !empty($customer->profiling_consent_at),
-            'Attiva',
-            'Non attiva',
+            __('admin.customers.active_female'),
+            __('admin.customers.inactive_female'),
             $customer->profiling_consent_at ?? null
         ),
         $consentStatusItem(
-            'Tracking',
+            __('admin.customers.tracking'),
             !empty($customer->tracking_consent_at),
-            'Attivo',
-            'Non attivo',
+            __('admin.common.active'),
+            __('admin.common.inactive'),
             $customer->tracking_consent_at ?? null
         ),
     ];
 
     $timelineItems = [
         [
-            'label' => 'Profilo creato',
-            'value' => $formatHumanDateTime($customer->created_at, 'data non disponibile'),
+            'label' => __('admin.customers.profile_created'),
+            'value' => $formatHumanDateTime($customer->created_at, __('admin.customers.data_unavailable')),
         ],
         [
-            'label' => 'Account registrato',
-            'value' => $formatHumanDateTime($customer->registered_at, 'non registrato'),
+            'label' => __('admin.customers.account_registered'),
+            'value' => $formatHumanDateTime($customer->registered_at, __('admin.customers.not_registered')),
         ],
         [
-            'label' => 'Email verificata',
-            'value' => $formatHumanDateTime($customer->email_verified_at, 'non verificata'),
+            'label' => __('admin.customers.email_verified'),
+            'value' => $formatHumanDateTime($customer->email_verified_at, __('admin.customers.not_verified')),
         ],
     ];
 
     $profileNotice = null;
     if (!$hasCustomerRecord) {
-        $profileNotice = 'Profilo costruito da ordini e prenotazioni non ancora collegati a un account.';
+        $profileNotice = __('admin.customers.aggregate_profile_notice');
     } elseif ($accountState === 'guest') {
-        $profileNotice = 'Il cliente esiste gia, ma il profilo non e ancora stato completato dal cliente.';
+        $profileNotice = __('admin.customers.guest_profile_notice');
     }
 @endphp
 
@@ -437,8 +440,8 @@
 
 @include('admin.Marketing.partials.breadcrumbs', [
     'items' => [
-        ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-        ['label' => 'Clienti', 'url' => route('admin.customers.index')],
+        ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+        ['label' => __('admin.nav.customers'), 'url' => route('admin.customers.index')],
         ['label' => $customerDisplayName],
     ],
 ])
@@ -464,7 +467,7 @@
 
                 @if ($profileNotice)
                     <div class="customer-detail__notice">
-                        <strong>Attenzione profilo</strong>
+                        <strong>{{ __('admin.customers.profile_attention') }}</strong>
                         <p>{{ $profileNotice }}</p>
                     </div>
                 @endif
@@ -487,22 +490,22 @@
 
                 <a href="{{ route('admin.marketing') }}" class="order-detail__contact">
                     <x-icon name="grid-1x2-fill" />
-                    <span>Area marketing</span>
+                    <span>{{ __('admin.customers.marketing_area') }}</span>
                 </a>
 
                 <a href="{{ route('admin.campaigns.index') }}" class="order-detail__contact">
                     <x-icon name="envelope-paper-fill" />
-                    <span>Campagne marketing</span>
+                    <span>{{ __('admin.customers.campaigns_marketing') }}</span>
                 </a>
 
                 <a href="{{ route('admin.automations.index') }}" class="order-detail__contact">
                     <x-icon name="lightning-charge-fill" />
-                    <span>Automazioni marketing</span>
+                    <span>{{ __('admin.customers.automations_marketing') }}</span>
                 </a>
 
                 <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
                     <x-icon name="megaphone-fill" />
-                    <span>Promozioni</span>
+                    <span>{{ __('admin.marketing.area_links.promotions') }}</span>
                 </a>
             </div>
         </header>
@@ -521,12 +524,12 @@
             <section class="order-detail__section">
                 <div class="order-detail__section-head">
                     <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="card-checklist" />
-                        </span>
-                        Riepilogo rapido
-                    </h3>
-                </div>
+                            <span class="order-detail__section-icon">
+                                <x-icon name="card-checklist" />
+                            </span>
+                            {{ __('admin.customers.quick_summary') }}
+                        </h3>
+                    </div>
 
                 <div class="customer-detail__stat-grid">
                     @foreach ($statItems as $item)
@@ -559,7 +562,7 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="person-vcard-fill" />
                             </span>
-                            Dati cliente
+                            {{ __('admin.customers.customer_data') }}
                         </h3>
                     </div>
 
@@ -584,11 +587,11 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="person-check-fill" />
                             </span>
-                            Consensi e preferenze
+                            {{ __('admin.customers.consents_preferences') }}
                         </h3>
                     </div>
 
-                    <p class="customer-detail__section-copy">Stato dei consensi e delle preferenze di contatto registrate per questo cliente.</p>
+                    <p class="customer-detail__section-copy">{{ __('admin.customers.consent_preferences_description') }}</p>
 
                     <div class="customer-detail__info-grid">
                         @foreach ($consentItems as $item)
@@ -618,7 +621,7 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="patch-question-fill" />
                             </span>
-                            Questionario profilo
+                            {{ __('admin.customers.profile_questionnaire') }}
                         </h3>
                     </div>
 
@@ -646,40 +649,40 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="card-checklist" />
                             </span>
-                            Storico ordini
+                            {{ __('admin.customers.order_history') }}
                         </h3>
                     </div>
 
                     @if ($orders->isNotEmpty())
                         <div class="customer-detail__activity-list">
                             @foreach ($orders as $order)
-                                @php $status = $orderStatuses[$order->status] ?? ['label' => 'Aggiornamento', 'tone' => 'warning']; @endphp
+                                @php $status = $orderStatuses[$order->status] ?? ['label' => __('admin.customers.status_update'), 'tone' => 'warning']; @endphp
                                 <article class="customer-detail__activity-item">
                                     <div class="customer-detail__activity-head">
                                         <div class="customer-detail__activity-copy">
-                                            <span class="customer-detail__activity-label">Ordine #O{{ $order->id }}</span>
-                                            <strong>{{ $formatHumanDateTime($order->activity_at, 'data non disponibile') }}</strong>
+                                            <span class="customer-detail__activity-label">{{ __('admin.customers.order_reference', ['id' => $order->id]) }}</span>
+                                            <strong>{{ $formatHumanDateTime($order->activity_at, __('admin.customers.data_unavailable')) }}</strong>
                                         </div>
                                         <x-dashboard.state-pill :tone="$status['tone']">{{ $status['label'] }}</x-dashboard.state-pill>
                                     </div>
 
                                     <div class="order-detail__detail-values">
-                                        <small>{{ !empty($order->comune) ? 'Domicilio' : 'Asporto' }}</small>
+                                        <small>{{ !empty($order->comune) ? __('admin.common.delivery') : __('admin.common.takeaway') }}</small>
                                         <small>{{ \App\Support\Currency::formatCents($order->tot_price ?? 0) }}</small>
-                                        <small>Marketing storico: {{ $order->news_letter ? 'si' : 'no' }}</small>
+                                        <small>{{ __('admin.customers.historical_marketing', ['value' => $order->news_letter ? __('admin.common.yes') : __('admin.common.no')]) }}</small>
                                     </div>
 
                                     <div class="customer-detail__activity-footer">
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="order-detail__contact">
                                             <x-icon name="arrow-up-right-circle-fill" />
-                                            <span>Apri ordine</span>
+                                            <span>{{ __('admin.customers.open_order') }}</span>
                                         </a>
                                     </div>
                                 </article>
                             @endforeach
                         </div>
                     @else
-                        <p class="customer-detail__empty">Nessun ordine trovato.</p>
+                        <p class="customer-detail__empty">{{ __('admin.customers.no_orders') }}</p>
                     @endif
                 </section>
             </div>
@@ -693,7 +696,7 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="people-fill" />
                             </span>
-                            Storico prenotazioni
+                            {{ __('admin.customers.reservation_history') }}
                         </h3>
                     </div>
 
@@ -701,36 +704,36 @@
                         <div class="customer-detail__activity-list">
                             @foreach ($reservations as $reservation)
                                 @php
-                                    $status = $reservationStatuses[$reservation->status] ?? ['label' => 'Aggiornamento', 'tone' => 'warning'];
+                                    $status = $reservationStatuses[$reservation->status] ?? ['label' => __('admin.customers.status_update'), 'tone' => 'warning'];
                                     $guests = json_decode($reservation->n_person, true);
                                     $totalGuests = (int) ($guests['adult'] ?? 0) + (int) ($guests['child'] ?? 0);
                                 @endphp
                                 <article class="customer-detail__activity-item">
                                     <div class="customer-detail__activity-head">
                                         <div class="customer-detail__activity-copy">
-                                            <span class="customer-detail__activity-label">Prenotazione #R{{ $reservation->id }}</span>
-                                            <strong>{{ $formatHumanDateTime($reservation->activity_at, 'data non disponibile') }}</strong>
+                                            <span class="customer-detail__activity-label">{{ __('admin.customers.reservation_reference', ['id' => $reservation->id]) }}</span>
+                                            <strong>{{ $formatHumanDateTime($reservation->activity_at, __('admin.customers.data_unavailable')) }}</strong>
                                         </div>
                                         <x-dashboard.state-pill :tone="$status['tone']">{{ $status['label'] }}</x-dashboard.state-pill>
                                     </div>
 
                                     <div class="order-detail__detail-values">
-                                        <small>Ospiti: {{ $totalGuests }}</small>
-                                        <small>{{ $reservation->sala ?: 'Sala non indicata' }}</small>
-                                        <small>Marketing storico: {{ $reservation->news_letter ? 'si' : 'no' }}</small>
+                                        <small>{{ __('admin.customers.guests_count', ['count' => $totalGuests]) }}</small>
+                                        <small>{{ $reservation->sala ?: __('admin.customers.room_not_indicated') }}</small>
+                                        <small>{{ __('admin.customers.historical_marketing', ['value' => $reservation->news_letter ? __('admin.common.yes') : __('admin.common.no')]) }}</small>
                                     </div>
 
                                     <div class="customer-detail__activity-footer">
                                         <a href="{{ route('admin.reservations.show', $reservation->id) }}" class="order-detail__contact">
                                             <x-icon name="arrow-up-right-circle-fill" />
-                                            <span>Apri prenotazione</span>
+                                            <span>{{ __('admin.customers.open_reservation') }}</span>
                                         </a>
                                     </div>
                                 </article>
                             @endforeach
                         </div>
                     @else
-                        <p class="customer-detail__empty">Nessuna prenotazione trovata.</p>
+                        <p class="customer-detail__empty">{{ __('admin.customers.no_reservations') }}</p>
                     @endif
                 </section>
             </div>

@@ -16,24 +16,24 @@
     $targetConfigs = [
         'product' => [
             'field'    => 'product_ids',
-            'empty'    => 'Nessun prodotto disponibile',
+            'empty'    => __('admin.marketing.promotions.no_products_available'),
             'icon'     => 'bi-tags-fill',
-            'singular' => '1 prodotto',
-            'plural'   => 'prodotti',
+            'singular' => __('admin.marketing.promotions.one_product'),
+            'plural'   => __('admin.marketing.promotions.products_count_label'),
         ],
         'menu' => [
             'field'    => 'menu_ids',
-            'empty'    => 'Nessun menu disponibile',
+            'empty'    => __('admin.marketing.promotions.no_menus_available'),
             'icon'     => 'bi-menu-button-wide-fill',
-            'singular' => '1 menu',
-            'plural'   => 'menu',
+            'singular' => __('admin.marketing.promotions.one_menu'),
+            'plural'   => __('admin.marketing.promotions.menus_count_label'),
         ],
         'category' => [
             'field'    => 'category_ids',
-            'empty'    => 'Nessuna categoria disponibile',
+            'empty'    => __('admin.marketing.promotions.no_categories_available'),
             'icon'     => 'bi-folder-fill',
-            'singular' => '1 categoria',
-            'plural'   => 'categorie',
+            'singular' => __('admin.marketing.promotions.one_category'),
+            'plural'   => __('admin.marketing.promotions.categories_count_label'),
         ],
     ];
 
@@ -77,7 +77,7 @@
         ? 'fixed'
         : $rawPreviewDiscountType;
 
-    $primaryActionLabel = $method === 'POST' ? 'Crea e attiva' : 'Salva e attiva';
+    $primaryActionLabel = $method === 'POST' ? __('admin.marketing.promotions.create_activate') : __('admin.marketing.promotions.save_activate');
     $cancelUrl = $promotion->exists ? route('admin.promotions.show', $promotion) : route('admin.promotions.index');
 
     $isTableCase = $previewCaseUse === 'table';
@@ -98,12 +98,12 @@
     }
 
     $caseUseLabels = [
-        'table'    => 'Prenotazioni',
-        'generic'  => 'Ordini',
-        'take_away'=> 'Solo asporto',
-        'delivery' => 'Solo delivery',
+        'table'    => __('admin.marketing.promotions.reservations'),
+        'generic'  => __('admin.marketing.promotions.orders'),
+        'take_away'=> __('admin.marketing.promotions.takeaway_only'),
+        'delivery' => __('admin.marketing.promotions.delivery_only'),
     ];
-    $discountTypeLabels = ['percentage' => 'Percentuale', 'fixed' => 'Fisso', 'gift' => 'Omaggio'];
+    $discountTypeLabels = ['percentage' => __('admin.marketing.promotions.discount_percentage'), 'fixed' => __('admin.marketing.promotions.fixed'), 'gift' => __('admin.marketing.promotions.discount_gift')];
 
     $targetOptionLabels = collect($targetOptionsByType[$targetType] ?? [])
         ->mapWithKeys(function ($option) {
@@ -119,18 +119,18 @@
 
     $targetCount = $previewTargetLabels->count();
     $targetSummary = match (true) {
-        $targetType === 'generic'  => 'Carrello',
+        $targetType === 'generic'  => __('admin.marketing.promotions.cart'),
         $targetCount === 1         => $targetConfigs[$targetType]['singular'],
         default                    => $targetCount . ' ' . ($targetConfigs[$targetType]['plural'] ?? ''),
     };
 
     $availabilitySummary = count($selectedWeekdays) === 0 || count($selectedWeekdays) === 7
-        ? 'Tutti i giorni'
+        ? __('admin.marketing.promotions.all_days')
         : collect($selectedWeekdays)->map(fn ($day) => $weekdayLabels[$day] ?? $day)->implode(', ');
     if ($validFromValue || $validToValue) {
         $availabilitySummary .= ' · ' . trim(($validFromValue ?: '00:00') . ' - ' . ($validToValue ?: '23:59'));
     } else {
-        $availabilitySummary .= ' · Qualsiasi ora';
+        $availabilitySummary .= ' · ' . __('admin.marketing.promotions.any_time');
     }
 @endphp
 
@@ -519,7 +519,7 @@
 
 @if ($errors->any())
     <div class="alert alert-danger mb-3">
-        Controlla i campi evidenziati prima di salvare.
+        {{ __('admin.marketing.promotions.check_fields') }}
     </div>
 @endif
 
@@ -547,19 +547,19 @@
             <span class="promo-wiz__dot-num">
                 @if ($initialStep > 1) <i class="bi bi-check-lg"></i> @else 1 @endif
             </span>
-            <span class="promo-wiz__dot-lbl">Identità</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.promotions.identity') }}</span>
         </div>
         <div class="promo-wiz__line {{ $initialStep > 1 ? 'is-done' : '' }}" data-step-line="1"></div>
         <div class="promo-wiz__dot {{ $initialStep === 2 ? 'is-active' : ($initialStep > 2 ? 'is-done' : '') }}" data-step-dot="2">
             <span class="promo-wiz__dot-num">
                 @if ($initialStep > 2) <i class="bi bi-check-lg"></i> @else 2 @endif
             </span>
-            <span class="promo-wiz__dot-lbl">Contesto</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.promotions.context') }}</span>
         </div>
         <div class="promo-wiz__line {{ $initialStep > 2 ? 'is-done' : '' }}" data-step-line="2"></div>
         <div class="promo-wiz__dot {{ $initialStep === 3 ? 'is-active' : '' }}" data-step-dot="3">
             <span class="promo-wiz__dot-num">3</span>
-            <span class="promo-wiz__dot-lbl">Regola</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.promotions.rule') }}</span>
         </div>
     </div>
 
@@ -576,7 +576,7 @@
                         <div>
                             <label class="label_c" for="name">
                                 <i class="bi bi-type"></i>
-                                Nome
+                                {{ __('admin.marketing.promotions.name') }}
                             </label>
                             <p>
                                 <input
@@ -584,7 +584,7 @@
                                     name="name"
                                     id="name"
                                     value="{{ old('name', $promotion->name) }}"
-                                    placeholder="Nome promozione"
+                                    placeholder="{{ __('admin.marketing.promotions.name_placeholder') }}"
                                     autocomplete="off"
                                 >
                             </p>
@@ -593,7 +593,7 @@
                         <div>
                             <label class="label_c" for="cta">
                                 <i class="bi bi-cursor-fill"></i>
-                                CTA
+                                {{ __('admin.marketing.promotions.cta') }}
                             </label>
                             <p>
                                 <input
@@ -601,7 +601,7 @@
                                     name="cta"
                                     id="cta"
                                     value="{{ old('cta', $promotion->cta) }}"
-                                    placeholder="Testo call to action"
+                                    placeholder="{{ __('admin.marketing.promotions.cta_placeholder') }}"
                                     autocomplete="off"
                                 >
                             </p>
@@ -612,14 +612,14 @@
                     <div class="mt-3">
                         <label class="label_c" for="description">
                             <i class="bi bi-text-paragraph"></i>
-                            Descrizione
+                            {{ __('admin.Descrizione') }}
                         </label>
                         <p>
                             <textarea
                                 name="description"
                                 id="description"
                                 rows="3"
-                                placeholder="Descrizione interna della promozione (opzionale)"
+                                placeholder="{{ __('admin.marketing.promotions.internal_description_placeholder') }}"
                                 autocomplete="off"
                             >{{ old('description', $promotion->description) }}</textarea>
                         </p>
@@ -644,8 +644,8 @@
                             <label class="promo-toggle__card" for="permanent">
                                 <span class="promo-toggle__icon"><i class="bi bi-infinity"></i></span>
                                 <span>
-                                    <strong>Permanente</strong>
-                                    <small>Senza scadenza</small>
+                                    <strong>{{ __('admin.marketing.promotions.permanent') }}</strong>
+                                    <small>{{ __('admin.marketing.promotions.without_expiration') }}</small>
                                 </span>
                             </label>
                             @error('permanent') <p class="error">{{ $message }}</p> @enderror
@@ -664,8 +664,8 @@
                             <label class="promo-toggle__card" for="metadata_reusable">
                                 <span class="promo-toggle__icon"><i class="bi bi-arrow-repeat"></i></span>
                                 <span>
-                                    <strong>Riutilizzabile</strong>
-                                    <small>Più utilizzi per cliente</small>
+                                    <strong>{{ __('admin.marketing.promotions.reusable_short') }}</strong>
+                                    <small>{{ __('admin.marketing.promotions.multiple_uses_per_customer') }}</small>
                                 </span>
                             </label>
                             @error('metadata.reusable') <p class="error">{{ $message }}</p> @enderror
@@ -677,7 +677,7 @@
                         <div>
                             <label class="label_c" for="schedule_at">
                                 <i class="bi bi-calendar-plus"></i>
-                                Data inizio
+                                {{ __('admin.marketing.promotions.start_date') }}
                             </label>
                             <p>
                                 <input
@@ -693,7 +693,7 @@
                         <div>
                             <label class="label_c" for="expiring_at">
                                 <i class="bi bi-calendar-x"></i>
-                                Data fine
+                                {{ __('admin.marketing.promotions.end_date') }}
                             </label>
                             <p>
                                 <input
@@ -713,15 +713,14 @@
                     <div class="order-detail__section-head">
                         <h3>
                             <span class="order-detail__section-icon"><i class="bi bi-clock-history"></i></span>
-                            Disponibilità ricorrente
+                            {{ __('admin.marketing.promotions.recurring_availability') }}
                         </h3>
                     </div>
                     <p class="promo-availability-note">
-                        Se non imposti limiti, la promozione sarà disponibile tutti i giorni e a qualsiasi ora.
-                        Lascia selezionati tutti i giorni per non limitare il calendario.
+                        {{ __('admin.marketing.promotions.availability_note') }}
                     </p>
 
-                    <div class="promo-days" aria-label="Giorni validi della promozione">
+                    <div class="promo-days" aria-label="{{ __('admin.marketing.promotions.valid_days_aria') }}">
                         @foreach ($weekdayLabels as $day => $label)
                             <label class="promo-day">
                                 <input
@@ -741,7 +740,7 @@
                         <div>
                             <label class="label_c" for="valid_from_time">
                                 <i class="bi bi-clock"></i>
-                                Ora inizio validità
+                                {{ __('admin.marketing.promotions.valid_from_time') }}
                             </label>
                             <p>
                                 <input
@@ -756,7 +755,7 @@
                         <div>
                             <label class="label_c" for="valid_to_time">
                                 <i class="bi bi-clock-fill"></i>
-                                Ora fine validità
+                                {{ __('admin.marketing.promotions.valid_to_time') }}
                             </label>
                             <p>
                                 <input
@@ -784,28 +783,28 @@
                             <input class="promo-card__radio" type="radio" name="_case_use" value="table"     @checked($previewCaseUse === 'table')     data-sync="h_case_use">
                             <span class="promo-card__face">
                                 <span class="promo-card__icon"><i class="bi bi-calendar2-check-fill"></i></span>
-                                <strong>Prenotazioni</strong>
+                                <strong>{{ __('admin.marketing.promotions.reservations') }}</strong>
                             </span>
                         </label>
                         <label class="promo-card">
                             <input class="promo-card__radio" type="radio" name="_case_use" value="generic"   @checked($previewCaseUse === 'generic')   data-sync="h_case_use">
                             <span class="promo-card__face">
                                 <span class="promo-card__icon"><i class="bi bi-bag-fill"></i></span>
-                                <strong>Ordini</strong>
+                                <strong>{{ __('admin.marketing.promotions.orders') }}</strong>
                             </span>
                         </label>
                         <label class="promo-card">
                             <input class="promo-card__radio" type="radio" name="_case_use" value="take_away" @checked($previewCaseUse === 'take_away') data-sync="h_case_use">
                             <span class="promo-card__face">
                                 <span class="promo-card__icon"><i class="bi bi-box2-fill"></i></span>
-                                <strong>Solo asporto</strong>
+                                <strong>{{ __('admin.marketing.promotions.takeaway_only') }}</strong>
                             </span>
                         </label>
                         <label class="promo-card">
                             <input class="promo-card__radio" type="radio" name="_case_use" value="delivery"  @checked($previewCaseUse === 'delivery')  data-sync="h_case_use">
                             <span class="promo-card__face">
                                 <span class="promo-card__icon"><i class="bi bi-bicycle"></i></span>
-                                <strong>Solo delivery</strong>
+                                <strong>{{ __('admin.marketing.promotions.delivery_only') }}</strong>
                             </span>
                         </label>
                     </div>
@@ -827,7 +826,7 @@
                             <div>
                                 <label class="label_c" for="dsp_min_table">
                                     <i class="bi bi-people-fill"></i>
-                                    Minimo persone
+                                    {{ __('admin.marketing.promotions.minimum_people') }}
                                 </label>
                                 <p>
                                     <input
@@ -838,7 +837,7 @@
                                         name="_min_table"
                                         value="{{ old('minimum_pretest', $promotion->minimum_pretest) }}"
                                         data-sync="h_minimum_pretest"
-                                        placeholder="es. 4"
+                                        placeholder="{{ __('admin.marketing.promotions.minimum_people_placeholder') }}"
                                     >
                                 </p>
                                 @error('minimum_pretest') <p class="error">{{ $message }}</p> @enderror
@@ -846,7 +845,7 @@
                             <div>
                                 <label class="label_c" for="dsp_discount_table">
                                     <i class="bi bi-cash-coin"></i>
-                                    Sconto
+                                    {{ __('admin.marketing.promotions.discount') }}
                                 </label>
                                 <p>
                                     <input
@@ -857,7 +856,7 @@
                                         name="_discount_table"
                                         value="{{ old('discount', $promotion->discount) }}"
                                         data-sync="h_discount"
-                                        placeholder="es. 10"
+                                        placeholder="{{ __('admin.marketing.promotions.discount_placeholder') }}"
                                     >
                                 </p>
                                 @error('discount') <p class="error">{{ $message }}</p> @enderror
@@ -868,7 +867,7 @@
                     <section class="order-detail__section">
                         <div class="label_c mb-2">
                             <i class="bi bi-percent"></i>
-                            Tipo sconto
+                            {{ __('admin.marketing.promotions.discount_type') }}
                         </div>
                         <div class="promo-cards" style="grid-template-columns: repeat(2, 1fr); max-width: 340px">
                             <label class="promo-card">
@@ -882,7 +881,7 @@
                                 >
                                 <span class="promo-card__face">
                                     <span class="promo-card__icon">%</span>
-                                    <strong>Percentuale</strong>
+                                    <strong>{{ __('admin.marketing.promotions.discount_percentage') }}</strong>
                                 </span>
                             </label>
                             <label class="promo-card">
@@ -896,7 +895,7 @@
                                 >
                                 <span class="promo-card__face">
                                     <span class="promo-card__icon"><i class="bi bi-currency-euro"></i></span>
-                                    <strong>Fisso</strong>
+                                    <strong>{{ __('admin.marketing.promotions.fixed') }}</strong>
                                 </span>
                             </label>
                         </div>
@@ -913,7 +912,7 @@
                         <div style="max-width: 320px">
                             <label class="label_c" for="dsp_min_order">
                                 <i class="bi bi-bag-check"></i>
-                                Minimo carrello
+                                {{ __('admin.marketing.promotions.minimum_cart') }}
                             </label>
                             <p>
                                 <input
@@ -924,7 +923,7 @@
                                     name="_min_order"
                                     value="{{ old('minimum_pretest', $promotion->minimum_pretest) }}"
                                     data-sync="h_minimum_pretest"
-                                    placeholder="es. 15.00"
+                                    placeholder="{{ __('admin.marketing.promotions.minimum_cart_placeholder') }}"
                                 >
                             </p>
                             @error('minimum_pretest') <p class="error">{{ $message }}</p> @enderror
@@ -938,28 +937,28 @@
                                 <input class="promo-card__radio" type="radio" name="_target_type" value="product"  @checked($isOrderCase && $targetType === 'product')  data-sync="h_target_type" data-target-radio>
                                 <span class="promo-card__face">
                                     <span class="promo-card__icon"><i class="bi bi-tags-fill"></i></span>
-                                    <strong>Prodotti</strong>
+                                    <strong>{{ __('admin.marketing.promotions.target_products') }}</strong>
                                 </span>
                             </label>
                             <label class="promo-card">
                                 <input class="promo-card__radio" type="radio" name="_target_type" value="menu"     @checked($isOrderCase && $targetType === 'menu')     data-sync="h_target_type" data-target-radio>
                                 <span class="promo-card__face">
                                     <span class="promo-card__icon"><i class="bi bi-menu-button-wide-fill"></i></span>
-                                    <strong>Menu</strong>
+                                    <strong>{{ __('admin.common.menu') }}</strong>
                                 </span>
                             </label>
                             <label class="promo-card">
                                 <input class="promo-card__radio" type="radio" name="_target_type" value="category" @checked($isOrderCase && $targetType === 'category') data-sync="h_target_type" data-target-radio>
                                 <span class="promo-card__face">
                                     <span class="promo-card__icon"><i class="bi bi-folder-fill"></i></span>
-                                    <strong>Categorie</strong>
+                                    <strong>{{ __('admin.Categorie') }}</strong>
                                 </span>
                             </label>
                             <label class="promo-card">
                                 <input class="promo-card__radio" type="radio" name="_target_type" value="generic"  @checked($isOrderCase && $targetType === 'generic')  data-sync="h_target_type" data-target-radio>
                                 <span class="promo-card__face">
                                     <span class="promo-card__icon"><i class="bi bi-cart-fill"></i></span>
-                                    <strong>Carrello</strong>
+                                    <strong>{{ __('admin.marketing.promotions.cart') }}</strong>
                                 </span>
                             </label>
                         </div>
@@ -972,21 +971,21 @@
                         <section class="order-detail__section">
                             <div class="label_c mb-2">
                                 <i class="bi bi-percent"></i>
-                                Tipo di sconto
+                                {{ __('admin.marketing.promotions.discount_type_full') }}
                             </div>
                             <div class="promo-cards" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); max-width: 420px" data-td-order-cards>
                                 <label class="promo-card">
                                     <input class="promo-card__radio" type="radio" name="_td_order" value="percentage" @checked($isOrderCase && $previewDiscountType === 'percentage') data-sync="h_type_discount" data-td-radio>
                                     <span class="promo-card__face">
                                         <span class="promo-card__icon">%</span>
-                                        <strong>Percentuale</strong>
+                                        <strong>{{ __('admin.marketing.promotions.discount_percentage') }}</strong>
                                     </span>
                                 </label>
                                 <label class="promo-card">
                                     <input class="promo-card__radio" type="radio" name="_td_order" value="fixed" @checked($isOrderCase && $previewDiscountType === 'fixed') data-sync="h_type_discount" data-td-radio>
                                     <span class="promo-card__face">
                                         <span class="promo-card__icon"><i class="bi bi-currency-euro"></i></span>
-                                        <strong>Fisso</strong>
+                                        <strong>{{ __('admin.marketing.promotions.fixed') }}</strong>
                                     </span>
                                 </label>
                                 {{-- Omaggio: only for product / menu --}}
@@ -995,7 +994,7 @@
                                     <input class="promo-card__radio" type="radio" name="_td_order" value="gift" @checked($isOrderCase && $previewDiscountType === 'gift') data-sync="h_type_discount" data-td-radio>
                                     <span class="promo-card__face">
                                         <span class="promo-card__icon"><i class="bi bi-gift-fill"></i></span>
-                                        <strong>Omaggio</strong>
+                                        <strong>{{ __('admin.marketing.promotions.discount_gift') }}</strong>
                                     </span>
                                 </label>
                             </div>
@@ -1010,7 +1009,7 @@
                             <div style="max-width: 320px">
                                 <label class="label_c" for="dsp_discount_order">
                                     <i class="bi bi-cash-coin"></i>
-                                    Sconto
+                                    {{ __('admin.marketing.promotions.discount') }}
                                 </label>
                                 <p>
                                     <input
@@ -1021,7 +1020,7 @@
                                         name="_discount_order"
                                         value="{{ $previewDiscountType !== 'gift' ? old('discount', $promotion->discount) : '' }}"
                                         data-sync="h_discount"
-                                        placeholder="es. 10"
+                                        placeholder="{{ __('admin.marketing.promotions.discount_placeholder') }}"
                                     >
                                 </p>
                                 @error('discount') <p class="error">{{ $message }}</p> @enderror
@@ -1077,114 +1076,82 @@
         {{-- Sidebar preview                         --}}
         {{-- ─────────────────────────────────────── --}}
         <aside class="marketing-form-sidebar">
-            <section class="order-detail__section marketing-form-preview">
-                <div class="order-detail__section-head">
-                    <h3>
-                        <span class="order-detail__section-icon">
-                            <i class="bi bi-eye-fill"></i>
-                        </span>
-                        Riepilogo
-                    </h3>
-                </div>
+            <div class="cpv2-nav">
+                <button type="button" class="cpv2-nav-btn" data-wiz-prev @if ($initialStep === 1) hidden @endif>
+                    <i class="bi bi-chevron-left"></i>
+                    <span>{{ __('admin.common.back') }}</span>
+                </button>
+                <span class="cpv2-nav-step" data-nav-step-indicator>{{ $initialStep }}/3</span>
+                <button type="button" class="cpv2-nav-btn cpv2-nav-btn--primary" data-wiz-next @if ($initialStep === 3) hidden @endif>
+                    <span>{{ __('admin.common.next') }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
 
-                <div class="marketing-form-preview__panel">
-                    <div class="marketing-form-preview__head">
-                        <span class="marketing-form-preview__icon">
-                            <i class="bi bi-megaphone-fill"></i>
-                        </span>
-                        <div>
-                            <strong data-preview-name>
-                                {{ old('name', $promotion->name) ?: 'Nome promozione' }}
-                            </strong>
-                        </div>
+            <div class="cpv2-card">
+                <div class="cpv2-header">
+                    <div class="cpv2-header-icon">
+                        <i class="bi bi-megaphone-fill"></i>
                     </div>
-
-                    <div class="marketing-form-preview__facts">
+                    <div>
+                        <span class="cpv2-eyebrow">{{ __('admin.marketing.promotions.summary') }}</span>
+                        <strong class="cpv2-name-display" data-preview-name>
+                            {{ old('name', $promotion->name) ?: '...' }}
+                        </strong>
                         @if ($promotion->exists)
-                            <div class="marketing-form-preview__fact">
-                                <span>Stato</span>
-                                <strong>{{ $statuses[$promotion->status] ?? $promotion->status }}</strong>
+                            <div class="cpv2-badges">
+                                <span class="cpv2-badge cpv2-badge--muted">{{ $statuses[$promotion->status] ?? $promotion->status }}</span>
                             </div>
                         @endif
-                        <div class="marketing-form-preview__fact">
-                            <span>Caso d'uso</span>
-                            <strong data-preview-case>
-                                {{ $caseUseLabels[$previewCaseUse] ?? ($previewCaseUse ? ucfirst($previewCaseUse) : '—') }}
-                            </strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Tipo sconto</span>
-                            <strong data-preview-td>
-                                {{ $discountTypeLabels[$previewDiscountType] ?? ($previewDiscountType ?: '—') }}
-                            </strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Target</span>
-                            <strong data-preview-target>{{ $targetSummary }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Permanente</span>
-                            <strong data-preview-perm>{{ $previewPermanent ? 'Sì' : 'No' }}</strong>
-                        </div>
-                        <div class="marketing-form-preview__fact">
-                            <span>Disponibilità</span>
-                            <strong>{{ $availabilitySummary }}</strong>
-                        </div>
                     </div>
-
-                    @if ($targetType !== 'generic' && $previewTargetLabels->isNotEmpty())
-                        <div class="marketing-form-preview__chips" data-preview-chips>
-                            @foreach ($previewTargetLabels->take(5) as $lbl)
-                                <span>{{ $lbl }}</span>
-                            @endforeach
-                            @if ($previewTargetLabels->count() > 5)
-                                <span>+{{ $previewTargetLabels->count() - 5 }}</span>
-                            @endif
-                        </div>
-                    @endif
                 </div>
-            </section>
+
+                <ul class="cpv2-rows" role="list">
+                    @php
+                        $nameVal = old('name', $promotion->name);
+                    @endphp
+                    <li class="cpv2-row {{ $nameVal ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="name">
+                        <span class="cpv2-row-icon"><i class="{{ $nameVal ? 'bi bi-check-lg' : 'bi bi-circle' }}" data-row-icon-name></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.promotions.name') }}</span>
+                        <span class="cpv2-row-val" data-preview-name-val>{{ $nameVal ?: '...' }}</span>
+                    </li>
+                    <li class="cpv2-row {{ $previewCaseUse ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="case">
+                        <span class="cpv2-row-icon"><i class="{{ $previewCaseUse ? 'bi bi-check-lg' : 'bi bi-circle' }}" data-row-icon-case></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.promotions.use_case') }}</span>
+                        <span class="cpv2-row-val" data-preview-case-val>{{ $caseUseLabels[$previewCaseUse] ?? '...' }}</span>
+                    </li>
+                    <li class="cpv2-row {{ $previewDiscountType ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="discount">
+                        <span class="cpv2-row-icon"><i class="{{ $previewDiscountType ? 'bi bi-check-lg' : 'bi bi-circle' }}" data-row-icon-discount></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.promotions.discount_type') }}</span>
+                        <span class="cpv2-row-val" data-preview-td-val>{{ $discountTypeLabels[$previewDiscountType] ?? '...' }}</span>
+                    </li>
+                    <li class="cpv2-row {{ $targetType !== 'generic' ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="target">
+                        <span class="cpv2-row-icon"><i class="{{ $targetType !== 'generic' ? 'bi bi-check-lg' : 'bi bi-circle' }}" data-row-icon-target></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.promotions.target') }}</span>
+                        <span class="cpv2-row-val" data-preview-target-val>{{ $targetSummary }}</span>
+                    </li>
+                    <li class="cpv2-row {{ $previewPermanent ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="permanent">
+                        <span class="cpv2-row-icon"><i class="{{ $previewPermanent ? 'bi bi-check-lg' : 'bi bi-circle' }}" data-row-icon-perm></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.promotions.permanent') }}</span>
+                        <span class="cpv2-row-val" data-preview-perm-val>{{ $previewPermanent ? __('admin.common.yes') : __('admin.common.no') }}</span>
+                    </li>
+                </ul>
+            </div>
         </aside>
 
     </div>{{-- /marketing-form-grid --}}
 
     {{-- Navigation --}}
     <div class="marketing-form-actions">
-        <a class="order-detail__contact marketing-form-action--cancel" href="{{ $cancelUrl }}">
-            <i class="bi bi-x-lg"></i>
-            <span>Annulla</span>
-        </a>
-
-        <button
-            type="button"
-            class="order-detail__contact"
-            data-wiz-prev
-            @if ($initialStep === 1) hidden @endif
-        >
-            <i class="bi bi-chevron-left"></i>
-            <span>Indietro</span>
-        </button>
-
-        <button
-            type="button"
-            class="order-detail__contact marketing-form-action--primary"
-            data-wiz-next
-            @if ($initialStep === 3) hidden @endif
-        >
-            <span>Avanti</span>
-            <i class="bi bi-chevron-right"></i>
-        </button>
-
         <button
             type="submit"
             name="submit_action"
             value="draft"
             class="order-detail__contact marketing-form-action--secondary"
             data-wiz-draft
-            @if ($initialStep !== 3) hidden @endif
         >
             <i class="bi bi-clock-history"></i>
-            <span>Completa più tardi</span>
+            <span>{{ __('admin.marketing.promotions.complete_later') }}</span>
         </button>
 
         <button
@@ -1219,16 +1186,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const group = () => cu() === 'table' ? 'table' : (cu() ? 'order' : null);
 
-    const CU_LABELS = { table: 'Prenotazioni', generic: 'Ordini', take_away: 'Solo asporto', delivery: 'Solo delivery' };
-    const TD_LABELS = { percentage: 'Percentuale', fixed: 'Fisso', gift: 'Omaggio' };
-    const TT_LABELS = { generic: 'Carrello', product: 'Prodotti', menu: 'Menu', category: 'Categorie' };
+    const i18n = {
+        yes: @json(__('admin.common.yes')),
+        no: @json(__('admin.common.no')),
+        namePlaceholder: @json(__('admin.marketing.promotions.name_placeholder')),
+        reservations: @json(__('admin.marketing.promotions.reservations')),
+        orders: @json(__('admin.marketing.promotions.orders')),
+        takeawayOnly: @json(__('admin.marketing.promotions.takeaway_only')),
+        deliveryOnly: @json(__('admin.marketing.promotions.delivery_only')),
+        percentage: @json(__('admin.marketing.promotions.discount_percentage')),
+        fixed: @json(__('admin.marketing.promotions.fixed')),
+        gift: @json(__('admin.marketing.promotions.discount_gift')),
+        cart: @json(__('admin.marketing.promotions.cart')),
+        products: @json(__('admin.marketing.promotions.target_products')),
+        menu: @json(__('admin.common.menu')),
+        categories: @json(__('admin.Categorie')),
+    };
+    const CU_LABELS = { table: i18n.reservations, generic: i18n.orders, take_away: i18n.takeawayOnly, delivery: i18n.deliveryOnly };
+    const TD_LABELS = { percentage: i18n.percentage, fixed: i18n.fixed, gift: i18n.gift };
+    const TT_LABELS = { generic: i18n.cart, product: i18n.products, menu: i18n.menu, category: i18n.categories };
 
-    const btnPrev   = form.querySelector('[data-wiz-prev]');
-    const btnNext   = form.querySelector('[data-wiz-next]');
+    const btnPrev   = form.querySelectorAll('[data-wiz-prev]');
+    const btnNext   = form.querySelectorAll('[data-wiz-next]');
     const btnDraft  = form.querySelector('[data-wiz-draft]');
     const btnSubmit = form.querySelector('[data-wiz-submit]');
 
-    const setHidden = (el, v) => { if (el) el.hidden = v; };
+    const setHidden = (target, hidden) => {
+        if (!target) return;
+        if (target instanceof NodeList || Array.isArray(target)) {
+            target.forEach((el) => { el.hidden = hidden; });
+        } else {
+            target.hidden = hidden;
+        }
+    };
 
     // Disable/enable submitting inputs inside a container (prevents double-submit from hidden lists)
     const setInputsDisabled = (el, disabled) => {
@@ -1266,26 +1256,76 @@ document.addEventListener('DOMContentLoaded', () => {
             datesPanel.hidden = on;
             datesPanel.querySelectorAll('input').forEach(f => { f.disabled = on; if (on) f.value = ''; });
         }
-        const el = form.querySelector('[data-preview-perm]');
-        if (el) el.textContent = on ? 'Sì' : 'No';
+        updatePreview();
     };
 
     permanentInput?.addEventListener('change', syncPermanent);
 
     /* ── Preview update ───────────────────────────── */
+    const setRowDone = (rowAttr, done) => {
+        const row = form.querySelector(`[data-preview-row="${rowAttr}"]`);
+        if (!row) return;
+        row.classList.toggle('cpv2-row--done', done);
+        row.classList.toggle('cpv2-row--empty', !done);
+    };
+
     const updatePreview = () => {
-        const nameEl = form.querySelector('#name');
-        const pName  = form.querySelector('[data-preview-name]');
-        if (pName) pName.textContent = nameEl?.value.trim() || 'Nome promozione';
+        const nameEl  = form.querySelector('#name');
+        const nameVal = nameEl?.value.trim() || '';
 
-        const pCase = form.querySelector('[data-preview-case]');
-        if (pCase) pCase.textContent = CU_LABELS[cu()] || '—';
+        // name
+        const pName    = form.querySelector('[data-preview-name]');
+        const pNameVal = form.querySelector('[data-preview-name-val]');
+        if (pName)    pName.textContent    = nameVal || i18n.namePlaceholder;
+        if (pNameVal) pNameVal.textContent = nameVal || '...';
+        const nameIcon = form.querySelector('[data-row-icon-name]');
+        if (nameIcon) nameIcon.className = nameVal ? 'bi bi-check-lg' : 'bi bi-circle';
+        setRowDone('name', Boolean(nameVal));
 
-        const pTd = form.querySelector('[data-preview-td]');
-        if (pTd) pTd.textContent = TD_LABELS[td()] || '—';
+        // case_use
+        const cuVal   = cu();
+        const pCase   = form.querySelector('[data-preview-case]');
+        const pCaseV  = form.querySelector('[data-preview-case-val]');
+        const caseLabel = CU_LABELS[cuVal] || '—';
+        if (pCase)  pCase.textContent  = caseLabel;
+        if (pCaseV) pCaseV.textContent = cuVal ? caseLabel : '...';
+        const caseIcon = form.querySelector('[data-row-icon-case]');
+        if (caseIcon) caseIcon.className = cuVal ? 'bi bi-check-lg' : 'bi bi-circle';
+        setRowDone('case', Boolean(cuVal));
 
-        const pTarget = form.querySelector('[data-preview-target]');
-        if (pTarget) pTarget.textContent = cu() === 'table' ? '—' : (TT_LABELS[tt()] || '—');
+        // type_discount
+        const tdVal  = td();
+        const pTd    = form.querySelector('[data-preview-td]');
+        const pTdV   = form.querySelector('[data-preview-td-val]');
+        const tdLabel = TD_LABELS[tdVal] || '—';
+        if (pTd)  pTd.textContent  = tdLabel;
+        if (pTdV) pTdV.textContent = tdVal ? tdLabel : '...';
+        const discIcon = form.querySelector('[data-row-icon-discount]');
+        if (discIcon) discIcon.className = tdVal ? 'bi bi-check-lg' : 'bi bi-circle';
+        setRowDone('discount', Boolean(tdVal));
+
+        // target
+        const ttVal    = tt();
+        const isTable  = cuVal === 'table';
+        const pTarget  = form.querySelector('[data-preview-target]');
+        const pTargetV = form.querySelector('[data-preview-target-val]');
+        const targetLabel = isTable ? '—' : (TT_LABELS[ttVal] || '—');
+        if (pTarget)  pTarget.textContent  = targetLabel;
+        if (pTargetV) pTargetV.textContent = targetLabel;
+        const targetIcon = form.querySelector('[data-row-icon-target]');
+        if (targetIcon) targetIcon.className = (ttVal && ttVal !== 'generic') ? 'bi bi-check-lg' : 'bi bi-circle';
+        setRowDone('target', Boolean(ttVal && ttVal !== 'generic'));
+
+        // permanent
+        const pPerm  = form.querySelector('[data-preview-perm]');
+        const pPermV = form.querySelector('[data-preview-perm-val]');
+        const permOn = permanentInput?.checked ?? false;
+        const permLabel = permOn ? i18n.yes : i18n.no;
+        if (pPerm)  pPerm.textContent  = permLabel;
+        if (pPermV) pPermV.textContent = permLabel;
+        const permIcon = form.querySelector('[data-row-icon-perm]');
+        if (permIcon) permIcon.className = permOn ? 'bi bi-check-lg' : 'bi bi-circle';
+        setRowDone('permanent', permOn);
     };
 
     form.querySelector('#name')?.addEventListener('input', updatePreview);
@@ -1308,9 +1348,12 @@ document.addEventListener('DOMContentLoaded', () => {
             line.classList.toggle('is-done', +line.dataset.stepLine < step);
         });
 
+        form.querySelectorAll('[data-nav-step-indicator]').forEach((el) => {
+            el.textContent = `${step}/3`;
+        });
+
         setHidden(btnPrev,   step === 1);
         setHidden(btnNext,   step === TOTAL);
-        setHidden(btnDraft,  step !== TOTAL);
         setHidden(btnSubmit, step !== TOTAL);
 
         // When not on step 3, disable item selector inputs to prevent unintended submission
@@ -1354,7 +1397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /* ── Navigation ───────────────────────────────── */
-    btnNext?.addEventListener('click', () => {
+    btnNext.forEach((btn) => btn.addEventListener('click', () => {
         if (currentStep >= TOTAL) return;
 
         if (currentStep === 2) {
@@ -1371,13 +1414,13 @@ document.addEventListener('DOMContentLoaded', () => {
         currentStep++;
         renderStepBar(currentStep);
         if (currentStep === 3) renderStep3();
-    });
+    }));
 
-    btnPrev?.addEventListener('click', () => {
+    btnPrev.forEach((btn) => btn.addEventListener('click', () => {
         if (currentStep <= 1) return;
         currentStep--;
         renderStepBar(currentStep);
-    });
+    }));
 
     /* ── Target card: reset td/discount on change ─── */
     form.querySelectorAll('[data-target-radio]').forEach(radio => {
@@ -1417,6 +1460,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (hidden) hidden.value = el.value;
             }
         });
+    });
+
+    /* ── Enter key: avanza step anziché submit ───── */
+    form.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        if (e.target?.tagName?.toLowerCase() === 'textarea') return;
+        if (currentStep < TOTAL) {
+            e.preventDefault();
+            currentStep++;
+            renderStepBar(currentStep);
+            if (currentStep === 3) renderStep3();
+            return;
+        }
+        if (e.target?.type !== 'submit') e.preventDefault();
     });
 
     /* ── Initial render ───────────────────────────── */

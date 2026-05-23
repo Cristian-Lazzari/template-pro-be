@@ -7,7 +7,7 @@
         $data = session('ingredient_success')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
+        {{ __('admin.catalog.created_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
     
@@ -16,10 +16,10 @@
 <header class="menu-dashboard__hero order-detail__summary">
     <div class="order-detail__meta">
         <div class="order-detail__status">
-            <span class="order-detail__status-icon order-detail__status-icon--warning">
-                <i class="bi bi-images"></i>
-            </span>
-            <strong>Contenuti</strong>
+                <span class="order-detail__status-icon order-detail__status-icon--warning">
+                    <i class="bi bi-images"></i>
+                </span>
+            <strong>{{ __('admin.content.contents') }}</strong>
         </div>
         <h1 class="menu-dashboard__title">{{ __('admin.Modifica_il_Post') }}</h1>
     </div>
@@ -41,7 +41,7 @@
                 <label class="label_c" for="title">
                     <i class="bi bi-type"></i>
                     {{__('admin.Titolo')}}</label>
-                <p><input value="{{ old('title', $post->title) }}" type="text" name="title" id="title" placeholder=" Inserisci il titolo"></p>
+                <p><input value="{{ old('title', $post->title) }}" type="text" name="title" id="title" placeholder="{{ __('admin.posts.title_placeholder') }}"></p>
                 @error('title') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div class="mr-auto">
@@ -98,7 +98,7 @@
             <div>
                 <label class="label_c" for="link">
                     <i class="bi bi-link-45deg"></i>{{ __('admin.Link_IG_') }}</label>
-                <p><input value="{{ old('link', $post->link) }}" type="text" name="link" id="link" placeholder=" Inserisci il link"></p>
+                <p><input value="{{ old('link', $post->link) }}" type="text" name="link" id="link" placeholder="{{ __('admin.posts.link_placeholder') }}"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror
             </div>     
             </p>

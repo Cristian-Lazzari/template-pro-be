@@ -5,9 +5,9 @@
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Modelli mail', 'url' => route('admin.customers.mail_models.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.mailer.plural'), 'url' => route('admin.customers.mail_models.index')],
             ['label' => $model->name],
         ],
     ])
@@ -18,17 +18,17 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <x-icon name="file-earmark-richtext-fill" />
                 </span>
-                <strong>Modifica modello mail</strong>
+                <strong>{{ __('admin.marketing.mailer.edit_model') }}</strong>
             </div>
 
             <h1 class="menu-dashboard__title">{{ $model->name }}</h1>
-            <p>Aggiorna contenuto, stato e variabili disponibili per gli invii marketing.</p>
+            <p>{{ __('admin.marketing.mailer.edit_description') }}</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.index') }}">
                 <x-icon name="arrow-left-circle-fill" />
-                <span>Indietro</span>
+                <span>{{ __('admin.common.back') }}</span>
             </a>
             @include('admin.Marketing.partials.area-links', ['current' => 'models'])
         </div>

@@ -86,10 +86,10 @@ class PromotionController extends Controller
         return view('admin.Promotions.index', [
             'promotions' => $promotions,
             'isArchivedView' => $archived,
-            'statuses' => self::STATUSES,
-            'caseUses' => self::CASE_USES,
-            'discountTypes' => self::DISCOUNT_TYPES,
-            'targetTypes' => self::TARGET_TYPES,
+            'statuses' => $this->statusLabels(),
+            'caseUses' => $this->caseUseLabels(),
+            'discountTypes' => $this->discountTypeLabels(),
+            'targetTypes' => $this->targetTypeLabels(),
             'targetLabels' => $this->targetLabels($this->targetOptions()),
         ]);
     }
@@ -120,7 +120,7 @@ class PromotionController extends Controller
             return $promotion;
         });
 
-        return $this->redirectAfterSave($request, $promotion, 'Promozione creata correttamente.');
+        return $this->redirectAfterSave($request, $promotion, __('admin.controllers.promotions.created'));
     }
 
     public function show(Promotion $promotion, MarketingReportService $reportService)
@@ -132,10 +132,10 @@ class PromotionController extends Controller
         return view('admin.Promotions.show', [
             'promotion' => $promotion,
             'report' => $report,
-            'statuses' => self::STATUSES,
-            'caseUses' => self::CASE_USES,
-            'discountTypes' => self::DISCOUNT_TYPES,
-            'targetTypes' => self::TARGET_TYPES,
+            'statuses' => $this->statusLabels(),
+            'caseUses' => $this->caseUseLabels(),
+            'discountTypes' => $this->discountTypeLabels(),
+            'targetTypes' => $this->targetTypeLabels(),
             'targetLabels' => $this->targetLabels($targetOptions),
         ]);
     }
@@ -160,34 +160,34 @@ class PromotionController extends Controller
             $this->syncTargets($promotion, $request);
         });
 
-        return $this->redirectAfterSave($request, $promotion, 'Promozione aggiornata correttamente.');
+        return $this->redirectAfterSave($request, $promotion, __('admin.controllers.promotions.updated'));
     }
 
     public function publish(Promotion $promotion)
     {
-        return $this->updateStatus($promotion, 'active', 'Promozione pubblicata correttamente.');
+        return $this->updateStatus($promotion, 'active', __('admin.controllers.promotions.published'));
     }
 
     public function pause(Promotion $promotion)
     {
-        return $this->updateStatus($promotion, 'paused', 'Promozione messa in pausa correttamente.');
+        return $this->updateStatus($promotion, 'paused', __('admin.controllers.promotions.paused'));
     }
 
     public function archive(Promotion $promotion)
     {
-        return $this->updateStatus($promotion, 'archived', 'Promozione archiviata correttamente.');
+        return $this->updateStatus($promotion, 'archived', __('admin.controllers.promotions.archived'));
     }
 
     public function draft(Promotion $promotion)
     {
-        return $this->updateStatus($promotion, 'draft', 'Promozione salvata come bozza.');
+        return $this->updateStatus($promotion, 'draft', __('admin.controllers.promotions.draft_saved'));
     }
 
     public function destroy(Promotion $promotion)
     {
         if ($promotion->status !== 'draft') {
             return back()->withErrors([
-                'status' => 'Puoi eliminare direttamente solo le bozze. Per le altre promozioni usa Archivia.',
+                'status' => __('admin.controllers.promotions.delete_only_drafts'),
             ]);
         }
 
@@ -202,7 +202,7 @@ class PromotionController extends Controller
         });
 
         return to_route('admin.promotions.index')
-            ->with('success', 'Bozza "' . $promotionName . '" eliminata insieme ai suoi collegamenti.');
+            ->with('success', __('admin.controllers.promotions.draft_deleted_with_links', ['name' => $promotionName]));
     }
 
     private function formOptions(?Promotion $promotion = null): array
@@ -211,11 +211,11 @@ class PromotionController extends Controller
         $specificTargetOptions = $this->specificTargetOptions($promotion);
 
         return [
-            'statuses' => self::STATUSES,
-            'caseUses' => self::CASE_USES,
-            'discountTypes' => self::DISCOUNT_TYPES,
-            'targetTypes' => self::TARGET_TYPES,
-            'formTargetTypes' => self::FORM_TARGET_TYPES,
+            'statuses' => $this->statusLabels(),
+            'caseUses' => $this->caseUseLabels(),
+            'discountTypes' => $this->discountTypeLabels(),
+            'targetTypes' => $this->targetTypeLabels(),
+            'formTargetTypes' => $this->formTargetTypeLabels(),
             'targetOptions' => $targetOptions,
             'specificTargetOptions' => $specificTargetOptions,
             'targetLabels' => $this->targetLabels($targetOptions),
@@ -277,16 +277,65 @@ class PromotionController extends Controller
         return $value !== '' ? $value : null;
     }
 
+    private function statusLabels(): array
+    {
+        return [
+            'draft' => __('admin.marketing.promotions.status_draft'),
+            'active' => __('admin.marketing.promotions.status_active'),
+            'paused' => __('admin.marketing.promotions.status_paused'),
+            'archived' => __('admin.marketing.promotions.status_archived'),
+        ];
+    }
+
+    private function caseUseLabels(): array
+    {
+        return [
+            'generic' => __('admin.marketing.promotions.case_generic'),
+            'take_away' => __('admin.marketing.promotions.case_takeaway'),
+            'delivery' => __('admin.marketing.promotions.case_delivery'),
+            'table' => __('admin.marketing.promotions.case_table'),
+        ];
+    }
+
+    private function discountTypeLabels(): array
+    {
+        return [
+            'fixed' => __('admin.marketing.promotions.discount_fixed'),
+            'percentage' => __('admin.marketing.promotions.discount_percentage'),
+            'gift' => __('admin.marketing.promotions.discount_gift'),
+        ];
+    }
+
+    private function targetTypeLabels(): array
+    {
+        return [
+            'generic' => __('admin.marketing.promotions.target_generic'),
+            'product' => __('admin.marketing.promotions.target_products'),
+            'menu' => __('admin.marketing.promotions.target_menus'),
+            'category' => __('admin.marketing.promotions.target_categories'),
+            'post' => __('admin.marketing.promotions.target_posts'),
+        ];
+    }
+
+    private function formTargetTypeLabels(): array
+    {
+        return [
+            'product' => __('admin.marketing.promotions.target_products'),
+            'menu' => __('admin.marketing.promotions.target_menus'),
+            'category' => __('admin.marketing.promotions.target_categories'),
+        ];
+    }
+
     private function weekdayLabels(): array
     {
         return [
-            1 => 'Lunedì',
-            2 => 'Martedì',
-            3 => 'Mercoledì',
-            4 => 'Giovedì',
-            5 => 'Venerdì',
-            6 => 'Sabato',
-            7 => 'Domenica',
+            1 => __('admin.marketing.promotions.weekday_monday'),
+            2 => __('admin.marketing.promotions.weekday_tuesday'),
+            3 => __('admin.marketing.promotions.weekday_wednesday'),
+            4 => __('admin.marketing.promotions.weekday_thursday'),
+            5 => __('admin.marketing.promotions.weekday_friday'),
+            6 => __('admin.marketing.promotions.weekday_saturday'),
+            7 => __('admin.marketing.promotions.weekday_sunday'),
         ];
     }
 
@@ -299,7 +348,7 @@ class PromotionController extends Controller
     {
         if ($request->input('submit_action') === 'draft') {
             return to_route('admin.promotions.index')
-                ->with('success', 'Promozione salvata come bozza. Puoi completarla dalla lista promozioni.');
+                ->with('success', __('admin.controllers.promotions.draft_saved_hint'));
         }
 
         return to_route('admin.promotions.show', $promotion)
@@ -352,28 +401,28 @@ class PromotionController extends Controller
     {
         $options = [
             PromotionTarget::TYPE_GENERIC => [
-                ['key' => PromotionTarget::TYPE_GENERIC . ':', 'label' => 'Promo generale'],
+                ['key' => PromotionTarget::TYPE_GENERIC . ':', 'label' => __('admin.marketing.promotions.target_generic')],
             ],
             PromotionTarget::TYPE_PRODUCT => $this->translatedTargetOptions(
                 PromotionTarget::TYPE_PRODUCT,
                 'products',
                 'product_translations',
                 'product_id',
-                'Prodotto'
+                __('admin.common.product')
             ),
             PromotionTarget::TYPE_MENU => $this->translatedTargetOptions(
                 PromotionTarget::TYPE_MENU,
                 'menus',
                 'menu_translations',
                 'menu_id',
-                'Menu'
+                __('admin.common.menu')
             ),
             PromotionTarget::TYPE_CATEGORY => $this->translatedTargetOptions(
                 PromotionTarget::TYPE_CATEGORY,
                 'categories',
                 'category_translations',
                 'category_id',
-                'Categoria'
+                __('admin.common.category')
             ),
             PromotionTarget::TYPE_POST => $this->postTargetOptions(),
         ];
@@ -448,7 +497,7 @@ class PromotionController extends Controller
             ->get()
             ->map(fn ($row) => [
                 'key' => PromotionTarget::TYPE_POST . ':' . $row->id,
-                'label' => '#' . $row->id . ' - ' . ($row->title ?: 'Post'),
+                'label' => '#' . $row->id . ' - ' . ($row->title ?: __('admin.common.post')),
             ])
             ->all();
     }
@@ -477,13 +526,13 @@ class PromotionController extends Controller
     private function targetOptionLabel(PromotionTarget $target): string
     {
         if ($target->isGenericTarget()) {
-            return 'Promo generale';
+            return __('admin.marketing.promotions.target_generic');
         }
 
         $model = $target->target();
         $label = $model?->name ?? $model?->title ?? null;
 
-        return $label ?: (self::TARGET_TYPES[$target->target_type] ?? 'Target') . ' #' . $target->target_id;
+        return $label ?: ($this->targetTypeLabels()[$target->target_type] ?? __('admin.controllers.promotions.target')) . ' #' . $target->target_id;
     }
 
     private function targetLabels(array $targetOptions): array

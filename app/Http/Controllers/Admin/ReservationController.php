@@ -82,18 +82,18 @@ class ReservationController extends Controller
         $property_adv = json_decode($adv_s->property, 1);
         if($c_a){
             $res->status = 1;
-            $m = 'La prenotazione e\' stata confermata correttamente';
-            $message = 'Siamo felici di informarti che la tua prenotazione e\' stata confermata, ti ricordo la data e l\'orario che hai scelto: ' . $res->date_slot ;
+            $m = __('admin.controllers.reservations.confirmed');
+            $message = __('admin.controllers.reservations.customer_confirmed_whatsapp', ['date_slot' => $res->date_slot]);
         }else{
             if($res->status == 0){
-                $m = 'La prenotazione e\' stata gia annullata correttamente';
+                $m = __('admin.controllers.reservations.already_cancelled');
                 return redirect()->back()->with('success', $m);
             }
 
 
             $res->status = 0;
-            $m = 'La prenotazione e\' stata annullata correttamente';
-            $message = 'Ci spiace informarti che la tua prenotazione e\' stata annullata per la data e l\'orario che hai scelto... ' . $res->date_slot ;
+            $m = __('admin.controllers.reservations.cancelled');
+            $message = __('admin.controllers.reservations.customer_cancelled_whatsapp', ['date_slot' => $res->date_slot]);
         }
         $res->update();
         
@@ -114,7 +114,7 @@ class ReservationController extends Controller
             'phone' => $res->phone,
             'admin_phone' => $p_set['telefono'],
 
-            'title' =>  $c_a ? 'Ti confermiamo che la tua prenotazione è stata accettata' : 'Ci dispiace informarti che la tua prenotazione è stata annullata',
+            'title' =>  $c_a ? __('admin.controllers.reservations.accepted_title_full') : __('admin.controllers.reservations.cancelled_title'),
             'subtitle' => '',
             'whatsapp_message_id' => $res->whatsapp_message_id,
                
@@ -202,10 +202,10 @@ class ReservationController extends Controller
 
         return [
             'has_promotion' => true,
-            'name' => $promotion['promotion_name'] ?? 'Promozione',
+            'name' => $promotion['promotion_name'] ?? __('admin.promotion_notification.promotion'),
             'badge_label' => $order && $discountAmount > 0
-                ? 'Sconto ' . Currency::formatCents($discountAmount)
-                : 'Promo prenotazione',
+                ? __('admin.promotion_notification.discount') . ' ' . Currency::formatCents($discountAmount)
+                : __('admin.promotion_notification.reservation_promotion'),
         ];
     }
 
@@ -225,7 +225,7 @@ class ReservationController extends Controller
                     'status' => $this->customerPromotionStatusLabel($customerPromotion->status),
                     'name' => $formatted['promotion_name']
                         ?? $customerPromotion->promotion?->name
-                        ?? 'Promozione #' . $customerPromotion->promotion_id,
+                        ?? __('admin.promotion_notification.promotion') . ' #' . $customerPromotion->promotion_id,
                     'type_label' => $formatted['type_label']
                         ?? $this->promotionTypeLabel($customerPromotion->promotion?->type_discount),
                     'affected_items' => $this->formatAffectedItems(is_array($affectedItems) ? $affectedItems : []),
@@ -241,21 +241,21 @@ class ReservationController extends Controller
             ->map(function (array $item) {
                 $type = (string) ($item['type'] ?? 'reservation');
                 $label = match ($type) {
-                    'reservation' => 'Prenotazione tavolo',
-                    'product' => 'Prodotto',
-                    'menu' => 'Menu',
-                    'category' => 'Categoria',
-                    default => ucfirst($type ?: 'Elemento'),
+                    'reservation' => __('admin.reservations.table_reservation'),
+                    'product' => __('admin.reservations.product'),
+                    'menu' => __('admin.reservations.menu'),
+                    'category' => __('admin.reservations.category'),
+                    default => ucfirst($type ?: __('admin.reservations.element')),
                 };
 
                 $details = [];
 
                 if (! empty($item['people'])) {
-                    $details[] = $item['people'] . ' ospiti';
+                    $details[] = $item['people'] . ' ' . __('admin.reservations.guests');
                 }
 
                 if (! empty($item['minimum_required'])) {
-                    $details[] = 'minimo ' . $item['minimum_required'];
+                    $details[] = __('admin.reservations.minimum') . ' ' . $item['minimum_required'];
                 }
 
                 if (! empty($item['benefit_type'])) {
@@ -263,7 +263,7 @@ class ReservationController extends Controller
                 }
 
                 if (! empty($item['gift_benefit'])) {
-                    $details[] = 'omaggio';
+                    $details[] = __('admin.reservations.gift');
                 }
 
                 return [
@@ -278,11 +278,11 @@ class ReservationController extends Controller
     private function customerPromotionStatusLabel(?string $status): string
     {
         return match ($status) {
-            'assigned' => 'Assegnata',
-            'sent' => 'Inviata',
-            'opened' => 'Aperta',
-            'clicked' => 'Cliccata',
-            'used' => 'Usata',
+            'assigned' => __('admin.orders.assigned'),
+            'sent' => __('admin.orders.sent'),
+            'opened' => __('admin.orders.opened'),
+            'clicked' => __('admin.orders.clicked'),
+            'used' => __('admin.orders.used'),
             default => $status ?: 'n/d',
         };
     }
@@ -290,10 +290,10 @@ class ReservationController extends Controller
     private function promotionTypeLabel(?string $type): string
     {
         return match ($type) {
-            'fixed' => 'Sconto fisso',
-            'percentage' => 'Sconto percentuale',
-            'gift' => 'Omaggio',
-            default => $type ?: 'Promozione',
+            'fixed' => __('admin.orders.fixed_discount'),
+            'percentage' => __('admin.orders.percentage_discount'),
+            'gift' => __('admin.reservations.gift'),
+            default => $type ?: __('admin.promotion_notification.promotion'),
         };
     }
 }

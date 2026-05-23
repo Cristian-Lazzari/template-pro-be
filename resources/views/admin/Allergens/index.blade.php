@@ -10,7 +10,7 @@
         $data = session('created')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
+        {{ __('admin.catalog.created_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
 @if (session('edited'))
@@ -18,7 +18,7 @@
         $data = session('edited')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato modificato creato!
+        {{ __('admin.catalog.modified_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
 @if (session('delete_success'))

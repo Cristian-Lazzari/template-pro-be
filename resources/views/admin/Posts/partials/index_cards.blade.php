@@ -32,7 +32,7 @@
 @empty
     <div class="res-item prod">
         <div class="name_cat">
-            <div class="name">Nessun post trovato</div>
+            <div class="name">{{ __('admin.catalog.no_posts_found') }}</div>
         </div>
     </div>
 @endforelse

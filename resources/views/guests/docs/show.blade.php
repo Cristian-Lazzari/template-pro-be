@@ -1,21 +1,21 @@
 @extends('layouts.public')
 
-@section('title', $page['title'] . ' | Documentazione guest')
+@section('title', $page['title'] . ' | ' . __('admin.public.docs_show.documentation_suffix'))
 @section('kicker', $page['eyebrow'])
 @section('headline', $page['headline'])
 @section('lead', $page['lead'])
 
 @section('hero_actions')
-    <a class="public-button public-button--solid" href="#panoramica">Apri guida rapida</a>
-    <a class="public-button public-button--ghost" href="{{ route('guest.documentation') }}">Torna all'indice</a>
+    <a class="public-button public-button--solid" href="#panoramica">{{ __('admin.public.docs_show.open_quick_guide') }}</a>
+    <a class="public-button public-button--ghost" href="{{ route('guest.documentation') }}">{{ __('admin.public.docs_show.back_to_index') }}</a>
 @endsection
 
 @section('contents')
     <section class="public-panel public-panel--soft">
         <div class="public-breadcrumbs">
-            <a href="{{ route('guest.home') }}">Home</a>
+            <a href="{{ route('guest.home') }}">{{ __('admin.public.layout.home') }}</a>
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
-            <a href="{{ route('guest.documentation') }}">Documentazione</a>
+            <a href="{{ route('guest.documentation') }}">{{ __('admin.public.layout.documentation') }}</a>
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
             <span>{{ $page['title'] }}</span>
         </div>
@@ -46,8 +46,8 @@
     @if (!in_array($page['slug'], ['ordini', 'prenotazioni'], true))
         <section class="public-panel">
             <div class="public-panel__header">
-                <p class="public-panel__eyebrow">Cosa trovi in questa pagina</p>
-                <h2>Pannelli e controlli che ti aiutano nel lavoro quotidiano</h2>
+                <p class="public-panel__eyebrow">{{ __('admin.public.docs_show.what_you_find') }}</p>
+                <h2>{{ __('admin.public.docs_show.what_you_find_text') }}</h2>
             </div>
 
             <div class="doc-focus-grid">
@@ -85,7 +85,7 @@
         <section class="public-panel">
             <div class="public-panel__header">
                 <p class="public-panel__eyebrow">{{ $page['checklist_title'] }}</p>
-                <h2>Ultimo controllo prima di chiudere</h2>
+                <h2>{{ __('admin.public.docs_show.last_check') }}</h2>
             </div>
 
             <article class="public-card">
@@ -100,8 +100,8 @@
         <section class="doc-double-grid">
             <div class="public-panel">
                 <div class="public-panel__header">
-                    <p class="public-panel__eyebrow">Domande frequenti</p>
-                    <h2>Risposte rapide per chi lavora sul campo</h2>
+                    <p class="public-panel__eyebrow">{{ __('admin.public.docs_show.faq') }}</p>
+                    <h2>{{ __('admin.public.docs_show.quick_answers') }}</h2>
                 </div>
 
                 <div class="doc-faq-list">
@@ -116,8 +116,8 @@
 
             <div class="public-panel">
                 <div class="public-panel__header">
-                    <p class="public-panel__eyebrow">Continua la lettura</p>
-                    <h2>Pagine collegate</h2>
+                    <p class="public-panel__eyebrow">{{ __('admin.public.docs_show.continue_reading') }}</p>
+                    <h2>{{ __('admin.public.docs_show.related_pages') }}</h2>
                 </div>
 
                 <div class="doc-topic-grid doc-topic-grid--compact">
@@ -130,8 +130,8 @@
     @else
         <section class="public-panel">
             <div class="public-panel__header">
-                <p class="public-panel__eyebrow">Continua la lettura</p>
-                <h2>Pagine collegate</h2>
+                <p class="public-panel__eyebrow">{{ __('admin.public.docs_show.continue_reading') }}</p>
+                <h2>{{ __('admin.public.docs_show.related_pages') }}</h2>
             </div>
 
             <div class="doc-topic-grid doc-topic-grid--compact">

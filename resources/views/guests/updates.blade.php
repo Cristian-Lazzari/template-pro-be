@@ -1,25 +1,25 @@
 @extends('layouts.public')
 
-@section('title', 'Aggiornamenti del gestionale')
-@section('kicker', 'Registro novita')
-@section('headline', 'Pagina dedicata a tutti gli aggiornamenti futuri')
-@section('lead', 'Qui possiamo raccogliere le release da questo momento in avanti, con data, obiettivo e impatto operativo. La pagina e pubblica, quindi puo essere consultata anche da chi non accede al Backoffice.')
+@section('title', __('admin.public.updates.eyebrow'))
+@section('kicker', __('admin.public.updates.title'))
+@section('headline', __('admin.public.updates.subtitle'))
+@section('lead', __('admin.public.updates.lead'))
 
 @section('hero_actions')
-    <a class="public-button public-button--solid" href="#timeline">Apri timeline</a>
-    <a class="public-button public-button--ghost" href="{{ route('guest.documentation') }}">Apri documentazione</a>
+    <a class="public-button public-button--solid" href="#timeline">{{ __('admin.public.updates.open_timeline') }}</a>
+    <a class="public-button public-button--ghost" href="{{ route('guest.documentation') }}">{{ __('admin.public.updates.open_documentation') }}</a>
 @endsection
 
 @section('contents')
     <section class="public-panel public-panel--soft">
         <div class="public-panel__header">
-            <p class="public-panel__eyebrow">Come usare questa pagina</p>
-            <h2>Regola semplice per i prossimi rilasci</h2>
+            <p class="public-panel__eyebrow">{{ __('admin.public.updates.how_to_use') }}</p>
+            <h2>{{ __('admin.public.updates.simple_rule') }}</h2>
         </div>
 
         <div class="public-notes">
-            <p>Per ogni aggiornamento conviene inserire una nuova voce con data, titolo breve, riassunto del cambiamento e 2-3 punti pratici su cosa e stato introdotto o modificato.</p>
-            <p>In questo modo la pagina resta leggibile sia per chi gestisce il locale sia per chi segue lo sviluppo del progetto nel tempo.</p>
+            <p>{{ __('admin.public.updates.release_rule_1') }}</p>
+            <p>{{ __('admin.public.updates.release_rule_2') }}</p>
         </div>
     </section>
 

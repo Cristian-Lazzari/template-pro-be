@@ -50,7 +50,7 @@ class AllergenController extends Controller
             'name' => $request->name
         ]);   
         
-        $m = ' "' . $allergen['name'] . '" è stato creato correttamente';
+        $m = __('admin.controllers.allergen.created_named', ['name' => $allergen['name']]);
         return to_route('admin.allergens.index')->with('success', $m);
     }
 
@@ -103,7 +103,7 @@ class AllergenController extends Controller
             'name' => $request->name
         ]);
         
-        $m = ' "' . $allergen->name . '" è stato creato correttamente';
+        $m = __('admin.controllers.allergen.updated_named', ['name' => $allergen->name]);
         return to_route('admin.allergens.index')->with('success', $m);
     }
 
@@ -111,7 +111,7 @@ class AllergenController extends Controller
     {
         $allergen->products()->detach();
         $allergen->delete();
-        $m = ' "' . $allergen->name . '" è stato eliminato e rimosso dai prodotti correttamente';
+        $m = __('admin.controllers.allergen.deleted_with_products_named', ['name' => $allergen->name]);
         return to_route('admin.allergens.index')->with('delete_success', $m);
     }   
 }

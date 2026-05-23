@@ -25,7 +25,7 @@
 @empty
     <div class="res-item prod">
         <div class="name_cat">
-            <div class="name">Nessun prodotto trovato</div>
+            <div class="name">{{ __('admin.catalog.no_products_found') }}</div>
         </div>
     </div>
 @endforelse

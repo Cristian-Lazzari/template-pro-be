@@ -45,21 +45,21 @@ $moneyInputStep = \App\Support\Currency::inputStep();
                     <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
-                <p><input value="{{ old('name', $translations[$dfl]->name ?? '') }}" type="text" name="name_ing" id="name_ing" placeholder=" Inserisci il nome"></p>
+                <p><input value="{{ old('name', $translations[$dfl]->name ?? '') }}" type="text" name="name_ing" id="name_ing" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                 @error('name_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="label_c" for="price_ing">
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing', \App\Support\Currency::formatForInput($ingredient->price)) }}" type="number" name="price_ing" step="{{ $moneyInputStep }}" id="price_ing" placeholder=" Inserisci il prezzo "></p>
+                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing', \App\Support\Currency::formatForInput($ingredient->price)) }}" type="number" name="price_ing" step="{{ $moneyInputStep }}" id="price_ing" placeholder="{{ __('admin.products.price_placeholder') }}"></p>
                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
         <div class="check_c">
             <label class="label_c" for="type">
                 <i class="bi bi-ui-checks-grid"></i>
-                Categorie abbinate</label>
+                {{ __('admin.ingredients.linked_categories') }}</label>
             <p>
                 @php
                     if ($ingredient->type !== NULL && $ingredient->type !== '"[]"') {
@@ -105,10 +105,10 @@ $moneyInputStep = \App\Support\Currency::inputStep();
                             <div class="modal-dialog modal-dialog-centered">
                                 <x-dashboard.action-modal
                                     title-id="lang{{$i}}Label"
-                                    title="Personalizza traduzione"
+                                    title="{{ __('admin.catalog.customize_translation') }}"
                                     eyebrow="{{ strtoupper($i) }}"
                                     tone="mint"
-                                    description="Aggiorna il nome dell ingrediente nella lingua selezionata."
+                                    description="{{ __('admin.ingredients.translation_description') }}"
                                 >
                                     <div class="check_c" style="border: none !important; padding: 0; border-radius: 0; width: fit-content">
                                         @foreach ($list as $e)
@@ -121,7 +121,7 @@ $moneyInputStep = \App\Support\Currency::inputStep();
                                             <i class="bi bi-type"></i>
                                             {{__('admin.Nome')}}
                                         </label>
-                                        <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder=" Inserisci il nome">
+                                        <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}">
                                     </div>
 
                                     <x-slot name="footer">

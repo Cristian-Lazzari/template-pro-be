@@ -49,7 +49,7 @@
 
 @if ($post->hashtag)
     <section>
-        <h4><strong>#</strong> Hashtags</h4>
+        <h4><strong>#</strong> {{ __('admin.posts.hashtags') }}</h4>
         <p>{{$post->hashtag}}</p>
     </section>
 @endif

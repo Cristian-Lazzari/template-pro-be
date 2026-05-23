@@ -9,7 +9,7 @@
     $locale = app()->getLocale() ?: 'it';
     $imageUrl = $ingredient->icon ? \Illuminate\Support\Facades\Storage::url($ingredient->icon) : null;
     $detailTone = $ingredient->option ? 'warning' : 'active';
-    $detailLabel = $ingredient->option ? 'Opzione' : 'Ingrediente';
+    $detailLabel = $ingredient->option ? __('admin.ingredients.option') : __('admin.ingredients.ingredient');
     $priceLabel = \App\Support\Currency::formatCents($ingredient->price ?? 0);
     $translations = $ingredient->translations->sortBy('lang')->values();
     $initial = mb_strtoupper(mb_substr((string) $ingredient->name, 0, 1)) ?: 'I';
@@ -25,8 +25,8 @@
     };
 
     $statItems = [
-        ['label' => 'Prezzo', 'value' => $priceLabel, 'helper' => 'costo come extra'],
-        ['label' => 'Prodotti', 'value' => $products->count(), 'helper' => 'attualmente collegati'],
+        ['label' => __('admin.Prezzo'), 'value' => $priceLabel, 'helper' => __('admin.ingredients.extra_cost_helper')],
+        ['label' => __('admin.Prodotti'), 'value' => $products->count(), 'helper' => __('admin.ingredients.currently_linked')],
     ];
 @endphp
 
@@ -241,7 +241,7 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="image" />
                             </span>
-                            Panoramica
+                            {{ __('admin.ingredients.overview') }}
                         </h3>
                     </div>
 
@@ -271,7 +271,7 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="translate" />
                             </span>
-                            Traduzioni
+                            {{ __('admin.ingredients.translations') }}
                         </h3>
                     </div>
 
@@ -285,7 +285,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="ingredient-detail__empty">Non ci sono traduzioni salvate per questo ingrediente.</p>
+                        <p class="ingredient-detail__empty">{{ __('admin.ingredients.no_translations') }}</p>
                     @endif
                 </section>
             </div>
@@ -296,7 +296,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="exclamation-triangle-fill" />
                         </span>
-                        Allergeni
+                        {{ __('admin.Allergeni') }}
                     </h3>
                 </div>
 
@@ -312,7 +312,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="ingredient-detail__empty">Nessun allergene associato.</p>
+                    <p class="ingredient-detail__empty">{{ __('admin.catalog.no_ingredient_allergens') }}</p>
                 @endif
             </section>
 
@@ -322,7 +322,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="grid-1x2-fill" />
                         </span>
-                        Categorie abbinate
+                        {{ __('admin.ingredients.linked_categories') }}
                     </h3>
                 </div>
 
@@ -336,7 +336,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="ingredient-detail__empty">Questo ingrediente non e ancora disponibile per nessuna categoria.</p>
+                    <p class="ingredient-detail__empty">{{ __('admin.ingredients.not_available_for_categories') }}</p>
                 @endif
             </section>
 
@@ -346,7 +346,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="card-checklist" />
                         </span>
-                        Prodotti collegati
+                        {{ __('admin.ingredients.linked_products') }}
                     </h3>
                 </div>
 
@@ -356,7 +356,7 @@
                             <article class="ingredient-detail__product-item">
                                 <div class="ingredient-detail__product-copy">
                                     <strong>{{ $product->name }}</strong>
-                                    <p>{{ optional($product->category)->name ?: 'Senza categoria' }}</p>
+                                    <p>{{ optional($product->category)->name ?: __('admin.catalog.no_category') }}</p>
                                 </div>
 
                                 <div class="ingredient-detail__product-meta">
@@ -369,18 +369,18 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="ingredient-detail__empty">Nessun prodotto collegato a questo ingrediente per ora.</p>
+                    <p class="ingredient-detail__empty">{{ __('admin.ingredients.no_linked_products') }}</p>
                 @endif
             </section>
 
             <footer class="order-detail__footer">
                 <div class="order-detail__footer-row">
-                    <span>Creato il</span>
+                    <span>{{ __('admin.ingredients.created_at') }}</span>
                     <strong>{{ $formatDateTime($ingredient->created_at) }}</strong>
                 </div>
 
                 <div class="order-detail__footer-row">
-                    <span>Ultimo aggiornamento</span>
+                    <span>{{ __('admin.ingredients.updated_at') }}</span>
                     <strong>{{ $formatDateTime($ingredient->updated_at) }}</strong>
                 </div>
             </footer>

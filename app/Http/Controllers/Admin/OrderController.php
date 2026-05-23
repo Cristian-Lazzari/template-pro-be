@@ -35,12 +35,12 @@ class OrderController extends Controller
             }elseif($order->status == 3){
                 $order->status = 5;
             }
-            $m = 'L\'ordine è stata confermato correttamente';
-            $message = 'Grazie ' . $order->name . ' per aver ordinato da noi, ti confermiamo che il tuo ordine sarà pronto per il ' . $order->date_slot;    
+            $m = __('admin.controllers.orders.confirmed');
+            $message = __('admin.controllers.orders.confirmed_customer', ['name' => $order->name, 'date_slot' => $order->date_slot]);    
         }else{
             if(in_array($order->status, [3, 5])){
-                $m = 'L\'ordine è stato annullato e RIMBORSATO correttamente';
-                $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato e rimborsato';
+                $m = __('admin.controllers.orders.cancelled_refunded');
+                $message = __('admin.controllers.orders.cancelled_refunded_customer');
                 //codice per rimborso
                 try {
                     $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
@@ -66,11 +66,11 @@ class OrderController extends Controller
                 }
                 
             }elseif(in_array($order->status, [2, 1])){
-                $m = 'L\'ordine è stato annullato correttamente';
-                $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
+                $m = __('admin.controllers.orders.cancelled');
+                $message = __('admin.controllers.orders.cancelled_customer');
                 $order->status = 0;
             }else{
-                $m = 'L\'ordine era gia stato annullato!';
+                $m = __('admin.controllers.orders.already_cancelled');
                 return redirect()->back()->with('success', $m); 
             }            
             
@@ -149,8 +149,8 @@ class OrderController extends Controller
             'address_n' => $order->address_n,
             'delivery_cost' => $delivery_cost,
             
-            'title' =>  $c_a ? 'Ti confermiamo che il tuo ordine è stato accettato' : 'Ci dispiace informarti che il tuo ordine è stato annullato',
-            'subtitle' => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 gironi lavorativi' : '',
+            'title' =>  $c_a ? __('admin.controllers.orders.accepted_title') : __('admin.controllers.orders.cancelled_title'),
+            'subtitle' => $order->status == 6 ? __('admin.controllers.orders.refund_subtitle') : '',
             'whatsapp_message_id' => $order->whatsapp_message_id,
 
             'status' => $order->status,
@@ -277,7 +277,7 @@ class OrderController extends Controller
                     'status' => $this->customerPromotionStatusLabel($customerPromotion->status),
                     'name' => $formatted['promotion_name']
                         ?? $customerPromotion->promotion?->name
-                        ?? 'Promozione #' . $customerPromotion->promotion_id,
+                        ?? __('admin.orders.promotion') . ' #' . $customerPromotion->promotion_id,
                     'type_label' => $formatted['type_label']
                         ?? $this->promotionTypeLabel($customerPromotion->promotion?->type_discount),
                     'discount_amount_label' => $discountAmount > 0 ? Currency::formatCents($discountAmount) : null,
@@ -304,11 +304,11 @@ class OrderController extends Controller
                 $type = (string) ($item['type'] ?? '');
                 $id = $item['id'] ?? null;
                 $label = match ($type) {
-                    'product' => 'Prodotto',
-                    'menu' => 'Menu',
-                    'category' => 'Categoria',
-                    'reservation' => 'Prenotazione',
-                    default => ucfirst($type ?: 'Elemento'),
+                    'product' => __('admin.orders.product'),
+                    'menu' => __('admin.orders.menu'),
+                    'category' => __('admin.orders.category'),
+                    'reservation' => __('admin.orders.reservation'),
+                    default => ucfirst($type ?: __('admin.orders.element')),
                 };
                 $name = $item['name'] ?? ($id !== null ? ($itemNames[$type][$id] ?? null) : null);
                 $title = $name ? $label . ': ' . $name : ($id !== null ? $label . ' #' . $id : $label);
@@ -323,11 +323,11 @@ class OrderController extends Controller
                 }
 
                 if (! empty($item['discount_amount'])) {
-                    $details[] = 'sconto ' . Currency::formatCents($item['discount_amount']);
+                    $details[] = __('admin.orders.discount') . ' ' . Currency::formatCents($item['discount_amount']);
                 }
 
                 if (! empty($item['gift_quantity'])) {
-                    $details[] = 'omaggio x' . $item['gift_quantity'];
+                    $details[] = __('admin.orders.gift') . ' x' . $item['gift_quantity'];
                 }
 
                 return [
@@ -342,11 +342,11 @@ class OrderController extends Controller
     private function customerPromotionStatusLabel(?string $status): string
     {
         return match ($status) {
-            'assigned' => 'Assegnata',
-            'sent' => 'Inviata',
-            'opened' => 'Aperta',
-            'clicked' => 'Cliccata',
-            'used' => 'Usata',
+            'assigned' => __('admin.orders.assigned'),
+            'sent' => __('admin.orders.sent'),
+            'opened' => __('admin.orders.opened'),
+            'clicked' => __('admin.orders.clicked'),
+            'used' => __('admin.orders.used'),
             default => $status ?: 'n/d',
         };
     }
@@ -354,10 +354,10 @@ class OrderController extends Controller
     private function promotionTypeLabel(?string $type): string
     {
         return match ($type) {
-            'fixed' => 'Sconto fisso',
-            'percentage' => 'Sconto percentuale',
-            'gift' => 'Omaggio',
-            default => $type ?: 'Promozione',
+            'fixed' => __('admin.orders.fixed_discount'),
+            'percentage' => __('admin.orders.percentage_discount'),
+            'gift' => __('admin.orders.gift'),
+            default => $type ?: __('admin.orders.promotion'),
         };
     }
     

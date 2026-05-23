@@ -34,14 +34,14 @@
                     <i class="bi bi-type"></i>
                     {{__('admin.Nome')}}
                 </label>
-                <p><input  value="{{ old('name') }}"  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                <p><input  value="{{ old('name') }}"  type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div class="price_input">
                 <label class="label_c" for="price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price') }}" type="number" name="price" id="price" step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "></p>
+                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price') }}" type="number" name="price" id="price" step="{{ $moneyInputStep }}" placeholder="{{ __('admin.products.price_placeholder') }}"></p>
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -57,7 +57,7 @@
                 <label class="label_c" for="old_price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo_barrato')}}</label>
-                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('old_price') }}" type="number" name="old_price" id="old_price" step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "></p>
+                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('old_price') }}" type="number" name="old_price" id="old_price" step="{{ $moneyInputStep }}" placeholder="{{ __('admin.products.price_placeholder') }}"></p>
                 @error('old_price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -154,6 +154,7 @@
 <script defer>
     //document.addEventListener("DOMContentLoaded", function () {
     const categories = @json($products);
+    const fieldNamePlaceholder = @json(__('admin.catalog.field_name'));
     let number_field = 0
 
     function aggiungiCampo() {
@@ -167,7 +168,7 @@
         div.classList.add('campo-opzione');
         div.innerHTML = `
             <div class="mb-2 d-flex justify-content-between gap-2">
-                <input type="text" name="choice[${number_field}][label]" placeholder="Nome del campo">
+                <input type="text" name="choice[${number_field}][label]" placeholder="${fieldNamePlaceholder}">
                 <button type="button" class="btn btn-danger" onclick="this.closest('.campo-opzione').remove(); number_field--">{{ __('admin.Rimuovi') }}</button>
             </div>
             <div class="check_c small"> 

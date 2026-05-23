@@ -21,46 +21,46 @@ $ferieStatus    = (int) $setting['Periodo di Ferie']['status'];
 $promoStatus    = (int) $setting['Promozione Tavoli']['status'];
 
 $tavoliState = match ($tavoliStatus) {
-    2 => ['label' => 'Online',   'tone' => 'active'],
-    1 => ['label' => 'Telefono', 'tone' => 'warning'],
-    default => ['label' => 'Off', 'tone' => 'off'],
+    2 => ['label' => __('admin.settings.online_status'),   'tone' => 'active'],
+    1 => ['label' => __('admin.settings.phone_status'), 'tone' => 'warning'],
+    default => ['label' => __('admin.common.disabled'), 'tone' => 'off'],
 };
 $asportoState = match ($asportoStatus) {
-    2 => ['label' => 'Online',   'tone' => 'active'],
-    1 => ['label' => 'Telefono', 'tone' => 'warning'],
-    default => ['label' => 'Off', 'tone' => 'off'],
+    2 => ['label' => __('admin.settings.online_status'),   'tone' => 'active'],
+    1 => ['label' => __('admin.settings.phone_status'), 'tone' => 'warning'],
+    default => ['label' => __('admin.common.disabled'), 'tone' => 'off'],
 };
 $domicilioState = match ($domicilioStatus) {
-    1 => ['label' => 'Attivo', 'tone' => 'active'],
-    default => ['label' => 'Off', 'tone' => 'off'],
+    1 => ['label' => __('admin.settings.active_status_short'), 'tone' => 'active'],
+    default => ['label' => __('admin.common.disabled'), 'tone' => 'off'],
 };
 $ferieState = $ferieStatus === 1
-    ? ['label' => 'In ferie',  'tone' => 'warning']
-    : ['label' => 'Operativo', 'tone' => 'active'];
+    ? ['label' => __('admin.settings.on_holiday'),  'tone' => 'warning']
+    : ['label' => __('admin.settings.operational_status_short'), 'tone' => 'active'];
 $promoState = $promoStatus === 1
-    ? ['label' => 'Attiva', 'tone' => 'active']
-    : ['label' => 'Off',    'tone' => 'off'];
+    ? ['label' => __('admin.common.active_status'), 'tone' => 'active']
+    : ['label' => __('admin.common.disabled'), 'tone' => 'off'];
 
 $defaultLang = strtoupper((string) config('configurazione.default_lang'));
 
 $menuFixState = match ((string) ($adv['menu_fix_set'] ?? '0')) {
-    '0' => ['label' => 'Fisso',   'tone' => 'neutral'],
-    '1' => ['label' => 'Tutti',   'tone' => 'active'],
-    '2' => ['label' => 'Carta',   'tone' => 'neutral'],
-    default => ['label' => 'Default', 'tone' => 'neutral'],
+    '0' => ['label' => __('admin.Menu_fisso'),   'tone' => 'neutral'],
+    '1' => ['label' => __('admin.Tutti'),   'tone' => 'active'],
+    '2' => ['label' => __('admin.Menu_alla_carta'),   'tone' => 'neutral'],
+    default => ['label' => __('admin.common.default'), 'tone' => 'neutral'],
 };
 $servicesState = match ((string) ($adv['services'] ?? '4')) {
-    '2' => ['label' => 'Tavoli',  'tone' => 'active'],
-    '3' => ['label' => 'Asporto', 'tone' => 'active'],
-    '4' => ['label' => 'Tutti',   'tone' => 'active'],
-    default => ['label' => 'Custom', 'tone' => 'warning'],
+    '2' => ['label' => __('admin.common.table'),  'tone' => 'active'],
+    '3' => ['label' => __('admin.common.takeaway'), 'tone' => 'active'],
+    '4' => ['label' => __('admin.Tutti'),   'tone' => 'active'],
+    default => ['label' => __('admin.common.custom'), 'tone' => 'warning'],
 };
 $takeawayTypeState = ((int) ($adv['too'] ?? 0)) === 1
-    ? ['label' => 'Separato', 'tone' => 'active']
-    : ['label' => 'Unico',    'tone' => 'neutral'];
+    ? ['label' => __('admin.settings.separate'), 'tone' => 'active']
+    : ['label' => __('admin.settings.single'),    'tone' => 'neutral'];
 $doubleRoomState = ((int) ($adv['dt'] ?? 0)) === 1
-    ? ['label' => 'Attiva', 'tone' => 'active']
-    : ['label' => 'Off',    'tone' => 'off'];
+    ? ['label' => __('admin.common.active_status'), 'tone' => 'active']
+    : ['label' => __('admin.common.disabled'), 'tone' => 'off'];
 
 $asporto_p   = json_decode($setting['Prenotazione Asporti']['property'], 1);
 $domicilio_p = json_decode($setting['Possibilità di consegna a domicilio']['property'], 1);
@@ -94,7 +94,7 @@ $toneClass = fn(string $tone) => match($tone) {
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.dashboard') }}" class="order-detail__contact">
                 <i class="bi bi-grid-1x2-fill"></i>
-                <span>Dashboard</span>
+                <span>{{ __('admin.nav.dashboard') }}</span>
             </a>
         </div>
     </header>
@@ -762,7 +762,7 @@ $toneClass = fn(string $tone) => match($tone) {
                 </a>
                 <div class="stt-mobile-strip__brand-text">
                     <span class="stt-mobile-strip__name">{{ config('configurazione.APP_NAME') }}</span>
-                    <span class="stt-mobile-strip__pack">{{ $pack[$subscription] ?? 'Attivo' }}</span>
+                    <span class="stt-mobile-strip__pack">{{ $pack[$subscription] ?? __('admin.common.active') }}</span>
                 </div>
             </div>
         </div>
@@ -774,7 +774,7 @@ $toneClass = fn(string $tone) => match($tone) {
 
                 {{-- Sezione 1 — Stato operativo --}}
                 <div class="stt-section">
-                    <p class="stt-label">{{ __('Stato operativo') }}</p>
+                    <p class="stt-label">{{ __('admin.settings.operational_status') }}</p>
 
                     <div class="stt-op-grid">
 
@@ -782,12 +782,12 @@ $toneClass = fn(string $tone) => match($tone) {
                         <div class="stt-op-card {{ $toneClass($tavoliState['tone']) }}"
                              data-stt-toggle="tavoli" data-stt-max="2"
                              role="button" tabindex="0"
-                             aria-label="{{ __('Cambia stato Tavoli') }}" title="{{ __('Clicca per cambiare modalità') }}">
+                             aria-label="{{ __('admin.settings.change_table_status') }}" title="{{ __('admin.settings.click_to_change_mode') }}">
                             <div class="stt-op-card__icon">
                                 <i class="bi bi-table"></i>
                             </div>
                             <div class="stt-op-card__body">
-                                <p class="stt-op-card__name">{{ __('Tavoli') }}</p>
+                                <p class="stt-op-card__name">{{ __('admin.common.table') }}</p>
 
                             </div>
                             <span class="stt-op-card__badge stt-state stt-state--{{ $tavoliState['tone'] }}"
@@ -798,12 +798,12 @@ $toneClass = fn(string $tone) => match($tone) {
                         <div class="stt-op-card {{ $toneClass($asportoState['tone']) }}"
                              data-stt-toggle="asporto" data-stt-max="2"
                              role="button" tabindex="0"
-                             aria-label="{{ __('Cambia stato Asporto') }}" title="{{ __('Clicca per cambiare modalità') }}">
+                             aria-label="{{ __('admin.settings.change_takeaway_status') }}" title="{{ __('admin.settings.click_to_change_mode') }}">
                             <div class="stt-op-card__icon">
                                 <i class="bi bi-bag-fill"></i>
                             </div>
                             <div class="stt-op-card__body">
-                                <p class="stt-op-card__name">{{ __('Asporto') }}</p>
+                                <p class="stt-op-card__name">{{ __('admin.common.takeaway') }}</p>
 
                             </div>
                             <span class="stt-op-card__badge stt-state stt-state--{{ $asportoState['tone'] }}"
@@ -815,12 +815,12 @@ $toneClass = fn(string $tone) => match($tone) {
                         <div class="stt-op-card {{ $toneClass($domicilioState['tone']) }}"
                              data-stt-toggle="domicilio" data-stt-max="1"
                              role="button" tabindex="0"
-                             aria-label="{{ __('Cambia stato Domicilio') }}" title="{{ __('Clicca per cambiare modalità') }}">
+                             aria-label="{{ __('admin.settings.change_delivery_status') }}" title="{{ __('admin.settings.click_to_change_mode') }}">
                             <div class="stt-op-card__icon">
                                 <i class="bi bi-bicycle"></i>
                             </div>
                             <div class="stt-op-card__body">
-                                <p class="stt-op-card__name">{{ __('Domicilio') }}</p>
+                                <p class="stt-op-card__name">{{ __('admin.common.delivery') }}</p>
 
                             </div>
                             <span class="stt-op-card__badge stt-state stt-state--{{ $domicilioState['tone'] }}"
@@ -832,12 +832,12 @@ $toneClass = fn(string $tone) => match($tone) {
                         <div class="stt-op-card {{ $toneClass($ferieState['tone']) }}"
                              data-stt-toggle="ferie" data-stt-max="1"
                              role="button" tabindex="0"
-                             aria-label="{{ __('Cambia stato Ferie') }}" title="{{ __('Clicca per cambiare modalità') }}">
+                             aria-label="{{ __('admin.settings.change_holiday_status') }}" title="{{ __('admin.settings.click_to_change_mode') }}">
                             <div class="stt-op-card__icon">
                                 <i class="bi bi-umbrella-fill"></i>
                             </div>
                             <div class="stt-op-card__body">
-                                <p class="stt-op-card__name">{{ __('Ferie') }}</p>
+                                <p class="stt-op-card__name">{{ __('admin.common.holiday') }}</p>
 
                             </div>
                             <span class="stt-op-card__badge stt-state stt-state--{{ $ferieState['tone'] }}"
@@ -848,12 +848,12 @@ $toneClass = fn(string $tone) => match($tone) {
                         <div class="stt-op-card {{ $toneClass($promoState['tone']) }}"
                              data-stt-toggle="promo" data-stt-max="1"
                              role="button" tabindex="0"
-                             aria-label="{{ __('Cambia stato Promo') }}" title="{{ __('Clicca per cambiare modalità') }}">
+                             aria-label="{{ __('admin.settings.change_promo_status') }}" title="{{ __('admin.settings.click_to_change_mode') }}">
                             <div class="stt-op-card__icon">
                                 <i class="bi bi-gift-fill"></i>
                             </div>
                             <div class="stt-op-card__body">
-                                <p class="stt-op-card__name">{{ __('Promo') }}</p>
+                                <p class="stt-op-card__name">{{ __('admin.common.promo') }}</p>
 
                             </div>
                             <span class="stt-op-card__badge stt-state stt-state--{{ $promoState['tone'] }}"
@@ -865,11 +865,11 @@ $toneClass = fn(string $tone) => match($tone) {
 
                 {{-- Sezione 2 — Lingua e valuta --}}
                 <div class="stt-section">
-                    <p class="stt-label">Lingua e valuta</p>
+                    <p class="stt-label">{{ __('admin.settings.language_currency') }}</p>
                     <div class="stt-card">
                         <div class="stt-locale-grid">
                             <div>
-                                <p class="stt-sublabel">Lingua predefinita</p>
+                                <p class="stt-sublabel">{{ __('admin.settings.default_language') }}</p>
                                 <div class="stt-lang-pills">
                                     @foreach ($languages as $l)
                                         <button type="button"
@@ -879,7 +879,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                 </div>
                             </div>
                             <div>
-                                <p class="stt-sublabel">Valuta prezzi</p>
+                                <p class="stt-sublabel">{{ __('admin.settings.price_currency') }}</p>
                                 <select class="stt-select" data-stt-currency>
                                     @foreach ($supportedCurrencies as $currency)
                                         <option value="{{ $currency['code'] }}" @selected($activeCurrency['code'] === $currency['code'])>
@@ -888,7 +888,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                     @endforeach
                                 </select>
                                 <span class="stt-inline-err" id="stt-currency-err"></span>
-                                <p class="stt-note mt-2">I valori salvati non vengono convertiti automaticamente.</p>
+                                <p class="stt-note mt-2">{{ __('admin.settings.saved_values_not_converted') }}</p>
                             </div>
                         </div>
                     </div>
@@ -896,13 +896,13 @@ $toneClass = fn(string $tone) => match($tone) {
 
                 {{-- Sezione 3 — Servizi --}}
                 <div class="stt-section">
-                    <p class="stt-label">Servizi</p>
+                    <p class="stt-label">{{ __('admin.settings.services') }}</p>
                     <div class="stt-services-grid">
 
                         {{-- Asporto --}}
                         <div class="stt-card">
                             <div class="stt-svc-head">
-                                <span class="stt-svc-title"><i class="bi bi-bag-fill me-1"></i>Asporto</span>
+                                <span class="stt-svc-title"><i class="bi bi-bag-fill me-1"></i>{{ __('admin.common.takeaway') }}</span>
                                 <div class="stt-svc-toggle {{ $toneClass($asportoState['tone']) }}"
                                      data-stt-toggle="asporto" data-stt-max="2">
                                     <span class="stt-state stt-state--{{ $asportoState['tone'] }}" data-stt-badge="asporto">{{ $asportoState['label'] }}</span>
@@ -910,16 +910,16 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
                             @if ($subscription > 2)
                             <div class="stt-field">
-                                <span class="stt-field-lbl">Pagamento accettato</span>
+                                <span class="stt-field-lbl">{{ __('admin.settings.accepted_payment') }}</span>
                                 <div class="stt-pay-row" data-stt-pay="asporto_pay">
                                     <button type="button" class="stt-pay-btn {{ $asporto_p['pay'] == 0 ? 'active' : '' }}" data-stt-pay-val="0">
-                                        <i class="bi bi-cash-coin"></i> Contanti
+                                        <i class="bi bi-cash-coin"></i> {{ __('admin.settings.cash') }}
                                     </button>
                                     <button type="button" class="stt-pay-btn {{ $asporto_p['pay'] == 1 ? 'active' : '' }}" data-stt-pay-val="1">
-                                        <i class="bi bi-cash-coin"></i><i class="bi bi-credit-card-fill"></i> Entrambi
+                                        <i class="bi bi-cash-coin"></i><i class="bi bi-credit-card-fill"></i> {{ __('admin.settings.both') }}
                                     </button>
                                     <button type="button" class="stt-pay-btn {{ $asporto_p['pay'] == 2 ? 'active' : '' }}" data-stt-pay-val="2">
-                                        <i class="bi bi-credit-card-fill"></i> Carta
+                                        <i class="bi bi-credit-card-fill"></i> {{ __('admin.settings.card') }}
                                     </button>
                                 </div>
                             </div>
@@ -940,7 +940,7 @@ $toneClass = fn(string $tone) => match($tone) {
                         @if ($subscription > 1)
                         <div class="stt-card">
                             <div class="stt-svc-head">
-                                <span class="stt-svc-title"><i class="bi bi-bicycle me-1"></i>Domicilio</span>
+                                <span class="stt-svc-title"><i class="bi bi-bicycle me-1"></i>{{ __('admin.common.delivery') }}</span>
                                 <div class="stt-svc-toggle {{ $toneClass($domicilioState['tone']) }}"
                                      data-stt-toggle="domicilio" data-stt-max="1">
                                     <span class="stt-state stt-state--{{ $domicilioState['tone'] }}" data-stt-badge="domicilio">{{ $domicilioState['label'] }}</span>
@@ -948,16 +948,16 @@ $toneClass = fn(string $tone) => match($tone) {
                             </div>
                             @if ($subscription > 2)
                             <div class="stt-field">
-                                <span class="stt-field-lbl">Pagamento accettato</span>
+                                <span class="stt-field-lbl">{{ __('admin.settings.accepted_payment') }}</span>
                                 <div class="stt-pay-row" data-stt-pay="domicilio_pay">
                                     <button type="button" class="stt-pay-btn {{ $domicilio_p['pay'] == 0 ? 'active' : '' }}" data-stt-pay-val="0">
-                                        <i class="bi bi-cash-coin"></i> Contanti
+                                        <i class="bi bi-cash-coin"></i> {{ __('admin.settings.cash') }}
                                     </button>
                                     <button type="button" class="stt-pay-btn {{ $domicilio_p['pay'] == 1 ? 'active' : '' }}" data-stt-pay-val="1">
-                                        <i class="bi bi-cash-coin"></i><i class="bi bi-credit-card-fill"></i> Entrambi
+                                        <i class="bi bi-cash-coin"></i><i class="bi bi-credit-card-fill"></i> {{ __('admin.settings.both') }}
                                     </button>
                                     <button type="button" class="stt-pay-btn {{ $domicilio_p['pay'] == 2 ? 'active' : '' }}" data-stt-pay-val="2">
-                                        <i class="bi bi-credit-card-fill"></i> Carta
+                                        <i class="bi bi-credit-card-fill"></i> {{ __('admin.settings.card') }}
                                     </button>
                                 </div>
                             </div>
@@ -997,7 +997,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             </label>
                             <div>
                                 <p class="stt-sw-lbl" data-stt-badge="ferie">{{ $ferieState['label'] }}</p>
-                                <p class="stt-sw-sub" id="stt-ferie-sub">{{ $ferieStatus === 1 ? 'Il locale non accetta ordini' : 'Il locale è operativo' }}</p>
+                                <p class="stt-sw-sub" id="stt-ferie-sub">{{ $ferieStatus === 1 ? __('admin.settings.restaurant_closed_orders') : __('admin.settings.restaurant_operational') }}</p>
                             </div>
                         </div>
                         <div class="stt-date-row">
@@ -1022,7 +1022,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             </label>
                             <div>
                                 <p class="stt-sw-lbl" data-stt-badge="promo">{{ $promoState['label'] }}</p>
-                                <p class="stt-sw-sub">Visibile ai clienti sui tavoli</p>
+                                <p class="stt-sw-sub">{{ __('admin.settings.visible_to_table_customers') }}</p>
                             </div>
                         </div>
                         <div class="stt-field">
@@ -1030,14 +1030,14 @@ $toneClass = fn(string $tone) => match($tone) {
                             <input type="text" class="stt-input"
                                    data-stt-field="promo_table_title"
                                    value="{{ $promo_table['title'] ?? '' }}"
-                                   placeholder="Es: -10% su tutti i dessert">
+                                   placeholder="{{ __('admin.settings.promo_placeholder') }}">
                             <span class="stt-inline-err"></span>
                         </div>
                         <div class="stt-field">
                             <span class="stt-field-lbl">{{ __('admin.Corpo') }}</span>
                             <textarea class="stt-input" rows="3"
                                       data-stt-field="promo_table_body"
-                                      placeholder="Descrizione breve della promozione...">{{ $promo_table['body'] ?? '' }}</textarea>
+                                      placeholder="{{ __('admin.settings.promo_description_placeholder') }}">{{ $promo_table['body'] ?? '' }}</textarea>
                             <span class="stt-inline-err"></span>
                         </div>
                     </div>
@@ -1046,7 +1046,7 @@ $toneClass = fn(string $tone) => match($tone) {
 
                 {{-- Sezione 6 — Dettagli del locale (tab layout, submit unico) --}}
                 <div class="stt-section">
-                    <p class="stt-label"><i class="bi bi-building"></i>{{ __('admin.Dettagli_locale') ?? 'Dettagli del locale' }}</p>
+                    <p class="stt-label"><i class="bi bi-building"></i>{{ __('admin.settings.venue_details') }}</p>
                     <div class="stt-card stt-card-flush">
 
                         {{-- Tab nav --}}
@@ -1117,10 +1117,10 @@ $toneClass = fn(string $tone) => match($tone) {
                                 @if(isset($property_posizione['foto_maps']) && $property_posizione['foto_maps'] !== '')
                                     <img class="loc-map-preview"
                                          src="{{ asset('public/storage/' . $property_posizione['foto_maps']) }}"
-                                         alt="{{ __('admin.Mappa') ?? 'Mappa' }}">
+                                         alt="{{ __('admin.settings.map') }}">
                                 @endif
                                 <div class="loc-field">
-                                    <label>{{ __('admin.Foto_maps') ?? 'Foto mappa' }}</label>
+                                    <label>{{ __('admin.settings.map_photo') }}</label>
                                     <input type="file" id="file-input" name="foto_maps"
                                            accept="image/*">
                                 </div>
@@ -1134,7 +1134,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                     <label>{{ __('admin.Indirizzo') }}</label>
                                     <input type="text" class="stt-input" name="indirizzo"
                                            value="{{ $property_posizione['indirizzo'] ?? '' }}"
-                                           placeholder="{{ __('admin.Via_esempio') ?? 'Via Roma 1, Milano' }}">
+                                           placeholder="{{ __('admin.settings.address_placeholder') }}">
                                 </div>
                             </div>
 
@@ -1154,7 +1154,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                                placeholder="info@ristorante.it">
                                     </div>
                                 </div>
-                                <p class="stt-sublabel stt-sublabel--social">{{ __('admin.Social') ?? 'Social' }}</p>
+                                <p class="stt-sublabel stt-sublabel--social">{{ __('admin.settings.social') }}</p>
                                 <div class="loc-contact-grid">
                                     <div class="loc-field">
                                         <label><i class="bi bi-instagram"></i> Instagram</label>
@@ -1202,7 +1202,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                         <span>({{ $i['provincia'] }}) {{ $i['comune'] }} — {{ $i['cap'] }}{{ $i['price'] ? ' — ' . \App\Support\Currency::formatCents($i['price']) : '' }}</span>
                                     @endforeach
                                     @if (empty($setting['Comuni per il domicilio']['property']))
-                                        <span class="stt-empty-state">{{ __('admin.Nessun_comune') ?? 'Nessun comune aggiunto' }}</span>
+                                        <span class="stt-empty-state">{{ __('admin.settings.no_city_added') }}</span>
                                     @endif
                                 </div>
                                 <div class="loc-actions">
@@ -1231,7 +1231,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                         <span><i class="bi bi-whatsapp me-2 stt-wa-icon"></i>{{ $i }}</span>
                                     @endforeach
                                     @if (empty($setting['wa']['property']['numbers']))
-                                        <span class="stt-empty-state">{{ __('admin.Nessun_numero') ?? 'Nessun numero configurato' }}</span>
+                                        <span class="stt-empty-state">{{ __('admin.settings.no_number_configured') }}</span>
                                     @endif
                                 </div>
                                 <div class="loc-actions">
@@ -1275,7 +1275,7 @@ $toneClass = fn(string $tone) => match($tone) {
                     </a>
                     <a class="stt-pack-link" href="https://future-plus.it/#pacchetti">
                         <img class="stt-pack-link__icon" src="https://future-plus.it/img/favicon.png" alt="">
-                        {{ __('admin.Pacchetto') }}: {{ $pack[$subscription] ?? 'Attivo' }}
+                        {{ __('admin.Pacchetto') }}: {{ $pack[$subscription] ?? __('admin.common.active') }}
                     </a>
                 </div>
 
@@ -1368,24 +1368,24 @@ $toneClass = fn(string $tone) => match($tone) {
                             <div class="ops-radio-group ops-radio-group--spaced">
                                 <label class="ops-radio-label">
                                     <input class="critical-radio2" @checked(($adv['too'] ?? 0) == 0) type="radio" name="too" value="0">
-                                    <span>Unico</span>
+                                    <span>{{ __('admin.settings.single') }}</span>
                                 </label>
                                 <label class="ops-radio-label">
                                     <input class="critical-radio2" @checked(($adv['too'] ?? 0) == 1) type="radio" name="too" value="1">
-                                    <span>Separato</span>
+                                    <span>{{ __('admin.settings.separate') }}</span>
                                 </label>
                             </div>
                             <input type="hidden" id="attivo-originale2" value="{{ $adv['too'] ?? 0 }}">
                             <div class="ops-pair ops-pair--flush">
                                 <div class="ops-field">
-                                    <label>Tipo 1</label>
+                                    <label>{{ __('admin.settings.type_1') }}</label>
                                     <input type="text" name="too_1" value="{{ $adv['too_1'] ?? '' }}"
-                                           placeholder="Es: Asporto">
+                                           placeholder="{{ __('admin.settings.type_1_placeholder') }}">
                                 </div>
                                 <div class="ops-field">
-                                    <label>Tipo 2</label>
+                                    <label>{{ __('admin.settings.type_2') }}</label>
                                     <input type="text" name="too_2" value="{{ $adv['too_2'] ?? '' }}"
-                                           placeholder="Es: Domicilio">
+                                           placeholder="{{ __('admin.settings.type_2_placeholder') }}">
                                 </div>
                             </div>
                         </div>
@@ -1402,11 +1402,11 @@ $toneClass = fn(string $tone) => match($tone) {
                             <div class="ops-radio-group ops-radio-group--spaced">
                                 <label class="ops-radio-label">
                                     <input class="critical-radio3" @checked(($adv['dt'] ?? 0) == 0) type="radio" name="dt" value="0">
-                                    <span>Off</span>
+                                    <span>{{ __('admin.common.disabled') }}</span>
                                 </label>
                                 <label class="ops-radio-label">
                                     <input class="critical-radio3" @checked(($adv['dt'] ?? 0) == 1) type="radio" name="dt" value="1">
-                                    <span>On</span>
+                                    <span>{{ __('admin.common.enabled') }}</span>
                                 </label>
                             </div>
                             <input type="hidden" id="attivo-originale3" value="{{ $adv['dt'] ?? 0 }}">
@@ -1414,12 +1414,12 @@ $toneClass = fn(string $tone) => match($tone) {
                                 <div class="ops-field">
                                     <label>{{__('admin.Sala_1')}}</label>
                                     <input type="text" name="sala_1" value="{{ $adv['sala_1'] ?? '' }}"
-                                           placeholder="Es: Sala principale">
+                                           placeholder="{{ __('admin.settings.room_1_placeholder') }}">
                                 </div>
                                 <div class="ops-field">
                                     <label>{{__('admin.Sala_2')}}</label>
                                     <input type="text" name="sala_2" value="{{ $adv['sala_2'] ?? '' }}"
-                                           placeholder="Es: Sala eventi">
+                                           placeholder="{{ __('admin.settings.room_2_placeholder') }}">
                                 </div>
                             </div>
                         </div>
@@ -1436,7 +1436,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             <div class="ops-field">
                                 <label>{{__('admin.Ragione_sociale')}}</label>
                                 <input type="text" name="r_sociale" value="{{ $adv['r_sociale'] ?? '' }}"
-                                       placeholder="Ristorante SRL">
+                                       placeholder="{{ __('admin.settings.company_placeholder') }}">
                             </div>
                             <div class="ops-field">
                                 <label>{{__('admin.Piva')}}</label>
@@ -1518,7 +1518,7 @@ $toneClass = fn(string $tone) => match($tone) {
                             <div class="ops-method-item">
                                 <input class="btn-check" type="checkbox" name="method[]" id="m_7" value="7"
                                        @if (in_array(7, $adv['method'])) checked @endif>
-                                <label for="m_7" title="{{ __('admin.Contanti') ?? 'Contanti' }}">
+                                <label for="m_7" title="{{ __('admin.settings.cash') }}">
                                     <i class="bi bi-cash-coin"></i>
                                 </label>
                             </div>
@@ -1545,8 +1545,8 @@ $toneClass = fn(string $tone) => match($tone) {
                     @csrf
                     <input type="hidden" name="ar" value="remove">
                     <x-dashboard.action-modal title-id="staticBackdrop1Label" class="settings-basic-modal"
-                        title="{{ __('admin.Seleziona_i_comuni_che_vuoi_rimuovere') }}" eyebrow="Domicilio"
-                        tone="danger" description="Seleziona i comuni da rimuovere dalla zona di consegna.">
+                        title="{{ __('admin.Seleziona_i_comuni_che_vuoi_rimuovere') }}" eyebrow="{{ __('admin.settings.delivery_area_eyebrow') }}"
+                        tone="danger" description="{{ __('admin.settings.remove_delivery_areas_description') }}">
                         @php
                         if (is_string($setting['Comuni per il domicilio']['property'])) {
                             $setting['Comuni per il domicilio']['property'] = json_decode($setting['Comuni per il domicilio']['property'], true);
@@ -1573,23 +1573,23 @@ $toneClass = fn(string $tone) => match($tone) {
                     @csrf
                     <input type="hidden" name="ar" value="add">
                     <x-dashboard.action-modal title-id="staticBackdropLabel" class="settings-basic-modal"
-                        title="{{__('admin.Aggiungi_comune')}}" eyebrow="Domicilio" tone="mint"
-                        description="Aggiungi un nuovo comune e definisci subito sigla, CAP e costo extra di consegna.">
+                        title="{{__('admin.Aggiungi_comune')}}" eyebrow="{{ __('admin.settings.delivery_area_eyebrow') }}" tone="mint"
+                        description="{{ __('admin.settings.add_delivery_area_description') }}">
                         <div class="dashboard-action-modal__field">
-                            <label for="comune">{{__('admin.Comune')}}</label>
-                            <input name="comune" id="comune" type="text" placeholder="comune">
+                            <label for="comune">{{ __('admin.settings.city') }}</label>
+                            <input name="comune" id="comune" type="text" placeholder="{{ __('admin.settings.city_placeholder') }}">
                         </div>
                         <div class="dashboard-action-modal__field">
                             <label for="provincia">{{__('admin.Provincia')}}</label>
-                            <input name="provincia" id="provincia" type="text" placeholder="sigla della provincia es: AN">
+                            <input name="provincia" id="provincia" type="text" placeholder="{{ __('admin.settings.province_placeholder') }}">
                         </div>
                         <div class="dashboard-action-modal__field">
                             <label for="cap">{{__('admin.Cap')}}</label>
-                            <input name="cap" id="cap" type="text" placeholder="cap">
+                            <input name="cap" id="cap" type="text" placeholder="{{ __('admin.settings.zip_placeholder') }}">
                         </div>
                         <div class="dashboard-action-modal__field">
                             <label for="price">{{__('admin.Costo_extra_consegna')}}</label>
-                            <input name="price" id="price" type="number" step="{{ \App\Support\Currency::inputStep() }}" placeholder="{{ $appCurrency['symbol'] }} extra">
+                            <input name="price" id="price" type="number" step="{{ \App\Support\Currency::inputStep() }}" placeholder="{{ __('admin.settings.extra_price_placeholder', ['symbol' => $appCurrency['symbol']]) }}">
                         </div>
                         <x-slot name="footer">
                             <button type="button" class="my_btn_1 d" data-bs-dismiss="modal">{{__('admin.Annulla')}}</button>
@@ -1608,7 +1608,7 @@ $toneClass = fn(string $tone) => match($tone) {
                     @csrf
                     <x-dashboard.action-modal title-id="staticBackdrop2Label" class="settings-basic-modal"
                         title="{{__('admin.Modifica_wa')}}" eyebrow="WhatsApp" tone="mint"
-                        description="Aggiorna i numeri disponibili per l invio diretto dei messaggi WhatsApp.">
+                        description="{{ __('admin.settings.update_whatsapp_numbers_description') }}">
                         <div class="dashboard-action-modal__field">
                             <label for="numbers_primary">1# {{__('admin.Numero')}}</label>
                             <input name="numbers[]" id="numbers_primary" type="text" placeholder="39000111000">
@@ -1637,6 +1637,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── CSRF & fetch helper — unica rotta PATCH
     const CSRF    = '{{ csrf_token() }}';
     const API_URL = '{{ route("admin.settings.quickUpdate") }}';
+    const settingsTranslations = {
+        error: @json(__('admin.common.error')),
+        disabled: @json(__('admin.common.disabled')),
+        saveError: @json(__('admin.settings.save_error')),
+        phone: @json(__('admin.settings.phone_status')),
+        online: @json(__('admin.settings.online_status')),
+        active: @json(__('admin.settings.active_status_short')),
+        operational: @json(__('admin.settings.operational_status_short')),
+        holiday: @json(__('admin.settings.on_holiday')),
+        promoActive: @json(__('admin.common.active_status')),
+        restaurantClosedOrders: @json(__('admin.settings.restaurant_closed_orders')),
+        restaurantOperational: @json(__('admin.settings.restaurant_operational')),
+    };
 
     async function patch(field, value, el) {
         el?.classList.add('stt-loading');
@@ -1648,7 +1661,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             if (!res.ok) {
                 const json = await res.json().catch(() => ({}));
-                throw new Error(json.error || 'Errore ' + res.status);
+                throw new Error(json.error || settingsTranslations.error + ' ' + res.status);
             }
             el?.classList.add('stt-flash-ok');
             setTimeout(() => el?.classList.remove('stt-flash-ok'), 700);
@@ -1656,7 +1669,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (err) {
             el?.classList.add('stt-flash-err');
             setTimeout(() => el?.classList.remove('stt-flash-err'), 1500);
-            return err.message || 'Errore';
+            return err.message || settingsTranslations.error;
         } finally {
             el?.classList.remove('stt-loading');
         }
@@ -1672,11 +1685,11 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const stateMap = {
-        tavoli:    { 0:{label:'Off',tone:'off'}, 1:{label:'Telefono',tone:'warning'}, 2:{label:'Online',tone:'active'} },
-        asporto:   { 0:{label:'Off',tone:'off'}, 1:{label:'Telefono',tone:'warning'}, 2:{label:'Online',tone:'active'} },
-        domicilio: { 0:{label:'Off',tone:'off'}, 1:{label:'Attivo',tone:'active'} },
-        ferie:     { 0:{label:'Operativo',tone:'active'}, 1:{label:'In ferie',tone:'warning'} },
-        promo:     { 0:{label:'Off',tone:'off'}, 1:{label:'Attiva',tone:'active'} },
+        tavoli:    { 0:{label:settingsTranslations.disabled,tone:'off'}, 1:{label:settingsTranslations.phone,tone:'warning'}, 2:{label:settingsTranslations.online,tone:'active'} },
+        asporto:   { 0:{label:settingsTranslations.disabled,tone:'off'}, 1:{label:settingsTranslations.phone,tone:'warning'}, 2:{label:settingsTranslations.online,tone:'active'} },
+        domicilio: { 0:{label:settingsTranslations.disabled,tone:'off'}, 1:{label:settingsTranslations.active,tone:'active'} },
+        ferie:     { 0:{label:settingsTranslations.operational,tone:'active'}, 1:{label:settingsTranslations.holiday,tone:'warning'} },
+        promo:     { 0:{label:settingsTranslations.disabled,tone:'off'}, 1:{label:settingsTranslations.promoActive,tone:'active'} },
     };
 
     const toneToClass = t => ({active:'stt-pill--active-border',warning:'stt-pill--warning-border',off:'stt-pill--off-border'}[t]||'');
@@ -1708,7 +1721,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Ferie sublabel
         if (field === 'ferie') {
             const sub = document.getElementById('stt-ferie-sub');
-            if (sub) sub.textContent = value === 1 ? 'Il locale non accetta ordini' : 'Il locale è operativo';
+            if (sub) sub.textContent = value === 1 ? settingsTranslations.restaurantClosedOrders : settingsTranslations.restaurantOperational;
         }
     }
 
@@ -1774,7 +1787,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (currErr) currErr.style.display = 'none';
             const result = await patch('currency', this.value, this);
             if (result !== true) {
-                if (currErr) { currErr.textContent = typeof result === 'string' ? result : 'Errore'; currErr.style.display = 'block'; }
+                if (currErr) { currErr.textContent = typeof result === 'string' ? result : settingsTranslations.error; currErr.style.display = 'block'; }
                 this.value = prevCurr;
             } else {
                 prevCurr = this.value;
@@ -1794,7 +1807,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (e) e.style.display = 'none';
             const result = await patch(inp.dataset.sttField, inp.value, inp);
             if (result !== true && e) {
-                e.textContent = typeof result === 'string' ? result : 'Errore nel salvataggio';
+                e.textContent = typeof result === 'string' ? result : settingsTranslations.saveError;
                 e.style.display = 'block';
             }
         };

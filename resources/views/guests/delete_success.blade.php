@@ -13,7 +13,7 @@
     <header>
         <div class="container text-center my-5" >
             <h1>
-                La tua prenotazione è stata annullata con successo
+                {{ __('admin.public.delete_success.reservation_cancelled') }}
             </h1>
 
         </div>

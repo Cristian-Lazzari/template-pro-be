@@ -93,7 +93,7 @@ class MailerController extends Controller
             'img_2' => $img2Path,
         ]));
 
-        $message = 'Il modello "' . $data['name'] . '" è stato creato correttamente';
+        $message = __('admin.marketing.mailer.created_flash', ['name' => $data['name']]);
 
         return $this->redirectToModels($message);
     }
@@ -134,7 +134,7 @@ class MailerController extends Controller
         $model->fill($this->modelPayload($data));
         $model->save();
 
-        $message = 'Il modello "' . $data['name'] . '" è stato modificato correttamente';
+        $message = __('admin.marketing.mailer.updated_flash', ['name' => $data['name']]);
 
         return $this->redirectToModels($message);
     }
@@ -153,7 +153,7 @@ class MailerController extends Controller
 
         $model->delete();
 
-        return $this->redirectToModels('Modello eliminato con successo');
+        return $this->redirectToModels(__('admin.marketing.mailer.deleted_flash'));
     }
 
     private function redirectToModels(string $message)

@@ -13,9 +13,9 @@
 
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Modelli mail'],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.mailer.plural')],
         ],
     ])
 
@@ -25,17 +25,17 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <x-icon name="file-earmark-richtext-fill" />
                 </span>
-                <strong>Marketing</strong>
+                <strong>{{ __('admin.marketing.area_links.marketing') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">Modelli mail</h1>
-            <p>Template email collegabili a campagne e automazioni.</p>
+            <h1 class="menu-dashboard__title">{{ __('admin.marketing.mailer.plural') }}</h1>
+            <p>{{ __('admin.marketing.mailer.description') }}</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.customers.mail_models.create') }}" class="order-detail__contact">
                 <x-icon name="plus-circle-fill" />
-                <span>Crea nuovo</span>
+                <span>{{ __('admin.marketing.mailer.create_new') }}</span>
             </a>
             @include('admin.Marketing.partials.area-links', ['current' => 'models'])
         </div>
@@ -47,7 +47,7 @@
                 <span class="order-detail__section-icon">
                     <x-icon name="list-check" />
                 </span>
-                Elenco modelli
+                {{ __('admin.marketing.mailer.list_title') }}
             </h3>
         </div>
 
@@ -56,6 +56,11 @@
                 @foreach ($models as $mailModel)
                     @php
                         $status = $mailModel->status ?: 'draft';
+                        $statusLabels = [
+                            'draft' => __('admin.marketing.mailer.draft'),
+                            'active' => __('admin.marketing.mailer.active'),
+                            'archived' => __('admin.marketing.mailer.archived'),
+                        ];
                         $bodyPreview = trim(strip_tags($mailModel->body_html ?: $mailModel->body ?: ''));
                         $usageCount = (int) ($mailModel->campaigns_count ?? 0) + (int) ($mailModel->automations_count ?? 0);
                     @endphp
@@ -64,10 +69,10 @@
                         <div class="marketing-index-main">
                             <div class="marketing-index-kicker">
                                 <x-icon name="file-earmark-richtext-fill" />
-                                <span>Modello mail</span>
+                                <span>{{ __('admin.marketing.mailer.mail_model') }}</span>
                                 @include('admin.Marketing.partials.status-pill', [
                                     'status' => $status,
-                                    'label' => ucfirst($status),
+                                    'label' => $statusLabels[$status] ?? ucfirst($status),
                                 ])
                             </div>
 
@@ -80,10 +85,10 @@
                         </div>
 
                         <div class="marketing-index-block">
-                            <p class="marketing-index-copy">{{ $mailModel->object ?: 'Oggetto non definito' }}</p>
+                            <p class="marketing-index-copy">{{ $mailModel->object ?: __('admin.marketing.mailer.undefined_object') }}</p>
                             <div class="marketing-index-meta marketing-index-extra">
-                                <span>Heading: {{ $mailModel->heading ?: '-' }}</span>
-                                <span>Mittente: {{ $mailModel->sender ?: '-' }}</span>
+                                <span>{{ __('admin.marketing.mailer.heading') }}: {{ $mailModel->heading ?: '-' }}</span>
+                                <span>{{ __('admin.marketing.mailer.sender') }}: {{ $mailModel->sender ?: '-' }}</span>
                             </div>
                             @if ($bodyPreview !== '')
                                 <p class="marketing-index-copy marketing-index-extra">{{ \Illuminate\Support\Str::limit($bodyPreview, 130) }}</p>
@@ -94,27 +99,27 @@
                             <div class="marketing-index-stat-row">
                                 <span class="marketing-index-stat">
                                     <strong>{{ $usageCount }}</strong>
-                                    <span>utilizzi</span>
+                                    <span>{{ __('admin.marketing.mailer.usage_count') }}</span>
                                 </span>
                             </div>
                             <div class="marketing-index-meta marketing-index-extra">
-                                <span>{{ $mailModel->campaigns_count ?? 0 }} campagne</span>
-                                <span>{{ $mailModel->automations_count ?? 0 }} automazioni</span>
-                                <span>Aggiornato: {{ $mailModel->updated_at?->format('d/m/Y H:i') ?? '-' }}</span>
+                                <span>{{ __('admin.marketing.mailer.campaigns_count', ['count' => $mailModel->campaigns_count ?? 0]) }}</span>
+                                <span>{{ __('admin.marketing.mailer.automations_count', ['count' => $mailModel->automations_count ?? 0]) }}</span>
+                                <span>{{ __('admin.marketing.mailer.updated_at', ['date' => $mailModel->updated_at?->format('d/m/Y H:i') ?? '-']) }}</span>
                             </div>
                         </div>
 
                         <div class="marketing-index-actions">
                             <a class="order-detail__contact" href="{{ route('admin.customers.mail_models.edit', $mailModel->id) }}">
                                 <x-icon name="pencil-square" />
-                                <span>Modifica</span>
+                                <span>{{ __('admin.common.edit') }}</span>
                             </a>
                             <form class="marketing-index-secondary" action="{{ route('admin.customers.mail_models.delete', $mailModel->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button class="order-detail__contact marketing-index-danger" type="submit">
                                     <x-icon name="trash-fill" />
-                                    <span>Elimina</span>
+                                    <span>{{ __('admin.common.delete') }}</span>
                                 </button>
                             </form>
                         </div>
@@ -131,8 +136,8 @@
                     <x-icon name="file-earmark-richtext-fill" />
                 </span>
                 <div>
-                    <strong>Nessun modello mail presente.</strong>
-                    <p>Crea un template da collegare a campagne o automazioni.</p>
+                    <strong>{{ __('admin.marketing.mailer.no_models') }}</strong>
+                    <p>{{ __('admin.marketing.mailer.empty_text') }}</p>
                 </div>
             </div>
         @endif

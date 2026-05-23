@@ -10,11 +10,11 @@
     $showSummary = $showSummary ?? true;
     $compact = $compact ?? false;
     $statusLabels = [
-        'assigned' => 'Assegnata',
-        'sent' => 'Inviata',
-        'opened' => 'Aperta',
-        'clicked' => 'Click',
-        'used' => 'Usata',
+        'assigned' => __('admin.marketing.customer_promotions_table.assigned'),
+        'sent' => __('admin.marketing.customer_promotions_table.sent'),
+        'opened' => __('admin.marketing.customer_promotions_table.opened'),
+        'clicked' => __('admin.marketing.customer_promotions_table.clicked'),
+        'used' => __('admin.marketing.customer_promotions_table.used'),
     ];
     $formatDate = fn ($value) => $value ? $value->format('d/m/Y H:i') : '-';
 @endphp
@@ -25,44 +25,44 @@
             <span class="order-detail__section-icon">
                 <i class="bi bi-person-lines-fill"></i>
             </span>
-            Assegnazioni create
+            {{ __('admin.marketing.customer_promotions_table.created_assignments') }}
         </h3>
     </div>
 
     @if ($showSummary)
         <div class="campaign-assignment-summary">
             <article class="marketing-detail__fact">
-                <span>In questa pagina</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.in_this_page') }}</span>
                 <strong>{{ $pageCount }}</strong>
-                <small>Totale: {{ $totalCount }}</small>
+                <small>{{ __('admin.marketing.customer_promotions_table.total', ['count' => $totalCount]) }}</small>
             </article>
             <article class="marketing-detail__fact">
-                <span>Email inviate</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.sent_emails') }}</span>
                 <strong>{{ $pageSentCount }}</strong>
-                <small>Conteggio sui record visibili</small>
+                <small>{{ __('admin.marketing.customer_promotions_table.visible_records_count') }}</small>
             </article>
             <article class="marketing-detail__fact">
-                <span>Click</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.clicks') }}</span>
                 <strong>{{ $pageClickedCount }}</strong>
-                <small>Conteggio sui record visibili</small>
+                <small>{{ __('admin.marketing.customer_promotions_table.visible_records_count') }}</small>
             </article>
             <article class="marketing-detail__fact">
-                <span>Promo usate</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.used_promos') }}</span>
                 <strong>{{ $pageUsedCount }}</strong>
-                <small>Conteggio sui record visibili</small>
+                <small>{{ __('admin.marketing.customer_promotions_table.visible_records_count') }}</small>
             </article>
         </div>
     @endif
 
     @if ($pageCount > 0 && $compact)
-        <div class="campaign-assignment-table" role="table" aria-label="Assegnazioni create">
+        <div class="campaign-assignment-table" role="table" aria-label="{{ __('admin.marketing.customer_promotions_table.assignments_aria') }}">
             <div class="campaign-assignment-table__head" role="row">
-                <span>Cliente</span>
-                <span>Promozione</span>
-                <span>Status</span>
-                <span>Email</span>
-                <span>Promo / link</span>
-                <span>Creata</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.customer') }}</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.promotion') }}</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.status') }}</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.email') }}</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.promo_link') }}</span>
+                <span>{{ __('admin.marketing.customer_promotions_table.created_at') }}</span>
             </div>
 
             @foreach ($items as $customerPromotion)
@@ -76,25 +76,25 @@
                         : '';
                     $customerLabel = $customerName !== ''
                         ? $customerName
-                        : ($customerEmail ?: ($customer ? 'Cliente #' . $customer->id : 'Cliente non disponibile'));
+                        : ($customerEmail ?: ($customer ? __('admin.marketing.customer_promotions_table.customer_number', ['id' => $customer->id]) : __('admin.marketing.customer_promotions_table.customer_unavailable')));
                     $emailEvents = [
-                        ['label' => 'Sent', 'date' => $customerPromotion->email_sent_at],
-                        ['label' => 'Open', 'date' => $customerPromotion->email_open_at],
-                        ['label' => 'Click', 'date' => $customerPromotion->email_click_at],
+                        ['label' => __('admin.marketing.customer_promotions_table.sent_event'), 'date' => $customerPromotion->email_sent_at],
+                        ['label' => __('admin.marketing.customer_promotions_table.open_event'), 'date' => $customerPromotion->email_open_at],
+                        ['label' => __('admin.marketing.customer_promotions_table.click_event'), 'date' => $customerPromotion->email_click_at],
                     ];
                 @endphp
 
                 <div class="campaign-assignment-table__row" role="row">
                     <div class="campaign-assignment-table__cell" role="cell">
                         <strong>{{ $customerLabel }}</strong>
-                        <small>{{ $customerEmail ?: 'Email non disponibile' }}</small>
+                        <small>{{ $customerEmail ?: __('admin.marketing.customer_promotions_table.email_unavailable') }}</small>
                         @if ($customerPhone)
                             <small>{{ $customerPhone }}</small>
                         @endif
                     </div>
 
                     <div class="campaign-assignment-table__cell" role="cell">
-                        <strong>{{ $promotion?->name ?? 'Promozione non disponibile' }}</strong>
+                        <strong>{{ $promotion?->name ?? __('admin.marketing.customer_promotions_table.promotion_unavailable') }}</strong>
                     </div>
 
                     <div class="campaign-assignment-table__cell" role="cell">
@@ -115,9 +115,9 @@
                     </div>
 
                     <div class="campaign-assignment-table__cell" role="cell">
-                        <strong>{{ $customerPromotion->promo_used ? 'Usata' : 'Non usata' }}</strong>
-                        <small>Ordine: {{ $customerPromotion->order_id ? '#' . $customerPromotion->order_id : '-' }}</small>
-                        <small>Prenotazione: {{ $customerPromotion->reservation_id ? '#' . $customerPromotion->reservation_id : '-' }}</small>
+                        <strong>{{ $customerPromotion->promo_used ? __('admin.marketing.customer_promotions_table.used') : __('admin.marketing.customer_promotions_table.not_used') }}</strong>
+                        <small>{{ __('admin.marketing.customer_promotions_table.order') }}: {{ $customerPromotion->order_id ? '#' . $customerPromotion->order_id : '-' }}</small>
+                        <small>{{ __('admin.marketing.customer_promotions_table.reservation') }}: {{ $customerPromotion->reservation_id ? '#' . $customerPromotion->reservation_id : '-' }}</small>
                     </div>
 
                     <div class="campaign-assignment-table__cell" role="cell">
@@ -144,7 +144,7 @@
                         : '';
                     $customerLabel = $customerName !== ''
                         ? $customerName
-                        : ($customerEmail ?: ($customer ? 'Cliente #' . $customer->id : 'Cliente non disponibile'));
+                        : ($customerEmail ?: ($customer ? __('admin.marketing.customer_promotions_table.customer_number', ['id' => $customer->id]) : __('admin.marketing.customer_promotions_table.customer_unavailable')));
                     $initials = collect(explode(' ', $customerLabel))
                         ->filter()
                         ->map(fn ($part) => strtoupper(substr((string) $part, 0, 1)))
@@ -154,31 +154,31 @@
                     $shortToken = $token ? substr($token, 0, 8) . '...' . substr($token, -6) : '-';
                     $steps = [
                         [
-                            'label' => 'Assegnata',
+                            'label' => __('admin.marketing.customer_promotions_table.assigned'),
                             'icon' => 'bi-person-check-fill',
                             'date' => $customerPromotion->created_at,
                             'done' => true,
                         ],
                         [
-                            'label' => 'Inviata',
+                            'label' => __('admin.marketing.customer_promotions_table.sent'),
                             'icon' => 'bi-envelope-check-fill',
                             'date' => $customerPromotion->email_sent_at,
                             'done' => filled($customerPromotion->email_sent_at),
                         ],
                         [
-                            'label' => 'Aperta',
+                            'label' => __('admin.marketing.customer_promotions_table.opened'),
                             'icon' => 'bi-eye-fill',
                             'date' => $customerPromotion->email_open_at,
                             'done' => filled($customerPromotion->email_open_at),
                         ],
                         [
-                            'label' => 'Click',
+                            'label' => __('admin.marketing.customer_promotions_table.clicked'),
                             'icon' => 'bi-cursor-fill',
                             'date' => $customerPromotion->email_click_at,
                             'done' => filled($customerPromotion->email_click_at),
                         ],
                         [
-                            'label' => 'Usata',
+                            'label' => __('admin.marketing.customer_promotions_table.used'),
                             'icon' => 'bi-check2-circle',
                             'date' => $customerPromotion->promo_used,
                             'done' => filled($customerPromotion->promo_used),
@@ -193,8 +193,8 @@
                         <div class="campaign-assignment-person">
                             <strong>{{ $customerLabel }}</strong>
                             <div class="campaign-assignment-contact">
-                                <span>{{ $customerEmail ?: 'Email non disponibile' }}</span>
-                                <span>{{ $customerPhone ?: 'Telefono non disponibile' }}</span>
+                                <span>{{ $customerEmail ?: __('admin.marketing.customer_promotions_table.email_unavailable') }}</span>
+                                <span>{{ $customerPhone ?: __('admin.marketing.customer_promotions_table.phone_unavailable') }}</span>
                             </div>
                         </div>
 
@@ -209,12 +209,12 @@
                             <i class="bi bi-megaphone-fill"></i>
                         </span>
                         <div>
-                            <span>Promozione</span>
-                            <strong>{{ $promotion?->name ?? 'Promozione non disponibile' }}</strong>
+                            <span>{{ __('admin.marketing.customer_promotions_table.promotion') }}</span>
+                            <strong>{{ $promotion?->name ?? __('admin.marketing.customer_promotions_table.promotion_unavailable') }}</strong>
                         </div>
                     </div>
 
-                    <div class="campaign-assignment-timeline" aria-label="Timeline assegnazione marketing">
+                    <div class="campaign-assignment-timeline" aria-label="{{ __('admin.marketing.customer_promotions_table.assignment_timeline_aria') }}">
                         @foreach ($steps as $step)
                             <div class="campaign-assignment-step @if ($step['done']) is-done @endif">
                                 <i class="bi {{ $step['icon'] }}"></i>
@@ -226,23 +226,23 @@
 
                     <div class="campaign-assignment-meta">
                         <span>
-                            <small>Token</small>
+                            <small>{{ __('admin.marketing.customer_promotions_table.token') }}</small>
                             <strong>{{ $shortToken }}</strong>
                         </span>
                         <span>
-                            <small>Sconto</small>
+                            <small>{{ __('admin.marketing.customer_promotions_table.discount') }}</small>
                             <strong>{{ $customerPromotion->discount_amount !== null ? \App\Support\Currency::formatAmount($customerPromotion->discount_amount) : '-' }}</strong>
                         </span>
                         <span>
-                            <small>Ordine</small>
+                            <small>{{ __('admin.marketing.customer_promotions_table.order') }}</small>
                             <strong>{{ $customerPromotion->order_id ? '#' . $customerPromotion->order_id : '-' }}</strong>
                         </span>
                         <span>
-                            <small>Prenotazione</small>
+                            <small>{{ __('admin.marketing.customer_promotions_table.reservation') }}</small>
                             <strong>{{ $customerPromotion->reservation_id ? '#' . $customerPromotion->reservation_id : '-' }}</strong>
                         </span>
                         <span>
-                            <small>Creata</small>
+                            <small>{{ __('admin.marketing.customer_promotions_table.created_at') }}</small>
                             <strong>{{ $formatDate($customerPromotion->created_at) }}</strong>
                         </span>
                     </div>
@@ -255,7 +255,7 @@
         </div>
     @else
         <div class="marketing-detail__empty">
-            <strong>{{ $emptyText ?? 'Nessuna assegnazione creata.' }}</strong>
+            <strong>{{ $emptyText ?? __('admin.marketing.customer_promotions_table.empty_assignments') }}</strong>
         </div>
     @endif
 </section>

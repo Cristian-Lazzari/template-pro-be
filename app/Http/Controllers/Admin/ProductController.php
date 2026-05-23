@@ -56,8 +56,8 @@ class ProductController extends Controller
             $product->save();
             $action = 'archived';
             $message = $product->archived
-                ? '"' . $product->name . '" e\' stato archiviato correttamente'
-                : '"' . $product->name . '" e\' stato ripristinato correttamente';
+                ? __('admin.controllers.product.archived_named', ['name' => $product->name])
+                : __('admin.controllers.product.restored_named', ['name' => $product->name]);
         }
 
         if ($toggleVisible) {
@@ -65,12 +65,12 @@ class ProductController extends Controller
             $product->save();
             $action = 'visible';
             $message = $product->visible
-                ? '"' . $product->name . '" e\' visibile ai tuoi clienti '
-                : '"' . $product->name . '" non e\' visibile ai tuoi clienti';
+                ? __('admin.controllers.product.visible_named', ['name' => $product->name])
+                : __('admin.controllers.product.hidden_named', ['name' => $product->name]);
         }
 
         if (is_null($message)) {
-            $message = 'Nessuna modifica applicata.';
+            $message = __('admin.controllers.product.no_change');
         }
 
         if ($request->expectsJson() || $request->ajax()) {
@@ -376,7 +376,7 @@ class ProductController extends Controller
             ]);
         }
 
-        return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $product->name . '" creato correttamente');
+        return to_route('admin.products.index', compact('products'))->with('success', __('admin.controllers.product.created_named', ['name' => $product->name]));
     }
     
     
@@ -549,7 +549,7 @@ class ProductController extends Controller
         }
 
         $products = Product::all();        
-        return to_route('admin.products.index', compact('products'))->with('success', 'Prodotto "' . $data['name'] . '" modificato correttamente');
+        return to_route('admin.products.index', compact('products'))->with('success', __('admin.controllers.product.updated_named', ['name' => $data['name']]));
 
     }
 

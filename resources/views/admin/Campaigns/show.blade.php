@@ -50,12 +50,12 @@
     $segmentLabel = $segments[$normalizedSegment] ?? ($campaign->segment ?: '-');
     $consentBasis = $campaign->consentBasis();
     $consentBasisLabel = ($consentBasisOptions ?? \App\Models\Campaign::consentBasisOptions())[$consentBasis] ?? $campaign->consentBasisLabel();
-    $channelLabel = $campaign->usesWhatsappMarketingConsent() ? 'WhatsApp' : 'Email';
+    $channelLabel = $campaign->usesWhatsappMarketingConsent() ? __('admin.marketing.campaigns.consent_whatsapp_short') : __('admin.common.email');
     $isWhatsappMarketing = $campaign->usesWhatsappMarketingConsent();
     $modelName = $campaign->model?->name ?? '-';
     $modelObject = $campaign->model?->object ?? '-';
     $promotionsCount = $campaign->promotions->count();
-    $scheduleState = $sendProgress['message'] ?? 'Nessuna programmazione';
+    $scheduleState = $sendProgress['message'] ?? __('admin.marketing.campaigns.no_schedule');
     $nextBatchDueAt = $sendProgress['next_batch_due_at'] ?? ($nextBatchDueAt ?? null);
     $scheduleWindow = data_get($campaign->metadata, 'schedule_window');
     $scheduleWindowLabel = $scheduleWindows[$scheduleWindow] ?? ($scheduleWindow ?: '-');
@@ -69,50 +69,50 @@
         ? $nextBatchDueAt->copy()->subMinutes($batchIntervalMinutes)
         : null;
     $batchWaitStartedAtIso = $batchWaitStartedAt?->toIso8601String();
-    $readyRunnerMessage = 'Pronta per il prossimo ciclo del runner marketing';
+    $readyRunnerMessage = __('admin.marketing.campaigns.ready_runner');
     $isScheduledFuture = $normalizedStatus === 'scheduled' && $campaign->scheduled_at?->isFuture();
     $isRunning = $normalizedStatus === 'running';
     $hasFutureNextBatch = $isRunning && $nextBatchDueAt?->isFuture();
     $progressPercentageLabel = number_format($progressPercentage, $progressPercentage === floor($progressPercentage) ? 0 : 2, ',', '.') . '%';
     $sendPanelTitle = match ($normalizedStatus) {
-        'scheduled' => 'Invio programmato',
-        'running' => 'Invio in corso',
-        'completed' => 'Tutte le email sono state inviate',
-        'paused' => 'Campagna in pausa',
-        'archived' => 'Campagna archiviata',
-        'draft' => 'Bozza',
+        'scheduled' => __('admin.marketing.campaigns.send_programmed'),
+        'running' => __('admin.marketing.campaigns.send_running'),
+        'completed' => __('admin.marketing.campaigns.all_emails_sent'),
+        'paused' => __('admin.marketing.campaigns.paused_title'),
+        'archived' => __('admin.marketing.campaigns.archived_singular_title'),
+        'draft' => __('admin.marketing.campaigns.status_draft'),
         default => $statusLabel,
     };
     $sendPanelBadge = match ($normalizedStatus) {
-        'scheduled' => 'Programmata',
-        'running' => 'Live',
-        'completed' => 'Completata',
-        'paused' => 'In pausa',
-        'archived' => 'Archiviata',
-        'draft' => 'Bozza',
+        'scheduled' => __('admin.marketing.campaigns.status_scheduled'),
+        'running' => __('admin.marketing.campaigns.live'),
+        'completed' => __('admin.marketing.campaigns.status_completed'),
+        'paused' => __('admin.marketing.campaigns.status_paused'),
+        'archived' => __('admin.marketing.campaigns.status_archived'),
+        'draft' => __('admin.marketing.campaigns.status_draft'),
         default => $statusLabel,
     };
     $sendPanelMessage = match (true) {
-        $normalizedStatus === 'scheduled' && $isScheduledFuture => 'Invio programmato per: ' . $campaign->scheduled_at->format('d/m/Y H:i'),
+        $normalizedStatus === 'scheduled' && $isScheduledFuture => __('admin.marketing.campaigns.scheduled_for', ['date' => $campaign->scheduled_at->format('d/m/Y H:i')]),
         $normalizedStatus === 'scheduled' => $readyRunnerMessage,
-        $isRunning => 'Invio in corso tramite runner marketing.',
-        $normalizedStatus === 'completed' => 'Tutte le email sono state inviate',
-        $normalizedStatus === 'draft' => 'Bozza: programma la campagna per creare i destinatari.',
-        $normalizedStatus === 'paused' => 'Campagna in pausa: non verranno inviati nuovi batch.',
-        $normalizedStatus === 'archived' => 'Campagna archiviata.',
+        $isRunning => __('admin.marketing.campaigns.running_runner'),
+        $normalizedStatus === 'completed' => __('admin.marketing.campaigns.all_emails_sent'),
+        $normalizedStatus === 'draft' => __('admin.marketing.campaigns.send_draft_message'),
+        $normalizedStatus === 'paused' => __('admin.marketing.campaigns.send_paused_message'),
+        $normalizedStatus === 'archived' => __('admin.marketing.campaigns.send_archived_message'),
         default => $scheduleState,
     };
     $caseUseLabels = [
-        'generic' => 'Generica',
-        'take_away' => 'Asporto',
-        'delivery' => 'Delivery',
-        'table' => 'Tavolo',
-        'gift' => 'Regalo',
+        'generic' => __('admin.marketing.campaigns.case_generic'),
+        'take_away' => __('admin.marketing.campaigns.case_takeaway'),
+        'delivery' => __('admin.marketing.campaigns.case_delivery'),
+        'table' => __('admin.marketing.campaigns.case_table'),
+        'gift' => __('admin.marketing.campaigns.case_gift'),
     ];
     $discountTypeLabels = [
-        'fixed' => 'Importo fisso',
-        'percentage' => 'Percentuale',
-        'gift' => 'Regalo',
+        'fixed' => __('admin.marketing.campaigns.discount_fixed'),
+        'percentage' => __('admin.marketing.campaigns.discount_percentage'),
+        'gift' => __('admin.marketing.campaigns.discount_gift'),
     ];
     $formatDiscount = function ($promotion) {
         if (! $promotion) {
@@ -120,7 +120,7 @@
         }
 
         if ($promotion->type_discount === 'gift') {
-            return 'Regalo';
+            return __('admin.marketing.campaigns.discount_gift');
         }
 
         if ($promotion->discount === null) {
@@ -154,24 +154,24 @@
         ? route('admin.campaigns.archived')
         : route('admin.campaigns.index');
     $reportMetrics = [
-        ['label' => 'Destinatari', 'value' => $totalEmails, 'tone' => 'neutral'],
-        ['label' => 'Email inviate', 'value' => $sentEmails, 'tone' => 'neutral'],
-        ['label' => 'Aperture', 'value' => $report['opened_count'] ?? 0, 'tone' => 'neutral'],
-        ['label' => 'Click', 'value' => $report['clicked_count'] ?? 0, 'tone' => 'neutral'],
-        ['label' => 'Promo usate', 'value' => $report['used_count'] ?? 0, 'tone' => 'active'],
+        ['label' => __('admin.marketing.campaigns.recipients'), 'value' => $totalEmails, 'tone' => 'neutral'],
+        ['label' => __('admin.marketing.campaigns.sent_emails'), 'value' => $sentEmails, 'tone' => 'neutral'],
+        ['label' => __('admin.marketing.campaigns.opens'), 'value' => $report['opened_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => __('admin.marketing.campaigns.clicks'), 'value' => $report['clicked_count'] ?? 0, 'tone' => 'neutral'],
+        ['label' => __('admin.marketing.campaigns.used_promos'), 'value' => $report['used_count'] ?? 0, 'tone' => 'active'],
     ];
 
-    $reportMetrics[] = ['label' => 'Open rate', 'value' => number_format((float) ($report['open_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
-    $reportMetrics[] = ['label' => 'Click rate', 'value' => number_format((float) ($report['click_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
-    $reportMetrics[] = ['label' => 'Usage rate', 'value' => number_format((float) ($report['usage_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
+    $reportMetrics[] = ['label' => __('admin.marketing.campaigns.open_rate'), 'value' => number_format((float) ($report['open_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
+    $reportMetrics[] = ['label' => __('admin.marketing.campaigns.click_rate'), 'value' => number_format((float) ($report['click_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
+    $reportMetrics[] = ['label' => __('admin.marketing.campaigns.usage_rate'), 'value' => number_format((float) ($report['usage_rate'] ?? 0), 2, ',', '.') . '%', 'tone' => 'rate'];
 @endphp
 
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Campagne', 'url' => route('admin.campaigns.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.campaigns.plural'), 'url' => route('admin.campaigns.index')],
             ['label' => $campaign->name],
         ],
     ])
@@ -476,13 +476,13 @@
                 <div class="order-detail__contacts campaign-header-actions">
                     <a class="order-detail__contact" href="{{ $backToCampaignsRoute }}">
                         <i class="bi bi-arrow-left"></i>
-                        <span>{{ $normalizedStatus === 'archived' ? 'Archivio' : 'Lista' }}</span>
+                        <span>{{ $normalizedStatus === 'archived' ? __('admin.marketing.campaigns.archive_short') : __('admin.marketing.campaigns.list_short') }}</span>
                     </a>
 
                     @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
                         <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
                             <i class="bi bi-pencil-square"></i>
-                            <span>Modifica</span>
+                            <span>{{ __('admin.common.edit') }}</span>
                         </a>
                     @endif
 
@@ -491,7 +491,7 @@
                             @csrf
                             <button class="order-detail__contact" type="submit">
                                 <i class="bi bi-check2-circle"></i>
-                                <span>Conferma/programma</span>
+                                <span>{{ __('admin.marketing.campaigns.confirm_schedule') }}</span>
                             </button>
                         </form>
                     @endif
@@ -501,7 +501,7 @@
                             @csrf
                             <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                 <i class="bi bi-pause-circle"></i>
-                                <span>Pausa</span>
+                                <span>{{ __('admin.marketing.promotions.pause') }}</span>
                             </button>
                         </form>
                     @endif
@@ -511,7 +511,7 @@
                             @csrf
                             <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                 <i class="bi bi-clock-history"></i>
-                                <span>Completa più tardi</span>
+                                <span>{{ __('admin.marketing.campaigns.complete_later') }}</span>
                             </button>
                         </form>
                     @endif
@@ -521,7 +521,7 @@
                             @csrf
                             <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
                                 <i class="bi bi-archive-fill"></i>
-                                <span>Archivia</span>
+                                <span>{{ __('admin.marketing.campaigns.archive') }}</span>
                             </button>
                         </form>
                     @endif
@@ -531,7 +531,7 @@
                             @csrf
                             <button class="order-detail__contact" type="submit">
                                 <i class="bi bi-arrow-counterclockwise"></i>
-                                <span>Ripristina come bozza</span>
+                                <span>{{ __('admin.marketing.campaigns.restore_as_draft') }}</span>
                             </button>
                         </form>
                     @endif
@@ -540,13 +540,13 @@
                         <form
                             action="{{ route('admin.campaigns.destroy', $campaign) }}"
                             method="POST"
-                            onsubmit="return confirm('Eliminare definitivamente questa campagna? Questa azione non è reversibile.');"
+                            onsubmit="return confirm(@js(__('admin.marketing.campaigns.delete_forever_confirm')));"
                         >
                             @csrf
                             @method('DELETE')
                             <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
                                 <i class="bi bi-trash-fill"></i>
-                                <span>Elimina definitivamente</span>
+                                <span>{{ __('admin.marketing.campaigns.delete_forever') }}</span>
                             </button>
                         </form>
                     @endif
@@ -563,7 +563,7 @@
 
                     <div class="order-detail__customer">
                         <span>{{ $modelName }}</span>
-                        <small>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? 'Non programmata' }}</small>
+                        <small>{{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? __('admin.marketing.campaigns.not_scheduled') }}</small>
                     </div>
                 </section>
 
@@ -573,7 +573,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-activity"></i>
                             </span>
-                            Stato invio
+                            {{ __('admin.marketing.campaigns.send_status') }}
                         </h3>
                     </div>
 
@@ -594,12 +594,12 @@
                                 class="marketing-detail__progress-live"
                                 data-marketing-countdown
                                 data-countdown-target="{{ $scheduledAtIso }}"
-                                data-countdown-prefix="Parte tra"
+                                data-countdown-prefix="{{ __('admin.marketing.campaigns.starts_in') }}"
                                 data-countdown-expired="{{ $readyRunnerMessage }}"
                                 data-countdown-sync="campaign-send-message"
                             >
                                 <i class="bi bi-hourglass-split"></i>
-                                <span data-countdown-text>Parte tra calcolo...</span>
+                                <span data-countdown-text>{{ __('admin.marketing.campaigns.starts_in_calculation') }}</span>
                             </span>
                         @endif
 
@@ -609,34 +609,34 @@
                                 @if ($hasFutureNextBatch && $nextBatchDueAtIso)
                                     data-marketing-countdown
                                     data-countdown-target="{{ $nextBatchDueAtIso }}"
-                                    data-countdown-prefix="Prossimo batch tra"
-                                    data-countdown-expired="In attesa del prossimo ciclo del runner"
+                                    data-countdown-prefix="{{ __('admin.marketing.campaigns.next_batch_in') }}"
+                                    data-countdown-expired="{{ __('admin.marketing.campaigns.waiting_runner') }}"
                                 @endif
                             >
                                 <i class="bi bi-clock-history"></i>
                                 <span data-countdown-text>
-                                    {{ $hasFutureNextBatch ? 'Prossimo batch tra calcolo...' : 'In attesa del prossimo ciclo del runner' }}
+                                    {{ $hasFutureNextBatch ? __('admin.marketing.campaigns.next_batch_calculation') : __('admin.marketing.campaigns.waiting_runner') }}
                                 </span>
                             </span>
                         @elseif ($isRunning)
                             <span class="marketing-detail__progress-live is-expired">
                                 <i class="bi bi-clock-history"></i>
-                                <span>In attesa del prossimo ciclo del runner</span>
+                                <span>{{ __('admin.marketing.campaigns.waiting_runner') }}</span>
                             </span>
                         @endif
 
                         @if ($normalizedStatus === 'completed')
                             <span class="marketing-detail__progress-live is-expired">
                                 <i class="bi bi-check2-circle"></i>
-                                <span>Tutte le email sono state inviate{{ $completedAt ? ' il ' . $completedAt->format('d/m/Y H:i') : '' }}</span>
+                                <span>{{ $completedAt ? __('admin.marketing.campaigns.completed_emails_sent_at', ['date' => $completedAt->format('d/m/Y H:i')]) : __('admin.marketing.campaigns.all_emails_sent') }}</span>
                             </span>
                         @endif
 
                         @if ($totalEmails === 0)
-                            <small>Nessun destinatario preparato</small>
+                            <small>{{ __('admin.marketing.campaigns.no_prepared_recipients') }}</small>
                         @endif
 
-                        <div class="marketing-detail__progress" aria-label="Avanzamento reale invio campagna">
+                        <div class="marketing-detail__progress" aria-label="{{ __('admin.marketing.campaigns.send_progress_aria') }}">
                             <div class="marketing-detail__progress-track">
                                 <div
                                     class="marketing-detail__progress-bar @if ($isScheduledFuture) is-scheduled @endif @if ($isRunning && $progressPercentage < 100) is-running @endif @if ($normalizedStatus === 'completed') is-completed @endif"
@@ -645,7 +645,7 @@
                                 <span class="marketing-detail__progress-percent">{{ $progressPercentageLabel }}</span>
                             </div>
                             <div class="marketing-detail__progress-meta">
-                                <span>Avanzamento reale dai batch del runner</span>
+                                <span>{{ __('admin.marketing.campaigns.real_runner_progress') }}</span>
                                 <span>{{ $statusLabel }}</span>
                             </div>
                         </div>
@@ -658,17 +658,17 @@
                                 data-batch-due="{{ $nextBatchDueAtIso }}"
                             >
                                 <div class="campaign-send-panel__wait-head">
-                                    <strong>Attesa prossimo batch</strong>
+                                    <strong>{{ __('admin.marketing.campaigns.waiting_next_batch') }}</strong>
                                     <span data-batch-wait-label>
-                                        {{ $hasFutureNextBatch ? 'Calcolo attesa...' : 'In attesa del runner' }}
+                                        {{ $hasFutureNextBatch ? __('admin.marketing.campaigns.wait_calculation') : __('admin.marketing.campaigns.runner_wait') }}
                                     </span>
                                 </div>
                                 <div class="campaign-send-panel__wait-track" aria-hidden="true">
                                     <div class="campaign-send-panel__wait-bar" data-batch-wait-bar></div>
                                 </div>
                                 <div class="campaign-send-panel__wait-meta">
-                                    <span>Intervallo batch: {{ $batchIntervalMinutes }} min</span>
-                                    <span>Prossimo: {{ $nextBatchDueAt->format('d/m/Y H:i') }}</span>
+                                    <span>{{ __('admin.marketing.campaigns.batch_interval', ['minutes' => $batchIntervalMinutes]) }}</span>
+                                    <span>{{ __('admin.marketing.campaigns.next_at', ['date' => $nextBatchDueAt->format('d/m/Y H:i')]) }}</span>
                                 </div>
                             </div>
                         @endif
@@ -681,14 +681,14 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-bar-chart-fill"></i>
                             </span>
-                            Metriche principali
+                            {{ __('admin.marketing.campaigns.main_metrics') }}
                         </h3>
                     </div>
 
                     <div class="campaign-report-panel">
                         @unless ($hasLinkedPromotions)
                             <div class="marketing-detail__empty mt-3">
-                                Collega almeno una promozione per ottenere metriche specifiche per ordini o prenotazioni.
+                                {{ __('admin.marketing.campaigns.link_promotion_warning') }}
                             </div>
                         @endunless
 
@@ -709,53 +709,53 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-info-circle-fill"></i>
                             </span>
-                            Configurazione campagna
+                            {{ __('admin.marketing.campaigns.configuration') }}
                         </h3>
                     </div>
 
                     <div class="campaign-config-list">
                         <div class="campaign-config-row">
-                            <span class="campaign-config-label">Segmento</span>
+                            <span class="campaign-config-label">{{ __('admin.marketing.campaigns.segment') }}</span>
                             <span class="campaign-config-value">{{ $segmentLabel }}</span>
                         </div>
                         <div class="campaign-config-row">
-                            <span class="campaign-config-label">Tipo invio</span>
+                            <span class="campaign-config-label">{{ __('admin.marketing.campaigns.send_type') }}</span>
                             <span class="campaign-config-value">
                                 {{ $channelLabel }}
                                 <small>{{ $consentBasisLabel }}</small>
                             </span>
                         </div>
                         <div class="campaign-config-row">
-                            <span class="campaign-config-label">Modello mail</span>
+                            <span class="campaign-config-label">{{ __('admin.marketing.campaigns.mail_model') }}</span>
                             <span class="campaign-config-value">
                                 {{ $modelName }}
                                 <small>{{ $modelObject }}</small>
                             </span>
                         </div>
                         <div class="campaign-config-row">
-                            <span class="campaign-config-label">Programmazione</span>
+                            <span class="campaign-config-label">{{ __('admin.marketing.campaigns.schedule') }}</span>
                             <span class="campaign-config-value">
                                 {{ $campaign->scheduled_at?->format('d/m/Y H:i') ?? '-' }}
-                                <small>{{ $requestedScheduledAt ? 'Richiesta: ' . $requestedScheduledAt : $scheduleWindowLabel }}</small>
+                                <small>{{ $requestedScheduledAt ? __('admin.marketing.campaigns.requested_at', ['date' => $requestedScheduledAt]) : $scheduleWindowLabel }}</small>
                             </span>
                         </div>
                         <div class="campaign-config-row">
-                            <span class="campaign-config-label">Promozioni</span>
-                            <span class="campaign-config-value">{{ $promotionsCount }} collegate</span>
+                            <span class="campaign-config-label">{{ __('admin.marketing.campaigns.promotions') }}</span>
+                            <span class="campaign-config-value">{{ __('admin.marketing.campaigns.promotions_linked_count', ['count' => $promotionsCount]) }}</span>
                         </div>
                         <div class="campaign-config-row">
-                            <span class="campaign-config-label">Audience</span>
+                            <span class="campaign-config-label">{{ __('admin.marketing.campaigns.estimated_audience') }}</span>
                             <span class="campaign-config-value">
-                                {{ $totalEmails }} assegnati
-                                <small>{{ $hasAssignments ? 'Assegnazioni create' : 'Nessuna assegnazione creata' }}</small>
+                                {{ __('admin.marketing.campaigns.assigned_count', ['count' => $totalEmails]) }}
+                                <small>{{ $hasAssignments ? __('admin.marketing.campaigns.assignments_created') : __('admin.marketing.campaigns.no_assignments_created') }}</small>
                             </span>
                         </div>
                     </div>
 
                     @if ($isWhatsappMarketing)
                         <div class="marketing-detail__empty mt-3">
-                            <strong>Invio WhatsApp non ancora implementato.</strong>
-                            <small>La campagna puo preparare l'audience WhatsApp, ma il dispatch email la salta senza inviare messaggi.</small>
+                            <strong>{{ __('admin.marketing.campaigns.whatsapp_not_implemented') }}</strong>
+                            <small>{{ __('admin.marketing.campaigns.whatsapp_not_implemented_note') }}</small>
                         </div>
                     @endif
 
@@ -767,7 +767,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-megaphone-fill"></i>
                             </span>
-                            Dettaglio promozioni
+                            {{ __('admin.marketing.campaigns.promotion_detail') }}
                         </h3>
                     </div>
 
@@ -788,7 +788,7 @@
 
                                         return [
                                             'type' => $target->target_type,
-                                            'name' => $name ?: ($target->target_type === 'generic' ? 'Generica' : '#' . $target->target_id),
+                                            'name' => $name ?: ($target->target_type === 'generic' ? __('admin.marketing.campaigns.case_generic') : '#' . $target->target_id),
                                         ];
                                     })->filter(fn ($target) => filled($target['name']))->values();
                                 @endphp
@@ -800,8 +800,8 @@
                                                 <strong>{{ $promotion->name }}</strong>
                                                 <small>
                                                     {{ $promotion->slug }}
-                                                    · {{ $caseUseLabels[$promotion->case_use] ?? ($promotion->case_use ?: 'Nessun ambito') }}
-                                                    · {{ $discountTypeLabels[$promotion->type_discount] ?? ($promotion->type_discount ?: 'Sconto non definito') }}
+                                                    · {{ $caseUseLabels[$promotion->case_use] ?? ($promotion->case_use ?: __('admin.marketing.campaigns.no_scope')) }}
+                                                    · {{ $discountTypeLabels[$promotion->type_discount] ?? ($promotion->type_discount ?: __('admin.marketing.campaigns.discount_not_defined')) }}
                                                 </small>
                                             </div>
                                             @include('admin.Marketing.partials.status-pill', [
@@ -813,38 +813,38 @@
 
                                     <div class="campaign-promotion-card__stats">
                                         <span>
-                                            <small>Sconto</small>
+                                            <small>{{ __('admin.marketing.campaigns.discount') }}</small>
                                             <strong>{{ $formatDiscount($promotion) }}</strong>
                                         </span>
                                         <span>
-                                            <small>Minimo</small>
+                                            <small>{{ __('admin.marketing.campaigns.minimum') }}</small>
                                             <strong>{{ $promotion->minimum_pretest !== null ? number_format((float) $promotion->minimum_pretest, 2, ',', '.') : '-' }}</strong>
                                         </span>
                                         <span>
-                                            <small>Scadenza</small>
-                                            <strong>{{ $promotion->expiring_at?->format('d/m/Y') ?? 'Senza scadenza' }}</strong>
+                                            <small>{{ __('admin.marketing.campaigns.expiration') }}</small>
+                                            <strong>{{ $promotion->expiring_at?->format('d/m/Y') ?? __('admin.marketing.campaigns.without_expiration') }}</strong>
                                         </span>
                                     </div>
 
                                     <div class="campaign-promotion-card__targets">
-                                        <strong>Target</strong>
+                                        <strong>{{ __('admin.marketing.campaigns.target') }}</strong>
                                         @forelse ($targetLabels as $target)
                                             <span>{{ ucfirst($target['type']) }}: {{ $target['name'] }}</span>
                                         @empty
-                                            <span>Target generico</span>
+                                            <span>{{ __('admin.marketing.campaigns.generic_target') }}</span>
                                         @endforelse
                                     </div>
 
                                     <a href="{{ route('admin.promotions.show', $promotion) }}" class="order-detail__contact">
                                         <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                        <span>Apri promozione</span>
+                                        <span>{{ __('admin.marketing.campaigns.open_promotion') }}</span>
                                     </a>
                                 </article>
                             @endforeach
                         </div>
                     @else
                         <div class="marketing-detail__empty">
-                            <strong>Nessuna promozione collegata.</strong>
+                            <strong>{{ __('admin.marketing.campaigns.no_linked_promotions') }}</strong>
                         </div>
                     @endif
                 </section>
@@ -856,7 +856,7 @@
                                 <span class="order-detail__section-icon">
                                     <i class="bi bi-people-fill"></i>
                                 </span>
-                                Preparazione audience
+                                {{ __('admin.marketing.campaigns.audience_preparation') }}
                             </h3>
                         </div>
 
@@ -866,7 +866,7 @@
                                     @csrf
                                     <button class="order-detail__contact" type="submit">
                                         <i class="bi bi-eye-fill"></i>
-                                        <span>Preview audience</span>
+                                        <span>{{ __('admin.marketing.campaigns.preview_audience') }}</span>
                                     </button>
                                 </form>
                             @endif
@@ -876,7 +876,7 @@
                                     @csrf
                                     <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                         <i class="bi bi-person-plus-fill"></i>
-                                        <span>Prepara assegnazioni</span>
+                                        <span>{{ __('admin.marketing.campaigns.prepare_assignments') }}</span>
                                     </button>
                                 </form>
                             @endif
@@ -889,14 +889,14 @@
                         $audiencePreview = session('audience_preview');
                         $assignableCount = $audiencePreview['assignable_count'] ?? $audiencePreview['assigned_count'] ?? 0;
                         $previewMetrics = [
-                            ['label' => 'Assegnabile', 'value' => ($audiencePreview['can_assign'] ?? false) ? 'Si' : 'No'],
-                            ['label' => 'Motivo', 'value' => $audiencePreview['failure_reason'] ?? '-'],
-                            ['label' => 'Clienti', 'value' => $audiencePreview['customers_checked'] ?? 0],
-                            ['label' => 'Promozioni', 'value' => $audiencePreview['promotions_count'] ?? 0],
-                            ['label' => 'Simulate', 'value' => $assignableCount],
-                            ['label' => 'Gia assegnate', 'value' => $audiencePreview['already_assigned_count'] ?? 0],
-                            ['label' => 'Saltate', 'value' => $audiencePreview['skipped_count'] ?? 0],
-                            ['label' => 'Errori', 'value' => $audiencePreview['errors_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.assignable'), 'value' => ($audiencePreview['can_assign'] ?? false) ? __('admin.common.yes') : __('admin.common.no')],
+                            ['label' => __('admin.marketing.campaigns.reason'), 'value' => $audiencePreview['failure_reason'] ?? '-'],
+                            ['label' => __('admin.marketing.campaigns.customers'), 'value' => $audiencePreview['customers_checked'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.promotions'), 'value' => $audiencePreview['promotions_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.simulated'), 'value' => $assignableCount],
+                            ['label' => __('admin.marketing.campaigns.already_assigned'), 'value' => $audiencePreview['already_assigned_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.skipped'), 'value' => $audiencePreview['skipped_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.errors'), 'value' => $audiencePreview['errors_count'] ?? 0],
                         ];
                     @endphp
 
@@ -906,13 +906,13 @@
                                 <span class="order-detail__section-icon">
                                     <i class="bi bi-people-fill"></i>
                                 </span>
-                                Preview audience
+                                {{ __('admin.marketing.campaigns.preview_audience') }}
                             </h3>
                         </div>
 
                         <div class="marketing-detail__empty">
-                            <strong>Simulazione soltanto.</strong>
-                            <small>La preview non crea assegnazioni e non invia email.</small>
+                            <strong>{{ __('admin.marketing.campaigns.simulation_only') }}</strong>
+                            <small>{{ __('admin.marketing.campaigns.preview_note') }}</small>
                         </div>
 
                         <div class="marketing-detail__compact-grid">
@@ -932,9 +932,9 @@
                     @php
                         $assignmentResult = session('campaign_assignment_result');
                         $assignmentMetrics = [
-                            ['label' => 'Assegnabile', 'value' => ($assignmentResult['can_assign'] ?? false) ? 'Si' : 'No'],
-                            ['label' => 'Motivo', 'value' => $assignmentResult['failure_reason'] ?? '-'],
-                            ['label' => 'Errori', 'value' => $assignmentResult['errors_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.assignable'), 'value' => ($assignmentResult['can_assign'] ?? false) ? __('admin.common.yes') : __('admin.common.no')],
+                            ['label' => __('admin.marketing.campaigns.reason'), 'value' => $assignmentResult['failure_reason'] ?? '-'],
+                            ['label' => __('admin.marketing.campaigns.errors'), 'value' => $assignmentResult['errors_count'] ?? 0],
                         ];
                     @endphp
 
@@ -944,13 +944,13 @@
                                 <span class="order-detail__section-icon">
                                     <i class="bi bi-person-plus-fill"></i>
                                 </span>
-                                Risultato assegnazioni
+                                {{ __('admin.marketing.campaigns.assignment_result') }}
                             </h3>
                         </div>
 
                         <div class="marketing-detail__empty">
-                            <strong>Le assegnazioni richiedono attenzione.</strong>
-                            <small>Le righe create restano visibili nella tabella read-only.</small>
+                            <strong>{{ __('admin.marketing.campaigns.assignments_need_attention') }}</strong>
+                            <small>{{ __('admin.marketing.campaigns.assignments_attention_note') }}</small>
                         </div>
 
                         <div class="marketing-detail__compact-grid">
@@ -968,7 +968,7 @@
 
                 @include('admin.Marketing.partials.customer-promotions-table', [
                     'customerPromotions' => $customerPromotions,
-                    'emptyText' => 'Nessuna assegnazione creata per questa campagna.',
+                    'emptyText' => __('admin.marketing.customer_promotions_table.empty_assignments'),
                     'showSummary' => false,
                     'compact' => true,
                 ])
@@ -977,10 +977,19 @@
     </div>
 </div>
 
+@php
+    $showPageCopy = [
+        'readyRunner'   => __('admin.marketing.campaigns.ready_runner'),
+        'timeRemaining' => __('admin.marketing.campaigns.time_remaining'),
+        'nextBatchIn'   => __('admin.marketing.campaigns.next_batch_in'),
+        'waitingRunner' => __('admin.marketing.campaigns.waiting_runner'),
+    ];
+@endphp
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const countdowns = document.querySelectorAll('[data-marketing-countdown]');
         const batchWaits = document.querySelectorAll('[data-batch-wait]');
+        const copy = @json($showPageCopy);
 
         if (!countdowns.length && !batchWaits.length) {
             return;
@@ -1016,7 +1025,7 @@
             const remaining = targetDate.getTime() - Date.now();
 
             if (remaining <= 0) {
-                const expiredText = element.dataset.countdownExpired || 'Pronta per il prossimo ciclo del runner marketing';
+                const expiredText = element.dataset.countdownExpired || copy.readyRunner;
                 textElement.textContent = expiredText;
                 element.classList.add('is-expired');
 
@@ -1031,7 +1040,7 @@
                 return false;
             }
 
-            const prefix = element.dataset.countdownPrefix || 'Tempo restante:';
+            const prefix = element.dataset.countdownPrefix || copy.timeRemaining;
             textElement.textContent = `${prefix} ${formatDuration(remaining)}`;
             element.classList.remove('is-expired');
 
@@ -1061,8 +1070,8 @@
 
             if (label) {
                 label.textContent = remaining > 0
-                    ? `Prossimo batch tra ${formatDuration(remaining)}`
-                    : 'In attesa del prossimo ciclo del runner';
+                    ? `${copy.nextBatchIn} ${formatDuration(remaining)}`
+                    : copy.waitingRunner;
             }
 
             return remaining > 0;

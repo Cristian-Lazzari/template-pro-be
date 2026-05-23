@@ -19,7 +19,7 @@
     @endphp
    <div class="alert alert-primary alert-dismissible fade show" role="alert">
     {{ $data }} 
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('admin.common.close') }}"></button>
 </div>
 @endif
  
@@ -30,14 +30,14 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <i class="bi bi-archive-fill"></i>
                 </span>
-                <strong>Contenuti</strong>
+                <strong>{{ __('admin.content.contents') }}</strong>
             </div>
-            <h1 class="menu-dashboard__title">Contenuti archiviati</h1>
+            <h1 class="menu-dashboard__title">{{ __('admin.content.archived_title') }}</h1>
         </div>
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.posts.index') }}" class="order-detail__contact">
                 <i class="bi bi-arrow-left"></i>
-                <span>Contenuti</span>
+                <span>{{ __('admin.content.contents') }}</span>
             </a>
         </div>
     </header>
@@ -45,7 +45,7 @@
         <div class="bar">
             <input type="checkbox" class="check" id="f">
             <div class="box">
-                <input type="text" id="searchInput" class="search" placeholder="Cerca prodotto..." >
+                <input type="text" id="searchInput" class="search" placeholder="{{ __('admin.posts.search_placeholder') }}" >
                 <button id="typeToggle" class="type">{{__('admin.Tutti')}}</button>
                 <button id="sortToggle" class="order">
                     <i class="bi bi-sort-down-alt"></i>
@@ -91,12 +91,12 @@
                     @if ($item->link)
                         <a class="link" href="{{$item->link}}">
                         <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
-                        Link
+                        {{ __('admin.Link') }}
                     </a>
                     @endif
                     <button type="button" class="action_menu action_menu_info" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
                         <i class="bi bi-info-circle-fill" style="font-size: var(--fs-400)"></i>
-                        Info
+                        {{ __('admin.Info') }}
                     </button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModal{{$item->id}}Label" aria-hidden="true">
@@ -116,7 +116,7 @@
                                             <input type="hidden" name="id" value="{{$item->id}}">
                                             <button class="edit" type="submit">
                                                 <i class="bi bi-cloud-plus-fill" style="font-size: var(--fs-400)"></i>
-                                                Ripristina
+                                                {{ __('admin.Ripristina') }}
                                             </button>
                                         </form>
                                         <form action="{{ route('admin.posts.destroy', $item) }}" method="POST">
@@ -144,7 +144,7 @@
                                         <section>
                                             <h4>
                                                 <strong>#</strong>
-                                                Hashtags</h4>
+                                                {{ __('admin.posts.hashtags') }}</h4>
                                             <p>{{$item->hashtag}}</p>
                                         </section>
                                     @endif
@@ -152,7 +152,7 @@
                                         <section>
                                             <h4>
                                                 <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
-                                                Link</h4>
+                                                {{ __('admin.Link') }}</h4>
                                             <a href="{{$item->link}}">{{$item->link}}</a>
                                         </section>
                                     @endif

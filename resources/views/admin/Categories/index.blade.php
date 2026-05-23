@@ -137,7 +137,8 @@
                                 :items="$item->products"
                                 input-name="new_order_p[]"
                                 label-field="name"
-                                item-label="prodotto"
+                                :item-label="__('admin.catalog.reorder_product_label')"
+                                :empty-text="__('admin.catalog.reorder_empty')"
                             />
 
                             <x-slot name="footer">
@@ -167,7 +168,8 @@
                         :items="$categories"
                         input-name="new_order[]"
                         label-field="name"
-                        item-label="categoria"
+                        :item-label="__('admin.catalog.reorder_category_label')"
+                        :empty-text="__('admin.catalog.reorder_empty')"
                     />
 
                     <x-slot name="footer">

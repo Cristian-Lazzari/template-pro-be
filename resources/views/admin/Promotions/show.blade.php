@@ -33,9 +33,9 @@
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Promozioni', 'url' => route('admin.promotions.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.promotions.plural'), 'url' => route('admin.promotions.index')],
             ['label' => $promotion->name],
         ],
     ])
@@ -58,15 +58,15 @@
                 <div class="order-detail__contacts">
                     <a class="order-detail__contact" href="{{ route('admin.promotions.index') }}">
                         <i class="bi bi-arrow-left"></i>
-                        <span>Lista</span>
+                        <span>{{ __('admin.marketing.promotions.list') }}</span>
                     </a>
                     <a class="order-detail__contact" href="{{ route('admin.promotions.edit', $promotion) }}">
                         <i class="bi bi-pencil-square"></i>
-                        <span>Modifica</span>
+                        <span>{{ __('admin.common.edit') }}</span>
                     </a>
                     <a class="order-detail__contact" href="{{ route('admin.marketing') }}">
                         <i class="bi bi-grid-1x2-fill"></i>
-                        <span>Marketing</span>
+                        <span>{{ __('admin.marketing.area_links.marketing') }}</span>
                     </a>
                 </div>
             </header>
@@ -80,8 +80,8 @@
                     </div>
 
                     <div class="order-detail__customer">
-                        <span>{{ $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: 'Generica') }}</span>
-                        <small>Aggiornata {{ $promotion->updated_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                        <span>{{ $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: __('admin.marketing.promotions.case_generic')) }}</span>
+                        <small>{{ __('admin.marketing.promotions.updated_at') }} {{ $promotion->updated_at?->format('d/m/Y H:i') ?? '-' }}</small>
                     </div>
                 </section>
 
@@ -91,43 +91,43 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-info-circle-fill"></i>
                             </span>
-                            Dettaglio promozione
+                            {{ __('admin.marketing.promotions.detail_title') }}
                         </h3>
                     </div>
 
                     <div class="marketing-detail__grid">
                         <article class="marketing-detail__fact">
-                            <span>Slug</span>
+                            <span>{{ __('admin.marketing.promotions.slug') }}</span>
                             <strong>{{ $promotion->slug }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Uso</span>
+                            <span>{{ __('admin.marketing.promotions.usage') }}</span>
                             <strong>{{ $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: '-') }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Sconto</span>
+                            <span>{{ __('admin.marketing.promotions.discount') }}</span>
                             <strong>{{ $discountValue }}</strong>
                             <small>{{ $discountTypes[$promotion->type_discount] ?? ($promotion->type_discount ?: '-') }}</small>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Minimo</span>
+                            <span>{{ __('admin.marketing.promotions.minimum') }}</span>
                             <strong>{{ $minimumValue }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>CTA</span>
+                            <span>{{ __('admin.marketing.promotions.cta') }}</span>
                             <strong>{{ $promotion->cta ?: '-' }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Periodo</span>
-                            <strong>{{ $promotion->permanent ? 'Permanente' : 'Programmabile' }}</strong>
+                            <span>{{ __('admin.marketing.promotions.period') }}</span>
+                            <strong>{{ $promotion->permanent ? __('admin.marketing.promotions.permanent') : __('admin.marketing.promotions.programmable') }}</strong>
                             <small>{{ $promotion->schedule_at?->format('d/m/Y H:i') ?? '-' }} / {{ $promotion->expiring_at?->format('d/m/Y H:i') ?? '-' }}</small>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Riusabile</span>
-                            <strong>{{ $isReusable ? 'Si' : 'No' }}</strong>
+                            <span>{{ __('admin.marketing.promotions.reusable') }}</span>
+                            <strong>{{ $isReusable ? __('admin.common.yes') : __('admin.common.no') }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Creata</span>
+                            <span>{{ __('admin.marketing.promotions.created_at') }}</span>
                             <strong>{{ $promotion->created_at?->format('d/m/Y H:i') ?? '-' }}</strong>
                         </article>
                     </div>
@@ -139,7 +139,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-bullseye"></i>
                             </span>
-                            Target promozione
+                            {{ __('admin.marketing.promotions.target_title') }}
                         </h3>
                     </div>
 
@@ -148,26 +148,26 @@
                             @foreach ($promotion->targets as $target)
                                 @php
                                     $targetKey = $target->target_type . ':' . ($target->target_id ?? '');
-                                    $targetLabel = $targetLabels[$targetKey] ?? (($targetTypes[$target->target_type] ?? 'Target') . ($target->target_id ? ' #' . $target->target_id : ''));
+                                    $targetLabel = $targetLabels[$targetKey] ?? (($targetTypes[$target->target_type] ?? __('admin.marketing.promotions.target')) . ($target->target_id ? ' #' . $target->target_id : ''));
                                     $targetDiscount = $target->discount !== null
                                         ? number_format((float) $target->discount, 2, ',', '.')
-                                        : 'Sconto principale';
+                                        : __('admin.marketing.promotions.main_discount');
                                     $targetDiscountType = $target->type_discount
                                         ? ($discountTypes[$target->type_discount] ?? $target->type_discount)
-                                        : 'Tipo principale';
+                                        : __('admin.marketing.promotions.main_type');
                                 @endphp
 
                                 <article class="marketing-detail__linked-card">
                                     <span>{{ $targetTypes[$target->target_type] ?? $target->target_type }}</span>
                                     <strong>{{ $targetLabel }}</strong>
-                                    <small>Sconto: {{ $targetDiscount }}</small>
-                                    <small>Tipo: {{ $targetDiscountType }}</small>
+                                    <small>{{ __('admin.marketing.promotions.discount_label') }} {{ $targetDiscount }}</small>
+                                    <small>{{ __('admin.marketing.promotions.type_label') }} {{ $targetDiscountType }}</small>
                                 </article>
                             @endforeach
                         </div>
                     @else
                         <div class="marketing-detail__empty">
-                            <strong>Nessun target collegato.</strong>
+                            <strong>{{ __('admin.marketing.promotions.no_targets') }}</strong>
                         </div>
                     @endif
                 </section>
@@ -178,21 +178,21 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-speedometer2"></i>
                             </span>
-                            Contatori
+                            {{ __('admin.marketing.promotions.counters') }}
                         </h3>
                     </div>
 
                     <div class="marketing-detail__compact-grid">
                         <article class="marketing-detail__metric">
-                            <span>Coinvolti</span>
+                            <span>{{ __('admin.marketing.promotions.involved') }}</span>
                             <strong>{{ $promotion->total_activation }}</strong>
                         </article>
                         <article class="marketing-detail__metric">
-                            <span>Inviate</span>
+                            <span>{{ __('admin.marketing.promotions.sent') }}</span>
                             <strong>{{ $promotion->total_sent }}</strong>
                         </article>
                         <article class="marketing-detail__metric">
-                            <span>Usate</span>
+                            <span>{{ __('admin.marketing.promotions.used') }}</span>
                             <strong>{{ $promotion->total_used }}</strong>
                         </article>
                     </div>
@@ -204,7 +204,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-toggles"></i>
                             </span>
-                            Azioni stato
+                            {{ __('admin.marketing.promotions.status_actions') }}
                         </h3>
                     </div>
 
@@ -214,7 +214,7 @@
                                 @csrf
                                 <button class="order-detail__contact" type="submit">
                                     <i class="bi bi-check2-circle"></i>
-                                    <span>Attiva</span>
+                                    <span>{{ __('admin.marketing.promotions.status_active') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -224,7 +224,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                     <i class="bi bi-pause-circle"></i>
-                                    <span>Pausa</span>
+                                    <span>{{ __('admin.marketing.promotions.pause') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -234,7 +234,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                     <i class="bi bi-clock-history"></i>
-                                    <span>Completa più tardi</span>
+                                    <span>{{ __('admin.marketing.promotions.complete_later') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -244,7 +244,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
                                     <i class="bi bi-archive-fill"></i>
-                                    <span>Archivia</span>
+                                    <span>{{ __('admin.marketing.promotions.archive') }}</span>
                                 </button>
                             </form>
                         @endif

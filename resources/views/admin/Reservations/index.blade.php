@@ -20,7 +20,7 @@
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         
       {{__('admin.Filtri_aggiornati')}}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('admin.common.close') }}"></button>
     </div>
 @endif
 
@@ -38,7 +38,7 @@
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.dashboard') }}" class="order-detail__contact">
                 <i class="bi bi-grid-1x2-fill"></i>
-                <span>Dashboard</span>
+                <span>{{ __('admin.common.dashboard') }}</span>
             </a>
         </div>
     </header>
@@ -127,9 +127,9 @@
                     @endif
 
                     @if ($promotionSummary['has_promotion'] ?? false)
-                        <div class="status promo-badge" title="{{ $promotionSummary['name'] ?? 'Promozione applicata' }}">
+                        <div class="status promo-badge" title="{{ $promotionSummary['name'] ?? __('admin.dashboard.promotion_applied') }}">
                             <i class="bi bi-gift-fill"></i>
-                            {{ $promotionSummary['badge_label'] ?? 'Promo' }}
+                            {{ $promotionSummary['badge_label'] ?? __('admin.common.promo') }}
                         </div>
                     @endif
 

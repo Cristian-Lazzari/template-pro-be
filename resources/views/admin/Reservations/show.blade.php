@@ -9,7 +9,15 @@
     $oraFormattata = $dataOra?->format('H:i');
     $dataFormattata = $dataOra?->format('d/m/Y');
     $giornoSettimana = (int) ($dataOra?->format('w') ?? 0);
-    $giorniSettimana = ['domenica', 'lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato'];
+    $giorniSettimana = [
+        __('admin.common.weekday_sunday'),
+        __('admin.common.weekday_monday'),
+        __('admin.common.weekday_tuesday'),
+        __('admin.common.weekday_wednesday'),
+        __('admin.common.weekday_thursday'),
+        __('admin.common.weekday_friday'),
+        __('admin.common.weekday_saturday'),
+    ];
     $nPerson = json_decode($reservation->n_person, true) ?? [];
     $roomLabel = null;
 
@@ -17,7 +25,7 @@
         $roomLabel = $reservation->sala == 1 ? ($property_adv['sala_1'] ?? null) : ($property_adv['sala_2'] ?? null);
     }
 
-    $reservationCancelButtonLabel = 'Annulla';
+    $reservationCancelButtonLabel = __('admin.common.cancel');
 @endphp
 
 <div class="reservation-detail-page">
@@ -34,7 +42,7 @@
         :room-label="$roomLabel"
         :note="$reservation->message"
         :sent-at="\Carbon\Carbon::parse($reservation->created_at)->translatedFormat('H:i:s l j F Y')"
-        :marketing="$reservation->news_letter ? 'si' : 'no'"
+        :marketing="$reservation->news_letter ? __('admin.common.yes') : __('admin.common.no')"
         :promotions="$promotionDetails"
     >
         @if (in_array($reservation->status, [0, 2, 3]))
@@ -51,26 +59,26 @@
         <div class="modal-dialog modal-dialog-centered">
             <x-dashboard.action-modal
                 title-id="confirmModalLabel"
-                eyebrow="Conferma prenotazione"
+                eyebrow="{{ __('admin.reservations.confirm_reservation') }}"
                 tone="success"
                 entity-label="{{ __('admin.Prenotazione_di') }}"
                 :subject="$reservation->name"
                 :date-slot="$reservation->date_slot"
-                description="La mail automatica parte sempre. Qui scegli solo se aggiungere anche WhatsApp."
+                description="{{ __('admin.reservations.confirm_description') }}"
             >
                 <x-slot name="details">
                     <div class="dashboard-action-modal__detail">
-                        <span>Stato finale</span>
-                        <strong>Confermata</strong>
+                        <span>{{ __('admin.reservations.final_status') }}</span>
+                        <strong>{{ __('admin.reservations.confirmed') }}</strong>
                     </div>
 
                     <div class="dashboard-action-modal__detail">
-                        <span>Canale base</span>
-                        <strong>Email automatica</strong>
+                        <span>{{ __('admin.reservations.base_channel') }}</span>
+                        <strong>{{ __('admin.reservations.automatic_email') }}</strong>
                     </div>
                 </x-slot>
 
-                <p class="dashboard-action-modal__hint">Usa WhatsApp solo se vuoi un contatto piu diretto o la prenotazione e vicina.</p>
+                <p class="dashboard-action-modal__hint">{{ __('admin.reservations.confirm_whatsapp_hint') }}</p>
 
                 <x-slot name="footer">
                     <form action="{{ route('admin.reservations.status') }}" method="POST">
@@ -78,7 +86,7 @@
                         <input value="0" type="hidden" name="wa">
                         <input value="1" type="hidden" name="c_a">
                         <input value="{{$reservation->id}}" type="hidden" name="id">
-                        <button type="submit" class="w-100 my_btn_2">Solo email</button>
+                        <button type="submit" class="w-100 my_btn_2">{{ __('admin.reservations.only_email') }}</button>
                     </form>
 
                     <form action="{{ route('admin.reservations.status') }}" method="POST">
@@ -86,7 +94,7 @@
                         <input value="1" type="hidden" name="wa">
                         <input value="1" type="hidden" name="c_a">
                         <input value="{{$reservation->id}}" type="hidden" name="id">
-                        <button type="submit" class="w-100 my_btn_3">Email + WhatsApp</button>
+                        <button type="submit" class="w-100 my_btn_3">{{ __('admin.reservations.email_whatsapp') }}</button>
                     </form>
                 </x-slot>
             </x-dashboard.action-modal>
@@ -98,26 +106,26 @@
         <div class="modal-dialog modal-dialog-centered">
             <x-dashboard.action-modal
                 title-id="cancelModalLabel"
-                eyebrow="Annulla prenotazione"
+                eyebrow="{{ __('admin.reservations.cancel_reservation') }}"
                 tone="danger"
                 entity-label="{{ __('admin.Prenotazione_di') }}"
                 :subject="$reservation->name"
                 :date-slot="$reservation->date_slot"
-                description="Usa questa azione solo se non puoi confermare la richiesta. La mail automatica parte sempre."
+                description="{{ __('admin.reservations.cancel_description') }}"
             >
                 <x-slot name="details">
                     <div class="dashboard-action-modal__detail">
-                        <span>Stato finale</span>
-                        <strong>Annullata</strong>
+                        <span>{{ __('admin.reservations.final_status') }}</span>
+                        <strong>{{ __('admin.reservations.cancelled') }}</strong>
                     </div>
 
                     <div class="dashboard-action-modal__detail">
-                        <span>Canale base</span>
-                        <strong>Email automatica</strong>
+                        <span>{{ __('admin.reservations.base_channel') }}</span>
+                        <strong>{{ __('admin.reservations.automatic_email') }}</strong>
                     </div>
                 </x-slot>
 
-                <p class="dashboard-action-modal__hint">Se ti serve un contatto piu immediato puoi aggiungere anche il messaggio WhatsApp.</p>
+                <p class="dashboard-action-modal__hint">{{ __('admin.reservations.cancel_whatsapp_hint') }}</p>
 
                 <x-slot name="footer">
                     <form action="{{ route('admin.reservations.status') }}" method="POST">
@@ -125,7 +133,7 @@
                         <input value="0" type="hidden" name="wa">
                         <input value="0" type="hidden" name="c_a">
                         <input value="{{$reservation->id}}" type="hidden" name="id">
-                        <button type="submit" class="w-100 my_btn_2">Solo email</button>
+                        <button type="submit" class="w-100 my_btn_2">{{ __('admin.reservations.only_email') }}</button>
                     </form>
 
                     <form action="{{ route('admin.reservations.status') }}" method="POST">
@@ -133,7 +141,7 @@
                         <input value="1" type="hidden" name="wa">
                         <input value="0" type="hidden" name="c_a">
                         <input value="{{$reservation->id}}" type="hidden" name="id">
-                        <button type="submit" class="w-100 my_btn_5">Email + WhatsApp</button>
+                        <button type="submit" class="w-100 my_btn_5">{{ __('admin.reservations.email_whatsapp') }}</button>
                     </form>
                 </x-slot>
             </x-dashboard.action-modal>

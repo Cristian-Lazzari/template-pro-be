@@ -7,7 +7,7 @@
         $data = session('ingredient_success')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
+        {{ __('admin.catalog.created_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
     
@@ -42,7 +42,7 @@
                     <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
-                <p> <input value="{{ old('name') }}" type="text" name="name" id="name" placeholder="Inserisci il nome"> </p>
+                <p> <input value="{{ old('name') }}" type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"> </p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>

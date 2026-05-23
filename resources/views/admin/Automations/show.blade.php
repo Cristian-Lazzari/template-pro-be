@@ -30,9 +30,9 @@
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Automazioni', 'url' => route('admin.automations.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.automations.plural'), 'url' => route('admin.automations.index')],
             ['label' => $automation->name],
         ],
     ])
@@ -55,15 +55,15 @@
                 <div class="order-detail__contacts">
                     <a class="order-detail__contact" href="{{ route('admin.automations.index') }}">
                         <i class="bi bi-arrow-left"></i>
-                        <span>Lista</span>
+                        <span>{{ __('admin.marketing.campaigns.list_short') }}</span>
                     </a>
                     <a class="order-detail__contact" href="{{ route('admin.automations.edit', $automation) }}">
                         <i class="bi bi-pencil-square"></i>
-                        <span>Modifica</span>
+                        <span>{{ __('admin.common.edit') }}</span>
                     </a>
                     <a class="order-detail__contact" href="{{ route('admin.marketing') }}">
                         <i class="bi bi-grid-1x2-fill"></i>
-                        <span>Marketing</span>
+                        <span>{{ __('admin.marketing.area_links.marketing') }}</span>
                     </a>
                 </div>
             </header>
@@ -78,7 +78,7 @@
 
                     <div class="order-detail__customer">
                         <span>{{ $modelName }}</span>
-                        <small>Run {{ $automation->last_run_at?->format('d/m/Y H:i') ?? '-' }}</small>
+                        <small>{{ __('admin.marketing.automations.run') }} {{ $automation->last_run_at?->format('d/m/Y H:i') ?? '-' }}</small>
                     </div>
                 </section>
 
@@ -88,42 +88,42 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-info-circle-fill"></i>
                             </span>
-                            Dettaglio automazione
+                            {{ __('admin.marketing.automations.detail_title') }}
                         </h3>
                     </div>
 
                     <div class="marketing-detail__grid">
                         <article class="marketing-detail__fact">
-                            <span>Status</span>
+                            <span>{{ __('admin.marketing.automations.status') }}</span>
                             <strong>{{ $statuses[$automation->status] ?? $automation->status }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Trigger</span>
+                            <span>{{ __('admin.marketing.automations.trigger') }}</span>
                             <strong>{{ $triggerLabel }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Modello mail</span>
+                            <span>{{ __('admin.marketing.automations.mail_model') }}</span>
                             <strong>{{ $modelName }}</strong>
                             <small>{{ $modelObject }}</small>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Cooldown</span>
+                            <span>{{ __('admin.marketing.automations.cooldown') }}</span>
                             <strong>{{ data_get($automation->metadata, 'cooldown_days') ?? '-' }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Da</span>
+                            <span>{{ __('admin.marketing.automations.from') }}</span>
                             <strong>{{ data_get($automation->metadata, 'enabled_from') ?: '-' }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Fino</span>
+                            <span>{{ __('admin.marketing.automations.until') }}</span>
                             <strong>{{ data_get($automation->metadata, 'enabled_until') ?: '-' }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Ultimo run</span>
+                            <span>{{ __('admin.marketing.automations.last_run') }}</span>
                             <strong>{{ $automation->last_run_at?->format('d/m/Y H:i') ?? '-' }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
-                            <span>Promozioni</span>
+                            <span>{{ __('admin.marketing.automations.promotions') }}</span>
                             <strong>{{ $promotionsCount }}</strong>
                         </article>
                     </div>
@@ -135,17 +135,17 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-speedometer2"></i>
                             </span>
-                            Contatori
+                            {{ __('admin.marketing.automations.counters') }}
                         </h3>
                     </div>
 
                     <div class="marketing-detail__compact-grid">
                         <article class="marketing-detail__metric">
-                            <span>Coinvolti</span>
+                            <span>{{ __('admin.marketing.customer_promotions_table.involved') }}</span>
                             <strong>{{ $automation->total_activation }}</strong>
                         </article>
                         <article class="marketing-detail__metric">
-                            <span>Inviate</span>
+                            <span>{{ __('admin.marketing.customer_promotions_table.sent') }}</span>
                             <strong>{{ $automation->total_sent }}</strong>
                         </article>
                     </div>
@@ -157,7 +157,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-megaphone-fill"></i>
                             </span>
-                            Promozioni collegate
+                            {{ __('admin.marketing.automations.linked_promotions') }}
                         </h3>
                     </div>
 
@@ -165,7 +165,7 @@
                         <div class="marketing-detail__linked-grid">
                             @foreach ($automation->promotions as $promotion)
                                 <article class="marketing-detail__linked-card">
-                                    <span>Promozione</span>
+                                    <span>{{ __('admin.marketing.automations.promotion') }}</span>
                                     <strong>{{ $promotion->name }}</strong>
                                     <small>{{ $promotion->slug }}</small>
                                     @include('admin.Marketing.partials.status-pill', [
@@ -174,14 +174,14 @@
                                     ])
                                     <a href="{{ route('admin.promotions.show', $promotion) }}" class="order-detail__contact">
                                         <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                        <span>Apri</span>
+                                        <span>{{ __('admin.marketing.automations.open') }}</span>
                                     </a>
                                 </article>
                             @endforeach
                         </div>
                     @else
                         <div class="marketing-detail__empty">
-                            <strong>Nessuna promozione collegata.</strong>
+                            <strong>{{ __('admin.marketing.automations.no_linked_promotions') }}</strong>
                         </div>
                     @endif
                 </section>
@@ -192,7 +192,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-sliders"></i>
                             </span>
-                            Azioni
+                            {{ __('admin.marketing.automations.actions') }}
                         </h3>
                     </div>
 
@@ -202,7 +202,7 @@
                                 @csrf
                                 <button class="order-detail__contact" type="submit">
                                     <i class="bi bi-check2-circle"></i>
-                                    <span>Attiva</span>
+                                    <span>{{ __('admin.marketing.automations.activate') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -212,7 +212,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                     <i class="bi bi-pause-circle"></i>
-                                    <span>Pausa</span>
+                                    <span>{{ __('admin.marketing.automations.pause') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -222,7 +222,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
                                     <i class="bi bi-clock-history"></i>
-                                    <span>Completa più tardi</span>
+                                    <span>{{ __('admin.marketing.automations.complete_later') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -232,7 +232,7 @@
                                 @csrf
                                 <button class="order-detail__contact" type="submit">
                                     <i class="bi bi-people-fill"></i>
-                                    <span>Preview audience</span>
+                                    <span>{{ __('admin.marketing.automations.preview_audience') }}</span>
                                 </button>
                             </form>
 
@@ -240,7 +240,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
                                     <i class="bi bi-person-plus-fill"></i>
-                                    <span>Prepara assegnazioni</span>
+                                    <span>{{ __('admin.marketing.automations.prepare_assignments') }}</span>
                                 </button>
                             </form>
 
@@ -248,7 +248,7 @@
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
                                     <i class="bi bi-archive-fill"></i>
-                                    <span>Archivia</span>
+                                    <span>{{ __('admin.marketing.automations.archive') }}</span>
                                 </button>
                             </form>
                         @endif
@@ -259,11 +259,11 @@
                     @php
                         $audiencePreview = session('automation_audience_preview');
                         $previewMetrics = [
-                            ['label' => 'Disponibile', 'value' => ($audiencePreview['can_preview'] ?? false) ? 'Si' : 'No'],
-                            ['label' => 'Motivo', 'value' => $audiencePreview['failure_reason'] ?? '-'],
-                            ['label' => 'Trigger', 'value' => $triggers[$audiencePreview['trigger'] ?? null] ?? ($audiencePreview['trigger'] ?? '-')],
-                            ['label' => 'Clienti', 'value' => $audiencePreview['customers_checked'] ?? 0],
-                            ['label' => 'Promozioni', 'value' => $audiencePreview['promotions_count'] ?? 0],
+                            ['label' => __('admin.marketing.automations.available'), 'value' => ($audiencePreview['can_preview'] ?? false) ? __('admin.common.yes') : __('admin.common.no')],
+                            ['label' => __('admin.marketing.campaigns.reason'), 'value' => $audiencePreview['failure_reason'] ?? '-'],
+                            ['label' => __('admin.marketing.automations.trigger'), 'value' => $triggers[$audiencePreview['trigger'] ?? null] ?? ($audiencePreview['trigger'] ?? '-')],
+                            ['label' => __('admin.marketing.campaigns.customers'), 'value' => $audiencePreview['customers_checked'] ?? 0],
+                            ['label' => __('admin.marketing.automations.promotions'), 'value' => $audiencePreview['promotions_count'] ?? 0],
                         ];
                     @endphp
 
@@ -273,7 +273,7 @@
                                 <span class="order-detail__section-icon">
                                     <i class="bi bi-people-fill"></i>
                                 </span>
-                                Preview audience
+                                {{ __('admin.marketing.automations.preview_audience') }}
                             </h3>
                         </div>
 
@@ -292,15 +292,15 @@
                     @php
                         $assignmentResult = session('automation_assignment_result');
                         $assignmentMetrics = [
-                            ['label' => 'Modalita', 'value' => $assignmentResult['mode'] ?? '-'],
-                            ['label' => 'Assegnabile', 'value' => ($assignmentResult['can_assign'] ?? false) ? 'Si' : 'No'],
-                            ['label' => 'Motivo', 'value' => $assignmentResult['failure_reason'] ?? '-'],
-                            ['label' => 'Clienti', 'value' => $assignmentResult['customers_checked'] ?? 0],
-                            ['label' => 'Promozioni', 'value' => $assignmentResult['promotions_count'] ?? 0],
-                            ['label' => 'Nuove', 'value' => $assignmentResult['assigned_count'] ?? 0],
-                            ['label' => 'Gia assegnate', 'value' => $assignmentResult['already_assigned_count'] ?? 0],
-                            ['label' => 'Saltate', 'value' => $assignmentResult['skipped_count'] ?? 0],
-                            ['label' => 'Errori', 'value' => $assignmentResult['errors_count'] ?? 0],
+                            ['label' => __('admin.marketing.automations.mode'), 'value' => $assignmentResult['mode'] ?? '-'],
+                            ['label' => __('admin.marketing.campaigns.assignable'), 'value' => ($assignmentResult['can_assign'] ?? false) ? __('admin.common.yes') : __('admin.common.no')],
+                            ['label' => __('admin.marketing.campaigns.reason'), 'value' => $assignmentResult['failure_reason'] ?? '-'],
+                            ['label' => __('admin.marketing.campaigns.customers'), 'value' => $assignmentResult['customers_checked'] ?? 0],
+                            ['label' => __('admin.marketing.automations.promotions'), 'value' => $assignmentResult['promotions_count'] ?? 0],
+                            ['label' => __('admin.marketing.automations.new_assignments'), 'value' => $assignmentResult['assigned_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.already_assigned'), 'value' => $assignmentResult['already_assigned_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.skipped'), 'value' => $assignmentResult['skipped_count'] ?? 0],
+                            ['label' => __('admin.marketing.campaigns.errors'), 'value' => $assignmentResult['errors_count'] ?? 0],
                         ];
                     @endphp
 
@@ -310,7 +310,7 @@
                                 <span class="order-detail__section-icon">
                                     <i class="bi bi-person-plus-fill"></i>
                                 </span>
-                                Risultato assegnazioni
+                                {{ __('admin.marketing.automations.assignment_result') }}
                             </h3>
                         </div>
 
@@ -331,7 +331,7 @@
 
                 @include('admin.Marketing.partials.customer-promotions-table', [
                     'customerPromotions' => $customerPromotions,
-                    'emptyText' => 'Nessuna assegnazione creata per questa automazione.',
+                    'emptyText' => __('admin.marketing.automations.empty_assignments'),
                 ])
             </div>
         </article>

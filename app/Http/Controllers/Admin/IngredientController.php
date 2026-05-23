@@ -102,7 +102,7 @@ class IngredientController extends Controller
             ]);
         }
         
-        $m = ' "' . $ingredient['name'] . '" è stato creato correttamente';
+        $m = __('admin.controllers.ingredient.created_named', ['name' => $ingredient['name']]);
         return to_route('admin.ingredients.index')->with('ingredient_success', $m);   
     }
     
@@ -179,7 +179,7 @@ class IngredientController extends Controller
         }
 
 
-        $m = ' "' . $ingredient['name'] . '" è stato modificato correttamente';
+        $m = __('admin.controllers.ingredient.updated_named', ['name' => $ingredient['name']]);
         return to_route('admin.ingredients.index')->with('ingredient_success', $m);
  
     }
@@ -217,7 +217,7 @@ class IngredientController extends Controller
     {
         $ingredient->products()->detach();
         $ingredient->delete();
-        $m = ' "' . $ingredient->name . '" è stato eliminato e rimosso dai prodotti correttamente';
+        $m = __('admin.controllers.ingredient.deleted_with_products_named', ['name' => $ingredient->name]);
         return to_route('admin.ingredients.index')->with('delete_success', $m);
     }
    

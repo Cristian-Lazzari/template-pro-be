@@ -7,7 +7,7 @@
         $data = session('ingredient_success')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
+        {{ __('admin.catalog.created_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
     
@@ -47,7 +47,7 @@
                     <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
-                <p><input value="{{ old('name', $translations[$dfl]->name ?? '') }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                <p><input value="{{ old('name', $translations[$dfl]->name ?? '') }}" type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             
@@ -75,10 +75,10 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <x-dashboard.action-modal
                                     title-id="lang{{$i}}Label"
-                                    title="Personalizza traduzione"
+                                    title="{{ __('admin.catalog.customize_translation') }}"
                                     eyebrow="{{ strtoupper($i) }}"
                                     tone="mint"
-                                    description="Aggiorna nome e descrizione della categoria nella lingua selezionata."
+                                    description="{{ __('admin.categories.translation_description') }}"
                                 >
                                     <div class="check_c" style="border: none !important; padding: 0; border-radius: 0; width: fit-content">
                                         @foreach ($list as $e)
@@ -91,7 +91,7 @@
                                             <i class="bi bi-type"></i>
                                             {{__('admin.Nome')}}
                                         </label>
-                                        <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder=" Inserisci il nome">
+                                        <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}">
                                     </div>
 
                                     <div class="dashboard-action-modal__field">

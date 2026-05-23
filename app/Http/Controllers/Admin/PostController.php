@@ -47,9 +47,9 @@ class PostController extends Controller
             $p->archived = !$p->archived;
             $p->update();
             if ($p->archived) {
-                $m = '"' . $p->title . '" e\' stato archiviato correttamente';
+                $m = __('admin.controllers.post.archived_named', ['name' => $p->title]);
             } else{
-                $m = '"' . $p->title . '" e\' stato ripristinato correttamente';
+                $m = __('admin.controllers.post.restored_named', ['name' => $p->title]);
             }
             if ($archive == 1) {
                 $posts = Post::where('archived', true)->get();
@@ -66,9 +66,9 @@ class PostController extends Controller
             $p->visible = !$p->visible;
             $p->update();
             if ($p->visible) {
-                $m = '"' . $p->title . '" e\' visibile ai tuoi clienti ';
+                $m = __('admin.controllers.post.visible_named', ['name' => $p->title]);
             } else{
-                $m = '"' . $p->title . '" non e\' visibile ai tuoi clienti';
+                $m = __('admin.controllers.post.hidden_named', ['name' => $p->title]);
             }
             if ($archive == 1) {
                 $posts = Post::where('archived', true)->get();
@@ -150,7 +150,7 @@ class PostController extends Controller
         $ids = array_values(array_filter((array) $request->input('new_order')));
 
         if ($ids === []) {
-            return to_route('admin.posts.index')->with('order_success', 'Nessun elemento da riordinare');
+            return to_route('admin.posts.index')->with('order_success', __('admin.controllers.post.no_reorder_items'));
         }
 
         $invertito = array_reverse($ids);
@@ -168,7 +168,7 @@ class PostController extends Controller
         }
         
         //dd($ids);
-        $m = 'Ordine aggiornato correttamente';
+        $m = __('admin.controllers.post.order_updated');
     
         return to_route('admin.posts.index')->with('order_success', $m);   
     }

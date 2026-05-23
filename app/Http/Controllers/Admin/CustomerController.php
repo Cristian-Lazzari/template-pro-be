@@ -109,7 +109,7 @@ class CustomerController extends Controller
 
         return redirect()
             ->route('admin.customers.index')
-            ->with('success', 'Profilo cliente aggiornato correttamente.');
+            ->with('success', __('admin.controllers.customers.profile_updated'));
     }
 
     private function paginateCustomers(Collection $customers, Request $request): LengthAwarePaginator

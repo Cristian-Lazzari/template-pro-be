@@ -20,7 +20,7 @@ $domain = 'https://future-plus.it/allergens/';
     @endphp
     <div class="alert alert-primary alert-dismissible fade show" role="alert">
         {{ $data }} 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('admin.common.close') }}"></button>
     </div>
 @endif
  

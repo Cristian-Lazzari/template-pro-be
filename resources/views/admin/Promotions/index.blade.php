@@ -23,9 +23,9 @@
 
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => $isArchivedView ? 'Promozioni archiviate' : 'Promozioni'],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => $isArchivedView ? __('admin.marketing.promotions.archived_title') : __('admin.marketing.promotions.plural')],
         ],
     ])
 
@@ -35,32 +35,32 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <i class="bi {{ $isArchivedView ? 'bi-archive-fill' : 'bi-megaphone-fill' }}"></i>
                 </span>
-                <strong>Marketing</strong>
+                <strong>{{ __('admin.marketing.area_links.marketing') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">{{ $isArchivedView ? 'Promozioni archiviate' : 'Promozioni' }}</h1>
+            <h1 class="menu-dashboard__title">{{ $isArchivedView ? __('admin.marketing.promotions.archived_title') : __('admin.marketing.promotions.plural') }}</h1>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             @if ($isArchivedView)
                 <a href="{{ route('admin.promotions.index') }}" class="order-detail__contact">
                     <i class="bi bi-arrow-left"></i>
-                    <span>Lista promozioni</span>
+                    <span>{{ __('admin.marketing.promotions.list') }}</span>
                 </a>
             @else
                 <a href="{{ route('admin.promotions.archived') }}" class="order-detail__contact">
                     <i class="bi bi-archive-fill"></i>
-                    <span>Archiviate</span>
+                    <span>{{ __('admin.marketing.promotions.archived') }}</span>
                 </a>
                 <a href="{{ route('admin.promotions.create') }}" class="order-detail__contact">
                     <i class="bi bi-cloud-plus-fill"></i>
-                    <span>Crea nuova</span>
+                    <span>{{ __('admin.common.create_new') }}</span>
                 </a>
             @endif
         </div>
     </header>
 
-    <section class="promotion-index-board mt-4" aria-label="{{ $isArchivedView ? 'Promozioni archiviate' : 'Elenco promozioni' }}">
+    <section class="promotion-index-board mt-4" aria-label="{{ $isArchivedView ? __('admin.marketing.promotions.archived_aria') : __('admin.marketing.promotions.list_aria') }}">
         @if ($promotions->count() > 0)
             <div class="promotion-list-render">
                 @foreach ($promotions as $promotion)
@@ -74,23 +74,23 @@
                         $usageRate = $assignedCount > 0 ? min(100, round(($usedCount / $assignedCount) * 100)) : 0;
                         $usageLabel = $usageRate . '%';
                         $caseUseLabel = match ($promotion->case_use) {
-                            'take_away' => 'asporto',
-                            'delivery' => 'domicilio',
-                            'generic' => 'asporto / domicilio',
-                            'table' => 'TAVOLI',
-                            default => $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: 'generica'),
+                            'take_away' => __('admin.marketing.promotions.case_takeaway'),
+                            'delivery' => __('admin.marketing.promotions.case_delivery'),
+                            'generic' => __('admin.marketing.promotions.case_takeaway_delivery'),
+                            'table' => __('admin.marketing.promotions.case_table'),
+                            default => $caseUses[$promotion->case_use] ?? ($promotion->case_use ?: __('admin.marketing.promotions.case_generic')),
                         };
                         $discountLabel = match ($promotion->type_discount) {
                             'fixed' => $promotion->discount !== null ? $formatDecimal($promotion->discount) . ' ' . $currencySymbol : '-',
                             'percentage' => $promotion->discount !== null ? (int) $promotion->discount . ' %' : '-',
-                            'gift' => 'Omaggio',
+                            'gift' => __('admin.marketing.promotions.discount_gift'),
                             default => '-',
                         };
                         $validityLabel = match (true) {
-                            (bool) $promotion->permanent => 'Permanente',
+                            (bool) $promotion->permanent => __('admin.marketing.promotions.permanent_validity'),
                             filled($promotion->schedule_at) && filled($promotion->expiring_at) => $promotion->schedule_at->format('d/m') . ' - ' . $promotion->expiring_at->format('d/m'),
-                            filled($promotion->schedule_at) => 'Dal ' . $promotion->schedule_at->format('d/m'),
-                            filled($promotion->expiring_at) => 'Fino al ' . $promotion->expiring_at->format('d/m'),
+                            filled($promotion->schedule_at) => __('admin.marketing.promotions.from_date', ['date' => $promotion->schedule_at->format('d/m')]),
+                            filled($promotion->expiring_at) => __('admin.marketing.promotions.until_date', ['date' => $promotion->expiring_at->format('d/m')]),
                             default => '-',
                         };
                         $specificTargets = $promotion->targets
@@ -102,7 +102,7 @@
                         if ($firstTarget) {
                             $targetKey = $firstTarget->target_type . ':' . ($firstTarget->target_id ?? '');
                             $targetLabel = $targetLabels[$targetKey]
-                                ?? (($targetTypes[$firstTarget->target_type] ?? 'Target') . ($firstTarget->target_id ? ' #' . $firstTarget->target_id : ''));
+                                ?? (($targetTypes[$firstTarget->target_type] ?? __('admin.marketing.promotions.target')) . ($firstTarget->target_id ? ' #' . $firstTarget->target_id : ''));
 
                             if ($specificTargets->count() > 1) {
                                 $targetLabel .= ' +' . ($specificTargets->count() - 1);
@@ -110,12 +110,12 @@
                         }
 
                         $minimumLabel = match (true) {
-                            $promotion->minimum_pretest === null => 'Nessuno',
-                            $promotion->case_use === 'table' => rtrim(rtrim(number_format((float) $promotion->minimum_pretest, 1, ',', '.'), '0'), ',') . ' ospiti',
+                            $promotion->minimum_pretest === null => __('admin.marketing.promotions.none'),
+                            $promotion->case_use === 'table' => rtrim(rtrim(number_format((float) $promotion->minimum_pretest, 1, ',', '.'), '0'), ',') . ' ' . __('admin.marketing.promotions.guests_suffix'),
                             default => $formatDecimal($promotion->minimum_pretest) . ' ' . $currencySymbol,
                         };
-                        $secondaryLabel = $targetLabel ? 'Target' : ($promotion->case_use === 'table' ? 'Minimo' : 'Target');
-                        $secondaryValue = $targetLabel ?: ($promotion->case_use === 'table' ? $minimumLabel : 'Carrello');
+                        $secondaryLabel = $targetLabel ? __('admin.marketing.promotions.target') : ($promotion->case_use === 'table' ? __('admin.marketing.promotions.minimum') : __('admin.marketing.promotions.target'));
+                        $secondaryValue = $targetLabel ?: ($promotion->case_use === 'table' ? $minimumLabel : __('admin.marketing.promotions.cart'));
                     @endphp
 
                     <article class="promotion-list-row @if ($isDraft) promotion-list-row--draft @endif">
@@ -128,19 +128,19 @@
                             <div class="promotion-list-code">
                                 <span class="promotion-list-slug" title="{{ $promotion->slug }}">{{ $promotion->slug }}</span>
                                 <span class="promotion-list-reuse @if (! $isReusable) promotion-list-reuse--off @endif">
-                                    {{ $isReusable ? 'RIUTILIZZABILE' : 'NON RIUTILIZZABILE' }}
+                                    {{ $isReusable ? __('admin.marketing.promotions.reusable_short') : __('admin.marketing.promotions.not_reusable') }}
                                 </span>
                             </div>
                         </div>
 
                         <div class="promotion-list-validity">
-                            <span>Validità</span>
+                                <span>{{ __('admin.marketing.promotions.validity') }}</span>
                             <strong title="{{ $validityLabel }}">{{ $validityLabel }}</strong>
                         </div>
 
                         <div class="promotion-list-rule">
                             <div>
-                                <span>Sconto</span>
+                                <span>{{ __('admin.marketing.promotions.discount') }}</span>
                                 <strong title="{{ $discountLabel }}">{{ $discountLabel }}</strong>
                             </div>
                             <div>
@@ -155,8 +155,8 @@
                                     class="promotion-list-donut"
                                     style="--promotion-usage: {{ $usageRate }}%;"
                                     role="img"
-                                    aria-label="{{ $usedCount }} usi su {{ $assignedCount }} assegnazioni"
-                                    title="{{ $usedCount }} usi su {{ $assignedCount }} assegnazioni"
+                                    aria-label="{{ __('admin.marketing.promotions.usage') }} {{ $usedCount }} / {{ $assignedCount }}"
+                                    title="{{ __('admin.marketing.promotions.usage') }} {{ $usedCount }} / {{ $assignedCount }}"
                                 >
                                     <strong>{{ $usageLabel }}</strong>
                                 </div>
@@ -166,24 +166,24 @@
                         <div class="promotion-list-actions">
                             @if ($isDraft)
                                 <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.promotions.edit', $promotion) }}">
-                                    Completa
+                                    {{ __('admin.marketing.promotions.complete') }}
                                 </a>
-                                <form action="{{ route('admin.promotions.destroy', $promotion) }}" method="POST" onsubmit="return confirm('Eliminare questa bozza e i collegamenti collegati?');">
+                                <form action="{{ route('admin.promotions.destroy', $promotion) }}" method="POST" onsubmit="return confirm(@js(__('admin.marketing.promotions.delete_draft_confirm')));">
                                     @csrf
                                     @method('DELETE')
                                     <button class="promotion-list-action promotion-list-action--danger" type="submit">
-                                        Elimina
+                                        {{ __('admin.common.delete') }}
                                     </button>
                                 </form>
                             @else
                                 <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.promotions.show', $promotion) }}">
-                                    Apri
+                                    {{ __('admin.Vedi') }}
                                 </a>
                                 @if ($promotion->status !== 'archived')
                                     <form action="{{ route('admin.promotions.archive', $promotion) }}" method="POST">
                                         @csrf
                                         <button class="promotion-list-action promotion-list-action--danger" type="submit">
-                                            Archivia
+                                            {{ __('admin.marketing.promotions.archive') }}
                                         </button>
                                     </form>
                                 @endif
@@ -202,11 +202,11 @@
                     <i class="bi {{ $isArchivedView ? 'bi-archive-fill' : 'bi-megaphone-fill' }}"></i>
                 </span>
                 <div>
-                    <strong>{{ $isArchivedView ? 'Nessuna promozione archiviata.' : 'Nessuna promozione presente.' }}</strong>
+                    <strong>{{ $isArchivedView ? __('admin.marketing.promotions.no_archived_promotions') : __('admin.marketing.promotions.no_promotions') }}</strong>
                     <p>
                         {{ $isArchivedView
-                            ? 'Quando archivi una promozione, la ritrovi qui.'
-                            : 'Crea la prima regola promozionale per collegarla a campagne o automazioni.' }}
+                            ? __('admin.marketing.promotions.archived_empty_text')
+                            : __('admin.marketing.promotions.empty_text') }}
                     </p>
                 </div>
             </div>

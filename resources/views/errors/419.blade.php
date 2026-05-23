@@ -1,5 +1,5 @@
 @extends('errors.minimal')
 
-@section('title', __('Sessione scaduta'))
+@section('title', __('admin.errors.419_title'))
 @section('code', '419')
-@section('message', __('La tua sessione e scaduta. Premi il pulsante qui sotto per tornare alla pagina principale e riprovare.'))
+@section('message', __('admin.errors.419_message'))

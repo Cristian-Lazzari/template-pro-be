@@ -29,7 +29,15 @@
     $oraFormattata = $dataOra?->format('H:i');
     $dataFormattata = $dataOra?->format('d/m/Y');
     $giornoSettimana = (int) ($dataOra?->format('w') ?? 0);
-    $giorniSettimana = ['domenica', 'lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato'];
+    $giorniSettimana = [
+        __('admin.common.weekday_sunday'),
+        __('admin.common.weekday_monday'),
+        __('admin.common.weekday_tuesday'),
+        __('admin.common.weekday_wednesday'),
+        __('admin.common.weekday_thursday'),
+        __('admin.common.weekday_friday'),
+        __('admin.common.weekday_saturday'),
+    ];
 
     $detailItems = [];
 
@@ -43,7 +51,7 @@
             foreach ($choices as $choiceId) {
                 foreach ($menu->products as $product) {
                     if ($product->id == $choiceId) {
-                        $chosenProducts[] = ($product->pivot->label ?? 'Prodotto') . ': ' . $product->name . ' (' . $product->category->name . ')';
+                        $chosenProducts[] = ($product->pivot->label ?? __('admin.orders.product')) . ': ' . $product->name . ' (' . $product->category->name . ')';
                         break;
                     }
                 }
@@ -100,9 +108,9 @@
     $dateLabel = trim(($giorniSettimana[$giornoSettimana] ?? '') . ' ' . ($dataFormattata ?? ''));
     $fulfillmentTitle = isset($order->comune) ? __('admin.Consegnare_a_domicilio') : __('admin.Ritiro_dasporto');
     $fulfillmentValue = isset($order->comune) ? collect([$order->comune, $order->address, $order->address_n])->filter()->implode(', ') : null;
-    $cancelButtonLabel = in_array($order->status, [3, 5], true) ? 'Rimborsa e Annulla' : 'Annulla';
-    $confirmResultLabel = $order->status === 3 ? 'Confermato e incassato' : 'Confermato';
-    $cancelResultLabel = in_array($order->status, [3, 5], true) ? 'Rimborsato e annullato' : 'Annullato';
+    $cancelButtonLabel = in_array($order->status, [3, 5], true) ? __('admin.orders.refund_and_cancel') : __('admin.common.cancel');
+    $confirmResultLabel = $order->status === 3 ? __('admin.orders.confirmed_paid') : __('admin.orders.confirmed');
+    $cancelResultLabel = in_array($order->status, [3, 5], true) ? __('admin.orders.refunded_cancelled') : __('admin.orders.cancelled');
 @endphp
 
 <div class="order-detail-page">
@@ -122,7 +130,7 @@
         :fulfillment-type="isset($order->comune) ? 'delivery' : 'takeaway'"
         :note="$order->message"
         :sent-at="\Carbon\Carbon::parse($order->created_at)->translatedFormat('H:i:s l j F Y')"
-        :marketing="$order->news_letter ? 'si' : 'no'"
+        :marketing="$order->news_letter ? __('admin.common.yes') : __('admin.common.no')"
         :promotions="$promotionDetails"
     >
         @if (in_array($order->status, [0, 2, 3]))
@@ -154,13 +162,13 @@
             >
                 <x-slot name="details">
                     <div class="dashboard-action-modal__detail">
-                        <span>Stato finale</span>
-                        <strong>Confermato</strong>
+                        <span>{{ __('admin.orders.final_status') }}</span>
+                        <strong>{{ __('admin.orders.confirmed') }}</strong>
                     </div>
 
                     <div class="dashboard-action-modal__detail">
-                        <span>Fascia originale</span>
-                        <strong>La lasci attiva o la blocchi ora</strong>
+                        <span>{{ __('admin.orders.original_slot') }}</span>
+                        <strong>{{ __('admin.orders.keep_or_block_original_slot') }}</strong>
                     </div>
                 </x-slot>
 
@@ -190,7 +198,7 @@
                     </select>
                 </div>
 
-                <p class="dashboard-action-modal__hint">Scegli uno slot realistico. Il cliente riceve l aggiornamento con il nuovo orario.</p>
+                <p class="dashboard-action-modal__hint">{{ __('admin.orders.choose_realistic_slot') }} {{ __('admin.orders.customer_receives_time_update') }}</p>
 
                 <x-slot name="footer">
                     <button type="submit" name="block" value="0" class="my_btn_5">{{ __('admin.Lascia_attivo') }}</button>
@@ -206,7 +214,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <x-dashboard.action-modal
             title-id="confirmModalLabel"
-            eyebrow="Conferma ordine"
+            eyebrow="{{ __('admin.orders.confirm_order') }}"
             tone="success"
             entity-label="{{ __('admin.Ordine_di') }}"
             :subject="$order->name"
@@ -214,17 +222,17 @@
         >
             <x-slot name="details">
                 <div class="dashboard-action-modal__detail">
-                    <span>Stato finale</span>
+                    <span>{{ __('admin.orders.final_status') }}</span>
                     <strong>{{ $confirmResultLabel }}</strong>
                 </div>
 
                 <div class="dashboard-action-modal__detail">
-                    <span>Avviso cliente</span>
-                    <strong>Email automatica</strong>
+                    <span>{{ __('admin.orders.customer_warning') }}</span>
+                    <strong>{{ __('admin.orders.automatic_email') }}</strong>
                 </div>
             </x-slot>
 
-            <p class="dashboard-action-modal__hint">Il cliente riceve subito la conferma con il riepilogo dell ordine.</p>
+            <p class="dashboard-action-modal__hint">{{ __('admin.orders.customer_receives_order_confirmation') }}</p>
 
             <x-slot name="footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">
@@ -232,7 +240,7 @@
                     <input value="0" type="hidden" name="wa">
                     <input value="1" type="hidden" name="c_a">
                     <input value="{{$order->id}}" type="hidden" name="id">
-                    <button type="submit" class="w-100 my_btn_3">Conferma ordine</button>
+                    <button type="submit" class="w-100 my_btn_3">{{ __('admin.orders.confirm_order') }}</button>
                 </form>
             </x-slot>
         </x-dashboard.action-modal>
@@ -249,21 +257,21 @@
             entity-label="{{ __('admin.Ordine_di') }}"
             :subject="$order->name"
             :date-slot="$order->date_slot"
-            :description="in_array($order->status, [3, 5], true) ? 'Il pagamento risulta gia incassato: questa azione avvia anche il rimborso.' : 'Usa questa azione solo se non puoi evadere l ordine richiesto.'"
+            :description="in_array($order->status, [3, 5], true) ? __('admin.orders.cancel_paid_description') : __('admin.orders.cancel_unavailable_description')"
         >
             <x-slot name="details">
                 <div class="dashboard-action-modal__detail">
-                    <span>Stato finale</span>
+                    <span>{{ __('admin.orders.final_status') }}</span>
                     <strong>{{ $cancelResultLabel }}</strong>
                 </div>
 
                 <div class="dashboard-action-modal__detail">
-                    <span>Avviso cliente</span>
-                    <strong>Email automatica</strong>
+                    <span>{{ __('admin.orders.customer_warning') }}</span>
+                    <strong>{{ __('admin.orders.automatic_email') }}</strong>
                 </div>
             </x-slot>
 
-            <p class="dashboard-action-modal__hint">Procedi solo dopo un ultimo controllo su giorno, orario e ordine.</p>
+            <p class="dashboard-action-modal__hint">{{ __('admin.orders.final_check_before_order_action') }}</p>
 
             <x-slot name="footer">
                 <form action="{{ route('admin.orders.status') }}" method="POST">

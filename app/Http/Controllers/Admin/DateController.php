@@ -65,7 +65,7 @@ class DateController extends Controller
         $set->property = json_encode($adv);
         $set->update();
 
-        $m = 'Date per ordinazioni e prenotazioni configurate correttamente!';
+        $m = __('admin.controllers.date.configured');
         return back()->with('success', $m);
     }
 
@@ -84,7 +84,7 @@ class DateController extends Controller
 
             $setting = Setting::where('name', 'advanced')->first();
             if (!$setting) {
-                return response()->json(['success' => false, 'message' => 'Impostazioni non trovate']);
+                return response()->json(['success' => false, 'message' => __('admin.controllers.date.settings_not_found')]);
             }
 
             $adv = json_decode($setting->property, true);
@@ -124,7 +124,7 @@ class DateController extends Controller
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             \Log::error('Error in blockTime: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Errore interno del server']);
+            return response()->json(['success' => false, 'message' => __('admin.controllers.date.server_error')]);
         }
     }
 }

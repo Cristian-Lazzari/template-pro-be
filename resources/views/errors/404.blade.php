@@ -1,5 +1,5 @@
 @extends('errors.minimal')
 
-@section('title', __('Pagina non trovata'))
+@section('title', __('admin.errors.404_title'))
 @section('code', '404')
-@section('message', __('La pagina che stai cercando non esiste oppure e stata spostata.'))
+@section('message', __('admin.errors.404_message'))

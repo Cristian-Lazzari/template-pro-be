@@ -23,12 +23,12 @@
     $promotions = collect($promotions)->filter();
 
     $statusMap = [
-        0 => ['label' => 'Annullata', 'tone' => 'off'],
-        1 => ['label' => 'Confermata', 'tone' => 'active'],
-        2 => ['label' => 'In attesa', 'tone' => 'warning'],
-        3 => ['label' => 'Gia pagata in attesa', 'tone' => 'warning'],
-        5 => ['label' => 'Confermata e incassata', 'tone' => 'active'],
-        6 => ['label' => 'Rimborsata', 'tone' => 'off'],
+        0 => ['label' => __('admin.components.statuses.cancelled'), 'tone' => 'off'],
+        1 => ['label' => __('admin.components.statuses.confirmed'), 'tone' => 'active'],
+        2 => ['label' => __('admin.components.statuses.pending'), 'tone' => 'warning'],
+        3 => ['label' => __('admin.components.statuses.paid_pending'), 'tone' => 'warning'],
+        5 => ['label' => __('admin.components.statuses.confirmed_paid'), 'tone' => 'active'],
+        6 => ['label' => __('admin.components.statuses.refunded'), 'tone' => 'off'],
     ];
 
     $statusData = $statusMap[$status] ?? $statusMap[2];
@@ -102,7 +102,7 @@
                     <span class="order-detail__section-icon">
                         <x-icon name="card-checklist" />
                     </span>
-                    Prodotti ordinati
+                    {{ __('admin.components.order_detail.ordered_products') }}
                 </h3>
             </div>
 
@@ -138,14 +138,14 @@
                 <div class="order-detail__totals">
                     @if ($deliveryCost)
                         <div class="order-detail__total-row">
-                            <span>Costo di consegna</span>
+                            <span>{{ __('admin.components.order_detail.delivery_cost') }}</span>
                             <strong>{{ $deliveryCost }}</strong>
                         </div>
                     @endif
 
                     @if ($total)
                         <div class="order-detail__total-row order-detail__total-row--grand">
-                            <span>Totale</span>
+                            <span>{{ __('admin.common.total') }}</span>
                             <strong>{{ $total }}</strong>
                         </div>
                     @endif
@@ -160,7 +160,7 @@
                         <span class="order-detail__section-icon">
                             <i class="bi bi-gift-fill"></i>
                         </span>
-                        Promozione applicata
+                        {{ __('admin.components.order_detail.promotion_applied') }}
                     </h3>
                 </div>
 
@@ -168,19 +168,19 @@
                     @foreach ($promotions as $promotion)
                         <article class="order-detail__item">
                             <div class="order-detail__item-top">
-                                <span class="order-detail__qty">Promo</span>
-                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? 'Promozione' }}</strong>
+                                <span class="order-detail__qty">{{ __('admin.common.promo') }}</span>
+                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? __('admin.common.promotion') }}</strong>
                                 <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
                             </div>
 
                             <div class="order-detail__detail-groups">
                                 @foreach ([
-                                    ['label' => 'Tipo', 'value' => $promotion['type_label'] ?? null],
-                                    ['label' => 'Sconto', 'value' => $promotion['discount_amount_label'] ?? null],
-                                    ['label' => 'Subtotale prima dello sconto', 'value' => $promotion['subtotal_before_discount_label'] ?? null],
-                                    ['label' => 'Subtotale scontato', 'value' => $promotion['subtotal_after_discount_label'] ?? null],
-                                    ['label' => 'Totale dopo sconto', 'value' => $promotion['total_after_discount_label'] ?? null],
-                                    ['label' => 'Customer promotion', 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
+                                    ['label' => __('admin.components.order_detail.discount_type'), 'value' => $promotion['type_label'] ?? null],
+                                    ['label' => __('admin.components.order_detail.discount'), 'value' => $promotion['discount_amount_label'] ?? null],
+                                    ['label' => __('admin.components.order_detail.subtotal_before_discount'), 'value' => $promotion['subtotal_before_discount_label'] ?? null],
+                                    ['label' => __('admin.components.order_detail.discounted_subtotal'), 'value' => $promotion['subtotal_after_discount_label'] ?? null],
+                                    ['label' => __('admin.components.order_detail.total_after_discount'), 'value' => $promotion['total_after_discount_label'] ?? null],
+                                    ['label' => __('admin.components.order_detail.customer_promotion'), 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
                                 ] as $row)
                                     @if (!blank($row['value']))
                                         <div class="order-detail__detail-group">
@@ -194,11 +194,11 @@
 
                                 @if (!empty($promotion['affected_items']))
                                     <div class="order-detail__detail-group">
-                                        <span>Righe interessate</span>
+                                        <span>{{ __('admin.components.order_detail.affected_rows') }}</span>
                                         <div class="order-detail__detail-values">
                                             @foreach ($promotion['affected_items'] as $affectedItem)
                                                 <small>
-                                                    {{ $affectedItem['label'] ?? 'Elemento' }}
+                                                    {{ $affectedItem['label'] ?? __('admin.common.element') }}
                                                     @if (!empty($affectedItem['details']))
                                                         · {{ implode(' · ', $affectedItem['details']) }}
                                                     @endif
@@ -242,7 +242,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="chat-left-text-fill" />
                         </span>
-                        Messaggio del cliente
+                        {{ __('admin.components.order_detail.customer_message') }}
                     </h3>
                 </div>
 
@@ -254,14 +254,14 @@
             <footer class="order-detail__footer">
                 @if ($sentAt)
                     <div class="order-detail__footer-row">
-                        <span>Inviato alle</span>
+                        <span>{{ __('admin.components.order_detail.sent_at') }}</span>
                         <strong>{{ $sentAt }}</strong>
                     </div>
                 @endif
 
                 @if (!is_null($marketing))
                     <div class="order-detail__footer-row">
-                        <span>Marketing sul contatto</span>
+                        <span>{{ __('admin.components.order_detail.contact_marketing') }}</span>
                         <strong>{{ $marketing }}</strong>
                     </div>
                 @endif

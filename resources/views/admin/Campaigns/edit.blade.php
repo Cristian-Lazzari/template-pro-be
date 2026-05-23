@@ -5,11 +5,11 @@
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Campagne', 'url' => route('admin.campaigns.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.campaigns.plural'), 'url' => route('admin.campaigns.index')],
             ['label' => $campaign->name, 'url' => route('admin.campaigns.show', $campaign)],
-            ['label' => 'Modifica'],
+            ['label' => __('admin.marketing.campaigns.edit_breadcrumb')],
         ],
     ])
 
@@ -19,11 +19,11 @@
                 <span class="order-detail__status-icon order-detail__status-icon--warning">
                     <i class="bi bi-envelope-paper-fill"></i>
                 </span>
-                <strong>Modifica campagna</strong>
+                <strong>{{ __('admin.marketing.campaigns.edit') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">Modifica campagna</h1>
-            <p>Programma l’invio a un segmento clienti.</p>
+            <h1 class="menu-dashboard__title">{{ __('admin.marketing.campaigns.edit') }}</h1>
+            <p>{{ __('admin.marketing.campaigns.description') }}</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">

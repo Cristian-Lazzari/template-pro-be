@@ -23,15 +23,15 @@ use Illuminate\Validation\ValidationException;
 
 class CampaignController extends Controller
 {
-    private const STATUSES = [
-        'draft' => 'Bozza',
-        'scheduled' => 'Programmata',
-        'running' => 'In esecuzione',
-        'completed' => 'Completata',
-        'paused' => 'In pausa',
-        'archived' => 'Archiviata',
-        'active' => 'Programmata',
-        'sent' => 'Completata',
+    private const STATUS_TRANSLATION_KEYS = [
+        'draft' => 'status_draft',
+        'scheduled' => 'status_scheduled',
+        'running' => 'status_running',
+        'completed' => 'status_completed',
+        'paused' => 'status_paused',
+        'archived' => 'status_archived',
+        'active' => 'status_scheduled',
+        'sent' => 'status_completed',
     ];
 
     public function index(MarketingCustomerSegmentService $segmentService)
@@ -46,7 +46,7 @@ class CampaignController extends Controller
 
         return view('admin.Campaigns.index', [
             'campaigns' => $campaigns,
-            'statuses' => self::STATUSES,
+            'statuses' => $this->statusLabels(),
             'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
             'isArchivedView' => false,
@@ -62,7 +62,7 @@ class CampaignController extends Controller
 
         return view('admin.Campaigns.index', [
             'campaigns' => $campaigns,
-            'statuses' => self::STATUSES,
+            'statuses' => $this->statusLabels(),
             'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
             'isArchivedView' => true,
@@ -98,7 +98,7 @@ class CampaignController extends Controller
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
-        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, 'Campagna creata correttamente.');
+        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, __('admin.marketing.campaigns.created_flash'));
     }
 
     public function show(
@@ -156,7 +156,7 @@ class CampaignController extends Controller
             'showOrderMetrics' => $showOrderMetrics,
             'showReservationMetrics' => $showReservationMetrics,
             'customerPromotions' => $customerPromotions,
-            'statuses' => self::STATUSES,
+            'statuses' => $this->statusLabels(),
             'segments' => $segmentService->getSegmentOptions(),
             'scheduleWindows' => app(CampaignScheduleService::class)->getWindowOptions(),
             'consentBasisOptions' => Campaign::consentBasisOptions(),
@@ -183,7 +183,7 @@ class CampaignController extends Controller
     {
         if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()
-                ->withErrors(['status' => 'Una campagna completata puo essere solo consultata o archiviata.'])
+                ->withErrors(['status' => __('admin.marketing.campaigns.completed_only_view_or_archive')])
                 ->withInput();
         }
 
@@ -193,7 +193,7 @@ class CampaignController extends Controller
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
-        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, 'Campagna aggiornata correttamente.');
+        return $this->redirectAfterFormSave($campaign, $request, $assignmentService, $scheduleService, __('admin.marketing.campaigns.updated_flash'));
     }
 
     public function activate(
@@ -204,7 +204,7 @@ class CampaignController extends Controller
     {
         if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()->withErrors([
-                'status' => 'Una campagna completata puo essere solo archiviata.',
+                'status' => __('admin.marketing.campaigns.completed_only_archive'),
             ]);
         }
 
@@ -216,8 +216,8 @@ class CampaignController extends Controller
         $this->refreshMarketingRunMarker();
 
         $message = $campaign->scheduled_at
-            ? 'Campagna confermata. Le assegnazioni sono state preparate; l’invio partira dalla programmazione.'
-            : 'Campagna confermata. Le assegnazioni sono state preparate; imposta una programmazione per avviare l’invio automatico.';
+            ? __('admin.marketing.campaigns.confirmed_scheduled_flash')
+            : __('admin.marketing.campaigns.confirmed_unscheduled_flash');
 
         return back()
             ->with('success', $message)
@@ -226,19 +226,19 @@ class CampaignController extends Controller
 
     public function pause(Campaign $campaign)
     {
-        return $this->updateStatus($campaign, 'paused', 'Campagna messa in pausa correttamente.');
+        return $this->updateStatus($campaign, 'paused', __('admin.marketing.campaigns.paused_flash'));
     }
 
     public function archive(Campaign $campaign)
     {
-        return $this->updateStatus($campaign, 'archived', 'Campagna archiviata correttamente.');
+        return $this->updateStatus($campaign, 'archived', __('admin.marketing.campaigns.archived_flash'));
     }
 
     public function restore(Campaign $campaign)
     {
         if ($this->normalizedStatus($campaign->status) !== 'archived') {
             return back()->withErrors([
-                'status' => 'Solo una campagna archiviata puo essere ripristinata.',
+                'status' => __('admin.marketing.campaigns.restore_only_archived'),
             ]);
         }
 
@@ -246,7 +246,7 @@ class CampaignController extends Controller
         $this->refreshMarketingRunMarker();
 
         return to_route('admin.campaigns.show', $campaign)
-            ->with('success', 'Campagna ripristinata come bozza.');
+            ->with('success', __('admin.marketing.campaigns.restored_flash'));
     }
 
     public function destroy(Campaign $campaign)
@@ -263,18 +263,18 @@ class CampaignController extends Controller
             $this->refreshMarketingRunMarker();
 
             return to_route('admin.campaigns.index')
-                ->with('success', 'Bozza "' . $campaignName . '" eliminata insieme ai suoi collegamenti.');
+                ->with('success', __('admin.marketing.campaigns.draft_deleted_flash', ['name' => $campaignName]));
         }
 
         if ($this->normalizedStatus($campaign->status) !== 'archived') {
             return back()->withErrors([
-                'status' => 'Puoi eliminare direttamente solo le bozze. Per le altre campagne usa Archivia.',
+                'status' => __('admin.marketing.campaigns.delete_only_drafts'),
             ]);
         }
 
         if ($campaign->customerPromotions()->exists()) {
             return back()->withErrors([
-                'status' => 'Impossibile eliminare definitivamente: la campagna ha assegnazioni/storico collegato. Puoi archiviarla.',
+                'status' => __('admin.marketing.campaigns.delete_with_history_error'),
             ]);
         }
 
@@ -288,12 +288,12 @@ class CampaignController extends Controller
         $this->refreshMarketingRunMarker();
 
         return to_route('admin.campaigns.archived')
-            ->with('success', 'Campagna "' . $campaignName . '" eliminata definitivamente.');
+            ->with('success', __('admin.marketing.campaigns.deleted_forever_flash', ['name' => $campaignName]));
     }
 
     public function draft(Campaign $campaign)
     {
-        return $this->updateStatus($campaign, 'draft', 'Campagna salvata come bozza.');
+        return $this->updateStatus($campaign, 'draft', __('admin.marketing.campaigns.draft_flash'));
     }
 
     public function previewAudience(Campaign $campaign, CampaignAssignmentService $assignmentService)
@@ -325,13 +325,13 @@ class CampaignController extends Controller
             return response()->json([
                 'matched' => 0,
                 'available' => 0,
-                'message' => 'Seleziona un segmento per vedere la stima.',
+                'message' => __('admin.marketing.campaigns.select_segment_preview'),
             ]);
         }
 
         if (! $segmentService->isValidSegmentForCampaignType($requestedSegment, $campaignType)) {
             throw ValidationException::withMessages([
-                'segment' => 'Il segmento selezionato non e valido per il tipo di campagna.',
+                'segment' => __('admin.marketing.campaigns.invalid_segment_for_type'),
             ]);
         }
 
@@ -382,7 +382,7 @@ class CampaignController extends Controller
         $segments = $segmentService->getSegmentOptions();
 
         return [
-            'statuses' => self::STATUSES,
+            'statuses' => $this->statusLabels(),
             'segments' => $segments,
             'campaignTypeOptions' => Campaign::campaignTypeOptions(),
             'consentBasisOptions' => Campaign::consentBasisOptions(),
@@ -394,6 +394,17 @@ class CampaignController extends Controller
                 ->orderBy('name')
                 ->get(),
         ];
+    }
+
+    private function statusLabels(): array
+    {
+        $labels = [];
+
+        foreach (self::STATUS_TRANSLATION_KEYS as $status => $key) {
+            $labels[$status] = __("admin.marketing.campaigns.{$key}");
+        }
+
+        return $labels;
     }
 
     private function campaignListQuery()
@@ -466,15 +477,15 @@ class CampaignController extends Controller
     private function audiencePreviewMessage(array $result): ?string
     {
         if (($result['failure_reason'] ?? null) === 'Campaign must have at least one promotion.') {
-            return 'Seleziona almeno una promozione per stimare i destinatari effettivi.';
+            return __('admin.marketing.campaigns.select_promotion_preview');
         }
 
         if (($result['failure_reason'] ?? null) !== null) {
-            return 'Non e possibile calcolare la preview audience con la selezione corrente.';
+            return __('admin.marketing.campaigns.preview_calculation_error');
         }
 
         if ((int) ($result['matched_count'] ?? 0) === 0) {
-            return 'Nessun cliente raggiungibile con segmento, consenso e promozioni selezionati.';
+            return __('admin.marketing.campaigns.no_reachable_customers');
         }
 
         return null;
@@ -483,9 +494,9 @@ class CampaignController extends Controller
     private function audiencePreviewAvailableLabel(string $campaignType): string
     {
         return match ($campaignType) {
-            Campaign::CAMPAIGN_TYPE_SOFT_MARKETING => 'Clienti con email valida senza opt-out soft',
-            Campaign::CAMPAIGN_TYPE_PROFILING => 'Clienti con email, consenso marketing e profilazione',
-            default => 'Clienti con email e consenso esplicito',
+            Campaign::CAMPAIGN_TYPE_SOFT_MARKETING => __('admin.marketing.campaigns.available_soft'),
+            Campaign::CAMPAIGN_TYPE_PROFILING => __('admin.marketing.campaigns.available_profiling'),
+            default => __('admin.marketing.campaigns.available_explicit'),
         };
     }
 
@@ -505,7 +516,7 @@ class CampaignController extends Controller
             $this->refreshMarketingRunMarker();
 
             return to_route('admin.campaigns.index')
-                ->with('success', 'Campagna salvata come bozza. Puoi completarla dalla lista campagne.');
+                ->with('success', __('admin.marketing.campaigns.draft_flash_long'));
         }
 
         $redirect = to_route('admin.campaigns.show', $campaign);
@@ -515,8 +526,8 @@ class CampaignController extends Controller
         $this->refreshMarketingRunMarker();
 
         $message = $campaign->scheduled_at
-            ? $baseMessage . ' Assegnazioni preparate; le email partiranno all’orario programmato tramite scheduler.'
-            : $baseMessage . ' Assegnazioni preparate; imposta una programmazione per avviare l’invio automatico.';
+            ? __('admin.marketing.campaigns.assignments_prepared_scheduled', ['base' => $baseMessage])
+            : __('admin.marketing.campaigns.assignments_prepared_unscheduled', ['base' => $baseMessage]);
 
         return $redirect
             ->with('success', $message)
@@ -589,7 +600,7 @@ class CampaignController extends Controller
     {
         if (in_array($campaign->status, ['completed', 'sent'], true) && $status !== 'archived') {
             return back()->withErrors([
-                'status' => 'Una campagna completata puo essere solo archiviata.',
+                'status' => __('admin.marketing.campaigns.completed_only_archive'),
             ]);
         }
 
@@ -627,7 +638,7 @@ class CampaignController extends Controller
 
         return [
             'status' => $status,
-            'label' => self::STATUSES[$status] ?? $status,
+            'label' => $this->statusLabels()[$status] ?? $status,
             'involved_count' => $total,
             'sent_count' => $sent,
             'pending_count' => $pending,
@@ -661,29 +672,29 @@ class CampaignController extends Controller
     ): string
     {
         return match ($status) {
-            'draft' => 'Bozza: programma la campagna per creare i destinatari.',
+            'draft' => __('admin.marketing.campaigns.send_draft_message'),
             'scheduled' => $this->scheduledProgressMessage($campaign),
-            'running' => "Invio in corso: {$sent} di {$total} email inviate.",
+            'running' => __('admin.marketing.campaigns.send_running_message', ['sent' => $sent, 'total' => $total]),
             'completed' => $completedAt
-                ? 'Campagna completata il ' . $completedAt->format('d/m/Y H:i')
-                : 'Campagna completata.',
-            'paused' => 'Campagna in pausa: non verranno inviati nuovi batch.',
-            'archived' => 'Campagna archiviata.',
-            default => self::STATUSES[$status] ?? $status,
+                ? __('admin.marketing.campaigns.send_completed_at', ['date' => $completedAt->format('d/m/Y H:i')])
+                : __('admin.marketing.campaigns.send_completed'),
+            'paused' => __('admin.marketing.campaigns.send_paused_message'),
+            'archived' => __('admin.marketing.campaigns.send_archived_message'),
+            default => $this->statusLabels()[$status] ?? $status,
         };
     }
 
     private function scheduledProgressMessage(Campaign $campaign): string
     {
         if (! $campaign->scheduled_at) {
-            return 'Programmazione non impostata.';
+            return __('admin.marketing.campaigns.schedule_not_set');
         }
 
         if ($campaign->scheduled_at->isFuture()) {
-            return 'Invio programmato per: ' . $campaign->scheduled_at->format('d/m/Y H:i');
+            return __('admin.marketing.campaigns.scheduled_for', ['date' => $campaign->scheduled_at->format('d/m/Y H:i')]);
         }
 
-        return 'Pronta per il prossimo ciclo del runner marketing.';
+        return __('admin.marketing.campaigns.ready_runner');
     }
 
     private function metadataDate(Campaign $campaign, string $key): ?Carbon

@@ -2,7 +2,7 @@
     $navItems = [
         [
             'key' => 'dashboard',
-            'label' => 'Dashboard',
+            'label' => __('admin.nav.dashboard'),
             'route' => route('admin.dashboard'),
             'icon' => 'calendar2-check-fill',
             'active' => request()->routeIs('admin.dashboard'),
@@ -16,14 +16,14 @@
         // ],
         [
             'key' => 'menu',
-            'label' => 'Menu',
+            'label' => __('admin.nav.menu'),
             'route' => route('admin.menu'),
             'icon' => 'fork-knife',
             'active' => request()->routeIs('admin.menu') || request()->routeIs('admin.products.*') || request()->routeIs('admin.menus.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.ingredients.*') || request()->routeIs('admin.allergens.*'),
         ],
         [
             'key' => 'posts',
-            'label' => 'Contenuti',
+            'label' => __('admin.nav.contents'),
             'route' => route('admin.posts.index'),
             'icon' => 'images',
             'active' => request()->routeIs('admin.posts.*'),
@@ -33,7 +33,7 @@
     if (config('configurazione.subscription') > 1) {
         $navItems[] = [
             'key' => 'statistics',
-            'label' => 'Statistiche',
+            'label' => __('admin.nav.statistics'),
             'route' => route('admin.statistics'),
             'icon' => 'graph-up-arrow',
             'active' => request()->routeIs('admin.statistics'),
@@ -42,7 +42,7 @@
 
     $navItems[] = [
         'key' => 'customers',
-        'label' => 'Clienti',
+        'label' => __('admin.nav.customers'),
         'route' => route('admin.customers.index'),
         'icon' => 'people-fill',
         'active' => request()->routeIs('admin.customers.*') && ! request()->routeIs('admin.customers.mail_models.*'),
@@ -50,7 +50,7 @@
 
     $navItems[] = [
         'key' => 'marketing',
-        'label' => 'Marketing',
+        'label' => __('admin.nav.marketing'),
         'route' => route('admin.marketing'),
         'icon' => 'megaphone-fill',
         'active' => request()->routeIs('admin.marketing') || request()->routeIs('admin.promotions.*') || request()->routeIs('admin.campaigns.*') || request()->routeIs('admin.automations.*') || request()->routeIs('admin.customers.mail_models.*'),
@@ -58,14 +58,14 @@
 
     $navItems[] = [
         'key' => 'settings',
-        'label' => 'Impostazioni',
+        'label' => __('admin.nav.settings'),
         'route' => route('admin.settings'),
         'icon' => 'gear-wide-connected',
         'active' => request()->routeIs('admin.settings') || request()->routeIs('admin.profile.*'),
     ];
 @endphp
 
-<nav class="admin-nav" aria-label="Navigazione dashboard">
+<nav class="admin-nav" aria-label="{{ __('admin.nav.dashboard_navigation_aria') }}">
     <div class="admin-nav__shell">
         <div class="admin-nav__group">
             @foreach ($navItems as $item)

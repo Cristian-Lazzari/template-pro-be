@@ -5,11 +5,11 @@
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Promozioni', 'url' => route('admin.promotions.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.promotions.plural'), 'url' => route('admin.promotions.index')],
             ['label' => $promotion->name, 'url' => route('admin.promotions.show', $promotion)],
-            ['label' => 'Modifica'],
+            ['label' => __('admin.common.edit')],
         ],
     ])
 
@@ -19,11 +19,11 @@
                 <span class="order-detail__status-icon order-detail__status-icon--warning">
                     <i class="bi bi-megaphone-fill"></i>
                 </span>
-                <strong>Modifica promozione</strong>
+                <strong>{{ __('admin.marketing.promotions.edit') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">Modifica promozione</h1>
-            <p>Definisci regola, validità e target della promozione.</p>
+            <h1 class="menu-dashboard__title">{{ __('admin.marketing.promotions.edit') }}</h1>
+            <p>{{ __('admin.marketing.promotions.description') }}</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">

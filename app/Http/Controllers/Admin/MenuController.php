@@ -150,7 +150,7 @@ class MenuController extends Controller
             ]);
         }
 
-        $m = ' "' . $data['name'] . '" è stato creato correttamente';
+        $m = __('admin.controllers.menu.created_named', ['name' => $data['name']]);
         return to_route('admin.menus.index')->with('success', $m);    
     }
 
@@ -217,7 +217,7 @@ class MenuController extends Controller
                 
             }
         }       
-        $m = ' "' . $data['name'] . '" è stato modificato correttamente';
+        $m = __('admin.controllers.menu.updated_named', ['name' => $data['name']]);
         return to_route('admin.menus.index')->with('success', $m);    
     }
 

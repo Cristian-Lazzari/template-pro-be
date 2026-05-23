@@ -22,12 +22,12 @@
     $promotions = collect($promotions)->filter();
 
     $statusMap = [
-        0 => ['label' => 'Annullata', 'tone' => 'off'],
-        1 => ['label' => 'Confermata', 'tone' => 'active'],
-        2 => ['label' => 'In attesa', 'tone' => 'warning'],
-        3 => ['label' => 'Gia pagata in attesa', 'tone' => 'warning'],
-        5 => ['label' => 'Confermata e incassata', 'tone' => 'active'],
-        6 => ['label' => 'Rimborsata', 'tone' => 'off'],
+        0 => ['label' => __('admin.components.statuses.cancelled'), 'tone' => 'off'],
+        1 => ['label' => __('admin.components.statuses.confirmed'), 'tone' => 'active'],
+        2 => ['label' => __('admin.components.statuses.pending'), 'tone' => 'warning'],
+        3 => ['label' => __('admin.components.statuses.paid_pending'), 'tone' => 'warning'],
+        5 => ['label' => __('admin.components.statuses.confirmed_paid'), 'tone' => 'active'],
+        6 => ['label' => __('admin.components.statuses.refunded'), 'tone' => 'off'],
     ];
 
     $statusData = $statusMap[$status] ?? $statusMap[2];
@@ -99,7 +99,7 @@
                     <span class="order-detail__section-icon">
                         <x-icon name="people-fill" />
                     </span>
-                    Ospiti
+                    {{ __('admin.components.reservation_detail.guests') }}
                 </h3>
             </div>
 
@@ -111,7 +111,7 @@
                         </span>
                         <span class="reservation-detail__guest-copy">
                             <strong>{{ $adults }}</strong>
-                            <small>Adulti</small>
+                            <small>{{ __('admin.components.reservation_detail.adults') }}</small>
                         </span>
                     </div>
                 @endif
@@ -123,14 +123,14 @@
                         </span>
                         <span class="reservation-detail__guest-copy">
                             <strong>{{ $children }}</strong>
-                            <small>Bambini</small>
+                            <small>{{ __('admin.components.reservation_detail.children') }}</small>
                         </span>
                     </div>
                 @endif
 
                 @if ($roomLabel)
                     <div class="reservation-detail__room">
-                        <span class="reservation-detail__room-label">Sala prenotata</span>
+                        <span class="reservation-detail__room-label">{{ __('admin.components.reservation_detail.booked_room') }}</span>
                         <strong>{{ $roomLabel }}</strong>
                     </div>
                 @endif
@@ -144,7 +144,7 @@
                         <span class="order-detail__section-icon">
                             <i class="bi bi-gift-fill"></i>
                         </span>
-                        Promozione prenotazione
+                        {{ __('admin.components.reservation_detail.reservation_promotion') }}
                     </h3>
                 </div>
 
@@ -152,15 +152,15 @@
                     @foreach ($promotions as $promotion)
                         <article class="order-detail__item">
                             <div class="order-detail__item-top">
-                                <span class="order-detail__qty">Promo</span>
-                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? 'Promozione' }}</strong>
+                                <span class="order-detail__qty">{{ __('admin.common.promo') }}</span>
+                                <strong class="order-detail__item-name">{{ $promotion['name'] ?? __('admin.common.promotion') }}</strong>
                                 <x-dashboard.state-pill tone="active">{{ $promotion['status'] ?? 'n/d' }}</x-dashboard.state-pill>
                             </div>
 
                             <div class="order-detail__detail-groups">
                                 @foreach ([
-                                    ['label' => 'Tipo', 'value' => $promotion['type_label'] ?? null],
-                                    ['label' => 'Customer promotion', 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
+                                    ['label' => __('admin.common.type'), 'value' => $promotion['type_label'] ?? null],
+                                    ['label' => __('admin.components.order_detail.customer_promotion'), 'value' => isset($promotion['customer_promotion_id']) ? '#' . $promotion['customer_promotion_id'] : null],
                                 ] as $row)
                                     @if (!blank($row['value']))
                                         <div class="order-detail__detail-group">
@@ -174,11 +174,11 @@
 
                                 @if (!empty($promotion['affected_items']))
                                     <div class="order-detail__detail-group">
-                                        <span>Dettagli promo</span>
+                                        <span>{{ __('admin.components.reservation_detail.promotion_details') }}</span>
                                         <div class="order-detail__detail-values">
                                             @foreach ($promotion['affected_items'] as $affectedItem)
                                                 <small>
-                                                    {{ $affectedItem['label'] ?? 'Elemento' }}
+                                                    {{ $affectedItem['label'] ?? __('admin.common.element') }}
                                                     @if (!empty($affectedItem['details']))
                                                         · {{ implode(' · ', $affectedItem['details']) }}
                                                     @endif
@@ -201,7 +201,7 @@
                         <span class="order-detail__section-icon">
                             <x-icon name="chat-left-text-fill" />
                         </span>
-                        Messaggio del cliente
+                        {{ __('admin.components.reservation_detail.customer_message') }}
                     </h3>
                 </div>
 
@@ -213,14 +213,14 @@
             <footer class="order-detail__footer">
                 @if ($sentAt)
                     <div class="order-detail__footer-row">
-                        <span>Inviato alle</span>
+                        <span>{{ __('admin.components.reservation_detail.sent_at') }}</span>
                         <strong>{{ $sentAt }}</strong>
                     </div>
                 @endif
 
                 @if (!is_null($marketing))
                     <div class="order-detail__footer-row">
-                        <span>Marketing sul contatto</span>
+                        <span>{{ __('admin.components.reservation_detail.contact_marketing') }}</span>
                         <strong>{{ $marketing }}</strong>
                     </div>
                 @endif

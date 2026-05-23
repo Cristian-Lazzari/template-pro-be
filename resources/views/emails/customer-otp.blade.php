@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codice di verifica</title>
+    <title>{{ __('admin.emails.verification_code') }}</title>
 </head>
 <body style="margin:0; padding:0; background:#f5f7fb; font-family:Arial, Helvetica, sans-serif; color:#1e2d64;">
     <div style="max-width:560px; margin:0 auto; padding:32px 16px;">

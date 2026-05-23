@@ -3,7 +3,9 @@
     $selectedPromotionIds = collect(old('promotions', $campaign->exists ? $campaign->promotions->pluck('id')->all() : []))
         ->map(fn ($id) => (string) $id)
         ->all();
-    $primaryActionLabel = $method === 'POST' ? 'Crea e programma' : 'Salva e programma';
+    $primaryActionLabel = $method === 'POST'
+        ? __('admin.marketing.campaigns.create_and_schedule')
+        : __('admin.marketing.campaigns.save_and_schedule');
     $cancelUrl = $campaign->exists ? route('admin.campaigns.show', $campaign) : route('admin.campaigns.index');
     $selectedScheduleWindow = old('schedule_window', data_get($campaign->metadata, 'schedule_window', 'next_available'));
     $legacySegmentMap = [
@@ -23,15 +25,15 @@
         \App\Models\Campaign::CAMPAIGN_TYPE_PROFILING => 'bi-diagram-3-fill',
     ];
     $campaignTypeDescriptions = [
-        \App\Models\Campaign::CAMPAIGN_TYPE_SOFT_MARKETING => 'Comunicazione email soft opt-in.',
-        \App\Models\Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING => 'Invio email con consenso esplicito.',
-        \App\Models\Campaign::CAMPAIGN_TYPE_PROFILING => 'Audience CRM profilata e segmenti avanzati.',
+        \App\Models\Campaign::CAMPAIGN_TYPE_SOFT_MARKETING => __('admin.marketing.campaigns.soft_marketing_description'),
+        \App\Models\Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING => __('admin.marketing.campaigns.explicit_marketing_description'),
+        \App\Models\Campaign::CAMPAIGN_TYPE_PROFILING => __('admin.marketing.campaigns.profiling_description'),
     ];
-    $selectedCampaignTypeLabel = $campaignTypeOptions[$selectedCampaignType] ?? 'Email marketing con consenso esplicito';
+    $selectedCampaignTypeLabel = $campaignTypeOptions[$selectedCampaignType] ?? __('admin.marketing.campaigns.consent_explicit');
     $baseSegmentOptions = [
-        'reservations' => 'Prenotazioni',
-        'orders' => 'Ordini',
-        'both' => 'Prenotazioni e ordini',
+        'reservations' => __('admin.marketing.campaigns.base_segment_reservations'),
+        'orders' => __('admin.marketing.campaigns.base_segment_orders'),
+        'both' => __('admin.marketing.campaigns.base_segment_both'),
     ];
     $advancedSegmentOptions = $segments ?? [];
     $visibleSegmentOptions = $selectedCampaignType === \App\Models\Campaign::CAMPAIGN_TYPE_PROFILING
@@ -43,11 +45,11 @@
     $segmentPreviewLabels = array_replace($advancedSegmentOptions, $baseSegmentOptions);
     $selectedConsentBasis = \App\Models\Campaign::consentBasisForCampaignType($selectedCampaignType);
     $consentBasisPreviewLabels = [
-        \App\Models\Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING => 'Email marketing con consenso esplicito',
-        \App\Models\Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => 'Email soft opt-in',
-        \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => 'WhatsApp marketing, non ancora attivo',
+        \App\Models\Campaign::CONSENT_BASIS_EXPLICIT_EMAIL_MARKETING => __('admin.marketing.campaigns.consent_explicit'),
+        \App\Models\Campaign::CONSENT_BASIS_SOFT_EMAIL_MARKETING => __('admin.marketing.campaigns.consent_soft'),
+        \App\Models\Campaign::CONSENT_BASIS_WHATSAPP_MARKETING => __('admin.marketing.campaigns.consent_whatsapp_inactive'),
     ];
-    $selectedConsentBasisLabel = $consentBasisPreviewLabels[$selectedConsentBasis] ?? 'Email marketing con consenso esplicito';
+    $selectedConsentBasisLabel = $consentBasisPreviewLabels[$selectedConsentBasis] ?? __('admin.marketing.campaigns.consent_explicit');
     $audiencePreviewUrl = $audiencePreviewUrl ?? route('admin.campaigns.audience-preview');
     $selectedScheduleWindow = array_key_exists($selectedScheduleWindow, $scheduleWindows)
         ? $selectedScheduleWindow
@@ -56,7 +58,7 @@
     $previewPromotions = collect($promotions)
         ->filter(fn ($promotion) => in_array((string) $promotion->id, $selectedPromotionIds, true))
         ->values();
-    $previewScheduleWindowLabel = $scheduleWindows[$selectedScheduleWindow] ?? 'Prima finestra disponibile';
+    $previewScheduleWindowLabel = $scheduleWindows[$selectedScheduleWindow] ?? __('admin.marketing.campaigns.next_available_window');
     $selectedScheduledAtValue = old('scheduled_at', $campaign->scheduled_at?->format('Y-m-d\TH:i'));
     $formatPreviewDate = function ($value) {
         if (! $value) {
@@ -70,17 +72,17 @@
         }
     };
     $previewScheduledAtLabel = $formatPreviewDate($selectedScheduledAtValue)
-        ?: ($selectedScheduleWindow === 'next_available' ? 'Prima finestra disponibile' : 'Definita dalla finestra scelta');
+        ?: ($selectedScheduleWindow === 'next_available' ? __('admin.marketing.campaigns.next_available_window') : __('admin.marketing.campaigns.chosen_window'));
     $statusPreviewLabel = $campaign->exists
         ? ($statuses[$campaign->status] ?? $campaign->status)
-        : 'Nuova campagna';
+        : __('admin.marketing.campaigns.new');
     $formatPromotionDiscount = function ($promotion) {
         if ($promotion->type_discount === 'gift') {
-            return 'Regalo';
+            return __('admin.marketing.campaigns.discount_gift');
         }
 
         if ($promotion->discount === null) {
-            return 'Sconto da definire';
+            return __('admin.marketing.campaigns.discount_to_define');
         }
 
         $value = number_format((float) $promotion->discount, 2, ',', '.');
@@ -321,236 +323,99 @@
         .promo-wiz__dot-lbl {
             white-space: normal;
         }
-
-        .campaign-preview-metrics {
-            grid-template-columns: 1fr;
-        }
     }
 
-    .campaign-preview-panel {
+    /* ── Audience block ────────────────────────────────────────── */
+    .cpv2-audience {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(216, 221, 232, 0.08);
+        background: rgba(216, 221, 232, 0.03);
         display: grid;
-        gap: 14px;
-        padding: 14px;
-        border-radius: 8px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background:
-            linear-gradient(180deg, rgba(216, 221, 232, 0.07), rgba(9, 3, 51, 0.16)),
-            rgba(9, 3, 51, 0.28);
-        box-shadow: inset 0 1px 0 rgba(216, 221, 232, 0.08);
+        gap: 5px;
     }
 
-    .campaign-preview-hero {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 12px;
-        align-items: start;
-        padding: 14px;
-        border-radius: 8px;
-        border: 1px solid rgba(14, 183, 146, 0.2);
-        background:
-            linear-gradient(135deg, rgba(14, 183, 146, 0.16), rgba(98, 166, 255, 0.08)),
-            rgba(216, 221, 232, 0.04);
-    }
-
-    .campaign-preview-hero__icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 42px;
-        height: 42px;
-        border-radius: 8px;
-        border: 1px solid rgba(142, 246, 219, 0.22);
-        background: rgba(9, 3, 51, 0.36);
-        color: rgba(142, 246, 219, 0.94);
-        font-size: 18px;
-        flex: 0 0 auto;
-    }
-
-    .campaign-preview-eyebrow,
-    .campaign-preview-label {
-        color: rgba(216, 221, 232, 0.58);
-        font-size: var(--fs-100);
-        font-weight: 800;
-        line-height: 1.3;
-        text-transform: uppercase;
-        overflow-wrap: anywhere;
-    }
-
-    .campaign-preview-title {
-        display: block;
-        margin-top: 3px;
-        color: var(--c3);
-        font-size: clamp(1.05rem, 1.8vw, 1.35rem);
-        font-weight: 900;
-        line-height: 1.18;
-        overflow-wrap: anywhere;
-    }
-
-    .campaign-preview-status-row {
+    .cpv2-audience-row {
         display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-        align-items: center;
-        margin-top: 10px;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
     }
 
-    .campaign-preview-badge {
-        display: inline-flex;
-        align-items: center;
-        width: fit-content;
-        max-width: 100%;
-        padding: 6px 9px;
-        border-radius: 999px;
-        border: 1px solid rgba(14, 183, 146, 0.28);
-        background: rgba(14, 183, 146, 0.12);
-        color: rgba(142, 246, 219, 0.96) !important;
+    .cpv2-audience-label {
+        color: rgba(216, 221, 232, 0.5);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .cpv2-audience-val {
+        color: var(--c3);
         font-size: var(--fs-100);
         font-weight: 900;
-        line-height: 1.25;
-        overflow-wrap: anywhere;
-    }
-
-    .campaign-preview-badge--muted {
-        border-color: rgba(98, 166, 255, 0.24);
-        background: rgba(98, 166, 255, 0.1);
-        color: rgba(216, 221, 232, 0.92) !important;
-    }
-
-    .campaign-preview-metrics {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .campaign-preview-metric {
-        display: grid;
-        gap: 4px;
+        text-align: right;
         min-width: 0;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid rgba(216, 221, 232, 0.1);
-        background: rgba(216, 221, 232, 0.045);
-    }
-
-    .campaign-preview-metric strong {
-        color: var(--c3);
-        font-size: var(--fs-500);
-        font-weight: 900;
-        line-height: 1.1;
         overflow-wrap: anywhere;
     }
 
-    .campaign-preview-metric small {
-        color: rgba(216, 221, 232, 0.62);
-        font-size: var(--fs-100);
-        font-weight: 700;
-        line-height: 1.3;
-        overflow-wrap: anywhere;
+    .cpv2-audience-note {
+        margin-top: 4px;
+        padding-top: 6px;
+        border-top: 1px solid rgba(216, 221, 232, 0.06);
     }
 
-    .campaign-preview-grid {
-        display: grid;
-        gap: 10px;
-    }
-
-    .campaign-preview-card {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 10px;
-        align-items: start;
-        min-width: 0;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid rgba(216, 221, 232, 0.1);
-        background: rgba(9, 3, 51, 0.26);
-    }
-
-    .campaign-preview-card__icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(216, 221, 232, 0.055);
-        color: rgba(142, 246, 219, 0.86);
-        flex: 0 0 auto;
-    }
-
-    .campaign-preview-card strong {
+    .cpv2-audience-status {
         display: block;
-        margin-top: 3px;
-        color: var(--c3);
-        font-size: var(--fs-300);
-        font-weight: 850;
-        line-height: 1.25;
-        overflow-wrap: anywhere;
-    }
-
-    .campaign-preview-card small {
-        display: block;
-        margin-top: 3px;
-        color: rgba(216, 221, 232, 0.6);
+        color: rgba(216, 221, 232, 0.48);
         font-size: var(--fs-100);
         font-weight: 700;
-        line-height: 1.35;
-        overflow-wrap: anywhere;
+        line-height: 1.4;
     }
 
-    .campaign-preview-warning {
-        color: #ffb4a8 !important;
-        font-weight: 800;
+    .cpv2-audience-status.is-warning {
+        color: #ffb4a8;
     }
 
-    .campaign-preview-warning.is-hidden {
-        display: none;
-    }
-
-    .campaign-preview-status-note {
-        color: rgba(216, 221, 232, 0.62);
-        font-size: var(--fs-100);
-        font-weight: 700;
-        line-height: 1.35;
-    }
-
-    .campaign-preview-status-note.is-warning,
-    .campaign-preview-status-note.is-error {
+    .cpv2-audience-status.is-error {
         color: #ffb4a8;
         font-weight: 800;
     }
 
-    .campaign-preview-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-        margin-top: 8px;
+    /* ── Disabled promotion option ─────────────────────────────── */
+    .campaign-promotion-option--disabled {
+        opacity: 0.4;
+        pointer-events: none;
+        user-select: none;
     }
 
-    .campaign-preview-chips span {
+    .campaign-promo-status-badge {
         display: inline-flex;
-        max-width: 100%;
-        padding: 6px 8px;
+        align-items: center;
+        padding: 1px 6px;
         border-radius: 999px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(9, 3, 51, 0.38);
-        color: rgba(216, 221, 232, 0.84);
-        font-size: var(--fs-100);
+        border: 1px solid rgba(255, 180, 168, 0.3);
+        background: rgba(255, 180, 168, 0.08);
+        color: #ffb4a8;
+        font-size: 10px;
         font-weight: 800;
-        line-height: 1.25;
-        overflow-wrap: anywhere;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 3px;
     }
+
 </style>
 
 @if ($errors->any())
     <div class="alert alert-danger">
-        Controlla i campi evidenziati prima di salvare.
+        {{ __('admin.marketing.campaigns.check_fields') }}
     </div>
 @endif
 
 @if (in_array($campaign->status, ['completed', 'sent'], true))
     <div class="alert alert-warning">
-        Questa campagna risulta completata: puoi solo archiviarla.
+        {{ __('admin.marketing.campaigns.completed_warning') }}
     </div>
 @endif
 
@@ -575,33 +440,33 @@
             <span class="promo-wiz__dot-num">
                 @if ($initialStep > 1) <i class="bi bi-check-lg"></i> @else 1 @endif
             </span>
-            <span class="promo-wiz__dot-lbl">Nome</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.campaigns.step_name') }}</span>
         </div>
         <div class="promo-wiz__line {{ $initialStep > 1 ? 'is-done' : '' }}" data-step-line="1"></div>
         <div class="promo-wiz__dot {{ $initialStep === 2 ? 'is-active' : ($initialStep > 2 ? 'is-done' : '') }}" data-step-dot="2">
             <span class="promo-wiz__dot-num">
                 @if ($initialStep > 2) <i class="bi bi-check-lg"></i> @else 2 @endif
             </span>
-            <span class="promo-wiz__dot-lbl">Data</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.campaigns.date') }}</span>
         </div>
         <div class="promo-wiz__line {{ $initialStep > 2 ? 'is-done' : '' }}" data-step-line="2"></div>
         <div class="promo-wiz__dot {{ $initialStep === 3 ? 'is-active' : ($initialStep > 3 ? 'is-done' : '') }}" data-step-dot="3">
             <span class="promo-wiz__dot-num">
                 @if ($initialStep > 3) <i class="bi bi-check-lg"></i> @else 3 @endif
             </span>
-            <span class="promo-wiz__dot-lbl">Modello</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.campaigns.step_model') }}</span>
         </div>
         <div class="promo-wiz__line {{ $initialStep > 3 ? 'is-done' : '' }}" data-step-line="3"></div>
         <div class="promo-wiz__dot {{ $initialStep === 4 ? 'is-active' : ($initialStep > 4 ? 'is-done' : '') }}" data-step-dot="4">
             <span class="promo-wiz__dot-num">
                 @if ($initialStep > 4) <i class="bi bi-check-lg"></i> @else 4 @endif
             </span>
-            <span class="promo-wiz__dot-lbl">Tipo</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.campaigns.step_type') }}</span>
         </div>
         <div class="promo-wiz__line {{ $initialStep > 4 ? 'is-done' : '' }}" data-step-line="4"></div>
         <div class="promo-wiz__dot {{ $initialStep === 5 ? 'is-active' : '' }}" data-step-dot="5">
             <span class="promo-wiz__dot-num">5</span>
-            <span class="promo-wiz__dot-lbl">Segmento</span>
+            <span class="promo-wiz__dot-lbl">{{ __('admin.marketing.campaigns.segment') }}</span>
         </div>
     </div>
 
@@ -614,17 +479,17 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-card-text"></i>
                             </span>
-                            Nome campagna
+                            {{ __('admin.marketing.campaigns.name_placeholder') }}
                         </h3>
                     </div>
 
                     <div>
                         <label class="label_c" for="name">
                             <i class="bi bi-type"></i>
-                            Nome
+                            {{ __('admin.marketing.campaigns.name') }}
                         </label>
                         <p>
-                            <input value="{{ old('name', $campaign->name) }}" type="text" name="name" id="name" placeholder="Nome campagna" autocomplete="off">
+                            <input value="{{ old('name', $campaign->name) }}" type="text" name="name" id="name" placeholder="{{ __('admin.marketing.campaigns.name_placeholder') }}" autocomplete="off">
                         </p>
                         @error('name') <p class="error">{{ $message }}</p> @enderror
                     </div>
@@ -638,14 +503,14 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-calendar-plus"></i>
                             </span>
-                            Data programmazione
+                            {{ __('admin.marketing.campaigns.schedule_date') }}
                         </h3>
                     </div>
 
                     <div>
                         <label class="label_c" for="schedule_window">
                             <i class="bi bi-calendar-plus"></i>
-                            Finestra di invio
+                            {{ __('admin.marketing.campaigns.schedule_window') }}
                         </label>
                         <p>
                             <select name="schedule_window" id="schedule_window" data-schedule-window-select data-initial-value="{{ $selectedScheduleWindow }}">
@@ -657,7 +522,7 @@
                         @error('schedule_window') <p class="error">{{ $message }}</p> @enderror
                         @error('scheduled_at') <p class="error">{{ $message }}</p> @enderror
                     </div>
-                    <p class="menu-dashboard__copy mt-3">Le email partiranno automaticamente nella finestra programmata tramite il runner marketing.</p>
+                    <p class="menu-dashboard__copy mt-3">{{ __('admin.marketing.campaigns.schedule_note') }}</p>
                 </section>
             </div>
 
@@ -668,18 +533,18 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-envelope-fill"></i>
                             </span>
-                            Modello email
+                            {{ __('admin.marketing.campaigns.model_email') }}
                         </h3>
                     </div>
 
                     <div>
                         <label class="label_c" for="model_id">
                             <i class="bi bi-envelope-fill"></i>
-                            Modello mail
+                            {{ __('admin.marketing.campaigns.mail_model') }}
                         </label>
                         <p>
                             <select name="model_id" id="model_id" data-mail-model-select>
-                                <option value="" data-preview-label="Da selezionare">Nessun modello</option>
+                                <option value="" data-preview-label="{{ __('admin.marketing.campaigns.to_select') }}">{{ __('admin.marketing.campaigns.no_model') }}</option>
                                 @foreach ($mailModels as $mailModel)
                                     <option value="{{ $mailModel->id }}" data-preview-label="{{ $mailModel->name }}" @selected((string) old('model_id', $campaign->model_id) === (string) $mailModel->id)>
                                         {{ $mailModel->name }}
@@ -702,7 +567,7 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-diagram-3-fill"></i>
                             </span>
-                            Tipo campagna
+                            {{ __('admin.marketing.campaigns.campaign_type') }}
                         </h3>
                     </div>
 
@@ -740,14 +605,14 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-people-fill"></i>
                             </span>
-                            Segmento dinamico
+                            {{ __('admin.marketing.campaigns.segment_dynamic') }}
                         </h3>
                     </div>
 
                     <div>
                         <label class="label_c" for="segment">
                             <i class="bi bi-people-fill"></i>
-                            Segmento
+                            {{ __('admin.marketing.campaigns.segment') }}
                         </label>
                         <p>
                             <select name="segment" id="segment" data-segment-select data-initial-value="{{ $selectedSegment }}">
@@ -766,20 +631,29 @@
                             <span class="order-detail__section-icon">
                                 <i class="bi bi-megaphone-fill"></i>
                             </span>
-                            Promozioni collegate
+                            {{ __('admin.marketing.campaigns.linked_promotions') }}
                         </h3>
                     </div>
 
+                    <p class="marketing-form-preview__note" style="margin-bottom: 14px;">
+                        <i class="bi bi-info-circle" style="margin-right: 6px; opacity: 0.7;"></i>{{ __('admin.marketing.campaigns.promo_optional_note') }}
+                    </p>
+
                     <label class="label_c">
                         <i class="bi bi-megaphone-fill"></i>
-                        Promozioni
+                        {{ __('admin.marketing.campaigns.promotions') }}
                     </label>
                     <div class="campaign-promotion-picker" data-campaign-promotion-picker>
                         @forelse ($promotions as $promotion)
                             @php
-                                $promotionChecked = in_array((string) $promotion->id, $selectedPromotionIds, true);
+                                $isSelectable = $promotion->isActive();
+                                $promotionChecked = $isSelectable && in_array((string) $promotion->id, $selectedPromotionIds, true);
+                                $statusBadgeLabel = match($promotion->status) {
+                                    'draft' => __('admin.common.draft'),
+                                    default => __('admin.marketing.campaigns.promo_status_inactive'),
+                                };
                             @endphp
-                            <label class="campaign-promotion-option">
+                            <label class="campaign-promotion-option {{ !$isSelectable ? 'campaign-promotion-option--disabled' : '' }}" @if(!$isSelectable) aria-disabled="true" @endif>
                                 <input
                                     class="campaign-promotion-option__input"
                                     type="checkbox"
@@ -788,6 +662,7 @@
                                     data-promotion-checkbox
                                     data-promotion-label="{{ $promotion->name }}"
                                     @checked($promotionChecked)
+                                    @if(!$isSelectable) disabled @endif
                                 >
                                 <span class="campaign-promotion-option__card">
                                     <span class="campaign-promotion-option__icon">
@@ -796,12 +671,15 @@
                                     <span>
                                         <strong>{{ $promotion->name }}</strong>
                                         <small>{{ $promotion->slug }} · {{ $formatPromotionDiscount($promotion) }}</small>
+                                        @if(!$isSelectable)
+                                            <small><span class="campaign-promo-status-badge">{{ $statusBadgeLabel }}</span></small>
+                                        @endif
                                     </span>
                                 </span>
                             </label>
                         @empty
                             <div class="marketing-form-preview__note">
-                                Non ci sono promozioni disponibili da collegare.
+                                {{ __('admin.marketing.campaigns.no_promotions_available') }}
                             </div>
                         @endforelse
                     </div>
@@ -812,130 +690,111 @@
         </div>
 
         <aside class="marketing-form-sidebar campaign-form-sidebar">
-            <section class="order-detail__section marketing-form-preview">
-                <div class="order-detail__section-head">
-                    <h3>
-                        <span class="order-detail__section-icon">
-                            <i class="bi bi-eye-fill"></i>
-                        </span>
-                        Riepilogo
-                    </h3>
-                </div>
+            {{-- Nav buttons sopra la preview --}}
+            <div class="cpv2-nav">
+                <button type="button" class="cpv2-nav-btn" data-wiz-prev @if ($initialStep === 1) hidden @endif>
+                    <i class="bi bi-chevron-left"></i>
+                    <span>{{ __('admin.common.back') }}</span>
+                </button>
+                <span class="cpv2-nav-step" data-nav-step-indicator>{{ $initialStep }}/5</span>
+                <button type="button" class="cpv2-nav-btn cpv2-nav-btn--primary" data-wiz-next @if ($initialStep === 5) hidden @endif>
+                    <span>{{ __('admin.common.next') }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
 
-                <div class="marketing-form-preview__panel campaign-preview-panel">
-                    <div class="campaign-preview-hero">
-                        <span class="campaign-preview-hero__icon">
-                            <i class="bi bi-envelope-paper-fill"></i>
-                        </span>
-                        <div>
-                            <span class="campaign-preview-eyebrow">Anteprima campagna</span>
-                            <strong class="campaign-preview-title" data-preview-campaign-name>{{ old('name', $campaign->name) ?: 'Nome campagna' }}</strong>
-                            <div class="campaign-preview-status-row">
-                                <strong class="campaign-preview-badge">{{ $statusPreviewLabel }}</strong>
-                                <strong class="campaign-preview-badge campaign-preview-badge--muted" data-preview-campaign-type>{{ $selectedCampaignTypeLabel }}</strong>
-                            </div>
-                        </div>
+            {{-- Preview card --}}
+            <div class="cpv2-card">
+                <div class="cpv2-header">
+                    <div class="cpv2-header-icon">
+                        <i class="bi bi-envelope-paper-fill"></i>
                     </div>
-
-                    <div class="campaign-preview-metrics">
-                        <div class="campaign-preview-metric">
-                            <span class="campaign-preview-label">Audience stimata</span>
-                            <strong data-preview-audience-count>Audience stimata: calcolo...</strong>
-                            <small class="campaign-preview-status-note" data-preview-audience-status>Ricalcolo dinamico in corso.</small>
-                        </div>
-                        <div class="campaign-preview-metric">
-                            <span class="campaign-preview-label">Disponibili</span>
-                            <strong data-preview-availability-count>Calcolo...</strong>
-                            <small data-preview-availability-context>{{ $selectedConsentBasisLabel }}</small>
-                        </div>
-                    </div>
-
-                    <div class="campaign-preview-grid">
-                        <div class="campaign-preview-card">
-                            <span class="campaign-preview-card__icon"><i class="bi bi-calendar2-week-fill"></i></span>
-                            <div>
-                                <span class="campaign-preview-label">Programmazione</span>
-                                <strong data-preview-schedule-window>{{ $previewScheduleWindowLabel }}</strong>
-                                <small data-preview-scheduled-at data-initial-label="{{ $previewScheduledAtLabel }}">{{ $previewScheduledAtLabel }}</small>
-                            </div>
-                        </div>
-
-                        <div class="campaign-preview-card">
-                            <span class="campaign-preview-card__icon"><i class="bi bi-envelope-fill"></i></span>
-                            <div>
-                                <span class="campaign-preview-label">Modello mail</span>
-                                <strong data-preview-mail-model>{{ $previewMailModel?->name ?? 'Da selezionare' }}</strong>
-                            </div>
-                        </div>
-
-                        <div class="campaign-preview-card">
-                            <span class="campaign-preview-card__icon"><i class="bi bi-people-fill"></i></span>
-                            <div>
-                                <span class="campaign-preview-label">Segmento</span>
-                                <strong data-preview-segment-label>{{ $segmentPreviewLabels[$selectedSegment] ?? 'Da selezionare' }}</strong>
-                                <small data-preview-consent-basis>{{ $selectedConsentBasisLabel }}</small>
-                            </div>
-                        </div>
-
-                        <div class="campaign-preview-card">
-                            <span class="campaign-preview-card__icon"><i class="bi bi-megaphone-fill"></i></span>
-                            <div>
-                                <span class="campaign-preview-label">Promozioni collegate</span>
-                                <strong><span data-preview-promotion-count>{{ $previewPromotions->count() }}</span> selezionate</strong>
-                                <div class="campaign-preview-chips" data-preview-promotion-chips>
-                                    @forelse ($previewPromotions->take(5) as $promotion)
-                                        <span>{{ $promotion->name }}</span>
-                                    @empty
-                                        <span>Nessuna promozione selezionata</span>
-                                    @endforelse
-                                    @if ($previewPromotions->count() > 5)
-                                        <span>+{{ $previewPromotions->count() - 5 }}</span>
-                                    @endif
-                                </div>
-                            </div>
+                    <div>
+                        <span class="cpv2-eyebrow">{{ __('admin.marketing.campaigns.preview') }}</span>
+                        <strong class="cpv2-name-display" data-preview-campaign-name>{{ old('name', $campaign->name) ?: __('admin.marketing.campaigns.name_placeholder') }}</strong>
+                        <div class="cpv2-badges">
+                            <span class="cpv2-badge">{{ $statusPreviewLabel }}</span>
+                            <span class="cpv2-badge cpv2-badge--muted" data-preview-campaign-type>{{ $selectedCampaignTypeLabel }}</span>
                         </div>
                     </div>
                 </div>
-            </section>
+
+                <ul class="cpv2-rows" role="list">
+                    <li class="cpv2-row {{ old('name', $campaign->name) ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="name">
+                        <span class="cpv2-row-icon"><i class="bi {{ old('name', $campaign->name) ? 'bi-check-lg' : 'bi-circle' }}" data-row-icon-name></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.campaigns.step_name') }}</span>
+                        <span class="cpv2-row-val" data-preview-campaign-name-val>{{ old('name', $campaign->name) ?: __('admin.marketing.campaigns.to_define') }}</span>
+                    </li>
+
+                    <li class="cpv2-row cpv2-row--done" data-preview-row="schedule">
+                        <span class="cpv2-row-icon"><i class="bi bi-check-lg"></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.campaigns.date') }}</span>
+                        <span class="cpv2-row-val" data-preview-schedule-window>{{ $previewScheduleWindowLabel }}</span>
+                    </li>
+
+                    <li class="cpv2-row {{ $previewMailModel ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="model">
+                        <span class="cpv2-row-icon"><i class="bi {{ $previewMailModel ? 'bi-check-lg' : 'bi-circle' }}" data-row-icon-model></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.campaigns.step_model') }}</span>
+                        <span class="cpv2-row-val" data-preview-mail-model>{{ $previewMailModel?->name ?? __('admin.marketing.campaigns.to_select') }}</span>
+                    </li>
+
+                    <li class="cpv2-row cpv2-row--done" data-preview-row="type">
+                        <span class="cpv2-row-icon"><i class="bi bi-check-lg"></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.campaigns.step_type') }}</span>
+                        <span class="cpv2-row-val" data-preview-campaign-type-row>{{ $selectedCampaignTypeLabel }}</span>
+                    </li>
+
+                    <li class="cpv2-row {{ $selectedSegment ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="segment">
+                        <span class="cpv2-row-icon"><i class="bi {{ $selectedSegment ? 'bi-check-lg' : 'bi-circle' }}" data-row-icon-segment></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.campaigns.segment') }}</span>
+                        <span class="cpv2-row-val" data-preview-segment-label>{{ $segmentPreviewLabels[$selectedSegment] ?? __('admin.marketing.campaigns.to_select') }}</span>
+                    </li>
+
+                    <li class="cpv2-row cpv2-row--optional" data-preview-row="promo">
+                        <span class="cpv2-row-icon"><i class="bi bi-dash-lg" data-row-icon-promo></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.common.promo') }}</span>
+                        <span class="cpv2-row-val" data-preview-promo-summary>{{ $previewPromotions->isNotEmpty() ? $previewPromotions->first()->name : __('admin.marketing.campaigns.no_promotion_selected') }}</span>
+                    </li>
+                </ul>
+
+                <div class="cpv2-audience">
+                    <div class="cpv2-audience-row">
+                        <span class="cpv2-audience-label">{{ __('admin.marketing.campaigns.estimated_audience') }}</span>
+                        <strong class="cpv2-audience-val" data-preview-audience-count>{{ __('admin.marketing.campaigns.estimated_audience_calculating') }}</strong>
+                    </div>
+                    <div class="cpv2-audience-row">
+                        <span class="cpv2-audience-label">{{ __('admin.marketing.campaigns.available') }}</span>
+                        <strong class="cpv2-audience-val" data-preview-availability-count>{{ __('admin.common.loading_data') }}</strong>
+                    </div>
+                    <div class="cpv2-audience-note">
+                        <span class="cpv2-audience-status" data-preview-audience-status>{{ __('admin.marketing.campaigns.dynamic_recalculation') }}</span>
+                    </div>
+                </div>
+
+                {{-- Elementi nascosti che il JS continua ad aggiornare --}}
+                <span style="display:none" data-preview-availability-context>{{ $selectedConsentBasisLabel }}</span>
+                <span style="display:none" data-preview-consent-basis>{{ $selectedConsentBasisLabel }}</span>
+                <span style="display:none" data-preview-scheduled-at data-initial-label="{{ $previewScheduledAtLabel }}">{{ $previewScheduledAtLabel }}</span>
+                <span style="display:none" data-preview-promotion-count>{{ $previewPromotions->count() }}</span>
+                <div style="display:none" data-preview-promotion-chips>
+                    @foreach ($previewPromotions as $promotion)
+                        <span>{{ $promotion->name }}</span>
+                    @endforeach
+                </div>
+            </div>
         </aside>
     </div>
 
     <div class="marketing-form-actions">
-        <a class="order-detail__contact marketing-form-action--cancel" href="{{ $cancelUrl }}">
-            <i class="bi bi-x-lg"></i>
-            <span>Annulla</span>
-        </a>
-
-        <button
-            type="button"
-            class="order-detail__contact"
-            data-wiz-prev
-            @if ($initialStep === 1) hidden @endif
-        >
-            <i class="bi bi-chevron-left"></i>
-            <span>Indietro</span>
-        </button>
-
-        <button
-            type="button"
-            class="order-detail__contact marketing-form-action--primary"
-            data-wiz-next
-            @if ($initialStep === 5) hidden @endif
-        >
-            <span>Avanti</span>
-            <i class="bi bi-chevron-right"></i>
-        </button>
-
         <button
             class="order-detail__contact marketing-form-action--secondary"
             type="submit"
             name="submit_action"
             value="draft"
             data-wiz-draft
-            @if ($initialStep !== 5) hidden @endif
         >
             <i class="bi bi-clock-history"></i>
-            <span>Completa più tardi</span>
+            <span>{{ __('admin.marketing.campaigns.complete_later') }}</span>
         </button>
 
         <button
@@ -953,6 +812,27 @@
     </div>
 </form>
 
+@php
+    $campaignFormCopy = [
+        'define'                          => __('admin.marketing.campaigns.to_define'),
+        'toDefine'                        => __('admin.marketing.campaigns.not_selected'),
+        'estimatedAudienceSelectSegment'  => __('admin.marketing.campaigns.estimated_audience_select_segment'),
+        'estimatedAudienceCalculating'    => __('admin.marketing.campaigns.estimated_audience_calculating'),
+        'estimatedAudienceUnavailable'    => __('admin.marketing.campaigns.estimated_audience_unavailable'),
+        'estimatedAudienceReady'          => __('admin.marketing.campaigns.estimated_audience_ready', ['matched' => '__MATCHED__', 'available' => '__AVAILABLE__']),
+        'availableCount'                  => __('admin.marketing.campaigns.available_count', ['count' => '__COUNT__']),
+        'loading'                         => __('admin.common.loading_data'),
+        'error'                           => __('admin.common.error'),
+        'chooseSegmentStatus'             => __('admin.marketing.campaigns.choose_segment_status'),
+        'dynamicRecalculation'            => __('admin.marketing.campaigns.dynamic_recalculation'),
+        'audienceRetry'                   => __('admin.marketing.campaigns.audience_retry'),
+        'estimateAligned'                 => __('admin.marketing.campaigns.estimate_aligned'),
+        'nextAvailableWindow'             => __('admin.marketing.campaigns.next_available_window'),
+        'chosenWindow'                    => __('admin.marketing.campaigns.chosen_window'),
+        'noPromotionSelected'             => __('admin.marketing.campaigns.no_promotion_selected'),
+        'promotion'                       => __('admin.marketing.campaigns.promotion'),
+    ];
+@endphp
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.querySelector('[data-campaign-form]');
@@ -961,6 +841,11 @@
             return;
         }
 
+        const copy = @json($campaignFormCopy);
+        const interpolate = (template, values) => Object.entries(values).reduce(
+            (text, [key, value]) => text.split(key).join(value),
+            template || ''
+        );
         const segmentLabels = @json($segmentPreviewLabels ?? []);
         const baseSegmentOptions = @json($baseSegmentOptions ?? []);
         const advancedSegmentOptions = @json($advancedSegmentOptions ?? []);
@@ -972,12 +857,12 @@
             profiling: 'explicit_email_marketing',
         };
         const previewFallbacks = {
-            name: 'Da definire',
-            campaignType: 'Da definire',
-            consent: 'Da definire',
-            segment: 'Da definire',
-            mailModel: 'Non selezionato',
-            schedule: 'Da definire',
+            name: copy.define,
+            campaignType: copy.define,
+            consent: copy.define,
+            segment: copy.define,
+            mailModel: copy.toDefine,
+            schedule: copy.define,
         };
         const audiencePreviewUrl = form.dataset.audiencePreviewUrl || '';
         const campaignId = form.dataset.campaignId || '';
@@ -1003,8 +888,11 @@
         const promotionCount = form.querySelector('[data-preview-promotion-count]');
         const promotionChips = form.querySelector('[data-preview-promotion-chips]');
         const promotionInputs = form.querySelectorAll('[data-promotion-checkbox]');
-        const btnPrev = form.querySelector('[data-wiz-prev]');
-        const btnNext = form.querySelector('[data-wiz-next]');
+        const promoSummary = form.querySelector('[data-preview-promo-summary]');
+        const promoRowIcon = form.querySelector('[data-row-icon-promo]');
+        const promoRow = form.querySelector('[data-preview-row="promo"]');
+        const btnPrev = form.querySelectorAll('[data-wiz-prev]');
+        const btnNext = form.querySelectorAll('[data-wiz-next]');
         const btnDraft = form.querySelector('[data-wiz-draft]');
         const btnSubmit = form.querySelector('[data-wiz-submit]');
         let currentStep = {{ $initialStep }};
@@ -1015,9 +903,12 @@
         const selectedOption = (select) => select?.options[select.selectedIndex] || null;
         const numberFormatter = new Intl.NumberFormat('it-IT');
         const formatNumber = (value) => numberFormatter.format(Number(value || 0));
-        const setHidden = (element, hidden) => {
-            if (element) {
-                element.hidden = hidden;
+        const setHidden = (target, hidden) => {
+            if (!target) return;
+            if (target instanceof NodeList || Array.isArray(target)) {
+                target.forEach((el) => { el.hidden = hidden; });
+            } else {
+                target.hidden = hidden;
             }
         };
 
@@ -1041,12 +932,27 @@
             }).format(date);
         };
 
+        const setRowDone = (rowAttr, done) => {
+            const row = form.querySelector(`[data-preview-row="${rowAttr}"]`);
+            if (!row) return;
+            row.classList.toggle('cpv2-row--done', done);
+            row.classList.toggle('cpv2-row--empty', !done);
+        };
+
         const syncName = () => {
             if (!previewName || !nameInput) {
                 return;
             }
 
-            previewName.textContent = nameInput.value.trim() || previewFallbacks.name;
+            const val = nameInput.value.trim();
+            previewName.textContent = val || previewFallbacks.name;
+
+            const nameVal = form.querySelector('[data-preview-campaign-name-val]');
+            if (nameVal) nameVal.textContent = val || previewFallbacks.name;
+
+            const icon = form.querySelector('[data-row-icon-name]');
+            if (icon) icon.className = val ? 'bi bi-check-lg' : 'bi bi-circle';
+            setRowDone('name', Boolean(val));
         };
 
         const syncConsent = () => {
@@ -1064,6 +970,10 @@
             if (segmentLabel) {
                 segmentLabel.textContent = segmentLabels[value] || previewFallbacks.segment;
             }
+
+            const icon = form.querySelector('[data-row-icon-segment]');
+            if (icon) icon.className = value ? 'bi bi-check-lg' : 'bi bi-circle';
+            setRowDone('segment', Boolean(value));
         };
 
         const setAudienceStatus = (message, tone = '') => {
@@ -1084,44 +994,44 @@
         const setAudiencePreviewState = (state, payload = {}) => {
             if (state === 'empty') {
                 if (audienceCount) {
-                    audienceCount.textContent = 'Audience stimata: seleziona un segmento';
+                    audienceCount.textContent = copy.estimatedAudienceSelectSegment;
                 }
 
                 if (availabilityCount) {
-                    availabilityCount.textContent = '0 disponibili';
+                    availabilityCount.textContent = interpolate(copy.availableCount, {'__COUNT__': '0'});
                 }
 
                 if (availabilityContext) {
                     availabilityContext.textContent = '';
                 }
 
-                setAudienceStatus('Scegli un segmento per vedere la stima.', 'warning');
+                setAudienceStatus(copy.chooseSegmentStatus, 'warning');
                 return;
             }
 
             if (state === 'loading') {
                 if (audienceCount) {
-                    audienceCount.textContent = 'Audience stimata: calcolo...';
+                    audienceCount.textContent = copy.estimatedAudienceCalculating;
                 }
 
                 if (availabilityCount) {
-                    availabilityCount.textContent = 'Calcolo...';
+                    availabilityCount.textContent = copy.loading;
                 }
 
-                setAudienceStatus('Ricalcolo dinamico in corso.');
+                setAudienceStatus(copy.dynamicRecalculation);
                 return;
             }
 
             if (state === 'error') {
                 if (audienceCount) {
-                    audienceCount.textContent = 'Audience stimata: non disponibile';
+                    audienceCount.textContent = copy.estimatedAudienceUnavailable;
                 }
 
                 if (availabilityCount) {
-                    availabilityCount.textContent = 'Errore';
+                    availabilityCount.textContent = copy.error;
                 }
 
-                setAudienceStatus('Impossibile ricalcolare l’audience. Riprova tra poco.', 'error');
+                setAudienceStatus(copy.audienceRetry, 'error');
                 return;
             }
 
@@ -1129,11 +1039,14 @@
             const available = Number(payload.available || 0);
 
             if (audienceCount) {
-                audienceCount.textContent = `Audience stimata: ${formatNumber(matched)} clienti su ${formatNumber(available)} disponibili`;
+                audienceCount.textContent = interpolate(copy.estimatedAudienceReady, {
+                    '__MATCHED__': formatNumber(matched),
+                    '__AVAILABLE__': formatNumber(available),
+                });
             }
 
             if (availabilityCount) {
-                availabilityCount.textContent = `${formatNumber(available)} disponibili`;
+                availabilityCount.textContent = interpolate(copy.availableCount, {'__COUNT__': formatNumber(available)});
             }
 
             if (availabilityContext) {
@@ -1145,7 +1058,7 @@
                 return;
             }
 
-            setAudienceStatus('Stima allineata alle regole di assegnazione.');
+            setAudienceStatus(copy.estimateAligned);
         };
 
         const requestAudiencePreview = () => {
@@ -1261,8 +1174,13 @@
                 radio.checked = radio.value === value;
             });
 
+            const typeText = campaignTypeLabels[value] || previewFallbacks.campaignType;
             if (campaignTypeLabel) {
-                campaignTypeLabel.textContent = campaignTypeLabels[value] || previewFallbacks.campaignType;
+                campaignTypeLabel.textContent = typeText;
+            }
+            const campaignTypeRowLabel = form.querySelector('[data-preview-campaign-type-row]');
+            if (campaignTypeRowLabel) {
+                campaignTypeRowLabel.textContent = typeText;
             }
 
             if (consentInput) {
@@ -1279,9 +1197,14 @@
             }
 
             const option = selectedOption(mailModelSelect);
-            mailModelLabel.textContent = mailModelSelect.value
+            const label = mailModelSelect.value
                 ? (option?.dataset.previewLabel || option?.textContent?.trim() || previewFallbacks.mailModel)
                 : previewFallbacks.mailModel;
+            mailModelLabel.textContent = label;
+
+            const icon = form.querySelector('[data-row-icon-model]');
+            if (icon) icon.className = mailModelSelect.value ? 'bi bi-check-lg' : 'bi bi-circle';
+            setRowDone('model', Boolean(mailModelSelect.value));
         };
 
         const syncSchedule = () => {
@@ -1297,7 +1220,7 @@
             if (!scheduledAtInput) {
                 scheduledAtLabel.textContent = scheduleSelect?.value === scheduleSelect?.dataset.initialValue
                     ? (scheduledAtLabel.dataset.initialLabel || scheduledAtLabel.textContent)
-                    : (scheduleSelect?.value === 'next_available' ? 'Prima finestra disponibile' : (scheduleSelect?.value ? 'Definita dalla finestra scelta' : previewFallbacks.schedule));
+                    : (scheduleSelect?.value === 'next_available' ? copy.nextAvailableWindow : (scheduleSelect?.value ? copy.chosenWindow : previewFallbacks.schedule));
                 return;
             }
 
@@ -1309,8 +1232,8 @@
             }
 
             scheduledAtLabel.textContent = scheduleSelect?.value === 'next_available'
-                ? 'Prima finestra disponibile'
-                : (scheduleSelect?.value ? 'Definita dalla finestra scelta' : previewFallbacks.schedule);
+                ? copy.nextAvailableWindow
+                : (scheduleSelect?.value ? copy.chosenWindow : previewFallbacks.schedule);
         };
 
         const syncPromotions = () => {
@@ -1320,29 +1243,32 @@
                 promotionCount.textContent = selected.length;
             }
 
-            if (!promotionChips) {
-                return;
+            if (promotionChips) {
+                promotionChips.innerHTML = '';
+                if (selected.length === 0) {
+                    const chip = document.createElement('span');
+                    chip.textContent = copy.noPromotionSelected;
+                    promotionChips.appendChild(chip);
+                } else {
+                    selected.slice(0, 1).forEach((input) => {
+                        const chip = document.createElement('span');
+                        chip.textContent = input.dataset.promotionLabel || copy.promotion;
+                        promotionChips.appendChild(chip);
+                    });
+                }
             }
 
-            promotionChips.innerHTML = '';
-
-            if (selected.length === 0) {
-                const chip = document.createElement('span');
-                chip.textContent = 'Nessuna promozione selezionata';
-                promotionChips.appendChild(chip);
-                return;
+            if (promoSummary) {
+                promoSummary.textContent = selected.length > 0
+                    ? (selected[0].dataset.promotionLabel || copy.promotion)
+                    : copy.noPromotionSelected;
             }
 
-            selected.slice(0, 6).forEach((input) => {
-                const chip = document.createElement('span');
-                chip.textContent = input.dataset.promotionLabel || 'Promozione';
-                promotionChips.appendChild(chip);
-            });
-
-            if (selected.length > 6) {
-                const chip = document.createElement('span');
-                chip.textContent = `+${selected.length - 6}`;
-                promotionChips.appendChild(chip);
+            const hasPromo = selected.length > 0;
+            if (promoRowIcon) promoRowIcon.className = hasPromo ? 'bi bi-check-lg' : 'bi bi-dash-lg';
+            if (promoRow) {
+                promoRow.classList.toggle('cpv2-row--done', hasPromo);
+                promoRow.classList.toggle('cpv2-row--optional', !hasPromo);
             }
         };
 
@@ -1366,9 +1292,12 @@
                 line.classList.toggle('is-done', Number(line.dataset.stepLine) < step);
             });
 
+            form.querySelectorAll('[data-nav-step-indicator]').forEach((el) => {
+                el.textContent = `${step}/${totalSteps}`;
+            });
+
             setHidden(btnPrev, step === 1);
             setHidden(btnNext, step === totalSteps);
-            setHidden(btnDraft, step !== totalSteps);
             setHidden(btnSubmit, step !== totalSteps);
         };
 
@@ -1397,25 +1326,44 @@
         mailModelSelect?.addEventListener('change', syncMailModel);
         scheduleSelect?.addEventListener('change', syncSchedule);
         scheduledAtInput?.addEventListener('input', syncSchedule);
-        promotionInputs.forEach((input) => input.addEventListener('change', () => {
-            syncPromotions();
-            requestAudiencePreview();
-        }));
-        btnNext?.addEventListener('click', () => {
-            if (currentStep >= totalSteps) {
-                return;
-            }
+        promotionInputs.forEach((input) => {
+            input.addEventListener('change', () => {
+                if (input.checked) {
+                    promotionInputs.forEach((other) => {
+                        if (other !== input && !other.disabled) {
+                            other.checked = false;
+                        }
+                    });
+                }
+                syncPromotions();
+                requestAudiencePreview();
+            });
+        });
 
+        btnNext.forEach((btn) => btn.addEventListener('click', () => {
+            if (currentStep >= totalSteps) return;
             currentStep++;
             renderStepBar(currentStep);
-        });
-        btnPrev?.addEventListener('click', () => {
-            if (currentStep <= 1) {
-                return;
-            }
+        }));
 
+        btnPrev.forEach((btn) => btn.addEventListener('click', () => {
+            if (currentStep <= 1) return;
             currentStep--;
             renderStepBar(currentStep);
+        }));
+
+        form.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            if (e.target?.tagName?.toLowerCase() === 'textarea') return;
+            if (currentStep < totalSteps) {
+                e.preventDefault();
+                currentStep++;
+                renderStepBar(currentStep);
+                return;
+            }
+            if (e.target?.type !== 'submit') {
+                e.preventDefault();
+            }
         });
 
         syncCampaignType(campaignTypeInput?.value || 'explicit_email_marketing');

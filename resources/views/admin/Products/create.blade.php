@@ -11,7 +11,7 @@
         $data = session('ingredient_success')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
+        {{ __('admin.catalog.created_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
 
@@ -43,14 +43,14 @@
                     <i class="bi bi-type"></i>
                       {{__('admin.Nome')}}
                 </label>
-                <p><input @if(!isset($data)) value="{{ old('name') }}" @else value="{{ $data['name'] }}" @endif  type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                <p><input @if(!isset($data)) value="{{ old('name') }}" @else value="{{ $data['name'] }}" @endif  type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                 @error('name') <p class="error">{{ $message }}</p> @enderror
             </div>
             <div class="price_input">
                 <label class="label_c" for="price">   
                     <i class="bi bi-123"></i>
                     {{__('admin.Prezzo')}}</label>
-                <p><input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "><span>{{ $appCurrency['symbol'] }}</span></p> 
+                <p><input @if(!isset($data)) value="{{ old('price') }}" @else value="{{ $data['price'] }}" @endif  type="number" name="price" id="price" step="{{ $moneyInputStep }}" placeholder="{{ __('admin.products.price_placeholder') }}"><span>{{ $appCurrency['symbol'] }}</span></p> 
                 @error('price') <p class="error">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -93,7 +93,7 @@
             <div>
                 <label class="label_c" for="slot_plate">
                 <i class="bi bi-123"></i>{{ __('admin.Spazio_occupato') }}</label>
-                <p><input @if(!isset($data)) value="{{ old('slot_plate', 0) }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="Inserisci lo spazio  "></p>
+                <p><input @if(!isset($data)) value="{{ old('slot_plate', 0) }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="{{ __('admin.products.slot_placeholder') }}"></p>
                 @error('slot_plate') <p class="error">{{ $message }}</p> @enderror
             </div>
         
@@ -136,9 +136,9 @@
             <x-dashboard.action-modal
                 title-id="staticBackdropLabel"
                 title="{{ __('admin.Crea_e_aggiungi_Ingredienti_mancanti') }}"
-                eyebrow="Ingrediente rapido"
+                eyebrow="{{ __('admin.products.quick_ingredient_eyebrow') }}"
                 tone="mint"
-                description="Compila solo i campi essenziali e aggiungi subito il nuovo ingrediente al prodotto che stai creando."
+                description="{{ __('admin.products.quick_ingredient_create_description') }}"
             >
                 <section class="more_i">
                     <div class="split">
@@ -146,14 +146,14 @@
                             <label class="label_c" for="name_ing">
                                 <i class="bi bi-type"></i>
                                 {{__('admin.Nome')}}</label>
-                            <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" Inserisci il nome"></p>
+                            <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                             @error('name_ing') <p class="error">{{ $message }}</p> @enderror
                         </div>
                         <div class="price_input">
                             <label class="label_c" for="price_ing">
                                 <i class="bi bi-123"></i>
                                 {{__('admin.Prezzo')}}</label>
-                            <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" step="{{ $moneyInputStep }}" id="price_ing" placeholder=" Inserisci il prezzo "></p>
+                            <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" step="{{ $moneyInputStep }}" id="price_ing" placeholder="{{ __('admin.products.price_placeholder') }}"></p>
                             @error('price_ing') <p class="error">{{ $message }}</p> @enderror
                         </div>
                     </div>

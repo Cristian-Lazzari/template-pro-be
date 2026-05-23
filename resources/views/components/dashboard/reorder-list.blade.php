@@ -2,8 +2,8 @@
     'items' => collect(),
     'inputName',
     'labelField' => 'name',
-    'itemLabel' => 'elemento',
-    'emptyText' => 'Nessun elemento disponibile da riordinare.',
+    'itemLabel' => __('admin.catalog.reorder_item_label'),
+    'emptyText' => __('admin.catalog.reorder_empty'),
 ])
 
 @php
@@ -29,8 +29,8 @@
                     type="button"
                     class="catalog-reorder__handle"
                     data-reorder-handle
-                    aria-label="Trascina {{ $itemLabel }} {{ $itemName }}"
-                    title="Trascina {{ $itemLabel }}"
+                    aria-label="{{ __('admin.catalog.drag_item_named', ['item' => $itemLabel, 'name' => $itemName]) }}"
+                    title="{{ __('admin.catalog.drag_item', ['item' => $itemLabel]) }}"
                 >
                     <i class="bi bi-grip-vertical"></i>
                 </button>

@@ -16,19 +16,19 @@ use Illuminate\Support\Facades\Schema;
 
 class AutomationController extends Controller
 {
-    private const STATUSES = [
-        'draft' => 'Bozza',
-        'active' => 'Attiva',
-        'paused' => 'In pausa',
-        'archived' => 'Archiviata',
+    private const STATUS_TRANSLATION_KEYS = [
+        'draft' => 'status_draft',
+        'active' => 'status_active',
+        'paused' => 'status_paused',
+        'archived' => 'status_archived',
     ];
 
-    private const TRIGGERS = [
-        'order_inactive_30_days' => '30 giorni inattivita ordine',
-        'reservation_inactive_30_days' => '30 giorni inattivita prenotazione',
-        'birthday' => 'Compleanno',
-        'first_order_completed' => 'Primo ordine completato',
-        'abandoned_profile' => 'Profilo abbandonato',
+    private const TRIGGER_TRANSLATION_KEYS = [
+        'order_inactive_30_days' => 'trigger_order_inactive_30_days',
+        'reservation_inactive_30_days' => 'trigger_reservation_inactive_30_days',
+        'birthday' => 'trigger_birthday',
+        'first_order_completed' => 'trigger_first_order_completed',
+        'abandoned_profile' => 'trigger_abandoned_profile',
     ];
 
     public function index()
@@ -40,8 +40,8 @@ class AutomationController extends Controller
 
         return view('admin.Automations.index', [
             'automations' => $automations,
-            'statuses' => self::STATUSES,
-            'triggers' => self::TRIGGERS,
+            'statuses' => $this->statusLabels(),
+            'triggers' => $this->triggerLabels(),
         ]);
     }
 
@@ -66,7 +66,7 @@ class AutomationController extends Controller
         $automation->promotions()->sync($this->promotionIds($request));
 
         return to_route('admin.automations.show', $automation)
-            ->with('success', 'Automazione creata correttamente.');
+            ->with('success', __('admin.marketing.automations.created_flash'));
     }
 
     public function show(Automation $automation, MarketingReportService $reportService)
@@ -82,8 +82,8 @@ class AutomationController extends Controller
             'automation' => $automation,
             'report' => $report,
             'customerPromotions' => $customerPromotions,
-            'statuses' => self::STATUSES,
-            'triggers' => self::TRIGGERS,
+            'statuses' => $this->statusLabels(),
+            'triggers' => $this->triggerLabels(),
         ]);
     }
 
@@ -106,27 +106,27 @@ class AutomationController extends Controller
         $automation->promotions()->sync($this->promotionIds($request));
 
         return to_route('admin.automations.show', $automation)
-            ->with('success', 'Automazione aggiornata correttamente.');
+            ->with('success', __('admin.marketing.automations.updated_flash'));
     }
 
     public function activate(Automation $automation)
     {
-        return $this->updateStatus($automation, 'active', 'Automazione attivata correttamente.');
+        return $this->updateStatus($automation, 'active', __('admin.marketing.automations.activated_flash'));
     }
 
     public function pause(Automation $automation)
     {
-        return $this->updateStatus($automation, 'paused', 'Automazione messa in pausa correttamente.');
+        return $this->updateStatus($automation, 'paused', __('admin.marketing.automations.paused_flash'));
     }
 
     public function archive(Automation $automation)
     {
-        return $this->updateStatus($automation, 'archived', 'Automazione archiviata correttamente.');
+        return $this->updateStatus($automation, 'archived', __('admin.marketing.automations.archived_flash'));
     }
 
     public function draft(Automation $automation)
     {
-        return $this->updateStatus($automation, 'draft', 'Automazione salvata come bozza.');
+        return $this->updateStatus($automation, 'draft', __('admin.marketing.automations.draft_flash'));
     }
 
     public function previewAudience(Automation $automation, AutomationAudienceBuilder $audienceBuilder)
@@ -157,14 +157,36 @@ class AutomationController extends Controller
     private function formOptions(): array
     {
         return [
-            'statuses' => self::STATUSES,
-            'triggers' => self::TRIGGERS,
+            'statuses' => $this->statusLabels(),
+            'triggers' => $this->triggerLabels(),
             'mailModels' => $this->mailModelOptions(),
             'promotions' => Promotion::query()
                 ->where('status', '!=', 'archived')
                 ->orderBy('name')
                 ->get(),
         ];
+    }
+
+    private function statusLabels(): array
+    {
+        $labels = [];
+
+        foreach (self::STATUS_TRANSLATION_KEYS as $status => $key) {
+            $labels[$status] = __("admin.marketing.automations.{$key}");
+        }
+
+        return $labels;
+    }
+
+    private function triggerLabels(): array
+    {
+        $labels = [];
+
+        foreach (self::TRIGGER_TRANSLATION_KEYS as $trigger => $key) {
+            $labels[$trigger] = __("admin.marketing.automations.{$key}");
+        }
+
+        return $labels;
     }
 
     private function automationData(Request $request, ?Automation $automation = null): array

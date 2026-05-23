@@ -10,7 +10,7 @@
     @endphp
    <div class="alert alert-primary alert-dismissible fade show" role="alert">
     {{ $data }} 
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('admin.common.close') }}"></button>
 </div>
 @endif
 @if (session('delete_success'))
@@ -27,7 +27,7 @@
     @endphp
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         {{ $data }} 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('admin.common.close') }}"></button>
     </div>
 @endif
  
@@ -38,9 +38,9 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <i class="bi bi-images"></i>
                 </span>
-                <strong>Contenuti</strong>
+                <strong>{{ __('admin.content.contents') }}</strong>
             </div>
-            <h1 class="menu-dashboard__title">Contenuti multimediali</h1>
+            <h1 class="menu-dashboard__title">{{ __('admin.content.multimedia_title') }}</h1>
         </div>
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.posts.archived') }}" class="order-detail__contact">
@@ -57,7 +57,7 @@
         <div class="bar">
             <input type="checkbox" class="check" id="f">
             <div class="box">
-                <input type="text" id="searchInput" class="search" placeholder="Cerca prodotto..." >
+                <input type="text" id="searchInput" class="search" placeholder="{{ __('admin.posts.search_placeholder') }}" >
                 <button id="typeToggle" class="type">{{__('admin.Tutti')}}</button>
                 <button id="sortToggle" class="order">
                     <i class="bi bi-sort-down-alt"></i>
@@ -89,7 +89,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body" id="postInfoModalBody">
-                        <div class="text-center py-4">Caricamento...</div>
+                        <div class="text-center py-4">{{ __('admin.catalog.loading') }}</div>
                     </div>
                 </div>
             </div>
@@ -119,14 +119,15 @@
             <x-dashboard.action-modal
                 title-id="staticBackdropspecialNews"
                 title="{{ __('admin.Riordina_i_tuoi_Post_in_News_Noviteventi') }}"
-                eyebrow="News"
+                eyebrow="{{ __('admin.posts.news_type') }}"
                 tone="warning"
             >
                 <x-dashboard.reorder-list
                     :items="$news"
                     input-name="new_order[]"
                     label-field="title"
-                    item-label="post news"
+                    :item-label="__('admin.posts.reorder_news_label')"
+                    :empty-text="__('admin.catalog.reorder_empty')"
                 />
 
                 <x-slot name="footer">
@@ -146,14 +147,15 @@
             <x-dashboard.action-modal
                 title-id="staticBackdropspecialStory"
                 title="{{ __('admin.Riordina_i_tuoi_Post_in_Storia_Chi_siamo') }}"
-                eyebrow="Story"
+                eyebrow="{{ __('admin.posts.story_type') }}"
                 tone="warning"
             >
                 <x-dashboard.reorder-list
                     :items="$story"
                     input-name="new_order[]"
                     label-field="title"
-                    item-label="post story"
+                    :item-label="__('admin.posts.reorder_story_label')"
+                    :empty-text="__('admin.catalog.reorder_empty')"
                 />
 
                 <x-slot name="footer">
@@ -180,6 +182,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const postInfoModalBody = document.getElementById('postInfoModalBody');
     const defaultListHtml = postContainer.innerHTML;
     const searchUrlBase = "{{ route('admin.posts.search') }}";
+    const i18n = {
+        loading: @json(__('admin.catalog.loading')),
+        detailLoadError: @json(__('admin.catalog.detail_load_error')),
+        postsLoadError: @json(__('admin.posts.load_error')),
+        all: @json(__('admin.Tutti')),
+        story: @json(__('admin.posts.story_type')),
+        news: @json(__('admin.posts.news_type')),
+    };
 
     let currentType = 'all';
     let sortMode = 'recent';
@@ -198,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
         postContainer.querySelectorAll('.js-open-post-info').forEach(button => {
             button.addEventListener('click', async () => {
                 const url = button.dataset.infoUrl;
-                postInfoModalBody.innerHTML = '<div class="text-center py-4">Caricamento...</div>';
+                postInfoModalBody.innerHTML = `<div class="text-center py-4">${i18n.loading}</div>`;
 
                 try {
                     const response = await fetch(url, {
@@ -213,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     postInfoModalBody.innerHTML = await response.text();
                 } catch (error) {
-                    postInfoModalBody.innerHTML = '<div class="text-center text-danger py-4">Errore nel caricamento dei dettagli.</div>';
+                    postInfoModalBody.innerHTML = `<div class="text-center text-danger py-4">${i18n.detailLoadError}</div>`;
                 }
             });
         });
@@ -252,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
             pagination.classList.add('d-none');
             bindDynamicEvents();
         } catch (error) {
-            postContainer.innerHTML = '<div class="res-item prod"><div class="name_cat"><div class="name">Errore nel caricamento post</div></div></div>';
+            postContainer.innerHTML = `<div class="res-item prod"><div class="name_cat"><div class="name">${i18n.postsLoadError}</div></div></div>`;
             pagination.classList.add('d-none');
         }
     }
@@ -260,13 +270,13 @@ document.addEventListener("DOMContentLoaded", function () {
     typeToggle.addEventListener('click', () => {
         if (currentType === 'all') {
             currentType = 'story';
-            typeToggle.textContent = 'Story';
+            typeToggle.textContent = i18n.story;
         } else if (currentType === 'story') {
             currentType = 'news';
-            typeToggle.textContent = 'News';
+            typeToggle.textContent = i18n.news;
         } else {
             currentType = 'all';
-            typeToggle.textContent = "{{__('admin.Tutti')}}";
+            typeToggle.textContent = i18n.all;
         }
         applyFiltersGlobal();
     });

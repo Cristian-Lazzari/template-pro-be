@@ -5,11 +5,11 @@
 <div class="dash_page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing', 'url' => route('admin.marketing')],
-            ['label' => 'Automazioni', 'url' => route('admin.automations.index')],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing'), 'url' => route('admin.marketing')],
+            ['label' => __('admin.marketing.automations.plural'), 'url' => route('admin.automations.index')],
             ['label' => $automation->name, 'url' => route('admin.automations.show', $automation)],
-            ['label' => 'Modifica'],
+            ['label' => __('admin.marketing.automations.edit_breadcrumb')],
         ],
     ])
 
@@ -19,11 +19,11 @@
                 <span class="order-detail__status-icon order-detail__status-icon--warning">
                     <i class="bi bi-lightning-charge-fill"></i>
                 </span>
-                <strong>Modifica automazione</strong>
+                <strong>{{ __('admin.marketing.automations.edit') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">Modifica automazione</h1>
-            <p>Configura una regola automatica di marketing.</p>
+            <h1 class="menu-dashboard__title">{{ __('admin.marketing.automations.edit') }}</h1>
+            <p>{{ __('admin.marketing.automations.description') }}</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">

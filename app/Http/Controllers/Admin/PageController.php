@@ -280,13 +280,13 @@ class PageController extends Controller
 
         return [
             'has_promotion' => true,
-            'name' => $promotion['promotion_name'] ?? 'Promozione',
-            'type_label' => $promotion['type_label'] ?? 'Promozione',
-            'discount_label' => $discountAmount > 0 ? 'Sconto ' . Currency::formatCents($discountAmount) : null,
+            'name' => $promotion['promotion_name'] ?? __('admin.promotion_notification.promotion'),
+            'type_label' => $promotion['type_label'] ?? __('admin.promotion_notification.promotion'),
+            'discount_label' => $discountAmount > 0 ? __('admin.promotion_notification.discount') . ' ' . Currency::formatCents($discountAmount) : null,
             'total_label' => $order && $total !== null ? Currency::formatCents($total) : null,
             'badge_label' => $order
-                ? ($discountAmount > 0 ? 'Sconto ' . Currency::formatCents($discountAmount) : 'Promo')
-                : 'Promo prenotazione',
+                ? ($discountAmount > 0 ? __('admin.promotion_notification.discount') . ' ' . Currency::formatCents($discountAmount) : __('admin.common.promo'))
+                : __('admin.promotion_notification.reservation_promotion'),
         ];
     }
     private function get_date(){

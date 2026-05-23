@@ -1,5 +1,5 @@
 @php
-    $subject = (string) ($rendered['subject'] ?? 'Promozione per te');
+    $subject = (string) ($rendered['subject'] ?? __('admin.emails.marketing.promotion_for_you'));
     $heading = (string) ($rendered['heading'] ?? $subject);
     $bodyHtml = (string) ($rendered['body_html'] ?? '');
     $ending = $rendered['ending'] ?? null;
@@ -7,7 +7,7 @@
     $trackingOpenUrl = (string) ($rendered['tracking_open_url'] ?? '');
     $trackingClickUrl = (string) ($rendered['tracking_click_url'] ?? '');
     $unsubscribeUrl = (string) ($rendered['unsubscribe_url'] ?? '');
-    $unsubscribeLabel = (string) ($rendered['unsubscribe_label'] ?? 'Annulla iscrizione');
+    $unsubscribeLabel = (string) ($rendered['unsubscribe_label'] ?? __('admin.emails.marketing.unsubscribe'));
     $trackingRedirectUrl = null;
 
     if ($trackingClickUrl !== '') {
@@ -130,7 +130,7 @@
                                     <tr>
                                         <td align="center">
                                             <a href="{{ $trackingClickUrl }}" target="_blank" style="display: inline-block; font-weight: 800; font-size: 18px; color: #e9f0fb; text-decoration: none; padding: 12px 26px; border-radius: 10px; background-color: #04001d;">
-                                                Scopri la promozione
+                                                {{ __('admin.emails.marketing.discover_promotion') }}
                                             </a>
                                         </td>
                                     </tr>
@@ -176,7 +176,7 @@
         </div>
         @if ($unsubscribeUrl !== '')
             <p style="font-size: 12px; line-height: 1.5; margin: 12px 5px 8px; color: rgba(255,255,255,.82);">
-                Non vuoi più ricevere queste comunicazioni?
+                {{ __('admin.emails.marketing.unsubscribe_question') }}
                 <a style="color: white; text-decoration: underline; font-weight: 700;" href="{{ $unsubscribeUrl }}">
                     {{ $unsubscribeLabel }}
                 </a>

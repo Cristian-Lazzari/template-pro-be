@@ -1,43 +1,43 @@
 @extends('layouts.public')
 
-@section('title', 'Area pubblica Backoffice')
-@section('kicker', 'Accesso e supporto')
-@section('headline', 'Area pubblica pronta per accesso, guida e aggiornamenti')
-@section('lead', 'Da qui puoi entrare nel Backoffice, aprire la nuova documentazione guest divisa per pagine operative e consultare gli aggiornamenti del progetto senza autenticazione.')
+@section('title', __('admin.public.home.eyebrow'))
+@section('kicker', __('admin.public.home.title'))
+@section('headline', __('admin.public.home.subtitle'))
+@section('lead', __('admin.public.home.lead'))
 
 @section('hero_actions')
     <a class="public-button public-button--solid" href="{{ route('login') }}">{{ __('admin.Accedi') }}</a>
-    <a class="public-button public-button--ghost" href="{{ route('guest.documentation') }}">Apri documentazione</a>
+    <a class="public-button public-button--ghost" href="{{ route('guest.documentation') }}">{{ __('admin.public.home.open_documentation') }}</a>
 @endsection
 
 @section('contents')
     <section class="public-grid public-grid--home">
         <article class="public-card">
-            <p class="public-card__eyebrow">Documentazione</p>
-            <h2>Indice operativo guest</h2>
-            <p>Apri il centro documentazione con pagine dedicate per onboarding, configurazione, prenotazioni, ordini, menu e comunicazioni.</p>
-            <a class="public-inline-link" href="{{ route('guest.documentation') }}">Apri l'indice documentazione</a>
+            <p class="public-card__eyebrow">{{ __('admin.public.home.documentation_card_title') }}</p>
+            <h2>{{ __('admin.public.home.documentation_card_subtitle') }}</h2>
+            <p>{{ __('admin.public.home.documentation_card_text') }}</p>
+            <a class="public-inline-link" href="{{ route('guest.documentation') }}">{{ __('admin.public.home.documentation_card_cta') }}</a>
         </article>
 
         <article class="public-card">
-            <p class="public-card__eyebrow">Release notes</p>
-            <h2>Aggiornamenti del progetto</h2>
-            <p>Una timeline pubblica pensata per raccogliere tutte le modifiche che verranno introdotte da ora in avanti.</p>
-            <a class="public-inline-link" href="{{ route('guest.updates') }}">Apri il registro aggiornamenti</a>
+            <p class="public-card__eyebrow">{{ __('admin.public.home.updates_card_title') }}</p>
+            <h2>{{ __('admin.public.home.updates_card_subtitle') }}</h2>
+            <p>{{ __('admin.public.home.updates_card_text') }}</p>
+            <a class="public-inline-link" href="{{ route('guest.updates') }}">{{ __('admin.public.home.updates_card_cta') }}</a>
         </article>
 
         <article class="public-card">
-            <p class="public-card__eyebrow">Accesso</p>
-            <h2>Entra nel gestionale</h2>
-            <p>Se hai le credenziali puoi accedere direttamente al Backoffice e gestire i contenuti del locale.</p>
+            <p class="public-card__eyebrow">{{ __('admin.public.home.access_card_title') }}</p>
+            <h2>{{ __('admin.public.home.access_card_subtitle') }}</h2>
+            <p>{{ __('admin.public.home.access_card_text') }}</p>
             <a class="public-inline-link" href="{{ route('login') }}">{{ __('admin.Accedi') }}</a>
         </article>
     </section>
 
     <section class="public-panel public-panel--soft">
         <div class="public-panel__header">
-            <p class="public-panel__eyebrow">Pagine piu usate</p>
-            <h2>Accessi diretti alle guide operative</h2>
+            <p class="public-panel__eyebrow">{{ __('admin.public.home.most_used_pages') }}</p>
+            <h2>{{ __('admin.public.home.most_used_pages_text') }}</h2>
         </div>
 
         <div class="doc-topic-grid doc-topic-grid--compact doc-topic-grid--home">

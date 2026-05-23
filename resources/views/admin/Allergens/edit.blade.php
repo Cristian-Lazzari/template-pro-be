@@ -15,7 +15,7 @@
                 </span>
                 <strong>{{ __('admin.Allergeni') }}</strong>
             </div>
-            <h1 class="menu-dashboard__title">Modifica {{ $allergen->special == 0 ? 'Allergene' : 'Special Flag' }}</h1>
+            <h1 class="menu-dashboard__title">{{ __('admin.Modifica') }} {{ $allergen->special == 0 ? __('admin.allergens.allergen') : __('admin.Special_Flag') }}</h1>
         </div>
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.allergens.index') }}" class="order-detail__contact">
@@ -36,7 +36,7 @@
                         <i class="bi bi-type"></i>
                         {{__('admin.Nome')}}
                     </label>
-                    <p><input value="{{ old('name', $allergen->name) }}" type="text" name="name" id="name" placeholder=" Inserisci il nome"></p>
+                    <p><input value="{{ old('name', $allergen->name) }}" type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                     @error('name') <p class="error">{{ $message }}</p> @enderror
                 </div>
                 <div>

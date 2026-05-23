@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Errore')</title>
+    <title>@yield('title', __('admin.errors.generic_title'))</title>
     @vite('resources/js/app.js')
     <style>
         :root {
@@ -121,13 +121,13 @@
     @endphp
 
     <main class="error-card">
-        <p class="error-code">@yield('code', 'Errore')</p>
-        <h1 class="error-title">@yield('title', 'Qualcosa e andato storto')</h1>
-        <p class="error-message">@yield('message', 'Si e verificato un problema imprevisto.')</p>
+        <p class="error-code">@yield('code', __('admin.errors.generic_title'))</p>
+        <h1 class="error-title">@yield('title', __('admin.errors.generic_heading'))</h1>
+        <p class="error-message">@yield('message', __('admin.errors.generic_message'))</p>
 
         <div class="error-actions">
             <a class="error-home-button" href="{{ $homeUrl }}">
-                Torna alla pagina principale
+                {{ __('admin.errors.back_home') }}
             </a>
         </div>
     </main>

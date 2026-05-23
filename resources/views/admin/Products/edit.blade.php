@@ -11,7 +11,7 @@
         $data = session('ingredient_success')
     @endphp
     <div class="alert alert-success">
-        "{{ $data['name_ing'] }}" è stato correttamente creato!
+        {{ __('admin.catalog.created_flash', ['name' => $data['name_ing']]) }}
     </div>
 @endif
     
@@ -55,7 +55,7 @@
                     <p>
                         <input @if(!isset($data)) value="{{ old('name', $translations[$dfl]->name) }}" 
                             @else  value="{{ $data['name'] }}" @endif
-                            type="text" name="name" id="name" placeholder=" Inserisci il nome">
+                            type="text" name="name" id="name" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}">
                     </p>
                     @error('name') <p class="error">{{ $message }}</p> @enderror
                 </div>
@@ -63,7 +63,7 @@
                     <label class="label_c" for="price">   
                         <i class="bi bi-123"></i>
                         {{__('admin.Prezzo')}}</label>
-                    <p><input @if(!isset($data)) value="{{ old('price', \App\Support\Currency::formatForInput($product->price)) }}" @else value="{{ \App\Support\Currency::formatForInput($data['price']) }}" @endif  step="{{ $moneyInputStep }}" type="number" name="price" id="price" placeholder=" Inserisci il prezzo "><span>{{ $appCurrency['symbol'] }}</span></p>
+                    <p><input @if(!isset($data)) value="{{ old('price', \App\Support\Currency::formatForInput($product->price)) }}" @else value="{{ \App\Support\Currency::formatForInput($data['price']) }}" @endif  step="{{ $moneyInputStep }}" type="number" name="price" id="price" placeholder="{{ __('admin.products.price_placeholder') }}"><span>{{ $appCurrency['symbol'] }}</span></p>
                     @error('price') <p class="error">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -120,10 +120,10 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <x-dashboard.action-modal
                                         title-id="lang{{$i}}Label"
-                                        title="Personalizza traduzione"
+                                        title="{{ __('admin.catalog.customize_translation') }}"
                                         eyebrow="{{ strtoupper($i) }}"
                                         tone="mint"
-                                        description="Aggiorna nome e descrizione del prodotto nella lingua selezionata."
+                                        description="{{ __('admin.products.translation_description') }}"
                                     >
                                         <div class="check_c" style="border: none !important; padding: 0; border-radius: 0; width: fit-content">
                                             @foreach ($list as $e)
@@ -136,7 +136,7 @@
                                                 <i class="bi bi-type"></i>
                                                 {{__('admin.Nome')}}
                                             </label>
-                                            <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder=" Inserisci il nome">
+                                            <input value="{{ $translations[$i]->name ?? '' }}" type="text" name="translations[{{$i}}][name]" id="translations[{{$i}}][name]" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}">
                                         </div>
 
                                         <div class="dashboard-action-modal__field">
@@ -169,7 +169,7 @@
                     <label class="label_c" for="old_price">
                         <i class="bi bi-123"></i>
                         {{__('admin.Prezzo_barrato')}}</label>
-                    <p><span>{{ $appCurrency['symbol'] }}</span><input @if(!is_null($product->old_price) && $product->old_price !== 0.0) value="{{ old('old_price', \App\Support\Currency::formatForInput($product->old_price)) }}" @else value="{{ old('old_price')}}" @endif  step="{{ $moneyInputStep }}" type="number" name="old_price" id="old_price" placeholder=" Inserisci il prezzo barrato"></p>
+                    <p><span>{{ $appCurrency['symbol'] }}</span><input @if(!is_null($product->old_price) && $product->old_price !== 0.0) value="{{ old('old_price', \App\Support\Currency::formatForInput($product->old_price)) }}" @else value="{{ old('old_price')}}" @endif  step="{{ $moneyInputStep }}" type="number" name="old_price" id="old_price" placeholder="{{ __('admin.products.old_price_placeholder') }}"></p>
                 </div>
             </div>
         </section>
@@ -180,8 +180,8 @@
                 @if ($property_adv['too'])
                 <div>
                     <label class="label_c" for="slot_plate">
-                    <i class="bi bi-123"></i> Spazio occupato</label>
-                    <p><input @if(!isset($data)) value="{{ old('slot_plate', $product->slot_plate) }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="Inserisci lo spazio  "></p>
+                    <i class="bi bi-123"></i>{{ __('admin.Spazio_occupato') }}</label>
+                    <p><input @if(!isset($data)) value="{{ old('slot_plate', $product->slot_plate) }}" @else value="{{ $data['slot_plate'] }}" @endif  type="number" name="slot_plate" id="slot_plate" placeholder="{{ __('admin.products.slot_placeholder') }}"></p>
                     @error('slot_plate') <p class="error">{{ $message }}</p> @enderror
                 </div>
             
@@ -221,9 +221,9 @@
                 <x-dashboard.action-modal
                     title-id="staticBackdropLabel"
                     title="{{ __('admin.Crea_e_aggiungi_Ingredienti_mancanti') }}"
-                    eyebrow="Ingrediente rapido"
+                    eyebrow="{{ __('admin.products.quick_ingredient_eyebrow') }}"
                     tone="mint"
-                    description="Aggiungi un ingrediente senza uscire dalla modifica prodotto e collegalo subito alla scheda corrente."
+                    description="{{ __('admin.products.quick_ingredient_edit_description') }}"
                 >
                     <section class="more_i">  
                         <div class="split">
@@ -231,14 +231,14 @@
                                 <label class="label_c" for="name_ing">
                                     <i class="bi bi-type"></i>
                                     {{__('admin.Nome')}}</label>
-                                <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder=" Inserisci il nome"></p>
+                                <p><input value="{{ old('name_ing') }}" type="text" name="name_ing" id="name_ing" placeholder="{{ __('admin.catalog.insert_name_placeholder') }}"></p>
                                 @error('name_ing') <p class="error">{{ $message }}</p> @enderror
                             </div>
                             <div class="price_input">
                                 <label class="label_c" for="price_ing">
                                     <i class="bi bi-123"></i>
                                     {{__('admin.Prezzo')}}</label>
-                                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing"  step="{{ $moneyInputStep }}" placeholder=" Inserisci il prezzo "></p>
+                                <p><span>{{ $appCurrency['symbol'] }}</span><input value="{{ old('price_ing') }}" type="number" name="price_ing" id="price_ing"  step="{{ $moneyInputStep }}" placeholder="{{ __('admin.products.price_placeholder') }}"></p>
                                 @error('price_ing') <p class="error">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -254,7 +254,7 @@
                         <div class="check_c">
                             <label class="label_c" for="type">
                                 <i class="bi bi-ui-checks-grid"></i>
-                                Categorie abbinate</label>
+                                {{ __('admin.Categorie_abbinate') }}</label>
                             <p>
                                 @foreach ($categories as $c)
                                     <input type="checkbox" class="btn-check" id="a{{ $c->id }}" name="type_ing[]" value="{{ $c->id }}" @if (in_array($c->id, old('type_ing', []))) checked @endif>
@@ -294,11 +294,11 @@
         <section class="cont_i">
             <h2>
                 <i class="bi bi-ui-checks-grid"></i>
-                Abbina Ingredienti
+                {{ __('admin.Abbina_Ingredienti') }}
             </h2>
             <div id="associated-ingredients" class="check_c">
                 <h3>
-                    <i class="bi bi-check-square-fill"></i> Ingredienti abbinati
+                    <i class="bi bi-check-square-fill"></i> {{ __('admin.Ingredienti_abbinati') }}
                 </h3>
                 <p id="associated-list">
                     @if(isset($data['ingredients']))
@@ -329,7 +329,7 @@
             <div class="check_c">
                 <h3>
                     <i class="bi bi-square"></i>
-                    Ingredienti disponibili
+                    {{ __('admin.Ingredienti_disponibili') }}
                 </h3>
                 <p id="available-ingredients">
                     @foreach($ingredients as $ingredient)
@@ -353,7 +353,7 @@
                 </p>
             </div>
             <button type="button" class="my_btn_5 ml-auto" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                Crea Ingredienti mancanti
+                {{ __('admin.Crea_Ingredienti_mancanti') }}
             </button>
 
             <!-- Hidden container con input per submit -->

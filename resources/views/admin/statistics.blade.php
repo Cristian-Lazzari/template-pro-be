@@ -11,7 +11,7 @@
         : 0;
     $initialPeriodLabel = $activityRange['start'] && $activityRange['end']
         ? \Carbon\Carbon::parse($activityRange['start'])->translatedFormat('d M Y') . ' - ' . \Carbon\Carbon::parse($activityRange['end'])->translatedFormat('d M Y')
-        : 'Nessun dato disponibile';
+        : __('admin.statistics.no_available_data');
     $bestRevenueDay = $summary['best_revenue_day'] ?? [];
     $bestReservationDay = $summary['best_reservation_day'] ?? [];
 @endphp
@@ -23,18 +23,18 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <x-icon name="graph-up-arrow" />
                 </span>
-                <strong>Analisi operativa</strong>
+                <strong>{{ __('admin.statistics.operational_analysis') }}</strong>
             </div>
 
             <h1 class="menu-dashboard__title">
 
-                Statistiche
+                {{ __('admin.Statistiche') }}
             </h1>
 
             @if ($activityRange['end'])
                 <p class="ml-auto">
                     <span class="settings-state settings-state--active " data-stat-field="lastActivityLabel">
-                        Ultimo dato {{ \Carbon\Carbon::parse($activityRange['end'])->translatedFormat('d M Y') }}
+                        {{ __('admin.statistics.last_data') }} {{ \Carbon\Carbon::parse($activityRange['end'])->translatedFormat('d M Y') }}
                     </span>
                 </p>
             @endif
@@ -45,13 +45,13 @@
         <div class="statistics-page__floating-filter-shell">
             <div class="statistics-page__floating-filter">
                 <label class="statistics-page__period-control " for="statisticsPeriod">
-                    <span>Periodo analizzato</span>
+                    <span>{{ __('admin.statistics.analyzed_period') }}</span>
                     <select id="statisticsPeriod" data-stat-period>
-                        <option value="7">Ultimi 7 giorni</option>
-                        <option value="30" selected>Ultimi 30 giorni</option>
-                        <option value="90">Ultimi 90 giorni</option>
-                        <option value="365">Ultimi 12 mesi</option>
-                        <option value="all">Tutto lo storico</option>
+                        <option value="7">{{ __('admin.statistics.last_7_days') }}</option>
+                        <option value="30" selected>{{ __('admin.statistics.last_30_days') }}</option>
+                        <option value="90">{{ __('admin.statistics.last_90_days') }}</option>
+                        <option value="365">{{ __('admin.statistics.last_12_months') }}</option>
+                        <option value="all">{{ __('admin.statistics.all_history') }}</option>
                     </select>
                 </label>
 
@@ -70,8 +70,8 @@
                     <x-icon name="bar-chart" />
                 </span>
                 <div>
-                    <h2>Le statistiche compariranno qui appena arrivano i primi dati</h2>
-                    <p>Quando il locale riceverà ordini o prenotazioni, questa pagina mostrerà andamento, prodotti più richiesti e insight sul periodo.</p>
+                    <h2>{{ __('admin.statistics.empty_title') }}</h2>
+                    <p>{{ __('admin.statistics.empty_text') }}</p>
                 </div>
             </div>
         </section>
@@ -82,45 +82,45 @@
                     <span class="order-detail__section-icon">
                         <x-icon name="speedometer2" />
                     </span>
-                    Panorama del periodo
+                    {{ __('admin.statistics.period_overview') }}
                 </h3>
             </div>
 
             <div class="statistics-page__metric-grid">
                 <article class="statistics-page__metric-card">
-                    <span class="menu-dashboard__stat-label">Ordini</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.orders') }}</span>
                     <strong data-stat-field="ordersCount">{{ $summary['order_count'] }}</strong>
-                    <p data-stat-field="ordersMeta">{{ $summary['confirmed_orders'] }} confermati, {{ $summary['cancelled_orders'] }} annullati</p>
+                    <p data-stat-field="ordersMeta">{{ __('admin.statistics.orders_meta', ['confirmed' => $summary['confirmed_orders'], 'cancelled' => $summary['cancelled_orders']]) }}</p>
                 </article>
 
                 <article class="statistics-page__metric-card">
-                    <span class="menu-dashboard__stat-label">Conferma ordini</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.order_confirmation') }}</span>
                     <strong data-stat-field="orderConfirmRate">{{ $initialOrderConfirmRate }}%</strong>
-                    <p data-stat-field="orderConfirmMeta">{{ $summary['cancelled_orders'] }} annullati nel periodo</p>
+                    <p data-stat-field="orderConfirmMeta">{{ $summary['cancelled_orders'] }} {{ __('admin.statistics.cancelled_in_period') }}</p>
                 </article>
 
                 <article class="statistics-page__metric-card">
-                    <span class="menu-dashboard__stat-label">Ricavi confermati</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.confirmed_revenue') }}</span>
                     <strong data-stat-field="confirmedRevenue">{{ $formatCurrency($summary['confirmed_revenue']) }}</strong>
-                    <p data-stat-field="revenueMeta">Ticket medio {{ $formatCurrency($summary['average_ticket']) }}</p>
+                    <p data-stat-field="revenueMeta">{{ __('admin.statistics.ticket_average', ['amount' => $formatCurrency($summary['average_ticket'])]) }}</p>
                 </article>
 
                 <article class="statistics-page__metric-card">
-                    <span class="menu-dashboard__stat-label">Prenotazioni</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.reservations') }}</span>
                     <strong data-stat-field="reservationsCount">{{ $summary['reservation_count'] }}</strong>
-                    <p data-stat-field="reservationsMeta">{{ $summary['confirmed_reservations'] }} confermate, {{ $summary['cancelled_reservations'] }} annullate</p>
+                    <p data-stat-field="reservationsMeta">{{ __('admin.statistics.reservations_meta', ['confirmed' => $summary['confirmed_reservations'], 'cancelled' => $summary['cancelled_reservations']]) }}</p>
                 </article>
 
                 <article class="statistics-page__metric-card">
-                    <span class="menu-dashboard__stat-label">Coperti stimati</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.estimated_covers') }}</span>
                     <strong data-stat-field="guestsCount">{{ $summary['guests'] }}</strong>
-                    <p data-stat-field="guestsMeta">Media {{ number_format((float) $summary['average_guests'], 1, ',', '.') }} persone per prenotazione</p>
+                    <p data-stat-field="guestsMeta">{{ __('admin.statistics.average_people', ['count' => number_format((float) $summary['average_guests'], 1, ',', '.')]) }}</p>
                 </article>
 
                 <article class="statistics-page__metric-card">
-                    <span class="menu-dashboard__stat-label">Prodotto guida</span>
-                    <strong class="statistics-page__metric-card-title" data-stat-field="topProductName">{{ $summary['top_product'] ?? 'Nessun dato' }}</strong>
-                    <p data-stat-field="topProductMeta">Il più richiesto nel periodo selezionato</p>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.guide_product') }}</span>
+                    <strong class="statistics-page__metric-card-title" data-stat-field="topProductName">{{ $summary['top_product'] ?? __('admin.common.no_data') }}</strong>
+                    <p data-stat-field="topProductMeta">{{ __('admin.statistics.most_requested_product') }}</p>
                 </article>
             </div>
         </section>
@@ -131,63 +131,63 @@
                     <span class="order-detail__section-icon">
                         <x-icon name="stars" />
                     </span>
-                    Approfondimenti rapidi
+                    {{ __('admin.statistics.quick_insights') }}
                 </h3>
             </div>
 
             <div class="statistics-page__insight-grid">
                 <article class="statistics-page__insight-card">
-                    <span class="menu-dashboard__stat-label">Giorno migliore per ricavi</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.best_revenue_day') }}</span>
                     <strong data-stat-field="bestRevenueValue">
                         @if (!empty($bestRevenueDay['date'] ?? null))
                             {{ \Carbon\Carbon::parse($bestRevenueDay['date'])->translatedFormat('d M Y') }}
                         @else
-                            Nessun dato
+                            {{ __('admin.common.no_data') }}
                         @endif
                     </strong>
                     <p data-stat-field="bestRevenueMeta">
                         @if (!empty($bestRevenueDay['date'] ?? null))
-                            {{ $formatCurrency($bestRevenueDay['confirmed_revenue_cents'] ?? 0) }} confermati
+                            {{ $formatCurrency($bestRevenueDay['confirmed_revenue_cents'] ?? 0) }} {{ __('admin.statistics.confirmed_word') }}
                         @else
-                            Nessun ricavo registrato
+                            {{ __('admin.statistics.no_revenue_registered') }}
                         @endif
                     </p>
                 </article>
 
                 <article class="statistics-page__insight-card">
-                    <span class="menu-dashboard__stat-label">Giorno più richiesto</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.most_requested_day') }}</span>
                     <strong data-stat-field="bestReservationValue">
                         @if (!empty($bestReservationDay['date'] ?? null))
                             {{ \Carbon\Carbon::parse($bestReservationDay['date'])->translatedFormat('d M Y') }}
                         @else
-                            Nessun dato
+                            {{ __('admin.common.no_data') }}
                         @endif
                     </strong>
                     <p data-stat-field="bestReservationMeta">
                         @if (!empty($bestReservationDay['date'] ?? null))
-                            {{ $bestReservationDay['total_reservations'] ?? 0 }} prenotazioni
+                            {{ $bestReservationDay['total_reservations'] ?? 0 }} {{ __('admin.statistics.reservations_word') }}
                         @else
-                            Nessuna prenotazione registrata
+                            {{ __('admin.statistics.no_reservation_registered') }}
                         @endif
                     </p>
                 </article>
 
                 <article class="statistics-page__insight-card">
-                    <span class="menu-dashboard__stat-label">Presidio del periodo</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.period_presence') }}</span>
                     <strong data-stat-field="activeDaysValue">{{ $activityRange['days'] }}</strong>
                     <p data-stat-field="activeDaysMeta">
                         @if ($activityRange['days'])
-                            Dati distribuiti su {{ $activityRange['days'] }} giorni
+                            {{ __('admin.statistics.activity_days', ['days' => $activityRange['days']]) }}
                         @else
-                            Nessuna attività presente
+                            {{ __('admin.statistics.no_activity') }}
                         @endif
                     </p>
                 </article>
 
                 <article class="statistics-page__insight-card">
-                    <span class="menu-dashboard__stat-label">Qualità prenotazioni</span>
+                    <span class="menu-dashboard__stat-label">{{ __('admin.statistics.reservation_quality') }}</span>
                     <strong data-stat-field="reservationConfirmRate">{{ $initialReservationConfirmRate }}%</strong>
-                    <p data-stat-field="reservationConfirmMeta">{{ $summary['cancelled_reservations'] }} prenotazioni annullate</p>
+                    <p data-stat-field="reservationConfirmMeta">{{ __('admin.statistics.cancelled_reservations_meta', ['count' => $summary['cancelled_reservations']]) }}</p>
                 </article>
             </div>
         </section>
@@ -200,10 +200,10 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="cash-coin" />
                             </span>
-                            Ricavi nel tempo
+                            {{ __('admin.statistics.revenue_over_time') }}
                         </h3>
                     </div>
-                    <p data-stat-field="revenueChartMeta">Confronto fra ricavi confermati, online, alla consegna e annullati.</p>
+                    <p data-stat-field="revenueChartMeta">{{ __('admin.statistics.revenue_comparison') }}</p>
                 </div>
                 <div class="statistics-page__chart-shell">
                     <canvas id="statisticsRevenueChart"></canvas>
@@ -217,10 +217,10 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="pie-chart-fill" />
                             </span>
-                            Prodotti più richiesti
+                            {{ __('admin.statistics.most_requested_products') }}
                         </h3>
                     </div>
-                    <p data-stat-field="topProductsChartMeta">Top prodotti del periodo con peso relativo sul totale ordinato.</p>
+                    <p data-stat-field="topProductsChartMeta">{{ __('admin.statistics.top_products_description') }}</p>
                 </div>
 
                 <div class="statistics-page__top-products-layout">
@@ -233,14 +233,14 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Prodotto</th>
-                                    <th>Qta</th>
-                                    <th>Quota</th>
+                                    <th>{{ __('admin.common.product') }}</th>
+                                    <th>{{ __('admin.statistics.quantity_short') }}</th>
+                                    <th>{{ __('admin.statistics.share') }}</th>
                                 </tr>
                             </thead>
                             <tbody data-stat-products-table>
                                 <tr>
-                                    <td colspan="4" data-label="Stato">Caricamento dati...</td>
+                                    <td colspan="4" data-label="{{ __('admin.statistics.state') }}">{{ __('admin.common.loading_data') }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -255,10 +255,10 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="people-fill" />
                             </span>
-                            Prenotazioni e coperti
+                            {{ __('admin.statistics.reservations_and_covers') }}
                         </h3>
                     </div>
-                    <p data-stat-field="reservationChartMeta">Andamento di adulti, bambini e numero prenotazioni nel periodo.</p>
+                    <p data-stat-field="reservationChartMeta">{{ __('admin.statistics.reservation_chart_meta') }}</p>
                 </div>
                 <div class="statistics-page__chart-shell">
                     <canvas id="statisticsReservationsChart"></canvas>
@@ -272,10 +272,10 @@
                             <span class="order-detail__section-icon">
                                 <x-icon name="bar-chart-steps" />
                             </span>
-                            Mix prodotti nel tempo
+                            {{ __('admin.statistics.product_mix_over_time') }}
                         </h3>
                     </div>
-                    <p data-stat-field="productMixMeta">I prodotti più forti del periodo distribuiti giorno per giorno.</p>
+                    <p data-stat-field="productMixMeta">{{ __('admin.statistics.product_mix_description') }}</p>
                 </div>
                 <div class="statistics-page__chart-shell">
                     <canvas id="statisticsProductMixChart"></canvas>
@@ -293,8 +293,46 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const appCurrency = @json($appCurrency);
                 const payload = @json($statisticsPayload);
+                const i18n = {
+                    noData: @json(__('admin.common.no_data')),
+                    noRecentData: @json(__('admin.statistics.no_recent_data')),
+                    lastData: @json(__('admin.statistics.last_data')),
+                    ordersMeta: @json(__('admin.statistics.orders_meta')),
+                    reservationsMeta: @json(__('admin.statistics.reservations_meta')),
+                    cancelledInPeriod: @json(__('admin.statistics.cancelled_in_period')),
+                    ticketAverage: @json(__('admin.statistics.ticket_average')),
+                    averagePeople: @json(__('admin.statistics.average_people')),
+                    piecesInPeriod: @json(__('admin.statistics.pieces_in_period')),
+                    noOrdersRegistered: @json(__('admin.statistics.no_orders_registered')),
+                    activeDays: @json(__('admin.statistics.active_days')),
+                    cancelledReservationsMeta: @json(__('admin.statistics.cancelled_reservations_meta')),
+                    confirmedWord: @json(__('admin.statistics.confirmed_word')),
+                    noRevenueRegistered: @json(__('admin.statistics.no_revenue_registered')),
+                    reservationsWord: @json(__('admin.statistics.reservations_word')),
+                    noReservationRegistered: @json(__('admin.statistics.no_reservation_registered')),
+                    periodReading: @json(__('admin.statistics.period_reading')),
+                    topProductsPeriod: @json(__('admin.statistics.top_products_period')),
+                    coversPeriod: @json(__('admin.statistics.covers_and_reservations')),
+                    productDistribution: @json(__('admin.statistics.product_distribution')),
+                    noProductsOrdered: @json(__('admin.statistics.no_products_ordered')),
+                    state: @json(__('admin.statistics.state')),
+                    product: @json(__('admin.common.product')),
+                    quantity: @json(__('admin.statistics.quantity_short')),
+                    share: @json(__('admin.statistics.share')),
+                    confirmedRevenue: @json(__('admin.statistics.confirmed_revenue')),
+                    paidOnline: @json(__('admin.statistics.paid_online')),
+                    cashOnDelivery: @json(__('admin.statistics.cash_on_delivery')),
+                    cancelled: @json(__('admin.statistics.cancelled')),
+                    adults: @json(__('admin.statistics.adults')),
+                    children: @json(__('admin.statistics.children')),
+                    reservations: @json(__('admin.statistics.reservations')),
+                };
                 const periodSelect = document.querySelector('[data-stat-period]');
                 const tableBody = document.querySelector('[data-stat-products-table]');
+                const tr = (template, replacements = {}) => Object.entries(replacements).reduce(
+                    (text, [key, value]) => text.replaceAll(`:${key}`, value),
+                    template
+                );
 
                 if (!payload || !periodSelect) {
                     return;
@@ -670,35 +708,44 @@
 
                 const updateSummary = (snapshot) => {
                     const { summary, bounds, dates } = snapshot;
-                    const topProductName = summary.topProduct ? summary.topProduct[0] : 'Nessun dato';
+                    const topProductName = summary.topProduct ? summary.topProduct[0] : i18n.noData;
                     const topProductQty = summary.topProduct ? summary.topProduct[1] : 0;
 
                     setField('periodLabel', bounds.label);
-                    setField('lastActivityLabel', activity.end ? `Ultimo dato ${formatLongDate(activity.end)}` : 'Nessun dato recente');
+                    setField('lastActivityLabel', activity.end ? `${i18n.lastData} ${formatLongDate(activity.end)}` : i18n.noRecentData);
                     setField('ordersCount', numberFormatter.format(summary.ordersCount));
-                    setField('ordersMeta', `${numberFormatter.format(summary.confirmedOrders)} confermati, ${numberFormatter.format(summary.cancelledOrders)} annullati`);
+                    setField('ordersMeta', tr(i18n.ordersMeta, {
+                        confirmed: numberFormatter.format(summary.confirmedOrders),
+                        cancelled: numberFormatter.format(summary.cancelledOrders),
+                    }));
                     setField('orderConfirmRate', percent(summary.orderConfirmRate));
-                    setField('orderConfirmMeta', `${numberFormatter.format(summary.cancelledOrders)} annullati nel periodo`);
+                    setField('orderConfirmMeta', `${numberFormatter.format(summary.cancelledOrders)} ${i18n.cancelledInPeriod}`);
                     setField('confirmedRevenue', money(summary.confirmedRevenueCents));
-                    setField('revenueMeta', `Ticket medio ${currencyFormatter.format(summary.averageTicketCents || 0)}`);
+                    setField('revenueMeta', tr(i18n.ticketAverage, { amount: currencyFormatter.format(summary.averageTicketCents || 0) }));
                     setField('reservationsCount', numberFormatter.format(summary.reservationsCount));
-                    setField('reservationsMeta', `${numberFormatter.format(summary.confirmedReservations)} confermate, ${numberFormatter.format(summary.cancelledReservations)} annullate`);
+                    setField('reservationsMeta', tr(i18n.reservationsMeta, {
+                        confirmed: numberFormatter.format(summary.confirmedReservations),
+                        cancelled: numberFormatter.format(summary.cancelledReservations),
+                    }));
                     setField('guestsCount', numberFormatter.format(summary.guestsCount));
-                    setField('guestsMeta', `Media ${percentFormatter.format(summary.averageGuests)} persone per prenotazione`);
+                    setField('guestsMeta', tr(i18n.averagePeople, { count: percentFormatter.format(summary.averageGuests) }));
                     setField('topProductName', topProductName);
-                    setField('topProductMeta', topProductQty > 0 ? `${numberFormatter.format(topProductQty)} pezzi nel periodo` : 'Nessun ordine registrato');
+                    setField('topProductMeta', topProductQty > 0 ? tr(i18n.piecesInPeriod, { count: numberFormatter.format(topProductQty) }) : i18n.noOrdersRegistered);
                     setField('activeDaysValue', numberFormatter.format(summary.activeDays));
-                    setField('activeDaysMeta', `${numberFormatter.format(summary.activeDays)} giorni attivi su ${numberFormatter.format(dates.length)}`);
+                    setField('activeDaysMeta', tr(i18n.activeDays, {
+                        active: numberFormatter.format(summary.activeDays),
+                        total: numberFormatter.format(dates.length),
+                    }));
                     setField('reservationConfirmRate', percent(summary.reservationConfirmRate));
-                    setField('reservationConfirmMeta', `${numberFormatter.format(summary.cancelledReservations)} prenotazioni annullate`);
-                    setField('bestRevenueValue', summary.bestRevenueDay && summary.bestRevenueDay.value > 0 ? formatLongDate(summary.bestRevenueDay.date) : 'Nessun dato');
-                    setField('bestRevenueMeta', summary.bestRevenueDay && summary.bestRevenueDay.value > 0 ? `${money(summary.bestRevenueDay.value)} confermati` : 'Nessun ricavo registrato');
-                    setField('bestReservationValue', summary.bestReservationDay && summary.bestReservationDay.value > 0 ? formatLongDate(summary.bestReservationDay.date) : 'Nessun dato');
-                    setField('bestReservationMeta', summary.bestReservationDay && summary.bestReservationDay.value > 0 ? `${numberFormatter.format(summary.bestReservationDay.value)} prenotazioni` : 'Nessuna prenotazione registrata');
-                    setField('revenueChartMeta', `Lettura del periodo ${bounds.label.toLowerCase()}.`);
-                    setField('topProductsChartMeta', `Top prodotti per il periodo ${bounds.label.toLowerCase()}.`);
-                    setField('reservationChartMeta', `Coperti e numero prenotazioni per il periodo ${bounds.label.toLowerCase()}.`);
-                    setField('productMixMeta', `Distribuzione dei prodotti più forti nel periodo ${bounds.label.toLowerCase()}.`);
+                    setField('reservationConfirmMeta', tr(i18n.cancelledReservationsMeta, { count: numberFormatter.format(summary.cancelledReservations) }));
+                    setField('bestRevenueValue', summary.bestRevenueDay && summary.bestRevenueDay.value > 0 ? formatLongDate(summary.bestRevenueDay.date) : i18n.noData);
+                    setField('bestRevenueMeta', summary.bestRevenueDay && summary.bestRevenueDay.value > 0 ? `${money(summary.bestRevenueDay.value)} ${i18n.confirmedWord}` : i18n.noRevenueRegistered);
+                    setField('bestReservationValue', summary.bestReservationDay && summary.bestReservationDay.value > 0 ? formatLongDate(summary.bestReservationDay.date) : i18n.noData);
+                    setField('bestReservationMeta', summary.bestReservationDay && summary.bestReservationDay.value > 0 ? `${numberFormatter.format(summary.bestReservationDay.value)} ${i18n.reservationsWord}` : i18n.noReservationRegistered);
+                    setField('revenueChartMeta', tr(i18n.periodReading, { period: bounds.label.toLowerCase() }));
+                    setField('topProductsChartMeta', tr(i18n.topProductsPeriod, { period: bounds.label.toLowerCase() }));
+                    setField('reservationChartMeta', tr(i18n.coversPeriod, { period: bounds.label.toLowerCase() }));
+                    setField('productMixMeta', tr(i18n.productDistribution, { period: bounds.label.toLowerCase() }));
                     setTone('lastActivityLabel', 'active');
                     setTone('periodLabel', 'neutral');
                 };
@@ -713,7 +760,7 @@
                     if (!topProducts.length) {
                         tableBody.innerHTML = `
                             <tr>
-                                <td colspan="4" data-label="Stato">Nessun prodotto ordinato nel periodo selezionato.</td>
+                                <td colspan="4" data-label="${i18n.state}">${i18n.noProductsOrdered}</td>
                             </tr>
                         `;
                         return;
@@ -727,9 +774,9 @@
                         return `
                             <tr>
                                 <td data-label="#">${index + 1}</td>
-                                <td data-label="Prodotto">${item[0]}</td>
-                                <td data-label="Qta"><strong>${numberFormatter.format(item[1])}</strong></td>
-                                <td data-label="Quota">${percentFormatter.format(share)}%</td>
+                                <td data-label="${i18n.product}">${item[0]}</td>
+                                <td data-label="${i18n.quantity}"><strong>${numberFormatter.format(item[1])}</strong></td>
+                                <td data-label="${i18n.share}">${percentFormatter.format(share)}%</td>
                             </tr>
                         `;
                     }).join('');
@@ -748,7 +795,7 @@
                     charts.revenue.data.labels = labels;
                     charts.revenue.data.datasets = [
                         {
-                            label: 'Ricavi confermati',
+                            label: i18n.confirmedRevenue,
                             data: revenueSeries.map((row) => row.confirmed_revenue_cents || 0),
                             borderColor: '#8ef6db',
                             backgroundColor: 'rgba(142, 246, 219, 0.16)',
@@ -756,7 +803,7 @@
                             tension: 0.32,
                         },
                         {
-                            label: 'Pagati online',
+                            label: i18n.paidOnline,
                             data: revenueSeries.map((row) => row.paid_revenue_cents || 0),
                             borderColor: '#7cc7ff',
                             backgroundColor: 'rgba(124, 199, 255, 0.12)',
@@ -764,7 +811,7 @@
                             tension: 0.32,
                         },
                         {
-                            label: 'Alla consegna',
+                            label: i18n.cashOnDelivery,
                             data: revenueSeries.map((row) => row.cod_revenue_cents || 0),
                             borderColor: '#ffd37a',
                             backgroundColor: 'rgba(255, 211, 122, 0.12)',
@@ -772,7 +819,7 @@
                             tension: 0.32,
                         },
                         {
-                            label: 'Annullati',
+                            label: i18n.cancelled,
                             data: revenueSeries.map((row) => row.cancelled_revenue_cents || 0),
                             borderColor: '#ff9f9f',
                             backgroundColor: 'rgba(255, 159, 159, 0.12)',
@@ -782,7 +829,7 @@
                     ];
                     charts.revenue.update();
 
-                    charts.topProducts.data.labels = topProducts.length ? topProducts.map((item) => item[0]) : ['Nessun dato'];
+                    charts.topProducts.data.labels = topProducts.length ? topProducts.map((item) => item[0]) : [i18n.noData];
                     charts.topProducts.data.datasets[0].data = topProducts.length ? topProducts.map((item) => item[1]) : [1];
                     charts.topProducts.data.datasets[0].backgroundColor = topProducts.length
                         ? accentPalette.slice(0, topProducts.length)
@@ -794,7 +841,7 @@
                     charts.reservations.data.datasets = [
                         {
                             type: 'bar',
-                            label: 'Adulti',
+                            label: i18n.adults,
                             data: reservationSeries.map((row) => row.adults_total),
                             backgroundColor: 'rgba(124, 199, 255, 0.48)',
                             borderColor: '#7cc7ff',
@@ -803,7 +850,7 @@
                         },
                         {
                             type: 'bar',
-                            label: 'Bambini',
+                            label: i18n.children,
                             data: reservationSeries.map((row) => row.children_total),
                             backgroundColor: 'rgba(255, 159, 159, 0.48)',
                             borderColor: '#ff9f9f',
@@ -812,7 +859,7 @@
                         },
                         {
                             type: 'line',
-                            label: 'Prenotazioni',
+                            label: i18n.reservations,
                             data: reservationSeries.map((row) => row.total_reservations),
                             borderColor: '#8ef6db',
                             backgroundColor: 'rgba(142, 246, 219, 0.12)',

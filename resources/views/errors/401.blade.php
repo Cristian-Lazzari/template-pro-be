@@ -1,5 +1,5 @@
 @extends('errors.minimal')
 
-@section('title', __('Non autorizzato'))
+@section('title', __('admin.errors.401_title'))
 @section('code', '401')
-@section('message', __('Devi effettuare l\'accesso per continuare.'))
+@section('message', __('admin.errors.401_message'))

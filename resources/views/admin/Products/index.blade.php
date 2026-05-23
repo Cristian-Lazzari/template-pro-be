@@ -10,7 +10,7 @@
     @endphp
     <div class="alert alert-primary alert-dismissible fade show" role="alert">
         {{ $data }} 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('admin.common.close') }}"></button>
     </div>
 @endif
 @if (session('delete_success'))
@@ -88,7 +88,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body" id="productInfoModalBody">
-                        <div class="text-center py-4">Caricamento...</div>
+                        <div class="text-center py-4">{{ __('admin.catalog.loading') }}</div>
                     </div>
                 </div>
             </div>
@@ -114,6 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const asyncAlerts = document.getElementById('productsAsyncAlerts');
     const defaultListHtml = productContainer.innerHTML;
     const searchUrlBase = "{{ route('admin.products.search') }}";
+    const i18n = {
+        close: @json(__('admin.common.close')),
+        loading: @json(__('admin.catalog.loading')),
+        noProductsFound: @json(__('admin.catalog.no_products_found')),
+        statusUpdated: @json(__('admin.catalog.status_updated')),
+        statusUpdateError: @json(__('admin.products.status_update_error')),
+        detailLoadError: @json(__('admin.catalog.detail_load_error')),
+        productsLoadError: @json(__('admin.catalog.products_load_error')),
+    };
 
     function showAsyncAlert(message, type = 'primary') {
         if (!asyncAlerts) {
@@ -123,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         asyncAlerts.innerHTML = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                 ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${i18n.close}"></button>
             </div>
         `;
     }
@@ -131,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function ensureEmptyStateCard() {
         const cards = productContainer.querySelectorAll('.res-item.prod');
         if (cards.length === 0) {
-            productContainer.innerHTML = '<div class="res-item prod"><div class="name_cat"><div class="name">Nessun prodotto trovato</div></div></div>';
+            productContainer.innerHTML = `<div class="res-item prod"><div class="name_cat"><div class="name">${i18n.noProductsFound}</div></div></div>`;
         }
     }
 
@@ -193,9 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         visibleToggleButton.classList.toggle('not', !data.product.visible);
                     }
 
-                    showAsyncAlert(data.message || 'Stato aggiornato correttamente.', 'primary');
+                    showAsyncAlert(data.message || i18n.statusUpdated, 'primary');
                 } catch (error) {
-                    showAsyncAlert('Errore durante l\'aggiornamento dello stato del prodotto.', 'danger');
+                    showAsyncAlert(i18n.statusUpdateError, 'danger');
                 } finally {
                     if (submitButton) {
                         submitButton.disabled = false;
@@ -224,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         productContainer.querySelectorAll('.js-open-product-info').forEach(button => {
             button.addEventListener('click', async () => {
                 const url = button.dataset.infoUrl;
-                infoModalBody.innerHTML = '<div class="text-center py-4">Caricamento...</div>';
+                infoModalBody.innerHTML = `<div class="text-center py-4">${i18n.loading}</div>`;
 
                 try {
                     const response = await fetch(url, {
@@ -240,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     infoModalBody.innerHTML = await response.text();
                     bindModalStatusForms();
                 } catch (error) {
-                    infoModalBody.innerHTML = '<div class="text-center text-danger py-4">Errore nel caricamento dei dettagli.</div>';
+                    infoModalBody.innerHTML = `<div class="text-center text-danger py-4">${i18n.detailLoadError}</div>`;
                 }
             });
         });
@@ -280,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pagination.classList.add('d-none');
             bindDynamicEvents();
         } catch (error) {
-            productContainer.innerHTML = '<div class="res-item prod"><div class="name_cat"><div class="name">Errore nel caricamento prodotti</div></div></div>';
+            productContainer.innerHTML = `<div class="res-item prod"><div class="name_cat"><div class="name">${i18n.productsLoadError}</div></div></div>`;
             pagination.classList.add('d-none');
         }
     }

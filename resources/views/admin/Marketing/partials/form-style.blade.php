@@ -91,8 +91,7 @@
         gap: 12px;
         width: 100%;
         margin-top: 22px;
-        padding: 18px 0 4px;
-        border-top: 1px solid rgba(216, 221, 232, 0.12);
+        padding: 4px 0;
     }
 
     .marketing-form-actions .order-detail__contact {
@@ -378,5 +377,208 @@
             width: 100%;
             justify-content: center;
         }
+    }
+
+    /* ── CPV2 nav buttons ────────────────────────────────────────── */
+    .cpv2-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cpv2-nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(216, 221, 232, 0.14);
+        background: rgba(216, 221, 232, 0.05);
+        color: rgba(216, 221, 232, 0.82);
+        font-size: var(--fs-200);
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .15s, border-color .15s;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .cpv2-nav-btn:hover {
+        background: rgba(216, 221, 232, 0.1);
+        border-color: rgba(216, 221, 232, 0.22);
+    }
+
+    .cpv2-nav-btn[hidden] {
+        display: none !important;
+    }
+
+    .cpv2-nav-btn--primary {
+        flex: 1;
+        justify-content: center;
+        border-color: rgba(14, 183, 146, 0.38);
+        background: rgba(14, 183, 146, 0.12);
+        color: rgba(142, 246, 219, 0.95);
+    }
+
+    .cpv2-nav-btn--primary:hover {
+        background: rgba(14, 183, 146, 0.2);
+        border-color: rgba(14, 183, 146, 0.52);
+    }
+
+    .cpv2-nav-step {
+        flex: 0 0 auto;
+        color: rgba(216, 221, 232, 0.42);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        text-align: center;
+        min-width: 36px;
+        user-select: none;
+    }
+
+    /* ── CPV2 preview card ───────────────────────────────────────── */
+    .cpv2-card {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(216, 221, 232, 0.1);
+        background: rgba(9, 3, 51, 0.22);
+    }
+
+    .cpv2-header {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 12px;
+        align-items: start;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(216, 221, 232, 0.08);
+    }
+
+    .cpv2-header-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid rgba(142, 246, 219, 0.2);
+        background: rgba(14, 183, 146, 0.1);
+        color: rgba(142, 246, 219, 0.88);
+        font-size: 15px;
+        flex: 0 0 auto;
+    }
+
+    .cpv2-eyebrow {
+        display: block;
+        color: rgba(216, 221, 232, 0.4);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+
+    .cpv2-name-display {
+        display: block;
+        color: var(--c3);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .cpv2-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 7px;
+    }
+
+    .cpv2-badge {
+        display: inline-flex;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(14, 183, 146, 0.28);
+        background: rgba(14, 183, 146, 0.1);
+        color: rgba(142, 246, 219, 0.9);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        line-height: 1.3;
+    }
+
+    .cpv2-badge--muted {
+        border-color: rgba(216, 221, 232, 0.14);
+        background: rgba(216, 221, 232, 0.06);
+        color: rgba(216, 221, 232, 0.65);
+    }
+
+    /* ── CPV2 checklist rows ─────────────────────────────────────── */
+    .cpv2-rows {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 1px;
+    }
+
+    .cpv2-row {
+        display: grid;
+        grid-template-columns: 16px 1fr auto;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 4px;
+        border-radius: 6px;
+        min-width: 0;
+    }
+
+    .cpv2-row-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        flex: 0 0 auto;
+        color: rgba(216, 221, 232, 0.3);
+        line-height: 1;
+    }
+
+    .cpv2-row--done .cpv2-row-icon {
+        color: rgba(142, 246, 219, 0.75);
+    }
+
+    .cpv2-row--optional .cpv2-row-icon {
+        color: rgba(216, 221, 232, 0.25);
+    }
+
+    .cpv2-row-label {
+        color: rgba(216, 221, 232, 0.52);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        line-height: 1.3;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .cpv2-row-val {
+        color: var(--c3);
+        font-size: var(--fs-100);
+        font-weight: 800;
+        line-height: 1.3;
+        text-align: right;
+        min-width: 0;
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .cpv2-row--empty .cpv2-row-val,
+    .cpv2-row--optional .cpv2-row-val {
+        color: rgba(216, 221, 232, 0.35);
+        font-style: italic;
+        font-weight: 700;
     }
 </style>
