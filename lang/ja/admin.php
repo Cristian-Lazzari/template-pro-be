@@ -2030,6 +2030,18 @@ return array (
     array (
       'create' => '作成する',
       'operational_status' => '運用状況',
+      'list' => 'リスト',
+      'title' => 'マーケティングを管理する',
+      'subtitle' => 'プロモーション、キャンペーン、自動化、メールテンプレートを単一の入り口から管理できます。',
+      'section' => 'マーケティング概要',
+      'active_promotions' => '積極的なプロモーション',
+      'active_campaigns' => '進行中のキャンペーン',
+      'active_automations' => 'アクティブな自動化',
+      'health_stat' => ':value 対 :total、:percent%',
+      'promotions_description' => '割引ルール、CTA（行動喚起）、および有効期限。',
+      'campaigns_description' => 'セグメントごとに手動送信またはスケジュール送信が可能です。',
+      'automations_description' => 'マーケティングのトリガーを安全に準備しました。',
+      'mail_models_description' => 'キャンペーンや自動化で使用されるメールテンプレート。',
     ),
     'shared' => 
     array (

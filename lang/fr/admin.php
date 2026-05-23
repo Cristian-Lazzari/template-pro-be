@@ -2030,6 +2030,18 @@ return array (
     array (
       'create' => 'Créer',
       'operational_status' => 'État opérationnel',
+      'list' => 'Liste',
+      'title' => 'Gérez votre marketing',
+      'subtitle' => 'Promotions, campagnes, automatisations et modèles d\'e-mails, le tout depuis un point d\'entrée unique.',
+      'section' => 'Aperçu marketing',
+      'active_promotions' => 'Promotions actives',
+      'active_campaigns' => 'Campagnes actives',
+      'active_automations' => 'Automatisations actives',
+      'health_stat' => ':value sur :total, :percent%',
+      'promotions_description' => 'Règles de réduction, appels à l\'action et validité.',
+      'campaigns_description' => 'Envoi manuel ou programmé par segment.',
+      'automations_description' => 'Déclencheurs marketing préparés en toute sécurité.',
+      'mail_models_description' => 'Modèles d\'e-mails utilisés par les campagnes et les automatisations.',
     ),
     'shared' => 
     array (

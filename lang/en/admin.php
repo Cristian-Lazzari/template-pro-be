@@ -2030,6 +2030,18 @@ return array (
     array (
       'create' => 'Create',
       'operational_status' => 'Operational status',
+      'list' => 'List',
+      'title' => 'Manage your marketing',
+      'subtitle' => 'Promotions, campaigns, automations, and email templates in a single entry point.',
+      'section' => 'Marketing Overview',
+      'active_promotions' => 'Active promotions',
+      'active_campaigns' => 'Active campaigns',
+      'active_automations' => 'Active automations',
+      'health_stat' => ':value of :total, :percent%',
+      'promotions_description' => 'Discount rules, CTAs, and validity.',
+      'campaigns_description' => 'Manual or scheduled sending per segment.',
+      'automations_description' => 'Marketing triggers prepared safely.',
+      'mail_models_description' => 'Email templates used by campaigns and automations.',
     ),
     'shared' => 
     array (

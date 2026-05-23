@@ -2026,10 +2026,22 @@ return array (
       'automations' => 'Automazioni',
       'mail_models' => 'Modelli mail',
     ),
-    'overview' => 
+    'overview' =>
     array (
       'create' => 'Crea',
+      'list' => 'Lista',
       'operational_status' => 'Stato operativo',
+      'title' => 'Gestisci il tuo marketing',
+      'subtitle' => 'Promozioni, campagne, automazioni e modelli mail in un unico punto di ingresso.',
+      'section' => 'Panoramica marketing',
+      'active_promotions' => 'Promo attive',
+      'active_campaigns' => 'Campagne attive',
+      'active_automations' => 'Automazioni attive',
+      'health_stat' => ':value su :total, :percent%',
+      'promotions_description' => 'Regole sconto, CTA e validità.',
+      'campaigns_description' => 'Invii manuali o programmati per segmento.',
+      'automations_description' => 'Trigger marketing preparati in sicurezza.',
+      'mail_models_description' => 'Template email usati da campagne e automazioni.',
     ),
     'shared' => 
     array (

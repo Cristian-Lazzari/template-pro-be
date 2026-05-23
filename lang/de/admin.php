@@ -2030,6 +2030,18 @@ return array (
     array (
       'create' => 'Erstellen',
       'operational_status' => 'Betriebsstatus',
+      'list' => 'Liste',
+      'title' => 'Verwalten Sie Ihr Marketing',
+      'subtitle' => 'Werbeaktionen, Kampagnen, Automatisierungen und E-Mail-Vorlagen an einem zentralen Zugangspunkt.',
+      'section' => 'Marketingübersicht',
+      'active_promotions' => 'Aktive Werbeaktionen',
+      'active_campaigns' => 'Aktive Kampagnen',
+      'active_automations' => 'Aktive Automatisierungen',
+      'health_stat' => ':value auf :total, :percent%',
+      'promotions_description' => 'Rabattregeln, Handlungsaufforderungen und Gültigkeit.',
+      'campaigns_description' => 'Manuelle oder zeitgesteuerte Übermittlung pro Segment.',
+      'automations_description' => 'Sicher vorbereitete Marketing-Trigger.',
+      'mail_models_description' => 'E-Mail-Vorlagen, die von Kampagnen und Automatisierungen verwendet werden.',
     ),
     'shared' => 
     array (

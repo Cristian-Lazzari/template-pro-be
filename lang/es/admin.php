@@ -2030,6 +2030,18 @@ return array (
     array (
       'create' => 'Crear',
       'operational_status' => 'Estado operativo',
+      'list' => 'Lista',
+      'title' => 'Gestiona tu marketing',
+      'subtitle' => 'Promociones, campañas, automatizaciones y plantillas de correo electrónico en un único punto de acceso.',
+      'section' => 'Resumen de marketing',
+      'active_promotions' => 'Promociones activas',
+      'active_campaigns' => 'Campañas activas',
+      'active_automations' => 'Automatizaciones activas',
+      'health_stat' => ':value de :total, :percent%',
+      'promotions_description' => 'Reglas de descuento, llamadas a la acción y validez.',
+      'campaigns_description' => 'Envío manual o programado por segmento.',
+      'automations_description' => 'Los activadores de marketing se preparan de forma segura.',
+      'mail_models_description' => 'Plantillas de correo electrónico utilizadas en campañas y automatizaciones.',
     ),
     'shared' => 
     array (

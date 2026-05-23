@@ -2030,6 +2030,18 @@ return array (
     array (
       'create' => 'Crea',
       'operational_status' => 'Stare operațională',
+      'list' => 'Listă',
+      'title' => 'Gestionează-ți marketingul',
+      'subtitle' => 'Promoții, campanii, automatizări și șabloane de e-mail într-un singur punct de intrare.',
+      'section' => 'Prezentare generală a marketingului',
+      'active_promotions' => 'Promoții active',
+      'active_campaigns' => 'Campanii active',
+      'active_automations' => 'Automatizări active',
+      'health_stat' => ':value pe :total, :percent%',
+      'promotions_description' => 'Reguli de reducere, acțiuni îndemn la acțiune și valabilitate.',
+      'campaigns_description' => 'Trimitere manuală sau programată pe segment.',
+      'automations_description' => 'Declanșatori de marketing pregătiți în siguranță.',
+      'mail_models_description' => 'Șabloane de e-mail utilizate de campanii și automatizări.',
     ),
     'shared' => 
     array (

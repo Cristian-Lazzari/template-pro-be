@@ -4,33 +4,33 @@
 @php
     $marketingCards = [
         [
-            'label' => 'Promozioni',
+            'label' => __('admin.marketing.promotions.plural'),
             'count' => (int) ($stat['promotions']['tot'] ?? 0),
-            'description' => 'Regole sconto, CTA e validita.',
+            'description' => __('admin.marketing.overview.promotions_description'),
             'route' => route('admin.promotions.index'),
             'create' => route('admin.promotions.create'),
             'icon' => 'megaphone-fill',
         ],
         [
-            'label' => 'Campagne',
+            'label' => __('admin.marketing.campaigns.plural'),
             'count' => (int) ($stat['campaigns']['tot'] ?? 0),
-            'description' => 'Invii manuali o programmati per segmento.',
+            'description' => __('admin.marketing.overview.campaigns_description'),
             'route' => route('admin.campaigns.index'),
             'create' => route('admin.campaigns.create'),
             'icon' => 'envelope-paper-fill',
         ],
         [
-            'label' => 'Automazioni',
+            'label' => __('admin.marketing.automations.plural'),
             'count' => (int) ($stat['automations']['tot'] ?? 0),
-            'description' => 'Trigger marketing preparati in sicurezza.',
+            'description' => __('admin.marketing.overview.automations_description'),
             'route' => route('admin.automations.index'),
             'create' => route('admin.automations.create'),
             'icon' => 'lightning-charge-fill',
         ],
         [
-            'label' => 'Modelli mail',
+            'label' => __('admin.marketing.area_links.mail_models'),
             'count' => (int) ($stat['models']['tot'] ?? 0),
-            'description' => 'Template email usati da campagne e automazioni.',
+            'description' => __('admin.marketing.overview.mail_models_description'),
             'route' => route('admin.customers.mail_models.index'),
             'create' => route('admin.customers.mail_models.create'),
             'icon' => 'file-earmark-richtext-fill',
@@ -39,17 +39,17 @@
 
     $healthCards = [
         [
-            'label' => 'Promo attive',
+            'label' => __('admin.marketing.overview.active_promotions'),
             'value' => (int) ($stat['promotions']['active'] ?? 0),
             'total' => (int) ($stat['promotions']['tot'] ?? 0),
         ],
         [
-            'label' => 'Campagne attive',
+            'label' => __('admin.marketing.overview.active_campaigns'),
             'value' => (int) ($stat['campaigns']['active'] ?? 0),
             'total' => (int) ($stat['campaigns']['tot'] ?? 0),
         ],
         [
-            'label' => 'Automazioni attive',
+            'label' => __('admin.marketing.overview.active_automations'),
             'value' => (int) ($stat['automations']['active'] ?? 0),
             'total' => (int) ($stat['automations']['tot'] ?? 0),
         ],
@@ -61,8 +61,8 @@
 <div class="dash_page menu-dashboard-page">
     @include('admin.Marketing.partials.breadcrumbs', [
         'items' => [
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Marketing'],
+            ['label' => __('admin.nav.dashboard'), 'url' => route('admin.dashboard')],
+            ['label' => __('admin.marketing.area_links.marketing')],
         ],
     ])
 
@@ -72,22 +72,22 @@
                 <span class="order-detail__status-icon order-detail__status-icon--active">
                     <x-icon name="megaphone-fill" />
                 </span>
-                <strong>Gestisci il tuo marketing</strong>
+                <strong>{{ __('admin.marketing.overview.title') }}</strong>
             </div>
 
-            <h1 class="menu-dashboard__title">Marketing</h1>
-            <p>Promozioni, campagne, automazioni e modelli mail in un unico punto di ingresso.</p>
+            <h1 class="menu-dashboard__title">{{ __('admin.marketing.area_links.marketing') }}</h1>
+            <p>{{ __('admin.marketing.overview.subtitle') }}</p>
         </div>
 
         <div class="menu-dashboard__hero-actions dashboard-home__hero-actions">
             <a href="{{ route('admin.campaigns.create') }}" class="order-detail__contact">
                 <x-icon name="envelope-plus-fill" />
-                <span>Nuova campagna</span>
+                <span>{{ __('admin.marketing.campaigns.new') }}</span>
             </a>
 
             <a href="{{ route('admin.promotions.create') }}" class="order-detail__contact">
                 <x-icon name="megaphone-fill" />
-                <span>Nuova promozione</span>
+                <span>{{ __('admin.marketing.promotions.new') }}</span>
             </a>
         </div>
     </header>
@@ -98,7 +98,7 @@
                 <span class="order-detail__section-icon">
                     <x-icon name="grid-1x2-fill" />
                 </span>
-                Panoramica marketing
+                {{ __('admin.marketing.overview.section') }}
             </h3>
         </div>
 
@@ -114,11 +114,11 @@
                     <div class="menu-dashboard__hero-actions dashboard-home__hero-actions mt-3">
                         <a class="order-detail__contact" href="{{ $card['route'] }}">
                             <x-icon name="list-check" />
-                            <span>Lista</span>
+                            <span>{{ __('admin.marketing.overview.list') }}</span>
                         </a>
                         <a class="order-detail__contact" href="{{ $card['create'] }}">
                             <x-icon name="plus-circle-fill" />
-                            <span>Crea</span>
+                            <span>{{ __('admin.marketing.overview.create') }}</span>
                         </a>
                     </div>
                 </article>
@@ -132,7 +132,7 @@
                 <span class="order-detail__section-icon">
                     <x-icon name="bar-chart-line-fill" />
                 </span>
-                Stato operativo
+                {{ __('admin.marketing.overview.operational_status') }}
             </h3>
         </div>
 
@@ -146,7 +146,7 @@
                     <div class="menu-dashboard__health-copy">
                         <span class="menu-dashboard__stat-label">{{ $card['label'] }}</span>
                         <strong>{{ $card['value'] }}</strong>
-                        <small>{{ $card['value'] }} su {{ $card['total'] }}, {{ $percent }}%</small>
+                        <small>{{ __('admin.marketing.overview.health_stat', ['value' => $card['value'], 'total' => $card['total'], 'percent' => $percent]) }}</small>
                     </div>
 
                     <div class="donut-wrapper" style="--percent: {{ $percent }}">
