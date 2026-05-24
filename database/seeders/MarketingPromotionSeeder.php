@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductTranslation;
 use App\Models\Promotion;
 use App\Models\PromotionTarget;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class MarketingPromotionSeeder extends Seeder
@@ -76,8 +77,9 @@ class MarketingPromotionSeeder extends Seeder
             'valid_weekdays'  => $data['valid_weekdays'] ?? null,
             'valid_from_time' => $data['valid_from_time'] ?? null,
             'valid_to_time'   => $data['valid_to_time'] ?? null,
-            'schedule_at'     => null,
-            'expiring_at'     => null,
+            // Preserva le date esistenti; se non esiste ancora usa quelle del seed
+            'schedule_at'     => $existing?->schedule_at ?? $data['schedule_at'] ?? null,
+            'expiring_at'     => $existing?->expiring_at ?? $data['expiring_at'] ?? null,
             'metadata'        => array_replace(
                 is_array($existing?->metadata) ? $existing->metadata : [],
                 $data['metadata']
@@ -147,9 +149,12 @@ class MarketingPromotionSeeder extends Seeder
         $productId  = $product?->id;
         $categoryId = $category?->id;
 
+        $now = Carbon::now()->startOfDay();
+
         return [
 
             // ─── 1. ASPORTO · percentuale sul totale carrello ────────────────
+            // Non permanente: valida 90 giorni dalla data del seed
             [
                 'name'            => 'PROMO ASPORTO -10%',
                 'slug'            => 'promo-asporto-10pct',
@@ -160,6 +165,8 @@ class MarketingPromotionSeeder extends Seeder
                 'minimum_pretest' => 15.00,
                 'cta'             => '/asporto',
                 'permanent'       => false,
+                'schedule_at'     => $now->copy(),
+                'expiring_at'     => $now->copy()->addDays(90),
                 'metadata'        => [
                     'reusable'     => false,
                     'minimum_type' => 'cart_total',
@@ -168,6 +175,7 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 2. ASPORTO · importo fisso sul totale carrello ──────────────
+            // Non permanente: valida 60 giorni dalla data del seed
             [
                 'name'            => 'PROMO ASPORTO -5€',
                 'slug'            => 'promo-asporto-5e',
@@ -178,6 +186,8 @@ class MarketingPromotionSeeder extends Seeder
                 'minimum_pretest' => 20.00,
                 'cta'             => '/asporto',
                 'permanent'       => false,
+                'schedule_at'     => $now->copy(),
+                'expiring_at'     => $now->copy()->addDays(60),
                 'metadata'        => [
                     'reusable'     => false,
                     'minimum_type' => 'cart_total',
@@ -186,16 +196,19 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 3. PRODOTTO SPECIFICO · percentuale (target: prodotto) ──────
+            // Non permanente: valida 30 giorni dalla data del seed
             [
                 'name'            => 'PROMO -20% LA TRICOLORE',
                 'slug'            => 'promo-tricolore-20pct',
-                'description'     => '20% di sconto su "La Tricolore".',
+                'description'     => '20% di sconto su "La Tricolore" in asporto.',
                 'case_use'        => 'take_away',
                 'type_discount'   => 'percentage',
                 'discount'        => 20.00,
                 'minimum_pretest' => null,
                 'cta'             => '/asporto',
                 'permanent'       => false,
+                'schedule_at'     => $now->copy(),
+                'expiring_at'     => $now->copy()->addDays(30),
                 'metadata'        => [
                     'reusable'           => true,
                     'minimum_type'       => null,
@@ -213,23 +226,24 @@ class MarketingPromotionSeeder extends Seeder
                 ] : [],
             ],
 
-            // ─── 4. OMAGGIO PRODOTTO · regalo prodotto specifico ─────────────
+            // ─── 4. OMAGGIO PRODOTTO SPECIFICO · gift (target: prodotto) ─────
+            // Permanente: "La Tricolore" in regalo con spesa minima 25€
             [
                 'name'            => 'PROMO REGALO LA TRICOLORE',
                 'slug'            => 'promo-gift-tricolore',
                 'description'     => '"La Tricolore" in omaggio con una spesa minima di 25€.',
-                'case_use'        => 'gift',
+                'case_use'        => 'take_away',
                 'type_discount'   => 'gift',
                 'discount'        => null,
                 'minimum_pretest' => 25.00,
                 'cta'             => '/asporto',
                 'permanent'       => true,
                 'metadata'        => [
-                    'reusable'           => false,
-                    'minimum_type'       => 'cart_total',
-                    'gift_type'          => 'product',
+                    'reusable'              => false,
+                    'minimum_type'          => 'cart_total',
+                    'gift_type'             => 'product',
                     'product_link_required' => true,
-                    'seed_key'           => 'PROMO_GIFT_TRICOLORE',
+                    'seed_key'              => 'PROMO_GIFT_TRICOLORE',
                 ],
                 'targets' => $productId ? [
                     [
@@ -243,6 +257,7 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 5. CATEGORIA · percentuale su categoria (target: categoria) ─
+            // Non permanente: valida 45 giorni dalla data del seed
             [
                 'name'            => 'PROMO -15% TAPAS',
                 'slug'            => 'promo-tapas-15pct',
@@ -253,6 +268,8 @@ class MarketingPromotionSeeder extends Seeder
                 'minimum_pretest' => null,
                 'cta'             => '/asporto',
                 'permanent'       => false,
+                'schedule_at'     => $now->copy(),
+                'expiring_at'     => $now->copy()->addDays(45),
                 'metadata'        => [
                     'reusable'     => true,
                     'minimum_type' => null,
@@ -270,6 +287,7 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 6. TAVOLO · percentuale sul prezzo prenotazione ─────────────
+            // Non permanente: valida 90 giorni dalla data del seed
             [
                 'name'            => 'PROMO TAVOLO -15%',
                 'slug'            => 'promo-tavolo-15pct',
@@ -280,6 +298,8 @@ class MarketingPromotionSeeder extends Seeder
                 'minimum_pretest' => 2.00,
                 'cta'             => '/prenota',
                 'permanent'       => false,
+                'schedule_at'     => $now->copy(),
+                'expiring_at'     => $now->copy()->addDays(90),
                 'metadata'        => [
                     'reusable'     => false,
                     'minimum_type' => 'people',
@@ -288,6 +308,7 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 7. TAVOLO · importo fisso sul prezzo prenotazione ───────────
+            // Non permanente: valida 60 giorni dalla data del seed
             [
                 'name'            => 'PROMO TAVOLO -10€',
                 'slug'            => 'promo-tavolo-10e',
@@ -298,6 +319,8 @@ class MarketingPromotionSeeder extends Seeder
                 'minimum_pretest' => 4.00,
                 'cta'             => '/prenota',
                 'permanent'       => false,
+                'schedule_at'     => $now->copy(),
+                'expiring_at'     => $now->copy()->addDays(60),
                 'metadata'        => [
                     'reusable'     => false,
                     'minimum_type' => 'people',
@@ -306,6 +329,7 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 8. WEEKEND · percentuale valida solo sabato e domenica ──────
+            // Permanente: attiva ogni weekend (0 = domenica, 6 = sabato in date('w'))
             [
                 'name'            => 'PROMO WEEKEND -10%',
                 'slug'            => 'promo-weekend-10pct',
@@ -316,7 +340,7 @@ class MarketingPromotionSeeder extends Seeder
                 'minimum_pretest' => 10.00,
                 'cta'             => '/asporto',
                 'permanent'       => true,
-                'valid_weekdays'  => [0, 6], // 0 = domenica, 6 = sabato (date('w'))
+                'valid_weekdays'  => [0, 6],
                 'metadata'        => [
                     'reusable'     => true,
                     'minimum_type' => 'cart_total',
@@ -325,6 +349,7 @@ class MarketingPromotionSeeder extends Seeder
             ],
 
             // ─── 9. HAPPY HOUR · percentuale in fascia oraria ────────────────
+            // Permanente: attiva ogni giorno dalle 18 alle 20
             [
                 'name'            => 'PROMO HAPPY HOUR TAVOLO',
                 'slug'            => 'promo-happy-hour-tavolo',
@@ -344,31 +369,22 @@ class MarketingPromotionSeeder extends Seeder
                 ],
             ],
 
-            // ─── 10. COMPLEANNO · regalo generico (target: generic) ──────────
+            // ─── 10. COMPLEANNO · sconto tavolo per festeggiare ──────────────
+            // Permanente: 20% sulla prenotazione tavolo nel giorno/mese del compleanno
             [
-                'name'            => 'PROMO REGALO COMPLEANNO',
-                'slug'            => 'promo-regalo-compleanno',
-                'description'     => 'Antipasto in omaggio per il tuo compleanno. Nessuna spesa minima.',
-                'case_use'        => 'gift',
-                'type_discount'   => 'gift',
-                'discount'        => null,
-                'minimum_pretest' => null,
+                'name'            => 'PROMO COMPLEANNO TAVOLO -20%',
+                'slug'            => 'promo-compleanno-tavolo-20pct',
+                'description'     => '20% di sconto su prenotazione tavolo per festeggiare il compleanno. Minimo 2 persone.',
+                'case_use'        => 'table',
+                'type_discount'   => 'percentage',
+                'discount'        => 20.00,
+                'minimum_pretest' => 2.00,
                 'cta'             => '/prenota',
                 'permanent'       => true,
                 'metadata'        => [
                     'reusable'     => false,
-                    'minimum_type' => null,
-                    'gift_type'    => 'generic',
-                    'seed_key'     => 'PROMO_REGALO_COMPLEANNO',
-                ],
-                'targets' => [
-                    [
-                        'target_type'   => PromotionTarget::TYPE_GENERIC,
-                        'target_id'     => null,
-                        'discount'      => null,
-                        'type_discount' => 'gift',
-                        'metadata'      => ['label' => 'Antipasto omaggio compleanno'],
-                    ],
+                    'minimum_type' => 'people',
+                    'seed_key'     => 'PROMO_COMPLEANNO_TAVOLO_20PCT',
                 ],
             ],
         ];
