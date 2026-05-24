@@ -225,80 +225,6 @@
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Card grid (case_use / target / discount-type) */
-    .promo-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-        gap: 12px;
-    }
-
-    .promo-card {
-        position: relative;
-        min-width: 0;
-        cursor: pointer;
-    }
-
-    .promo-card__radio {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-        width: 1px;
-        height: 1px;
-    }
-
-    .promo-card__face {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 12px;
-        border-radius: 10px;
-        border: 1.5px solid rgba(216, 221, 232, 0.1);
-        background: rgba(216, 221, 232, 0.04);
-        color: var(--c3);
-        text-align: center;
-        transition: border-color .15s, background .15s, transform .15s;
-        height: 100%;
-    }
-
-    .promo-card__face:hover {
-        border-color: rgba(14, 183, 146, 0.3);
-        background: rgba(14, 183, 146, 0.07);
-        transform: translateY(-1px);
-    }
-
-    .promo-card__radio:checked + .promo-card__face {
-        border-color: rgba(14, 183, 146, 0.5);
-        background: linear-gradient(135deg, rgba(14, 183, 146, 0.18), rgba(216, 221, 232, 0.04));
-    }
-
-    .promo-card__radio:focus-visible + .promo-card__face {
-        outline: 2px solid rgba(142, 246, 219, 0.7);
-        outline-offset: 3px;
-    }
-
-    .promo-card__icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(9, 3, 51, 0.45);
-        color: rgba(142, 246, 219, 0.88);
-        font-size: 17px;
-        font-weight: 700;
-        flex: 0 0 auto;
-    }
-
-    .promo-card__face strong {
-        display: block;
-        font-size: var(--fs-200);
-        color: var(--c3);
-        line-height: 1.25;
-    }
-
     /* ── Toggle toggle (permanente / riusabile) ──── */
     .promo-toggles {
         display: grid;
@@ -311,11 +237,14 @@
     }
 
     .promo-toggle__input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-        width: 1px;
-        height: 1px;
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        pointer-events: none !important;
     }
 
     .promo-toggle__card {
@@ -393,11 +322,14 @@
 
     .promo-item input[type="radio"],
     .promo-item input[type="checkbox"] {
-        position: absolute;
-        opacity: 0;
-        width: 1px;
-        height: 1px;
-        pointer-events: none;
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        pointer-events: none !important;
     }
 
     .promo-item__check {
@@ -487,11 +419,14 @@
     }
 
     .promo-day input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-        width: 1px;
-        height: 1px;
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        pointer-events: none !important;
     }
 
     .promo-day span {
@@ -778,34 +713,54 @@
             <div class="promo-wiz__panel" data-wiz-panel="2" @if ($initialStep !== 2) hidden @endif>
 
                 <section class="order-detail__section">
-                    <div class="promo-cards" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))">
-                        <label class="promo-card">
-                            <input class="promo-card__radio" type="radio" name="_case_use" value="table"     @checked($previewCaseUse === 'table')     data-sync="h_case_use">
-                            <span class="promo-card__face">
-                                <span class="promo-card__icon"><i class="bi bi-calendar2-check-fill"></i></span>
-                                <strong>{{ __('admin.marketing.promotions.reservations') }}</strong>
-                            </span>
+                    <div class="model-type-picker">
+                        <label class="model-type-option">
+                            <input type="radio" name="_case_use" value="table" @checked($previewCaseUse === 'table') data-sync="h_case_use">
+                            <div class="model-type-option__card">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="model-type-option__icon"><i class="bi bi-calendar2-check-fill"></i></span>
+                                    <span class="model-type-option__dot"></span>
+                                </div>
+                                <div class="model-type-option__label">
+                                    <strong>{{ __('admin.marketing.promotions.reservations') }}</strong>
+                                </div>
+                            </div>
                         </label>
-                        <label class="promo-card">
-                            <input class="promo-card__radio" type="radio" name="_case_use" value="generic"   @checked($previewCaseUse === 'generic')   data-sync="h_case_use">
-                            <span class="promo-card__face">
-                                <span class="promo-card__icon"><i class="bi bi-bag-fill"></i></span>
-                                <strong>{{ __('admin.marketing.promotions.orders') }}</strong>
-                            </span>
+                        <label class="model-type-option">
+                            <input type="radio" name="_case_use" value="generic" @checked($previewCaseUse === 'generic') data-sync="h_case_use">
+                            <div class="model-type-option__card">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="model-type-option__icon"><i class="bi bi-bag-fill"></i></span>
+                                    <span class="model-type-option__dot"></span>
+                                </div>
+                                <div class="model-type-option__label">
+                                    <strong>{{ __('admin.marketing.promotions.orders') }}</strong>
+                                </div>
+                            </div>
                         </label>
-                        <label class="promo-card">
-                            <input class="promo-card__radio" type="radio" name="_case_use" value="take_away" @checked($previewCaseUse === 'take_away') data-sync="h_case_use">
-                            <span class="promo-card__face">
-                                <span class="promo-card__icon"><i class="bi bi-box2-fill"></i></span>
-                                <strong>{{ __('admin.marketing.promotions.takeaway_only') }}</strong>
-                            </span>
+                        <label class="model-type-option">
+                            <input type="radio" name="_case_use" value="take_away" @checked($previewCaseUse === 'take_away') data-sync="h_case_use">
+                            <div class="model-type-option__card">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="model-type-option__icon"><i class="bi bi-box2-fill"></i></span>
+                                    <span class="model-type-option__dot"></span>
+                                </div>
+                                <div class="model-type-option__label">
+                                    <strong>{{ __('admin.marketing.promotions.takeaway_only') }}</strong>
+                                </div>
+                            </div>
                         </label>
-                        <label class="promo-card">
-                            <input class="promo-card__radio" type="radio" name="_case_use" value="delivery"  @checked($previewCaseUse === 'delivery')  data-sync="h_case_use">
-                            <span class="promo-card__face">
-                                <span class="promo-card__icon"><i class="bi bi-bicycle"></i></span>
-                                <strong>{{ __('admin.marketing.promotions.delivery_only') }}</strong>
-                            </span>
+                        <label class="model-type-option">
+                            <input type="radio" name="_case_use" value="delivery" @checked($previewCaseUse === 'delivery') data-sync="h_case_use">
+                            <div class="model-type-option__card">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="model-type-option__icon"><i class="bi bi-bicycle"></i></span>
+                                    <span class="model-type-option__dot"></span>
+                                </div>
+                                <div class="model-type-option__label">
+                                    <strong>{{ __('admin.marketing.promotions.delivery_only') }}</strong>
+                                </div>
+                            </div>
                         </label>
                     </div>
                     @error('case_use') <p class="error mt-2">{{ $message }}</p> @enderror
@@ -869,34 +824,42 @@
                             <i class="bi bi-percent"></i>
                             {{ __('admin.marketing.promotions.discount_type') }}
                         </div>
-                        <div class="promo-cards" style="grid-template-columns: repeat(2, 1fr); max-width: 340px">
-                            <label class="promo-card">
+                        <div class="model-type-picker" style="max-width: 380px">
+                            <label class="model-type-option">
                                 <input
-                                    class="promo-card__radio"
                                     type="radio"
                                     name="_td_table"
                                     value="percentage"
                                     @checked($isTableCase && $previewDiscountType === 'percentage')
                                     data-sync="h_type_discount"
                                 >
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon">%</span>
-                                    <strong>{{ __('admin.marketing.promotions.discount_percentage') }}</strong>
-                                </span>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon" style="font-size:20px;font-weight:900;">%</span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ __('admin.marketing.promotions.discount_percentage') }}</strong>
+                                    </div>
+                                </div>
                             </label>
-                            <label class="promo-card">
+                            <label class="model-type-option">
                                 <input
-                                    class="promo-card__radio"
                                     type="radio"
                                     name="_td_table"
                                     value="fixed"
                                     @checked($isTableCase && $previewDiscountType === 'fixed')
                                     data-sync="h_type_discount"
                                 >
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon"><i class="bi bi-currency-euro"></i></span>
-                                    <strong>{{ __('admin.marketing.promotions.fixed') }}</strong>
-                                </span>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon"><i class="bi bi-currency-euro"></i></span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ __('admin.marketing.promotions.fixed') }}</strong>
+                                    </div>
+                                </div>
                             </label>
                         </div>
                         @error('type_discount') <p class="error mt-2">{{ $message }}</p> @enderror
@@ -932,34 +895,54 @@
 
                     {{-- Target --}}
                     <section class="order-detail__section">
-                        <div class="promo-cards" data-target-cards>
-                            <label class="promo-card">
-                                <input class="promo-card__radio" type="radio" name="_target_type" value="product"  @checked($isOrderCase && $targetType === 'product')  data-sync="h_target_type" data-target-radio>
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon"><i class="bi bi-tags-fill"></i></span>
-                                    <strong>{{ __('admin.marketing.promotions.target_products') }}</strong>
-                                </span>
+                        <div class="model-type-picker" data-target-cards>
+                            <label class="model-type-option">
+                                <input type="radio" name="_target_type" value="product" @checked($isOrderCase && $targetType === 'product') data-sync="h_target_type" data-target-radio>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon"><i class="bi bi-tags-fill"></i></span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ __('admin.marketing.promotions.target_products') }}</strong>
+                                    </div>
+                                </div>
                             </label>
-                            <label class="promo-card">
-                                <input class="promo-card__radio" type="radio" name="_target_type" value="menu"     @checked($isOrderCase && $targetType === 'menu')     data-sync="h_target_type" data-target-radio>
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon"><i class="bi bi-menu-button-wide-fill"></i></span>
-                                    <strong>{{ __('admin.common.menu') }}</strong>
-                                </span>
+                            <label class="model-type-option">
+                                <input type="radio" name="_target_type" value="menu" @checked($isOrderCase && $targetType === 'menu') data-sync="h_target_type" data-target-radio>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon"><i class="bi bi-menu-button-wide-fill"></i></span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ __('admin.common.menu') }}</strong>
+                                    </div>
+                                </div>
                             </label>
-                            <label class="promo-card">
-                                <input class="promo-card__radio" type="radio" name="_target_type" value="category" @checked($isOrderCase && $targetType === 'category') data-sync="h_target_type" data-target-radio>
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon"><i class="bi bi-folder-fill"></i></span>
-                                    <strong>{{ __('admin.Categorie') }}</strong>
-                                </span>
+                            <label class="model-type-option">
+                                <input type="radio" name="_target_type" value="category" @checked($isOrderCase && $targetType === 'category') data-sync="h_target_type" data-target-radio>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon"><i class="bi bi-folder-fill"></i></span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ __('admin.Categorie') }}</strong>
+                                    </div>
+                                </div>
                             </label>
-                            <label class="promo-card">
-                                <input class="promo-card__radio" type="radio" name="_target_type" value="generic"  @checked($isOrderCase && $targetType === 'generic')  data-sync="h_target_type" data-target-radio>
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon"><i class="bi bi-cart-fill"></i></span>
-                                    <strong>{{ __('admin.marketing.promotions.cart') }}</strong>
-                                </span>
+                            <label class="model-type-option">
+                                <input type="radio" name="_target_type" value="generic" @checked($isOrderCase && $targetType === 'generic') data-sync="h_target_type" data-target-radio>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon"><i class="bi bi-cart-fill"></i></span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ __('admin.marketing.promotions.cart') }}</strong>
+                                    </div>
+                                </div>
                             </label>
                         </div>
                         @error('target_type') <p class="error mt-2">{{ $message }}</p> @enderror
@@ -973,29 +956,44 @@
                                 <i class="bi bi-percent"></i>
                                 {{ __('admin.marketing.promotions.discount_type_full') }}
                             </div>
-                            <div class="promo-cards" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); max-width: 420px" data-td-order-cards>
-                                <label class="promo-card">
-                                    <input class="promo-card__radio" type="radio" name="_td_order" value="percentage" @checked($isOrderCase && $previewDiscountType === 'percentage') data-sync="h_type_discount" data-td-radio>
-                                    <span class="promo-card__face">
-                                        <span class="promo-card__icon">%</span>
-                                        <strong>{{ __('admin.marketing.promotions.discount_percentage') }}</strong>
-                                    </span>
+                            <div class="model-type-picker" data-td-order-cards>
+                                <label class="model-type-option">
+                                    <input type="radio" name="_td_order" value="percentage" @checked($isOrderCase && $previewDiscountType === 'percentage') data-sync="h_type_discount" data-td-radio>
+                                    <div class="model-type-option__card">
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <span class="model-type-option__icon" style="font-size:20px;font-weight:900;">%</span>
+                                            <span class="model-type-option__dot"></span>
+                                        </div>
+                                        <div class="model-type-option__label">
+                                            <strong>{{ __('admin.marketing.promotions.discount_percentage') }}</strong>
+                                        </div>
+                                    </div>
                                 </label>
-                                <label class="promo-card">
-                                    <input class="promo-card__radio" type="radio" name="_td_order" value="fixed" @checked($isOrderCase && $previewDiscountType === 'fixed') data-sync="h_type_discount" data-td-radio>
-                                    <span class="promo-card__face">
-                                        <span class="promo-card__icon"><i class="bi bi-currency-euro"></i></span>
-                                        <strong>{{ __('admin.marketing.promotions.fixed') }}</strong>
-                                    </span>
+                                <label class="model-type-option">
+                                    <input type="radio" name="_td_order" value="fixed" @checked($isOrderCase && $previewDiscountType === 'fixed') data-sync="h_type_discount" data-td-radio>
+                                    <div class="model-type-option__card">
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <span class="model-type-option__icon"><i class="bi bi-currency-euro"></i></span>
+                                            <span class="model-type-option__dot"></span>
+                                        </div>
+                                        <div class="model-type-option__label">
+                                            <strong>{{ __('admin.marketing.promotions.fixed') }}</strong>
+                                        </div>
+                                    </div>
                                 </label>
                                 {{-- Omaggio: only for product / menu --}}
-                                <label class="promo-card promo-reveal" data-gift-card
+                                <label class="model-type-option promo-reveal" data-gift-card
                                        @if (!$isOrderCase || in_array($targetType, ['category', 'generic'], true)) hidden @endif>
-                                    <input class="promo-card__radio" type="radio" name="_td_order" value="gift" @checked($isOrderCase && $previewDiscountType === 'gift') data-sync="h_type_discount" data-td-radio>
-                                    <span class="promo-card__face">
-                                        <span class="promo-card__icon"><i class="bi bi-gift-fill"></i></span>
-                                        <strong>{{ __('admin.marketing.promotions.discount_gift') }}</strong>
-                                    </span>
+                                    <input type="radio" name="_td_order" value="gift" @checked($isOrderCase && $previewDiscountType === 'gift') data-sync="h_type_discount" data-td-radio>
+                                    <div class="model-type-option__card">
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <span class="model-type-option__icon"><i class="bi bi-gift-fill"></i></span>
+                                            <span class="model-type-option__dot"></span>
+                                        </div>
+                                        <div class="model-type-option__label">
+                                            <strong>{{ __('admin.marketing.promotions.discount_gift') }}</strong>
+                                        </div>
+                                    </div>
                                 </label>
                             </div>
                             @error('type_discount') <p class="error mt-2">{{ $message }}</p> @enderror

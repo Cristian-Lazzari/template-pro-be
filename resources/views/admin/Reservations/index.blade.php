@@ -179,15 +179,6 @@
     .res-toolbar[data-open="true"] .res-toolbar__toggle .bi-funnel-fill { display: block; }
 
     /* ── Date/time separators ────────────────────────────── */
-    #res-list.res_index .date_time {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 6px 0 2px;
-        text-transform: capitalize;
-        margin: 0;
-    }
-
     #res-list.res_index .date_time .time {
         font-size: var(--fs-200);
         font-weight: 900;

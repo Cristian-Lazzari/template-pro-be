@@ -222,86 +222,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    .promo-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-    }
-
-    .promo-card {
-        position: relative;
-        min-width: 0;
-        cursor: pointer;
-    }
-
-    .promo-card__radio {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-        width: 1px;
-        height: 1px;
-    }
-
-    .promo-card__face {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        height: 100%;
-        padding: 16px 12px;
-        border-radius: 10px;
-        border: 1.5px solid rgba(216, 221, 232, 0.1);
-        background: rgba(216, 221, 232, 0.04);
-        color: var(--c3);
-        text-align: center;
-        transition: border-color .15s, background .15s, transform .15s;
-    }
-
-    .promo-card__face:hover {
-        border-color: rgba(14, 183, 146, 0.3);
-        background: rgba(14, 183, 146, 0.07);
-        transform: translateY(-1px);
-    }
-
-    .promo-card__radio:checked + .promo-card__face {
-        border-color: rgba(14, 183, 146, 0.5);
-        background: linear-gradient(135deg, rgba(14, 183, 146, 0.18), rgba(216, 221, 232, 0.04));
-    }
-
-    .promo-card__radio:focus-visible + .promo-card__face {
-        outline: 2px solid rgba(142, 246, 219, 0.7);
-        outline-offset: 3px;
-    }
-
-    .promo-card__icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(9, 3, 51, 0.45);
-        color: rgba(142, 246, 219, 0.88);
-        font-size: 17px;
-        font-weight: 700;
-        flex: 0 0 auto;
-    }
-
-    .promo-card__face strong {
-        display: block;
-        color: var(--c3);
-        font-size: var(--fs-300);
-        line-height: 1.25;
-    }
-
-    .promo-card__face small {
-        color: rgba(216, 221, 232, 0.66);
-        font-size: var(--fs-100);
-        font-weight: 700;
-        line-height: 1.35;
-    }
-
     .promo-reveal[hidden] {
         display: none !important;
     }
@@ -381,13 +301,6 @@
     .cpv2-audience-status.is-error {
         color: #ffb4a8;
         font-weight: 800;
-    }
-
-    /* ── Disabled promotion option ─────────────────────────────── */
-    .campaign-promotion-option--disabled {
-        opacity: 0.4;
-        pointer-events: none;
-        user-select: none;
     }
 
     .campaign-promo-status-badge {
@@ -571,24 +484,28 @@
                         </h3>
                     </div>
 
-                    <div class="promo-cards">
+                    <div class="model-type-picker">
                         @foreach ($campaignTypeOptions as $value => $label)
-                            <label class="promo-card">
+                            <label class="model-type-option">
                                 <input
-                                    class="promo-card__radio"
                                     type="radio"
                                     name="_campaign_type"
                                     value="{{ $value }}"
                                     data-campaign-type-radio
                                     @checked($selectedCampaignType === $value)
                                 >
-                                <span class="promo-card__face">
-                                    <span class="promo-card__icon">
-                                        <i class="bi {{ $campaignTypeIcons[$value] ?? 'bi-envelope-fill' }}"></i>
-                                    </span>
-                                    <strong>{{ $label }}</strong>
-                                    <small>{{ $campaignTypeDescriptions[$value] ?? '' }}</small>
-                                </span>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon">
+                                            <i class="bi {{ $campaignTypeIcons[$value] ?? 'bi-envelope-fill' }}"></i>
+                                        </span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
+                                        <strong>{{ $label }}</strong>
+                                        <small>{{ $campaignTypeDescriptions[$value] ?? '' }}</small>
+                                    </div>
+                                </div>
                             </label>
                         @endforeach
                     </div>
@@ -643,7 +560,7 @@
                         <i class="bi bi-megaphone-fill"></i>
                         {{ __('admin.marketing.campaigns.promotions') }}
                     </label>
-                    <div class="campaign-promotion-picker" data-campaign-promotion-picker>
+                    <div class="model-type-picker" data-campaign-promotion-picker>
                         @forelse ($promotions as $promotion)
                             @php
                                 $isSelectable = $promotion->isActive();
@@ -653,9 +570,8 @@
                                     default => __('admin.marketing.campaigns.promo_status_inactive'),
                                 };
                             @endphp
-                            <label class="campaign-promotion-option {{ !$isSelectable ? 'campaign-promotion-option--disabled' : '' }}" @if(!$isSelectable) aria-disabled="true" @endif>
+                            <label class="model-type-option {{ !$isSelectable ? 'model-type-option--disabled' : '' }}" @if(!$isSelectable) aria-disabled="true" @endif>
                                 <input
-                                    class="campaign-promotion-option__input"
                                     type="checkbox"
                                     name="promotions[]"
                                     value="{{ $promotion->id }}"
@@ -664,18 +580,21 @@
                                     @checked($promotionChecked)
                                     @if(!$isSelectable) disabled @endif
                                 >
-                                <span class="campaign-promotion-option__card">
-                                    <span class="campaign-promotion-option__icon">
-                                        <i class="bi bi-megaphone-fill"></i>
-                                    </span>
-                                    <span>
+                                <div class="model-type-option__card">
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="model-type-option__icon">
+                                            <i class="bi bi-megaphone-fill"></i>
+                                        </span>
+                                        <span class="model-type-option__dot"></span>
+                                    </div>
+                                    <div class="model-type-option__label">
                                         <strong>{{ $promotion->name }}</strong>
                                         <small>{{ $promotion->slug }} · {{ $formatPromotionDiscount($promotion) }}</small>
                                         @if(!$isSelectable)
                                             <small><span class="campaign-promo-status-badge">{{ $statusBadgeLabel }}</span></small>
                                         @endif
-                                    </span>
-                                </span>
+                                    </div>
+                                </div>
                             </label>
                         @empty
                             <div class="marketing-form-preview__note">

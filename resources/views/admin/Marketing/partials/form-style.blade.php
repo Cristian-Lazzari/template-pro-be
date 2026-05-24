@@ -274,78 +274,120 @@
         min-width: 0;
     }
 
-    .campaign-promotion-option {
-        position: relative;
-        min-width: 0;
-    }
-
-    .campaign-promotion-option__input {
-        position: absolute;
-        inline-size: 1px;
-        block-size: 1px;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .campaign-promotion-option__card {
+    /* ── Model type picker (globale) ────────────────────────────── */
+    .model-type-picker {
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 12px;
-        min-height: 100%;
-        padding: 15px;
-        border-radius: 18px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(216, 221, 232, 0.05);
-        color: var(--c3);
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+        gap: 10px;
+    }
+
+    .model-type-option {
+        position: relative;
         cursor: pointer;
-        transition: border-color .16s ease, background .16s ease, transform .16s ease;
+        user-select: none;
     }
 
-    .campaign-promotion-option__card:hover {
-        transform: translateY(-1px);
-        border-color: rgba(14, 183, 146, 0.26);
-        background: rgba(14, 183, 146, 0.08);
+    .model-type-option input[type="radio"],
+    .model-type-option input[type="checkbox"] {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        pointer-events: none !important;
     }
 
-    .campaign-promotion-option__input:focus-visible + .campaign-promotion-option__card {
+    .model-type-option__card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1.5px solid rgba(216, 221, 232, 0.14);
+        background: rgba(216, 221, 232, 0.04);
+        height: 100%;
+        transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+    .model-type-option:hover .model-type-option__card {
+        border-color: rgba(216, 221, 232, 0.28);
+        background: rgba(216, 221, 232, 0.07);
+    }
+
+    .model-type-option input:checked ~ .model-type-option__card {
+        border-color: rgba(14, 183, 146, 0.55);
+        background: rgba(14, 183, 146, 0.07);
+        box-shadow: 0 0 0 3px rgba(14, 183, 146, 0.08);
+    }
+
+    .model-type-option input:focus-visible ~ .model-type-option__card {
         outline: 2px solid rgba(142, 246, 219, 0.7);
         outline-offset: 3px;
     }
 
-    .campaign-promotion-option__input:checked + .campaign-promotion-option__card {
-        border-color: rgba(14, 183, 146, 0.42);
-        background:
-            linear-gradient(135deg, rgba(14, 183, 146, 0.18), rgba(216, 221, 232, 0.05));
-    }
-
-    .campaign-promotion-option__icon {
+    .model-type-option__icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 38px;
-        height: 38px;
-        border-radius: 13px;
-        border: 1px solid rgba(216, 221, 232, 0.12);
-        background: rgba(9, 3, 51, 0.42);
-        color: rgba(142, 246, 219, 0.92);
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(216, 221, 232, 0.08);
+        color: rgba(216, 221, 232, 0.6);
+        font-size: 17px;
+        flex: 0 0 auto;
+        transition: background .15s, color .15s;
     }
 
-    .campaign-promotion-option__card strong,
-    .campaign-promotion-option__card small {
+    .model-type-option input:checked ~ .model-type-option__card .model-type-option__icon {
+        background: rgba(14, 183, 146, 0.15);
+        color: rgba(14, 183, 146, 0.95);
+    }
+
+    .model-type-option__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(216, 221, 232, 0.2);
+        flex-shrink: 0;
+        transition: background .15s;
+    }
+
+    .model-type-option input:checked ~ .model-type-option__card .model-type-option__dot {
+        background: rgba(14, 183, 146, 0.9);
+    }
+
+    .model-type-option__label {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+    }
+
+    .model-type-option__label strong {
         display: block;
+        color: var(--c3);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.2;
         overflow-wrap: anywhere;
     }
 
-    .campaign-promotion-option__card strong {
-        color: var(--c3);
-        font-size: var(--fs-300);
-        line-height: 1.22;
+    .model-type-option__label small {
+        display: block;
+        color: rgba(216, 221, 232, 0.54);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        line-height: 1.38;
+        overflow-wrap: anywhere;
     }
 
-    .campaign-promotion-option__card small {
-        margin-top: 4px;
-        color: rgba(216, 221, 232, 0.72);
-        line-height: 1.4;
+    .model-type-option--disabled {
+        opacity: 0.4;
+        pointer-events: none;
+        user-select: none;
     }
 
     @media (max-width: 1120px) {

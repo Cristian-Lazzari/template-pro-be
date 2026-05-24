@@ -316,50 +316,6 @@
         background: rgba(216, 221, 232, 0.08);
     }
 
-    /* ── Toggle has_promotion ───────────────────────────────── */
-    .has-promotion-toggle {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(216, 221, 232, 0.16);
-        background: rgba(216, 221, 232, 0.04);
-        cursor: pointer;
-        user-select: none;
-        transition: border-color .15s, background .15s;
-    }
-
-    .has-promotion-toggle:hover {
-        border-color: rgba(14, 183, 146, 0.35);
-        background: rgba(14, 183, 146, 0.04);
-    }
-
-    .has-promotion-toggle input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        accent-color: rgba(14, 183, 146, 0.9);
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
-    .has-promotion-toggle__text strong {
-        display: block;
-        color: var(--c3);
-        font-size: var(--fs-300);
-        font-weight: 900;
-    }
-
-    .has-promotion-toggle__text small {
-        color: rgba(216, 221, 232, 0.6);
-        font-size: var(--fs-100);
-    }
-
-    .has-promotion-toggle--active {
-        border-color: rgba(14, 183, 146, 0.4);
-        background: rgba(14, 183, 146, 0.06);
-    }
-
     /* ── Blocco promozione nella preview ────────────────────── */
     .preview-promotion-block {
         margin: 16px 0;
@@ -476,17 +432,40 @@
                     </div>
                 </div>
 
-                {{-- Toggle promozione --}}
-                <div>
-                    <label class="has-promotion-toggle {{ $hasPromotion ? 'has-promotion-toggle--active' : '' }}"
-                           id="has-promotion-label"
-                           for="has_promotion">
-                        <input type="hidden" name="has_promotion" value="0">
-                        <input type="checkbox" name="has_promotion" id="has_promotion" value="1"
+                {{-- Selettore tipo modello --}}
+                <input type="hidden" name="has_promotion" value="0">
+                <div class="model-type-picker" id="model-type-picker">
+                    <label class="model-type-option">
+                        <input type="radio" name="has_promotion" id="has_promotion_no" value="0"
+                               {{ ! $hasPromotion ? 'checked' : '' }}>
+                        <div class="model-type-option__card">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="model-type-option__icon">
+                                    <x-icon name="envelope-fill" />
+                                </span>
+                                <span class="model-type-option__dot"></span>
+                            </div>
+                            <div class="model-type-option__label">
+                                <strong>Solo messaggio</strong>
+                                <small>Nessun blocco promozione, nessun bottone CTA</small>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="model-type-option">
+                        <input type="radio" name="has_promotion" id="has_promotion_yes" value="1"
                                {{ $hasPromotion ? 'checked' : '' }}>
-                        <div class="has-promotion-toggle__text">
-                            <strong>Contiene una promozione</strong>
-                            <small>Attiva per mostrare il blocco promozione e il bottone CTA nell'email</small>
+                        <div class="model-type-option__card">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="model-type-option__icon">
+                                    <x-icon name="gift-fill" />
+                                </span>
+                                <span class="model-type-option__dot"></span>
+                            </div>
+                            <div class="model-type-option__label">
+                                <strong>Con promozione</strong>
+                                <small>Mostra sconto, nome e bottone CTA contestuale</small>
+                            </div>
                         </div>
                     </label>
                 </div>
@@ -869,25 +848,24 @@
         if (el) el.addEventListener('input', updatePreview);
     });
 
-    // ─── TOGGLE HAS_PROMOTION ────────────────────────────────────
+    // ─── SELETTORE TIPO MODELLO ──────────────────────────────────
     (function () {
-        const chk           = document.getElementById('has_promotion');
-        const label         = document.getElementById('has-promotion-label');
+        const radios        = document.querySelectorAll('input[name="has_promotion"][type="radio"]');
         const promoBlock    = document.getElementById('preview-promotion-block');
         const ctaPreview    = document.getElementById('preview-cta-wrap');
         const promoVarGroup = document.getElementById('promotion-var-group');
 
-        if (!chk) return;
-
-        function applyState(checked) {
-            label?.classList.toggle('has-promotion-toggle--active', checked);
-            if (promoBlock)    promoBlock.style.display    = checked ? '' : 'none';
-            if (ctaPreview)    ctaPreview.style.display    = checked ? '' : 'none';
-            if (promoVarGroup) promoVarGroup.style.display = checked ? '' : 'none';
+        function applyState(hasPromo) {
+            if (promoBlock)    promoBlock.style.display    = hasPromo ? '' : 'none';
+            if (ctaPreview)    ctaPreview.style.display    = hasPromo ? '' : 'none';
+            if (promoVarGroup) promoVarGroup.style.display = hasPromo ? '' : 'none';
         }
 
-        chk.addEventListener('change', () => applyState(chk.checked));
-        applyState(chk.checked); // applica stato iniziale
+        radios.forEach(r => r.addEventListener('change', () => applyState(r.value === '1' && r.checked)));
+
+        // stato iniziale
+        const checked = document.getElementById('has_promotion_yes');
+        applyState(checked?.checked ?? false);
     })();
 
     // ─── AUTOCOMPLETE UI ─────────────────────────────────────────

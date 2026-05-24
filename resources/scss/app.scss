@@ -3586,7 +3586,6 @@ button.order-detail__contact{
         
 
         justify-content: space-between;
-        align-items: center;
         gap: .5rem;
         text-transform: capitalize;
         .data{
@@ -3599,8 +3598,9 @@ button.order-detail__contact{
         .line{
             border-bottom: 1px dashed var(--c3_op);
             flex: 1;
-            margin: auto 0 calc($fs_md / 1.4);
+            margin: auto 0 calc($fs_sm / 1.4);
             height: 1px;
+            align-self: flex-end;
         }
         .time{
             font-weight: 900;
