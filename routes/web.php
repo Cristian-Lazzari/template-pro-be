@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])
         Route::get('/customers/mail-models/{id}/edit', [MailerController::class, 'editModel'])->name('customers.mail_models.edit');
         Route::post('/customers/mail-models/update', [MailerController::class, 'updateModel'])->name('customers.mail_models.update');
         Route::delete('/customers/mail-models/{id}', [MailerController::class, 'deleteModel'])->name('customers.mail_models.delete');
+        Route::get('/customers/mail-models/{id}', [MailerController::class, 'showModel'])->name('customers.mail_models.show');
 
         Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
         Route::post('/customers/profile-settings', [CustomerController::class, 'updateProfileSettings'])->name('customers.profile_settings');

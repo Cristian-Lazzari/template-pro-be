@@ -105,6 +105,14 @@ class MarketingTemplateRenderer
             'customer_last_name' => $customerLastName,
             'customer_email' => (string) ($customer?->email ?? $customer?->mail ?? ''),
             'customer_phone' => (string) ($customer?->phone ?? ''),
+            'customer_age' => $customer?->birthday
+                ? (string) now()->diffInYears($customer->birthday)
+                : '',
+            'customer_gender' => match (strtolower(trim((string) ($customer?->gender ?? '')))) {
+                'male', 'm' => 'Uomo',
+                'female', 'f' => 'Donna',
+                default => (string) ($customer?->gender ?? ''),
+            },
             'promotion_name' => (string) ($promotion?->name ?? ''),
             'promotion_slug' => (string) ($promotion?->slug ?? ''),
             'promotion_cta' => $promotionRedirectUrl,
@@ -134,6 +142,16 @@ class MarketingTemplateRenderer
 
     public function replaceVariables(string $content, array $variables): string
     {
+        // Nuova sintassi @var
+        $content = (string) preg_replace_callback(
+            '/@([A-Za-z0-9_]+)/',
+            fn (array $matches) => array_key_exists($matches[1], $variables)
+                ? $this->stringValue($variables[$matches[1]])
+                : $matches[0],
+            $content
+        );
+
+        // Sintassi legacy {{ var }} (retrocompatibilità)
         return (string) preg_replace_callback(
             '/{{\s*([A-Za-z0-9_]+)\s*}}/',
             fn (array $matches) => array_key_exists($matches[1], $variables)
@@ -176,7 +194,12 @@ class MarketingTemplateRenderer
     private function resolveBodyHtml(?Model $template, array $variables): string
     {
         if ($template && filled($template->body_html)) {
-            return (string) $template->body_html;
+            $bodyHtml = (string) $template->body_html;
+            // Se il corpo è testo semplice (nessun tag HTML), converte \n in <br>
+            if (! preg_match('/<[a-z]/i', $bodyHtml)) {
+                $bodyHtml = nl2br(e($bodyHtml), false);
+            }
+            return $bodyHtml;
         }
 
         if ($template && filled($template->body)) {

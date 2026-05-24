@@ -772,7 +772,7 @@
                     </div>
 
                     @if ($promotionsCount > 0)
-                        <div class="campaign-promotion-list">
+                        <div class="order-detail__items">
                             @foreach ($campaign->promotions as $promotion)
                                 @php
                                     $targetLabels = $promotion->targets->map(function ($target) {
@@ -793,53 +793,61 @@
                                     })->filter(fn ($target) => filled($target['name']))->values();
                                 @endphp
 
-                                <article class="campaign-promotion-card">
-                                    <div class="campaign-promotion-card__main">
-                                        <div class="campaign-promotion-card__heading">
-                                            <div>
-                                                <strong>{{ $promotion->name }}</strong>
-                                                <small>
-                                                    {{ $promotion->slug }}
-                                                    · {{ $caseUseLabels[$promotion->case_use] ?? ($promotion->case_use ?: __('admin.marketing.campaigns.no_scope')) }}
-                                                    · {{ $discountTypeLabels[$promotion->type_discount] ?? ($promotion->type_discount ?: __('admin.marketing.campaigns.discount_not_defined')) }}
-                                                </small>
-                                            </div>
-                                            @include('admin.Marketing.partials.status-pill', [
-                                                'status' => $promotion->status,
-                                                'label' => $promotion->status,
-                                            ])
+                                <div class="promo-card">
+                                    <div class="promo-card__header">
+                                        <div class="promo-card__title">
+                                            <strong class="promo-card__name">{{ $promotion->name }}</strong>
+                                            @if ($promotion->type_discount)
+                                                <span class="promo-card__type-badge">{{ $discountTypeLabels[$promotion->type_discount] ?? $promotion->type_discount }}</span>
+                                            @endif
                                         </div>
+                                        @include('admin.Marketing.partials.status-pill', [
+                                            'status' => $promotion->status,
+                                            'label' => $promotion->status,
+                                        ])
                                     </div>
 
-                                    <div class="campaign-promotion-card__stats">
-                                        <span>
-                                            <small>{{ __('admin.marketing.campaigns.discount') }}</small>
+                                    <div class="promo-card__breakdown">
+                                        <div class="promo-card__row">
+                                            <span>{{ __('admin.marketing.campaigns.discount') }}</span>
                                             <strong>{{ $formatDiscount($promotion) }}</strong>
-                                        </span>
-                                        <span>
-                                            <small>{{ __('admin.marketing.campaigns.minimum') }}</small>
-                                            <strong>{{ $promotion->minimum_pretest !== null ? number_format((float) $promotion->minimum_pretest, 2, ',', '.') : '-' }}</strong>
-                                        </span>
-                                        <span>
-                                            <small>{{ __('admin.marketing.campaigns.expiration') }}</small>
-                                            <strong>{{ $promotion->expiring_at?->format('d/m/Y') ?? __('admin.marketing.campaigns.without_expiration') }}</strong>
-                                        </span>
+                                        </div>
+                                        <div class="promo-card__row">
+                                            <span>{{ __('admin.marketing.campaigns.minimum') }}</span>
+                                            <span>{{ $promotion->minimum_pretest !== null ? number_format((float) $promotion->minimum_pretest, 2, ',', '.') : '-' }}</span>
+                                        </div>
+                                        <div class="promo-card__row">
+                                            <span>{{ __('admin.marketing.campaigns.expiration') }}</span>
+                                            <span>{{ $promotion->expiring_at?->format('d/m/Y') ?? __('admin.marketing.campaigns.without_expiration') }}</span>
+                                        </div>
+                                        @if ($promotion->case_use)
+                                            <div class="promo-card__row">
+                                                <span>{{ $caseUseLabels[$promotion->case_use] ?? $promotion->case_use }}</span>
+                                                <span>{{ $promotion->slug }}</span>
+                                            </div>
+                                        @endif
                                     </div>
 
-                                    <div class="campaign-promotion-card__targets">
-                                        <strong>{{ __('admin.marketing.campaigns.target') }}</strong>
-                                        @forelse ($targetLabels as $target)
-                                            <span>{{ ucfirst($target['type']) }}: {{ $target['name'] }}</span>
-                                        @empty
-                                            <span>{{ __('admin.marketing.campaigns.generic_target') }}</span>
-                                        @endforelse
+                                    <div class="promo-card__items">
+                                        <p class="promo-card__items-title">{{ __('admin.marketing.campaigns.target') }}</p>
+                                        <ul class="promo-card__items-list">
+                                            @forelse ($targetLabels as $target)
+                                                <li class="promo-card__items-entry">
+                                                    <span>{{ ucfirst($target['type']) }}: {{ $target['name'] }}</span>
+                                                </li>
+                                            @empty
+                                                <li class="promo-card__items-entry">
+                                                    <span>{{ __('admin.marketing.campaigns.generic_target') }}</span>
+                                                </li>
+                                            @endforelse
+                                        </ul>
                                     </div>
 
                                     <a href="{{ route('admin.promotions.show', $promotion) }}" class="order-detail__contact">
                                         <i class="bi bi-arrow-up-right-circle-fill"></i>
                                         <span>{{ __('admin.marketing.campaigns.open_promotion') }}</span>
                                     </a>
-                                </article>
+                                </div>
                             @endforeach
                         </div>
                     @else

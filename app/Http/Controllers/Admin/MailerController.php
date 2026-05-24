@@ -31,19 +31,8 @@ class MailerController extends Controller
         'customer_last_name',
         'customer_email',
         'customer_phone',
-        'promotion_name',
-        'promotion_discount',
-        'promotion_discount_label',
-        'promotion_type_discount',
-        'promotion_type_discount_label',
-        'promotion_expiring_at',
-        'promotion_cta',
-        'product_name',
-        'menu_name',
-        'category_name',
-        'post_title',
-        'campaign_name',
-        'tracking_click_url',
+        'customer_age',
+        'customer_gender',
     ];
 
     public function indexModels()
@@ -62,6 +51,23 @@ class MailerController extends Controller
             : new LengthAwarePaginator(collect(), 0, 40);
 
         return view('admin.Mailer.index', compact('models'));
+    }
+
+    public function showModel(int $id)
+    {
+        $countRelations = array_filter([
+            Schema::hasTable('campaigns') ? 'campaigns' : null,
+            Schema::hasTable('automations') ? 'automations' : null,
+        ]);
+
+        $model = Model::query()
+            ->when($countRelations !== [], fn ($query) => $query->withCount($countRelations))
+            ->findOrFail($id);
+
+        return view('admin.Mailer.show', [
+            'model' => $model,
+            'previewData' => $this->previewData(),
+        ]);
     }
 
     public function createModel()
@@ -212,24 +218,13 @@ class MailerController extends Controller
     private function previewData(): array
     {
         return [
-            'customer_name' => 'Mario Rossi',
+            'customer_name'       => 'Mario Rossi',
             'customer_first_name' => 'Mario',
-            'customer_last_name' => 'Rossi',
-            'customer_email' => 'mario@example.com',
-            'customer_phone' => '+39 333 000 0000',
-            'promotion_name' => 'Promozione speciale',
-            'promotion_discount' => '10',
-            'promotion_discount_label' => '10%',
-            'promotion_type_discount' => 'percentage',
-            'promotion_type_discount_label' => 'Percentuale',
-            'promotion_expiring_at' => now()->addDays(7)->format('d/m/Y'),
-            'promotion_cta' => '/promo',
-            'product_name' => 'Margherita',
-            'menu_name' => 'Menu degustazione',
-            'category_name' => 'Pizze',
-            'post_title' => 'Evento speciale',
-            'campaign_name' => 'Campagna primavera',
-            'tracking_click_url' => '/api/marketing/click/example?redirect=/promo',
+            'customer_last_name'  => 'Rossi',
+            'customer_email'      => 'mario@example.com',
+            'customer_phone'      => '+39 333 000 0000',
+            'customer_age'        => '42',
+            'customer_gender'     => 'Uomo',
         ];
     }
 
