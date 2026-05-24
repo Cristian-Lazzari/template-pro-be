@@ -2,145 +2,373 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\CategoryTranslation;
+use App\Models\Product;
+use App\Models\ProductTranslation;
 use App\Models\Promotion;
+use App\Models\PromotionTarget;
 use Illuminate\Database\Seeder;
 
 class MarketingPromotionSeeder extends Seeder
 {
+    // Prodotto di riferimento usato in tutte le promozioni con target prodotto
+    private const PRODUCT_NAME  = 'La Tricolore';
+    private const CATEGORY_NAME = 'Tapas';
+
     public function run(): void
     {
-        foreach ($this->promotions() as $promotionData) {
-            $existing = Promotion::where('slug', $promotionData['slug'])->first();
+        $product  = $this->findProduct();
+        $category = $this->findCategory();
 
-            Promotion::updateOrCreate(
-                ['slug' => $promotionData['slug']],
-                $this->attributesFor($promotionData, $existing)
+        foreach ($this->promotions($product, $category) as $data) {
+            $targets = $data['targets'] ?? [];
+            unset($data['targets']);
+
+            $existing  = Promotion::where('slug', $data['slug'])->first();
+            $promotion = Promotion::updateOrCreate(
+                ['slug' => $data['slug']],
+                $this->buildAttributes($data, $existing)
             );
+
+            foreach ($targets as $target) {
+                $this->upsertTarget($promotion, $target);
+            }
         }
     }
 
-    private function attributesFor(array $promotionData, ?Promotion $existing): array
+    // -------------------------------------------------------------------------
+    // Lookup helpers
+    // -------------------------------------------------------------------------
+
+    private function findProduct(): ?Product
     {
-        $attributes = [
-            'name' => $promotionData['name'],
-            'status' => $existing?->status ?: 'draft',
-            'case_use' => $promotionData['case_use'],
-            'discount' => $promotionData['discount'],
-            'type_discount' => $promotionData['type_discount'],
-            'minimum_pretest' => $promotionData['minimum_pretest'],
-            'cta' => $promotionData['cta'],
-            'permanent' => $promotionData['permanent'],
-            'schedule_at' => null,
-            'expiring_at' => null,
-            'metadata' => $this->mergeMetadata($existing?->metadata, $promotionData['metadata']),
+        return ProductTranslation::where('lang', 'it')
+            ->where('name', self::PRODUCT_NAME)
+            ->first()
+            ?->product;
+    }
+
+    private function findCategory(): ?Category
+    {
+        return CategoryTranslation::where('lang', 'it')
+            ->where('name', self::CATEGORY_NAME)
+            ->first()
+            ?->category;
+    }
+
+    // -------------------------------------------------------------------------
+    // Attribute builder
+    // -------------------------------------------------------------------------
+
+    private function buildAttributes(array $data, ?Promotion $existing): array
+    {
+        $attrs = [
+            'name'            => $data['name'],
+            'description'     => $data['description'] ?? null,
+            'status'          => $existing?->status ?: 'draft',
+            'case_use'        => $data['case_use'],
+            'type_discount'   => $data['type_discount'],
+            'discount'        => $data['discount'],
+            'minimum_pretest' => $data['minimum_pretest'],
+            'cta'             => $data['cta'],
+            'permanent'       => $data['permanent'],
+            'valid_weekdays'  => $data['valid_weekdays'] ?? null,
+            'valid_from_time' => $data['valid_from_time'] ?? null,
+            'valid_to_time'   => $data['valid_to_time'] ?? null,
+            'schedule_at'     => null,
+            'expiring_at'     => null,
+            'metadata'        => array_replace(
+                is_array($existing?->metadata) ? $existing->metadata : [],
+                $data['metadata']
+            ),
         ];
 
         if (! $existing || $existing->total_activation === null) {
-            $attributes['total_activation'] = 0;
+            $attrs['total_activation'] = 0;
         }
-
         if (! $existing || $existing->total_sent === null) {
-            $attributes['total_sent'] = 0;
+            $attrs['total_sent'] = 0;
         }
-
         if (! $existing || $existing->total_used === null) {
-            $attributes['total_used'] = 0;
+            $attrs['total_used'] = 0;
         }
 
-        return $attributes;
+        return $attrs;
     }
 
-    private function mergeMetadata(mixed $existingMetadata, array $seedMetadata): array
-    {
-        $existingMetadata = is_array($existingMetadata) ? $existingMetadata : [];
+    // -------------------------------------------------------------------------
+    // Target upsert
+    // -------------------------------------------------------------------------
 
-        return array_replace($existingMetadata, $seedMetadata);
+    private function upsertTarget(Promotion $promotion, array $target): void
+    {
+        $targetId = $target['target_id'] ?? null;
+
+        if ($targetId !== null) {
+            PromotionTarget::firstOrCreate(
+                [
+                    'promotion_id' => $promotion->id,
+                    'target_type'  => $target['target_type'],
+                    'target_id'    => $targetId,
+                ],
+                [
+                    'discount'      => $target['discount'] ?? null,
+                    'type_discount' => $target['type_discount'] ?? null,
+                    'metadata'      => $target['metadata'] ?? null,
+                ]
+            );
+        } else {
+            // Per i target generici (target_id NULL) evitiamo duplicati controllando manualmente
+            $exists = PromotionTarget::where('promotion_id', $promotion->id)
+                ->where('target_type', $target['target_type'])
+                ->whereNull('target_id')
+                ->exists();
+
+            if (! $exists) {
+                PromotionTarget::create([
+                    'promotion_id'  => $promotion->id,
+                    'target_type'   => $target['target_type'],
+                    'target_id'     => null,
+                    'discount'      => $target['discount'] ?? null,
+                    'type_discount' => $target['type_discount'] ?? null,
+                    'metadata'      => $target['metadata'] ?? null,
+                ]);
+            }
+        }
     }
 
-    private function promotions(): array
+    // -------------------------------------------------------------------------
+    // Definizioni promozioni — tutti i tipi possibili
+    // -------------------------------------------------------------------------
+
+    private function promotions(?Product $product, ?Category $category): array
     {
+        $productId  = $product?->id;
+        $categoryId = $category?->id;
+
         return [
+
+            // ─── 1. ASPORTO · percentuale sul totale carrello ────────────────
             [
-                'name' => 'PROMOTION 10T',
-                'slug' => 'promotion-10t',
-                'case_use' => 'table',
-                'type_discount' => 'percentage',
-                'discount' => 10,
-                'minimum_pretest' => 3,
-                'cta' => '/prenota',
-                'permanent' => false,
-                'metadata' => [
-                    'reusable' => false,
-                    'description' => '10% di sconto su prenotazione tavolo. Minimo 3 persone.',
+                'name'            => 'PROMO ASPORTO -10%',
+                'slug'            => 'promo-asporto-10pct',
+                'description'     => '10% di sconto sul totale carrello asporto. Minima spesa 15€.',
+                'case_use'        => 'take_away',
+                'type_discount'   => 'percentage',
+                'discount'        => 10.00,
+                'minimum_pretest' => 15.00,
+                'cta'             => '/asporto',
+                'permanent'       => false,
+                'metadata'        => [
+                    'reusable'     => false,
+                    'minimum_type' => 'cart_total',
+                    'seed_key'     => 'PROMO_ASPORTO_10PCT',
+                ],
+            ],
+
+            // ─── 2. ASPORTO · importo fisso sul totale carrello ──────────────
+            [
+                'name'            => 'PROMO ASPORTO -5€',
+                'slug'            => 'promo-asporto-5e',
+                'description'     => '5€ di sconto fisso sul carrello asporto. Minima spesa 20€.',
+                'case_use'        => 'take_away',
+                'type_discount'   => 'fixed',
+                'discount'        => 5.00,
+                'minimum_pretest' => 20.00,
+                'cta'             => '/asporto',
+                'permanent'       => false,
+                'metadata'        => [
+                    'reusable'     => false,
+                    'minimum_type' => 'cart_total',
+                    'seed_key'     => 'PROMO_ASPORTO_5E',
+                ],
+            ],
+
+            // ─── 3. PRODOTTO SPECIFICO · percentuale (target: prodotto) ──────
+            [
+                'name'            => 'PROMO -20% LA TRICOLORE',
+                'slug'            => 'promo-tricolore-20pct',
+                'description'     => '20% di sconto su "La Tricolore".',
+                'case_use'        => 'take_away',
+                'type_discount'   => 'percentage',
+                'discount'        => 20.00,
+                'minimum_pretest' => null,
+                'cta'             => '/asporto',
+                'permanent'       => false,
+                'metadata'        => [
+                    'reusable'           => true,
+                    'minimum_type'       => null,
+                    'product_link_required' => true,
+                    'seed_key'           => 'PROMO_TRICOLORE_20PCT',
+                ],
+                'targets' => $productId ? [
+                    [
+                        'target_type'   => PromotionTarget::TYPE_PRODUCT,
+                        'target_id'     => $productId,
+                        'discount'      => 20.00,
+                        'type_discount' => 'percentage',
+                        'metadata'      => ['product_name' => self::PRODUCT_NAME],
+                    ],
+                ] : [],
+            ],
+
+            // ─── 4. OMAGGIO PRODOTTO · regalo prodotto specifico ─────────────
+            [
+                'name'            => 'PROMO REGALO LA TRICOLORE',
+                'slug'            => 'promo-gift-tricolore',
+                'description'     => '"La Tricolore" in omaggio con una spesa minima di 25€.',
+                'case_use'        => 'gift',
+                'type_discount'   => 'gift',
+                'discount'        => null,
+                'minimum_pretest' => 25.00,
+                'cta'             => '/asporto',
+                'permanent'       => true,
+                'metadata'        => [
+                    'reusable'           => false,
+                    'minimum_type'       => 'cart_total',
+                    'gift_type'          => 'product',
+                    'product_link_required' => true,
+                    'seed_key'           => 'PROMO_GIFT_TRICOLORE',
+                ],
+                'targets' => $productId ? [
+                    [
+                        'target_type'   => PromotionTarget::TYPE_PRODUCT,
+                        'target_id'     => $productId,
+                        'discount'      => null,
+                        'type_discount' => 'gift',
+                        'metadata'      => ['product_name' => self::PRODUCT_NAME],
+                    ],
+                ] : [],
+            ],
+
+            // ─── 5. CATEGORIA · percentuale su categoria (target: categoria) ─
+            [
+                'name'            => 'PROMO -15% TAPAS',
+                'slug'            => 'promo-tapas-15pct',
+                'description'     => '15% di sconto su tutti i prodotti della categoria Tapas.',
+                'case_use'        => 'take_away',
+                'type_discount'   => 'percentage',
+                'discount'        => 15.00,
+                'minimum_pretest' => null,
+                'cta'             => '/asporto',
+                'permanent'       => false,
+                'metadata'        => [
+                    'reusable'     => true,
+                    'minimum_type' => null,
+                    'seed_key'     => 'PROMO_TAPAS_15PCT',
+                ],
+                'targets' => $categoryId ? [
+                    [
+                        'target_type'   => PromotionTarget::TYPE_CATEGORY,
+                        'target_id'     => $categoryId,
+                        'discount'      => 15.00,
+                        'type_discount' => 'percentage',
+                        'metadata'      => ['category_name' => self::CATEGORY_NAME],
+                    ],
+                ] : [],
+            ],
+
+            // ─── 6. TAVOLO · percentuale sul prezzo prenotazione ─────────────
+            [
+                'name'            => 'PROMO TAVOLO -15%',
+                'slug'            => 'promo-tavolo-15pct',
+                'description'     => '15% di sconto su prenotazione tavolo. Minimo 2 persone.',
+                'case_use'        => 'table',
+                'type_discount'   => 'percentage',
+                'discount'        => 15.00,
+                'minimum_pretest' => 2.00,
+                'cta'             => '/prenota',
+                'permanent'       => false,
+                'metadata'        => [
+                    'reusable'     => false,
                     'minimum_type' => 'people',
-                    'seed_key' => 'PROMOTION_10T',
+                    'seed_key'     => 'PROMO_TAVOLO_15PCT',
                 ],
             ],
+
+            // ─── 7. TAVOLO · importo fisso sul prezzo prenotazione ───────────
             [
-                'name' => 'PROMOTION E5ASPO',
-                'slug' => 'promotion-e5aspo',
-                'case_use' => 'take_away',
-                'type_discount' => 'fixed',
-                'discount' => 5,
-                'minimum_pretest' => 10,
-                'cta' => '/asporto',
-                'permanent' => false,
-                'metadata' => [
-                    'reusable' => true,
-                    'description' => '5€ di sconto su asporto. Minima spesa 10€.',
-                    'minimum_type' => 'cart_total',
-                    'seed_key' => 'PROMOTION_E5ASPO',
+                'name'            => 'PROMO TAVOLO -10€',
+                'slug'            => 'promo-tavolo-10e',
+                'description'     => '10€ di sconto su prenotazione tavolo. Minimo 4 persone.',
+                'case_use'        => 'table',
+                'type_discount'   => 'fixed',
+                'discount'        => 10.00,
+                'minimum_pretest' => 4.00,
+                'cta'             => '/prenota',
+                'permanent'       => false,
+                'metadata'        => [
+                    'reusable'     => false,
+                    'minimum_type' => 'people',
+                    'seed_key'     => 'PROMO_TAVOLO_10E',
                 ],
             ],
+
+            // ─── 8. WEEKEND · percentuale valida solo sabato e domenica ──────
             [
-                'name' => 'PROMOTION 5MARG',
-                'slug' => 'promotion-5marg',
-                'case_use' => 'take_away',
-                'type_discount' => 'percentage',
-                'discount' => 5,
-                'minimum_pretest' => 10,
-                'cta' => '/asporto',
-                'permanent' => true,
-                'metadata' => [
-                    'reusable' => true,
-                    'description' => '5% di sconto su margherita da asporto. Minima spesa 10€.',
+                'name'            => 'PROMO WEEKEND -10%',
+                'slug'            => 'promo-weekend-10pct',
+                'description'     => '10% di sconto asporto, valido solo sabato e domenica. Minima spesa 10€.',
+                'case_use'        => 'take_away',
+                'type_discount'   => 'percentage',
+                'discount'        => 10.00,
+                'minimum_pretest' => 10.00,
+                'cta'             => '/asporto',
+                'permanent'       => true,
+                'valid_weekdays'  => [0, 6], // 0 = domenica, 6 = sabato (date('w'))
+                'metadata'        => [
+                    'reusable'     => true,
                     'minimum_type' => 'cart_total',
-                    'product_link_required' => true,
-                    'seed_key' => 'PROMOTION_5MARG',
+                    'seed_key'     => 'PROMO_WEEKEND_10PCT',
                 ],
             ],
+
+            // ─── 9. HAPPY HOUR · percentuale in fascia oraria ────────────────
             [
-                'name' => 'PROMOTION 5ASPO',
-                'slug' => 'promotion-5aspo',
-                'case_use' => 'take_away',
-                'type_discount' => 'percentage',
-                'discount' => 5,
-                'minimum_pretest' => 10,
-                'cta' => '/asporto',
-                'permanent' => false,
-                'metadata' => [
-                    'reusable' => false,
-                    'description' => '5% di sconto su spesa asporto. Minima spesa 10€.',
-                    'minimum_type' => 'cart_total',
-                    'seed_key' => 'PROMOTION_5ASPO',
+                'name'            => 'PROMO HAPPY HOUR TAVOLO',
+                'slug'            => 'promo-happy-hour-tavolo',
+                'description'     => '15% di sconto su prenotazione tavolo dalle 18:00 alle 20:00.',
+                'case_use'        => 'table',
+                'type_discount'   => 'percentage',
+                'discount'        => 15.00,
+                'minimum_pretest' => 1.00,
+                'cta'             => '/prenota',
+                'permanent'       => true,
+                'valid_from_time' => '18:00:00',
+                'valid_to_time'   => '20:00:00',
+                'metadata'        => [
+                    'reusable'     => true,
+                    'minimum_type' => 'people',
+                    'seed_key'     => 'PROMO_HAPPY_HOUR_TAVOLO',
                 ],
             ],
+
+            // ─── 10. COMPLEANNO · regalo generico (target: generic) ──────────
             [
-                'name' => 'PROMOTION GIFTMARG',
-                'slug' => 'promotion-giftmarg',
-                'case_use' => 'gift',
-                'type_discount' => 'gift',
-                'discount' => null,
-                'minimum_pretest' => 10,
-                'cta' => '/asporto',
-                'permanent' => true,
-                'metadata' => [
-                    'reusable' => false,
-                    'description' => 'Margherita in regalo con minima spesa 10€.',
-                    'minimum_type' => 'cart_total',
-                    'product_link_required' => true,
-                    'gift_type' => 'product',
-                    'seed_key' => 'PROMOTION_GIFTMARG',
+                'name'            => 'PROMO REGALO COMPLEANNO',
+                'slug'            => 'promo-regalo-compleanno',
+                'description'     => 'Antipasto in omaggio per il tuo compleanno. Nessuna spesa minima.',
+                'case_use'        => 'gift',
+                'type_discount'   => 'gift',
+                'discount'        => null,
+                'minimum_pretest' => null,
+                'cta'             => '/prenota',
+                'permanent'       => true,
+                'metadata'        => [
+                    'reusable'     => false,
+                    'minimum_type' => null,
+                    'gift_type'    => 'generic',
+                    'seed_key'     => 'PROMO_REGALO_COMPLEANNO',
+                ],
+                'targets' => [
+                    [
+                        'target_type'   => PromotionTarget::TYPE_GENERIC,
+                        'target_id'     => null,
+                        'discount'      => null,
+                        'type_discount' => 'gift',
+                        'metadata'      => ['label' => 'Antipasto omaggio compleanno'],
+                    ],
                 ],
             ],
         ];

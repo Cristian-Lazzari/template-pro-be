@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             //PostsTableSeeder::class,
             Ecce35MenuSeeder::class,
             MarketingPromotionSeeder::class,
+            MarketingCampaignsSeeder::class,
             MarketingBenvenutoSeeder::class,
         ]);
     }
