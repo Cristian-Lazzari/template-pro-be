@@ -24,7 +24,6 @@ class MailerController extends Controller
         'sender' => 'nullable|string|max:50',
         'status' => 'nullable|in:draft,active,archived',
         'has_promotion' => 'nullable|boolean',
-        'cta_label' => 'nullable|string|max:100',
     ];
 
     private array $supportedVariables = [
@@ -203,7 +202,6 @@ class MailerController extends Controller
             'channel' => 'email',
             'status' => $data['status'] ?? 'draft',
             'has_promotion' => (bool) ($data['has_promotion'] ?? false),
-            'cta_label' => trim((string) ($data['cta_label'] ?? '')),
             'body_html' => $bodyHtml,
             'body_text' => $bodyText !== '' ? $bodyText : null,
             'variables' => $this->supportedVariables,

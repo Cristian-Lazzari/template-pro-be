@@ -26,7 +26,6 @@
     $object       = trim((string) ($model->object ?: ''));
     $sender       = trim((string) ($model->sender ?: $appName));
     $hasPromotion = (bool) ($model->has_promotion ?? false);
-    $ctaLabel     = trim((string) ($model->cta_label ?: ''));
 @endphp
 
 <style>
@@ -358,8 +357,8 @@
                     <div class="mailer-show-fact">
                         <span>Tipo modello</span>
                         <strong>{{ $hasPromotion ? 'Con promozione' : 'Senza promozione' }}</strong>
-                        @if ($hasPromotion && $ctaLabel !== '')
-                            <small>CTA: {{ $ctaLabel }}</small>
+                        @if ($hasPromotion)
+                            <small>CTA adattata automaticamente al contesto della promozione</small>
                         @endif
                     </div>
 
@@ -461,7 +460,7 @@
                             <p style="font-size:13px;font-weight:700;color:#04001d;margin:4px 0;">Promozione associata</p>
                             <p style="font-size:11px;color:rgba(4,0,29,.45);margin:5px 0 0;">Il blocco verrà popolato con i dati reali</p>
                         </div>
-                        <span class="mail-preview-cta">{{ $ctaLabel ?: __('admin.emails.marketing.discover_promotion') }}</span>
+                        <span class="mail-preview-cta">{{ __('admin.emails.marketing.discover_promotion') }}</span>
                     @endif
 
                     @if ($ending !== '')

@@ -303,8 +303,7 @@
                             return $text;
                         };
 
-                        $hasPromotion       = (bool) ($mailModel->has_promotion ?? false);
-                        $ctaLabel           = trim((string) ($mailModel->cta_label ?: ''));
+                        $hasPromotion = (bool) ($mailModel->has_promotion ?? false);
                         $bodyHighlighted    = $highlightVar(e(\Illuminate\Support\Str::limit($bodyPreview, 160)));
                         $headingHighlighted = $highlightVar(e($mailModel->heading ?: ''));
                         $objectHighlighted  = $highlightVar(e($mailModel->object ?: __('admin.marketing.mailer.undefined_object')));
@@ -332,7 +331,7 @@
                                 @endif
 
                                 @if ($hasPromotion)
-                                    <span class="mail-card__cta">{{ $ctaLabel ?: __('admin.emails.marketing.discover_promotion') }}</span>
+                                    <span class="mail-card__cta">{{ __('admin.emails.marketing.discover_promotion') }}</span>
                                 @endif
 
                                 <p class="mail-card__sender-line">{{ $mailModel->sender ?: $appName }}</p>

@@ -6,8 +6,7 @@
     $objectValue     = old('object', $model->object);
     $headingValue    = old('heading', $model->heading);
     $senderValue     = old('sender', $model->sender);
-    $hasPromotion    = old('has_promotion', $model->has_promotion ?? false);
-    $ctaLabelValue   = old('cta_label', $model->cta_label);
+    $hasPromotion = old('has_promotion', $model->has_promotion ?? false);
 
     $variableGroups = [
         __('admin.marketing.mailer.variable_group_customer') => [
@@ -492,18 +491,6 @@
                     </label>
                 </div>
 
-                {{-- Campo testo CTA (visibile solo se has_promotion) --}}
-                <div id="cta-label-wrap" style="{{ $hasPromotion ? '' : 'display:none;' }}">
-                    <label class="label_c" for="cta_label">
-                        <x-icon name="cursor-fill" />
-                        Testo bottone CTA
-                    </label>
-                    <p>
-                        <input value="{{ $ctaLabelValue }}" type="text" name="cta_label" id="cta_label"
-                               placeholder="Scopri la promozione">
-                    </p>
-                    @error('cta_label') <p class="error">{{ $message }}</p> @enderror
-                </div>
             </section>
 
             <section class="order-detail__section">
@@ -623,8 +610,11 @@
 
                         <div id="preview-cta-wrap" style="{{ $hasPromotion ? '' : 'display:none;' }}">
                             <a class="mail-model-preview__cta" href="#" id="preview-cta-btn">
-                                {{ $ctaLabelValue ?: 'Scopri la promozione' }}
+                                Scopri la promozione
                             </a>
+                            <p style="font-size:11px;color:rgba(4,0,29,.45);margin:4px 0 0;">
+                                Il testo verrà adattato al contesto: "Ordina ora" (asporto/delivery), "Prenota ora" (tavolo)
+                            </p>
                         </div>
 
                         <div id="preview-ending-wrap">
@@ -847,7 +837,6 @@
         const body = document.getElementById('body_html')?.value || '';
         const end  = (document.getElementById('ending')?.value || '').trim();
         const snd  = (document.getElementById('sender')?.value || '').trim() || appName;
-        const ctaLbl = (document.getElementById('cta_label')?.value || '').trim() || 'Scopri la promozione';
 
         const pSubj    = document.getElementById('preview-subject');
         const pHdg     = document.getElementById('preview-heading');
@@ -855,7 +844,6 @@
         const pEnd     = document.getElementById('preview-ending');
         const pSnd     = document.getElementById('preview-sender');
         const pEndWrap = document.getElementById('preview-ending-wrap');
-        const pCtaBtn  = document.getElementById('preview-cta-btn');
 
         if (pSubj) {
             if (obj) { pSubj.innerHTML = renderInlineVar(obj); pSubj.classList.remove('is-placeholder'); }
@@ -874,30 +862,27 @@
             else { pEndWrap.style.display = 'none'; }
         }
         if (pSnd) pSnd.textContent = snd;
-        if (pCtaBtn) pCtaBtn.textContent = ctaLbl;
     }
 
-    ['object', 'heading', 'sender', 'cta_label'].forEach(id => {
+    ['object', 'heading', 'sender'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updatePreview);
     });
 
     // ─── TOGGLE HAS_PROMOTION ────────────────────────────────────
     (function () {
-        const chk          = document.getElementById('has_promotion');
-        const label        = document.getElementById('has-promotion-label');
-        const ctaWrap      = document.getElementById('cta-label-wrap');
-        const promoBlock   = document.getElementById('preview-promotion-block');
-        const ctaPreview   = document.getElementById('preview-cta-wrap');
+        const chk           = document.getElementById('has_promotion');
+        const label         = document.getElementById('has-promotion-label');
+        const promoBlock    = document.getElementById('preview-promotion-block');
+        const ctaPreview    = document.getElementById('preview-cta-wrap');
         const promoVarGroup = document.getElementById('promotion-var-group');
 
         if (!chk) return;
 
         function applyState(checked) {
             label?.classList.toggle('has-promotion-toggle--active', checked);
-            if (ctaWrap)     ctaWrap.style.display      = checked ? '' : 'none';
-            if (promoBlock)  promoBlock.style.display    = checked ? '' : 'none';
-            if (ctaPreview)  ctaPreview.style.display    = checked ? '' : 'none';
+            if (promoBlock)    promoBlock.style.display    = checked ? '' : 'none';
+            if (ctaPreview)    ctaPreview.style.display    = checked ? '' : 'none';
             if (promoVarGroup) promoVarGroup.style.display = checked ? '' : 'none';
         }
 

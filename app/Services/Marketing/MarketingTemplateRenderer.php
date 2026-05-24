@@ -39,9 +39,7 @@ class MarketingTemplateRenderer
             : $this->htmlToText($bodyHtml);
 
         $hasPromotion = $template ? (bool) $template->has_promotion : false;
-        $ctaLabel = $template && filled($template->cta_label)
-            ? $this->replaceVariables((string) $template->cta_label, $variables)
-            : __('admin.emails.marketing.discover_promotion');
+        $ctaLabel     = $this->resolveCtaLabel($customerPromotion);
 
         return [
             'subject' => $subject,
@@ -168,6 +166,17 @@ class MarketingTemplateRenderer
                 : $matches[0],
             $content
         );
+    }
+
+    private function resolveCtaLabel(CustomerPromotion $customerPromotion): string
+    {
+        $caseUse = strtolower(trim((string) ($customerPromotion->promotion?->case_use ?? '')));
+
+        return match ($caseUse) {
+            'take_away', 'delivery' => 'Ordina ora',
+            'table'                 => 'Prenota ora',
+            default                 => (string) __('admin.emails.marketing.discover_promotion'),
+        };
     }
 
     private function buildPromotionBlock(array $variables): string
