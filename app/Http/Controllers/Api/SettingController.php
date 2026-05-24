@@ -401,11 +401,11 @@ class SettingController extends Controller
             $r_option = [];
             $r_add = [];
             foreach ($arrO as $o) {
-                $ingredient = Ingredient::where('name', $o)->first();
+                $ingredient = Ingredient::findByName($o);
                 $r_option[] = $ingredient;
             }
             foreach ($arrA as $o) {
-                $ingredient = Ingredient::where('name', $o)->first();
+                $ingredient = Ingredient::findByName($o);
                 $r_add[] = $ingredient;
             }
             $p->setAttribute('r_option', $r_option);

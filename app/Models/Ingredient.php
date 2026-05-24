@@ -35,4 +35,9 @@ class Ingredient extends Model
     public function getNameAttribute()
     {return $this->getTranslation('name');}
 
+    public static function findByName(string $name): ?static
+    {
+        return static::whereHas('translations', fn($q) => $q->where('name', $name))->first();
+    }
+
 }

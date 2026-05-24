@@ -84,11 +84,11 @@ class OrderController extends Controller
             $r_option = [];
             $r_add = [];
             foreach ($arrO as $o) {
-                $ingredient = Ingredient::where('name', $o)->first();
+                $ingredient = Ingredient::findByName($o);
                 $r_option[] = $ingredient;
             }
             foreach ($arrA as $o) {
-                $ingredient = Ingredient::where('name', $o)->first();
+                $ingredient = Ingredient::findByName($o);
                 $r_add[] = $ingredient;
             }
             $p->setAttribute('r_option', $r_option);
@@ -107,11 +107,11 @@ class OrderController extends Controller
                 $add = json_decode( $o->pivot->add , 1);
                 $option = json_decode( $o->pivot->option , 1);
                 foreach ($add as $a) {
-                    $ing = Ingredient::where('name', $a)->first();
+                    $ing = Ingredient::findByName($a);
                     $cart_price += $ing->price * $o->pivot->quantity;
                 }
                 foreach ($option as $a) {
-                    $ing = Ingredient::where('name', $a)->first();
+                    $ing = Ingredient::findByName($a);
                     $cart_price += $ing->price * $o->pivot->quantity;
                 }
                 $cart_price += $o->price * $o->pivot->quantity;
@@ -206,11 +206,11 @@ class OrderController extends Controller
             $add = json_decode( $o->pivot->add , 1);
             $option = json_decode( $o->pivot->option , 1);
             foreach ($add as $a) {
-                $ing = Ingredient::where('name', $a)->first();
+                $ing = Ingredient::findByName($a);
                 $cart_price += $ing->price * $o->pivot->quantity;
             }
             foreach ($option as $a) {
-                $ing = Ingredient::where('name', $a)->first();
+                $ing = Ingredient::findByName($a);
                 $cart_price += $ing->price * $o->pivot->quantity;
             }
             $cart_price += $o->price * $o->pivot->quantity;
@@ -427,11 +427,11 @@ class OrderController extends Controller
             $r_option = [];
             $r_add = [];
             foreach ($arrO as $o) {
-                $ingredient = Ingredient::where('name', $o)->first();
+                $ingredient = Ingredient::findByName($o);
                 $r_option[] = $ingredient;
             }
             foreach ($arrA as $o) {
-                $ingredient = Ingredient::where('name', $o)->first();
+                $ingredient = Ingredient::findByName($o);
                 $r_add[] = $ingredient;
             }
             $p->setAttribute('r_option', $r_option);
@@ -450,11 +450,11 @@ class OrderController extends Controller
                 $add = json_decode( $o->pivot->add , 1);
                 $option = json_decode( $o->pivot->option , 1);
                 foreach ($add as $a) {
-                    $ing = Ingredient::where('name', $a)->first();
+                    $ing = Ingredient::findByName($a);
                     $cart_price += $ing->price * $o->pivot->quantity;
                 }
                 foreach ($option as $a) {
-                    $ing = Ingredient::where('name', $a)->first();
+                    $ing = Ingredient::findByName($a);
                     $cart_price += $ing->price * $o->pivot->quantity;
                 }
                 $cart_price += $o->price * $o->pivot->quantity;
