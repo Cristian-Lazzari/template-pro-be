@@ -67,7 +67,7 @@ class MarketingPromotionSeeder extends Seeder
         $attrs = [
             'name'            => $data['name'],
             'description'     => $data['description'] ?? null,
-            'status'          => $existing?->status ?: 'draft',
+            'status'          => $existing?->status ?: 'active',
             'case_use'        => $data['case_use'],
             'type_discount'   => $data['type_discount'],
             'discount'        => $data['discount'],
