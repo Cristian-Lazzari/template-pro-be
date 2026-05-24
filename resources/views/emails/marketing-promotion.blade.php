@@ -4,10 +4,13 @@
     $bodyHtml = (string) ($rendered['body_html'] ?? '');
     $ending = $rendered['ending'] ?? null;
     $sender = (string) ($rendered['sender'] ?? config('configurazione.APP_NAME', config('app.name')));
-    $trackingOpenUrl = (string) ($rendered['tracking_open_url'] ?? '');
+    $trackingOpenUrl  = (string) ($rendered['tracking_open_url'] ?? '');
     $trackingClickUrl = (string) ($rendered['tracking_click_url'] ?? '');
-    $unsubscribeUrl = (string) ($rendered['unsubscribe_url'] ?? '');
+    $unsubscribeUrl   = (string) ($rendered['unsubscribe_url'] ?? '');
     $unsubscribeLabel = (string) ($rendered['unsubscribe_label'] ?? __('admin.emails.marketing.unsubscribe'));
+    $hasPromotion     = (bool) ($rendered['has_promotion'] ?? false);
+    $ctaLabel         = (string) ($rendered['cta_label'] ?? __('admin.emails.marketing.discover_promotion'));
+    $appName          = config('configurazione.APP_NAME', config('app.name'));
     $trackingRedirectUrl = null;
 
     if ($trackingClickUrl !== '') {
@@ -125,12 +128,12 @@
                                 {!! $bodyHtml !!}
                             </div>
 
-                            @if ($trackingClickUrl !== '')
+                            @if ($hasPromotion && $trackingClickUrl !== '')
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 26px auto;">
                                     <tr>
                                         <td align="center">
                                             <a href="{{ $trackingClickUrl }}" target="_blank" style="display: inline-block; font-weight: 800; font-size: 18px; color: #e9f0fb; text-decoration: none; padding: 12px 26px; border-radius: 10px; background-color: #04001d;">
-                                                {{ __('admin.emails.marketing.discover_promotion') }}
+                                                {{ $ctaLabel }}
                                             </a>
                                         </td>
                                     </tr>
@@ -164,26 +167,31 @@
         </tr>
     </table>
 
-    <footer style="margin: 50px 0 0; background-color: #090333; color: white; padding: 10px 20px; text-align: center; font-size: 12px;">
-        <h5 style="font-size: 16px; margin: 5px 0 8px;">{{ __('admin.Seguici_sui_social') }}</h5>
-        <div style="padding: 0 0 20px;">
-            <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.facebook.com/profile.php?id=61558817374447">
-                Facebook: <span style="color: white; font-weight: 900;">Future plus</span>
-            </a>
-            <a style="color: white; text-decoration: none; margin: 0 auto;" href="https://www.instagram.com/future.plus_/?hl=it">
-                Instagram: <span style="color: white; font-weight: 900;">@future.plus_</span>
-            </a>
-        </div>
-        @if ($unsubscribeUrl !== '')
-            <p style="font-size: 12px; line-height: 1.5; margin: 12px 5px 8px; color: rgba(255,255,255,.82);">
-                {{ __('admin.emails.marketing.unsubscribe_question') }}
-                <a style="color: white; text-decoration: underline; font-weight: 700;" href="{{ $unsubscribeUrl }}">
-                    {{ $unsubscribeLabel }}
-                </a>
-            </p>
-        @endif
-        <p style="font-size: 12px; font-family: monospace; line-height: 1.5; margin: 10px 5px;">{{ __('admin.end_copy', ['name' => config('configurazione.APP_NAME')]) }}</p>
-        <p style="font-size: 15px; line-height: 1.5; margin: 5px;">Powered by <a style="color: white; text-decoration: none; font-weight: 900;" href="https://future-plus.it">Future +</a></p>
-    </footer>
+    <table role="presentation" width="900" cellspacing="0" cellpadding="0" border="0"
+           style="max-width:900px; width:100%; background-color:#0f0b2e; border-radius:0 0 14px 14px; margin: 50px auto 0;">
+        <tr>
+            <td align="center" style="padding:28px 24px 24px;">
+                @if ($unsubscribeUrl !== '')
+                    <p style="color:rgba(255,255,255,0.65); font-size:13px; margin:0 0 10px; line-height:1.6;">
+                        {{ __('admin.emails.marketing.unsubscribe_question') }}
+                        <a href="{{ $unsubscribeUrl }}"
+                           style="color:rgba(255,255,255,0.85); text-decoration:underline; font-weight:700;">
+                            {{ $unsubscribeLabel }}
+                        </a>
+                    </p>
+                @endif
+                <p style="color:rgba(255,255,255,0.4); font-size:11px; margin:0 0 5px; line-height:1.6;">
+                    {{ __('admin.end_copy', ['name' => $appName]) }}
+                </p>
+                <p style="color:rgba(255,255,255,0.35); font-size:11px; margin:0;">
+                    Powered by
+                    <a href="https://future-plus.it"
+                       style="color:rgba(255,255,255,0.6); text-decoration:none; font-weight:700;">
+                        Future +
+                    </a>
+                </p>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

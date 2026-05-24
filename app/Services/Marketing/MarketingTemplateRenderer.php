@@ -22,6 +22,8 @@ class MarketingTemplateRenderer
         $template = $this->getTemplateFor($customerPromotion);
         $variables = $this->buildVariables($customerPromotion);
 
+        $variables['promotion'] = $this->buildPromotionBlock($variables);
+
         $subject = $this->replaceVariables(
             $this->resolveSubject($template, $customerPromotion),
             $variables
@@ -36,6 +38,11 @@ class MarketingTemplateRenderer
             ? $this->replaceVariables((string) $template->body_text, $variables)
             : $this->htmlToText($bodyHtml);
 
+        $hasPromotion = $template ? (bool) $template->has_promotion : false;
+        $ctaLabel = $template && filled($template->cta_label)
+            ? $this->replaceVariables((string) $template->cta_label, $variables)
+            : __('admin.emails.marketing.discover_promotion');
+
         return [
             'subject' => $subject,
             'heading' => $this->replaceVariables($this->resolveHeading($template, $customerPromotion), $variables),
@@ -49,6 +56,8 @@ class MarketingTemplateRenderer
                 : config('configurazione.APP_NAME', config('app.name')),
             'img_1' => $template?->img_1,
             'img_2' => $template?->img_2,
+            'has_promotion' => $hasPromotion,
+            'cta_label' => $ctaLabel,
             'tracking_open_url' => $variables['tracking_open_url'],
             'tracking_click_url' => $variables['tracking_click_url'],
             'unsubscribe_url' => $variables['unsubscribe_url'],
@@ -159,6 +168,39 @@ class MarketingTemplateRenderer
                 : $matches[0],
             $content
         );
+    }
+
+    private function buildPromotionBlock(array $variables): string
+    {
+        $discountLabel = $variables['promotion_discount_label'] ?? '';
+        $name          = $variables['promotion_name'] ?? '';
+        $expiringAt    = $variables['promotion_expiring_at'] ?? '';
+
+        if ($discountLabel === '' && $name === '') {
+            return '';
+        }
+
+        $html  = '<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:20px 0;">';
+        $html .= '<tr><td align="center" style="padding:24px 20px;background:#eef2ff;border-radius:14px;border:1px solid rgba(4,0,29,.1);">';
+
+        if ($discountLabel !== '') {
+            $html .= '<p style="font-size:40px;font-weight:900;color:#04001d;margin:0 0 4px;line-height:1.1;">'
+                . e($discountLabel) . '</p>';
+        }
+
+        if ($name !== '') {
+            $html .= '<p style="font-size:16px;font-weight:700;color:#04001d;margin:6px 0;">'
+                . e($name) . '</p>';
+        }
+
+        if ($expiringAt !== '') {
+            $html .= '<p style="font-size:12px;color:rgba(4,0,29,.5);margin:8px 0 0;">Valida fino al '
+                . e($expiringAt) . '</p>';
+        }
+
+        $html .= '</td></tr></table>';
+
+        return $html;
     }
 
     private function resolveSubject(?Model $template, CustomerPromotion $customerPromotion): string

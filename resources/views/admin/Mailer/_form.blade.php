@@ -1,11 +1,13 @@
 @php
-    $isEdit = $model->exists;
-    $bodyHtmlValue = old('body_html', $model->body_html ?: $model->body);
-    $endingValue = old('ending', $model->ending);
-    $statusValue = old('status', $model->status ?: 'draft');
-    $objectValue = old('object', $model->object);
-    $headingValue = old('heading', $model->heading);
-    $senderValue = old('sender', $model->sender);
+    $isEdit          = $model->exists;
+    $bodyHtmlValue   = old('body_html', $model->body_html ?: $model->body);
+    $endingValue     = old('ending', $model->ending);
+    $statusValue     = old('status', $model->status ?: 'draft');
+    $objectValue     = old('object', $model->object);
+    $headingValue    = old('heading', $model->heading);
+    $senderValue     = old('sender', $model->sender);
+    $hasPromotion    = old('has_promotion', $model->has_promotion ?? false);
+    $ctaLabelValue   = old('cta_label', $model->cta_label);
 
     $variableGroups = [
         __('admin.marketing.mailer.variable_group_customer') => [
@@ -315,6 +317,81 @@
         background: rgba(216, 221, 232, 0.08);
     }
 
+    /* ── Toggle has_promotion ───────────────────────────────── */
+    .has-promotion-toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(216, 221, 232, 0.16);
+        background: rgba(216, 221, 232, 0.04);
+        cursor: pointer;
+        user-select: none;
+        transition: border-color .15s, background .15s;
+    }
+
+    .has-promotion-toggle:hover {
+        border-color: rgba(14, 183, 146, 0.35);
+        background: rgba(14, 183, 146, 0.04);
+    }
+
+    .has-promotion-toggle input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: rgba(14, 183, 146, 0.9);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .has-promotion-toggle__text strong {
+        display: block;
+        color: var(--c3);
+        font-size: var(--fs-300);
+        font-weight: 900;
+    }
+
+    .has-promotion-toggle__text small {
+        color: rgba(216, 221, 232, 0.6);
+        font-size: var(--fs-100);
+    }
+
+    .has-promotion-toggle--active {
+        border-color: rgba(14, 183, 146, 0.4);
+        background: rgba(14, 183, 146, 0.06);
+    }
+
+    /* ── Blocco promozione nella preview ────────────────────── */
+    .preview-promotion-block {
+        margin: 16px 0;
+        padding: 20px;
+        border-radius: 12px;
+        background: #eef2ff;
+        border: 1px solid rgba(4, 0, 29, .1);
+        text-align: center;
+    }
+
+    .preview-promotion-block__discount {
+        font-size: 36px;
+        font-weight: 900;
+        color: #04001d;
+        margin: 0 0 4px;
+        line-height: 1;
+    }
+
+    .preview-promotion-block__name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #04001d;
+        margin: 4px 0;
+    }
+
+    .preview-promotion-block__expiry {
+        font-size: 11px;
+        color: rgba(4, 0, 29, .5);
+        margin: 6px 0 0;
+    }
+
     @media (max-width: 1100px) {
         .mail-model-grid { grid-template-columns: 1fr; }
     }
@@ -398,6 +475,34 @@
                         </p>
                         @error('sender') <p class="error">{{ $message }}</p> @enderror
                     </div>
+                </div>
+
+                {{-- Toggle promozione --}}
+                <div>
+                    <label class="has-promotion-toggle {{ $hasPromotion ? 'has-promotion-toggle--active' : '' }}"
+                           id="has-promotion-label"
+                           for="has_promotion">
+                        <input type="hidden" name="has_promotion" value="0">
+                        <input type="checkbox" name="has_promotion" id="has_promotion" value="1"
+                               {{ $hasPromotion ? 'checked' : '' }}>
+                        <div class="has-promotion-toggle__text">
+                            <strong>Contiene una promozione</strong>
+                            <small>Attiva per mostrare il blocco promozione e il bottone CTA nell'email</small>
+                        </div>
+                    </label>
+                </div>
+
+                {{-- Campo testo CTA (visibile solo se has_promotion) --}}
+                <div id="cta-label-wrap" style="{{ $hasPromotion ? '' : 'display:none;' }}">
+                    <label class="label_c" for="cta_label">
+                        <x-icon name="cursor-fill" />
+                        Testo bottone CTA
+                    </label>
+                    <p>
+                        <input value="{{ $ctaLabelValue }}" type="text" name="cta_label" id="cta_label"
+                               placeholder="Scopri la promozione">
+                    </p>
+                    @error('cta_label') <p class="error">{{ $message }}</p> @enderror
                 </div>
             </section>
 
@@ -508,7 +613,19 @@
                              id="preview-body"
                              data-placeholder="{{ __('admin.marketing.mailer.preview_body') }}"></div>
 
-                        <a class="mail-model-preview__cta" href="#">{{ __('admin.marketing.mailer.preview_cta') }}</a>
+                        <div id="preview-promotion-block" style="{{ $hasPromotion ? '' : 'display:none;' }}">
+                            <div class="preview-promotion-block">
+                                <p class="preview-promotion-block__discount">20%</p>
+                                <p class="preview-promotion-block__name">Promozione esempio</p>
+                                <p class="preview-promotion-block__expiry">Valida fino al 31/12/2026</p>
+                            </div>
+                        </div>
+
+                        <div id="preview-cta-wrap" style="{{ $hasPromotion ? '' : 'display:none;' }}">
+                            <a class="mail-model-preview__cta" href="#" id="preview-cta-btn">
+                                {{ $ctaLabelValue ?: 'Scopri la promozione' }}
+                            </a>
+                        </div>
 
                         <div id="preview-ending-wrap">
                             <p id="preview-ending"></p>
@@ -539,6 +656,20 @@
                 </p>
 
                 <div class="mail-model-variable-list">
+                    {{-- Blocco promozione (solo se has_promotion attivo) --}}
+                    <div class="mail-model-variable-group" id="promotion-var-group" style="{{ $hasPromotion ? '' : 'display:none;' }}">
+                        <strong>Promozione</strong>
+                        <div class="mail-model-variable-chips">
+                            <code class="mail-model-variable-chip var-chip" data-var="promotion"
+                                  style="border-color:rgba(14,183,146,.35);background:rgba(14,183,146,.1);color:rgba(14,183,146,.96);">
+                                &#64;Blocco promozione
+                            </code>
+                        </div>
+                        <p class="menu-dashboard__copy" style="margin:4px 0 0;">
+                            Inserisce il blocco con nome, sconto e scadenza della promozione associata.
+                        </p>
+                    </div>
+
                     @foreach ($variableGroups as $group => $items)
                         <div class="mail-model-variable-group">
                             <strong>{{ $group }}</strong>
@@ -585,7 +716,15 @@
         { name: 'customer_phone',      label: 'Telefono' },
         { name: 'customer_age',        label: 'Età' },
         { name: 'customer_gender',     label: 'Sesso' },
+        { name: 'promotion',           label: 'Blocco promozione', isBlock: true },
     ];
+
+    const PROMO_BLOCK_PLACEHOLDER =
+        '<div style="margin:12px 0;padding:18px 16px;border-radius:10px;background:#eef2ff;border:1px dashed rgba(4,0,29,.15);text-align:center;">' +
+        '<p style="font-size:30px;font-weight:900;color:#04001d;margin:0 0 3px;line-height:1.1;">20%</p>' +
+        '<p style="font-size:13px;font-weight:700;color:#04001d;margin:4px 0;">Promozione esempio</p>' +
+        '<p style="font-size:11px;color:rgba(4,0,29,.45);margin:5px 0 0;">Valida fino al 31/12/2026</p>' +
+        '</div>';
 
     function findVar(name) {
         return vars.find(v => v.name === name) || null;
@@ -691,9 +830,10 @@
                 return '<span class="var-token">' + (vd ? vd.label : n) + '</span>';
             });
         }
-        // testo semplice con @var e \n
+        // testo semplice con @var, @promotion e \n
         return escHtml(text)
             .replace(/@([a-zA-Z0-9_]+)/g, (_, n) => {
+                if (n === 'promotion') return PROMO_BLOCK_PLACEHOLDER;
                 const vd = findVar(n);
                 return '<span class="var-token">' + (vd ? vd.label : '@' + n) + '</span>';
             })
@@ -707,6 +847,7 @@
         const body = document.getElementById('body_html')?.value || '';
         const end  = (document.getElementById('ending')?.value || '').trim();
         const snd  = (document.getElementById('sender')?.value || '').trim() || appName;
+        const ctaLbl = (document.getElementById('cta_label')?.value || '').trim() || 'Scopri la promozione';
 
         const pSubj    = document.getElementById('preview-subject');
         const pHdg     = document.getElementById('preview-heading');
@@ -714,6 +855,7 @@
         const pEnd     = document.getElementById('preview-ending');
         const pSnd     = document.getElementById('preview-sender');
         const pEndWrap = document.getElementById('preview-ending-wrap');
+        const pCtaBtn  = document.getElementById('preview-cta-btn');
 
         if (pSubj) {
             if (obj) { pSubj.innerHTML = renderInlineVar(obj); pSubj.classList.remove('is-placeholder'); }
@@ -732,12 +874,36 @@
             else { pEndWrap.style.display = 'none'; }
         }
         if (pSnd) pSnd.textContent = snd;
+        if (pCtaBtn) pCtaBtn.textContent = ctaLbl;
     }
 
-    ['object', 'heading', 'sender'].forEach(id => {
+    ['object', 'heading', 'sender', 'cta_label'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updatePreview);
     });
+
+    // ─── TOGGLE HAS_PROMOTION ────────────────────────────────────
+    (function () {
+        const chk          = document.getElementById('has_promotion');
+        const label        = document.getElementById('has-promotion-label');
+        const ctaWrap      = document.getElementById('cta-label-wrap');
+        const promoBlock   = document.getElementById('preview-promotion-block');
+        const ctaPreview   = document.getElementById('preview-cta-wrap');
+        const promoVarGroup = document.getElementById('promotion-var-group');
+
+        if (!chk) return;
+
+        function applyState(checked) {
+            label?.classList.toggle('has-promotion-toggle--active', checked);
+            if (ctaWrap)     ctaWrap.style.display      = checked ? '' : 'none';
+            if (promoBlock)  promoBlock.style.display    = checked ? '' : 'none';
+            if (ctaPreview)  ctaPreview.style.display    = checked ? '' : 'none';
+            if (promoVarGroup) promoVarGroup.style.display = checked ? '' : 'none';
+        }
+
+        chk.addEventListener('change', () => applyState(chk.checked));
+        applyState(chk.checked); // applica stato iniziale
+    })();
 
     // ─── AUTOCOMPLETE UI ─────────────────────────────────────────
     function showAc(anchorEl, query, isEditor) {

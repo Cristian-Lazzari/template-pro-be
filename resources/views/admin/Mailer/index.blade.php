@@ -303,6 +303,8 @@
                             return $text;
                         };
 
+                        $hasPromotion       = (bool) ($mailModel->has_promotion ?? false);
+                        $ctaLabel           = trim((string) ($mailModel->cta_label ?: ''));
                         $bodyHighlighted    = $highlightVar(e(\Illuminate\Support\Str::limit($bodyPreview, 160)));
                         $headingHighlighted = $highlightVar(e($mailModel->heading ?: ''));
                         $objectHighlighted  = $highlightVar(e($mailModel->object ?: __('admin.marketing.mailer.undefined_object')));
@@ -329,7 +331,9 @@
                                     <div class="mail-card__body mail-card__body--placeholder">{{ __('admin.marketing.mailer.html_body_placeholder') }}</div>
                                 @endif
 
-                                <span class="mail-card__cta">{{ __('admin.emails.marketing.discover_promotion') }}</span>
+                                @if ($hasPromotion)
+                                    <span class="mail-card__cta">{{ $ctaLabel ?: __('admin.emails.marketing.discover_promotion') }}</span>
+                                @endif
 
                                 <p class="mail-card__sender-line">{{ $mailModel->sender ?: $appName }}</p>
                             </div>
@@ -345,6 +349,11 @@
                                     'status' => $status,
                                     'label'  => $statusLabels[$status] ?? ucfirst($status),
                                 ])
+                                @if ($hasPromotion)
+                                    <span class="mail-card__usage" style="background:rgba(14,183,146,.18);border-color:rgba(14,183,146,.3);color:rgba(14,183,146,.95);">
+                                        Con promozione
+                                    </span>
+                                @endif
                                 @if ($usageCount > 0)
                                     <span class="mail-card__usage">{{ $usageCount }} {{ __('admin.marketing.mailer.usage_count') }}</span>
                                 @endif

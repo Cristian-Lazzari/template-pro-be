@@ -21,6 +21,8 @@ class Model extends IntModel
         'type',
         'channel',
         'status',
+        'has_promotion',
+        'cta_label',
         'body_html',
         'body_text',
         'variables',
@@ -29,6 +31,7 @@ class Model extends IntModel
     ];
 
     protected $casts = [
+        'has_promotion' => 'boolean',
         'variables' => 'array',
         'preview_data' => 'array',
         'last_used_at' => 'datetime',

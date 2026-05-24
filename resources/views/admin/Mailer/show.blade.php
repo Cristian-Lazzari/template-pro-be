@@ -20,11 +20,13 @@
     $appName     = config('configurazione.APP_NAME', config('app.name', 'R'));
     $logoLetter  = mb_strtoupper(mb_substr($appName, 0, 1));
 
-    $bodyHtml = trim((string) ($model->body_html ?: $model->body ?: ''));
-    $ending   = trim((string) ($model->ending ?: ''));
-    $heading  = trim((string) ($model->heading ?: ''));
-    $object   = trim((string) ($model->object ?: ''));
-    $sender   = trim((string) ($model->sender ?: $appName));
+    $bodyHtml     = trim((string) ($model->body_html ?: $model->body ?: ''));
+    $ending       = trim((string) ($model->ending ?: ''));
+    $heading      = trim((string) ($model->heading ?: ''));
+    $object       = trim((string) ($model->object ?: ''));
+    $sender       = trim((string) ($model->sender ?: $appName));
+    $hasPromotion = (bool) ($model->has_promotion ?? false);
+    $ctaLabel     = trim((string) ($model->cta_label ?: ''));
 @endphp
 
 <style>
@@ -354,6 +356,14 @@
                     </div>
 
                     <div class="mailer-show-fact">
+                        <span>Tipo modello</span>
+                        <strong>{{ $hasPromotion ? 'Con promozione' : 'Senza promozione' }}</strong>
+                        @if ($hasPromotion && $ctaLabel !== '')
+                            <small>CTA: {{ $ctaLabel }}</small>
+                        @endif
+                    </div>
+
+                    <div class="mailer-show-fact">
                         <span>{{ __('admin.marketing.mailer.updated_at', ['date' => '']) }}</span>
                         <strong>{{ $model->updated_at?->format('d/m/Y H:i') ?? '-' }}</strong>
                     </div>
@@ -445,7 +455,14 @@
                         <div class="mail-preview-body mail-preview-body--placeholder">{{ __('admin.marketing.mailer.preview_body') }}</div>
                     @endif
 
-                    <span class="mail-preview-cta">{{ __('admin.emails.marketing.discover_promotion') }}</span>
+                    @if ($hasPromotion)
+                        <div style="margin:12px 0;padding:18px 14px;border-radius:12px;background:#eef2ff;border:1px solid rgba(4,0,29,.1);text-align:center;">
+                            <p style="font-size:30px;font-weight:900;color:#04001d;margin:0 0 3px;line-height:1.1;">20%</p>
+                            <p style="font-size:13px;font-weight:700;color:#04001d;margin:4px 0;">Promozione associata</p>
+                            <p style="font-size:11px;color:rgba(4,0,29,.45);margin:5px 0 0;">Il blocco verrà popolato con i dati reali</p>
+                        </div>
+                        <span class="mail-preview-cta">{{ $ctaLabel ?: __('admin.emails.marketing.discover_promotion') }}</span>
+                    @endif
 
                     @if ($ending !== '')
                         <p class="mail-preview-ending">{{ $ending }}</p>
