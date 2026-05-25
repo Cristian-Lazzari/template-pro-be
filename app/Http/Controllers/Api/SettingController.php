@@ -6,11 +6,9 @@ use Exception;
 use Carbon\Carbon;
 use Stripe\Refund;
 use Stripe\Stripe;
-use App\Models\Date;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Reservation;
-use App\Models\OrderProduct;
 use App\Services\CustomerAuth\CustomerProfileSettingsService;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
@@ -376,250 +374,119 @@ class SettingController extends Controller
 
         return $lastResponseDate->greaterThanOrEqualTo(Carbon::now()->subHours(24));
     }
-    protected function statusOrder($c_a, $order){
-        if($c_a == 0 && in_array($order->status, [0, 6])){
+    protected function statusOrder($c_a, $order)
+    {
+        if ($c_a == 0 && in_array($order->status, [0, 6])) {
             return;
         }
-    
-        if(in_array($order->status, [3, 5])){
+
+        if (in_array($order->status, [3, 5])) {
             $m = 'L\'ordine è stato annullato e RIMBORSATO correttamente';
-            
-            //codice per rimborso
             try {
-                $stripeSecretKey = config('configurazione.STRIPE_SECRET'); 
-                
-                // Imposta la chiave segreta di Stripe
-                Stripe::setApiKey($stripeSecretKey);
-    
+                Stripe::setApiKey(config('configurazione.STRIPE_SECRET'));
                 if ($order->checkout_session_id === null) {
-                    return response()->json(['error' => 'Payment not found'], 404);
+                    return;
                 }
-    
-                // Effettua il rimborso
-                $refund = Refund::create([
-                    'payment_intent' => $order->checkout_session_id, // Questo è l'ID dell'intent di pagamento
-                ]);
-    
-                // Aggiorna lo stato del rimborso nella tua tabella
+                Refund::create(['payment_intent' => $order->checkout_session_id]);
                 $order->status = 6;
-    
             } catch (Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
+                Log::error('(SC) Errore rimborso Stripe', ['message' => $e->getMessage()]);
+                return;
             }
-            
-        }elseif(in_array($order->status, [2, 1])){
+        } elseif (in_array($order->status, [2, 1])) {
             $m = 'L\'ordine è stato annullato correttamente';
-            $message = 'Ci dispiace informarti che purtroppo il tuo ordine è stato annullato';
             $order->status = 0;
-        }else{
-            $m = 'L\'ordine era già stato annullato!';
-            return; 
-        }
-        $date = Date::where('date_slot', $order->date_slot)->firstOrFail();
-        $vis = json_decode($date->visible, 1); 
-        $reserving = json_decode($date->reserving, 1);
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1);  
-        if($property_adv['too']){
-            $np_cucina_1 = 0;
-            $np_cucina_2 = 0;
-            foreach ($order->products as $p) {
-                $qt = 0;
-                $op = OrderProduct::where('product_id', $p->id)->where('order_id', $order->id)->firstOrFail();
-                if($op !== null){
-                    $qt = $op->quantity;
-                    if($p->type_plate == 1 && $qt !== 0){
-                        $np_cucina_1 += ($p->slot_plate * $qt);
-                        if($vis['cucina_1'] == 0){
-                            $vis['cucina_1'] = 1;
-                        }
-                    }
-                    if($p->type_plate == 2){
-                        $np_cucina_2 += ($p->slot_plate * $qt);
-                        if($vis['cucina_2'] == 0){
-                            $vis['cucina_2'] = 1;
-                        }
-                    }
-                }
-            }
-            $reserving['cucina_1'] = $reserving['cucina_1'] - $np_cucina_1;
-            $reserving['cucina_2'] = $reserving['cucina_2'] - $np_cucina_2;
-            if($order->address !== null){
-                if($vis['domicilio'] == 0){
-                    $vis['domicilio'] = 1;
-                }
-                $reserving['domicilio'] --;
-            }
-        }else{
-            if($order->address !== null){
-                if($vis['domicilio'] == 0){
-                    $vis['domicilio'] = 1;
-                }
-                if($vis['asporto'] == 0){
-                    $vis['asporto'] = 1;
-                }
-                $reserving['domicilio'] --;
-            }else{
-                if($vis['asporto'] == 0){
-                    $vis['asporto'] = 1;
-                }
-                $reserving['asporto'] --;
-
-            }
+        } else {
+            return;
         }
 
-        $date->reserving = json_encode($reserving);
-        $date->visible = json_encode($vis);
-        $date->update();
-    
         $order->update();
-        //new menu
+
         $product_r = [];
         foreach ($order->products as $p) {
             $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
-            $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
+            $arrA = $p->pivot->add   !== '[]' ? json_decode($p->pivot->add,    true) : [];
             $r_option = [];
-            $r_add = [];
-            foreach ($arrO as $o) {
-                $ingredient = Ingredient::findByName($o);
-                $r_option[] = $ingredient;
-            }
-            foreach ($arrA as $o) {
-                $ingredient = Ingredient::findByName($o);
-                $r_add[] = $ingredient;
-            }
+            $r_add    = [];
+            foreach ($arrO as $o) { $r_option[] = Ingredient::findByName($o); }
+            foreach ($arrA as $o) { $r_add[]    = Ingredient::findByName($o); }
             $p->setAttribute('r_option', $r_option);
-            $p->setAttribute('r_add', $r_add);
+            $p->setAttribute('r_add',    $r_add);
             $product_r[] = $p;
         }
-        $cart_mail = [
-            'products' => $product_r,
-            'menus' => $order->menus,
-        ];
-        $adv_s = Setting::where('name', 'advanced')->first();
+
+        $adv_s        = Setting::where('name', 'advanced')->first();
         $property_adv = json_decode($adv_s->property, 1);
-        $set = Setting::where('name', 'Contatti')->firstOrFail();
-        $p_set = json_decode($set->property, true);
+        $set          = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set        = json_decode($set->property, true);
+
         $bodymail = [
-            'type' => 'or',
-            'to' => 'user',
-            
-            'title' =>  'Come richiesto il tuo ordine è stato annullato',
-            'subtitle' => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 gironi lavorativi' : '',
+            'type'                => 'or',
+            'to'                  => 'user',
+            'title'               => 'Come richiesto il tuo ordine è stato annullato',
+            'subtitle'            => $order->status == 6 ? 'Il tuo rimborso verrà elaborato in 5-10 giorni lavorativi' : '',
             'whatsapp_message_id' => $order->whatsapp_message_id,
-
-            'order_id' => $order->id,
-            'name' => $order->name,
-            'surname' => $order->surname,
-            'email' => $order->email,
-            'date_slot' => $order->date_slot,
-            'message' => $order->message,
-            'phone' => $order->phone,
-            'admin_phone' => $p_set['telefono'],
-            
-            'comune' => $order->comune,
-            'address' => $order->address,
-            'address_n' => $order->address_n,
-
-            
-            'status' => $order->status,
-            'cart' => $cart_mail,
-            'total_price' => $order->tot_price,
-
-            'property_adv' => $property_adv,
+            'order_id'            => $order->id,
+            'name'                => $order->name,
+            'surname'             => $order->surname,
+            'email'               => $order->email,
+            'date_slot'           => $order->date_slot,
+            'message'             => $order->message,
+            'phone'               => $order->phone,
+            'admin_phone'         => $p_set['telefono'],
+            'comune'              => $order->comune,
+            'address'             => $order->address,
+            'address_n'           => $order->address_n,
+            'status'              => $order->status,
+            'cart'                => ['products' => $product_r, 'menus' => $order->menus],
+            'total_price'         => $order->tot_price,
+            'property_adv'        => $property_adv,
         ];
 
-       
         $mail = new confermaOrdineAdmin($bodymail);
-        Mail::to($order['email'])->send($mail);
+        Mail::to($order->email)->send($mail);
 
-    
         return $m;
     }
-    protected function statusRes($c_a, $res){
-        if($c_a == 0 && in_array($res->status, [0, 6])){
+    protected function statusRes($c_a, $res)
+    {
+        if ($c_a == 0 && in_array($res->status, [0, 6])) {
             return;
         }
-       
-        if($res->status == 0){
-            $m = 'La prenotazione e\' stata gia annullata correttamente';
+
+        if ($res->status == 0) {
             return;
-        }
-        $date = Date::where('date_slot', $res->date_slot)->firstOrFail();
-        $vis = json_decode($date->visible, 1); 
-        $reserving = json_decode($date->reserving, 1);
-        $_p = json_decode($res->n_person);
-        $tot_p = $_p->child + $_p->adult;
-
-        $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1);
-
-        if($property_adv['dt']){
-            if($res->sala == 1){
-                if($vis['table_1'] == 0){
-                    $vis['table_1'] = 1;
-                }
-                $reserving['table_1'] = $reserving['table_1'] - $tot_p;
-                $date->reserving = json_encode($reserving);
-                $date->visible = json_encode($vis);
-                $date->update();
-            }else{
-                if($vis['table_2'] == 0){
-                    $vis['table_2'] = 1;
-                }
-                $reserving['table_2'] = $reserving['table_2'] - $tot_p;
-                $date->reserving = json_encode($reserving);
-                $date->visible = json_encode($vis);
-                $date->update();
-            }
-        }else{
-            if($vis['table'] == 0){
-                $vis['table'] = 1;
-            }
-            $reserving['table'] = $reserving['table'] - $tot_p;
-            $date->reserving = json_encode($reserving);
-            $date->visible = json_encode($vis);
-            $date->update();
         }
 
         $res->status = 0;
-        $m = 'La prenotazione e\' stata annullata correttamente';
-        $message = 'Ci spiace informarti che la tua prenotazione in data ' . $res->date_slot .' e\' stata annullata';
-        
         $res->update();
-        
 
-        $set = Setting::where('name', 'Contatti')->firstOrFail();
-        $p_set = json_decode($set->property, true);
+        $adv_s        = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+        $set          = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set        = json_decode($set->property, true);
+
         $bodymail = [
-            'type' => 'res',
-            'to' => 'user',
-
-            'title' => 'Come richiesto la tua prenotazione è stata annullata',
-            'subtitle' => '',
-
-            'res_id' => $res->id,
-            'name' => $res->name,
-            'surname' => $res->surname,
-            'email' => $res->email,
-            'date_slot' => $res->date_slot,
-            'message' => $res->message,
-            'sala' => $res->sala,
-            'phone' => $res->phone,
-            'admin_phone' => $p_set['telefono'],
-            
+            'type'                => 'res',
+            'to'                  => 'user',
+            'title'               => 'Come richiesto la tua prenotazione è stata annullata',
+            'subtitle'            => '',
             'whatsapp_message_id' => $res->whatsapp_message_id,
-            'n_person' => $res->n_person,
-            'status' => $res->status,
-
-            'property_adv' => $property_adv,
+            'res_id'              => $res->id,
+            'name'                => $res->name,
+            'surname'             => $res->surname,
+            'email'               => $res->email,
+            'date_slot'           => $res->date_slot,
+            'message'             => $res->message,
+            'sala'                => $res->sala,
+            'phone'               => $res->phone,
+            'admin_phone'         => $p_set['telefono'],
+            'n_person'            => $res->n_person,
+            'status'              => $res->status,
+            'property_adv'        => $property_adv,
         ];
 
-       
         $mail = new confermaOrdineAdmin($bodymail);
-
-        Mail::to($res['email'])->send($mail);
-
-        return;   
+        Mail::to($res->email)->send($mail);
     }
 }
