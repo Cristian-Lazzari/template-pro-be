@@ -237,6 +237,7 @@ class ReservationController extends Controller
             $newRes->message = $data['message'];
             $newRes->status = 2;
             $newRes->news_letter = $this->legacyNewsletterOptIn($data);
+            $newRes->lang        = $lang;
             if($isDoubleRoomEnabled){
                 $newRes->sala = $selectedSala;
             }
