@@ -277,6 +277,7 @@ class OrderController extends Controller
             $newOrder->email = $data['email'];
             $newOrder->message = $data['message'];
             $newOrder->news_letter = $this->legacyNewsletterOptIn($data);
+            $newOrder->lang        = $lang;
             $tot_delivery_cost = 0;
             $newOrder->status = $data['paying'] ? 4 : 2;
             if (isset($data['comune'])) {
@@ -674,11 +675,12 @@ class OrderController extends Controller
                 $mail = new confermaOrdineAdmin($bodymail);
                 Mail::to($data['email'])->send($mail);
 
-                $mx = $this->save_message([        
-                    'wa_id' => $newOrder->whatsapp_message_id,
+                $mx = $this->save_message([
+                    'wa_id'  => $newOrder->whatsapp_message_id,
                     'type_1' => $type_m_1,
                     'type_2' => $type_m_2,
                     'source' => config('configurazione.db'),
+                    'lang'   => $lang,
                 ]);
                 return response()->json([
                     'success' => true,
@@ -959,6 +961,7 @@ class OrderController extends Controller
                     'wa_id'  =>  $id,
                     'type'   =>  $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'],
                     'source' =>  $source->id,
+                    'lang'   =>  $data_am1['lang'] ?? 'it',
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]

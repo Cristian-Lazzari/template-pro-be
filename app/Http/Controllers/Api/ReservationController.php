@@ -412,11 +412,12 @@ class ReservationController extends Controller
         
         $this->send_mail($newRes, $lang, $defaultLang);
 
-        $mx = $this->save_message([        
+        $mx = $this->save_message([
             'wa_id' => $newRes->whatsapp_message_id,
             'type_1' => $type_m_1,
             'type_2' => $type_m_2,
             'source' => config('configurazione.db'),
+            'lang'   => $lang,
         ]);
             return response()->json([
                 'success' => true,
@@ -632,6 +633,7 @@ class ReservationController extends Controller
                     'wa_id'  =>  $id,
                     'type'   =>  $i == 1 ? $data_am1['type_1'] : $data_am1['type_2'],
                     'source' =>  $source->id,
+                    'lang'   =>  $data_am1['lang'] ?? 'it',
                     'created_at' => $now,
                     'updated_at' => $now,
                 ]
