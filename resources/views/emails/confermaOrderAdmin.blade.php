@@ -689,16 +689,27 @@
                 {{-- ================================================================
                      LINK ANNULLA (utente)
                      ================================================================ --}}
-                @if (isset($content_mail['whatsapp_message_id'])
-                    && config('configurazione.subscription') > 2
+                @if (config('configurazione.subscription') > 2
                     && $mailTo == 'user'
                     && !in_array($content_mail['status'], [0, 6]))
+                @php
+                    $cancelId  = $content_mail['type'] === 'or'
+                        ? ($content_mail['order_id'] ?? null)
+                        : ($content_mail['res_id']   ?? null);
+                    $cancelUrl = $cancelId
+                        ? \Illuminate\Support\Facades\URL::signedRoute('api.client_default', [
+                            'type' => $content_mail['type'],
+                            'id'   => $cancelId,
+                          ])
+                        : null;
+                @endphp
+                @if ($cancelUrl)
                 <tr>
                     <td align="center" style="padding:20px 40px 0;">
                         <p style="color:#6b7280; font-size:12px; margin:0 0 10px; line-height:1.5;">
                             {{ __('admin._Per_annullare_lordine_o_la_prenotazione_in_autonomia_premi_questo_bottone') }}
                         </p>
-                        <a href="{{ config('configurazione.APP_URL') }}/api/client_default/?whatsapp_message_id={{ $content_mail['whatsapp_message_id'] }}"
+                        <a href="{{ $cancelUrl }}"
                            style="display:inline-block; padding:10px 28px; background-color:#b91c1c;
                                   color:#ffffff; font-size:14px; font-weight:700; text-decoration:none;
                                   border-radius:8px;">
@@ -706,6 +717,7 @@
                         </a>
                     </td>
                 </tr>
+                @endif
                 @endif
 
                 <!-- Spazio inferiore interno alla card -->

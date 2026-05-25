@@ -23,56 +23,136 @@ use Illuminate\Support\Facades\Mail;
 class SettingController extends Controller
 {
     public function client_default(Request $request) {
-        $messageId = $request->query('whatsapp_message_id');
-        //return $messageId;
-
-        if (!$messageId) {
-            return response()->json(['error' => 'whatsapp_message_id mancante'], 400);
+        if (!$request->hasValidSignature()) {
+            return view('guests.cancel_denied', [
+                'reason' => 'link_invalid',
+                'phone'  => $this->getRestaurantPhone(),
+            ]);
         }
-        
-        // Cerca l'ordine o la prenotazione
-        $order = Order::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
-        $reservation = Reservation::where('whatsapp_message_id', 'like', '%' . $messageId . '%')->first();
-        
-        if (!$order && !$reservation) {
-            return response()->json(['error' => 'Nessun ordine o prenotazione trovata'], 404);
-        }
-        
-        // Determina quale entità annullare
 
-        if ($order) {
-            $or_res = $order;
-            $status = $or_res->status;  
-            if(in_array($status, [0, 6])){
-                return view('guests.delete_success');
-            }
-            $link_id = config('configurazione.APP_URL') . '/admin/orders/' . $or_res->id;
-            $this->statusOrder(0, $or_res);
-            $o_r = 'or';
-            
+        $type = $request->query('type'); // 'or' | 'res'
+        $id   = (int) $request->query('id');
+
+        if ($type === 'or') {
+            $entity = Order::find($id);
+        } elseif ($type === 'res') {
+            $entity = Reservation::find($id);
         } else {
-            $or_res = $reservation;
-            $status = $or_res->status;  
-            if(in_array($status, [0, 6])){
-                return view('guests.delete_success');
-            }
-            $link_id = config('configurazione.APP_URL') . '/admin/reservations/' . $or_res->id;
-            $this->statusRes(0, $or_res);
-            $o_r = 'res'; 
+            abort(400);
         }
-        // 📲 **Invia il messaggio di annullamento su WhatsApp*
+
+        if (!$entity) {
+            abort(404);
+        }
+
+        if (in_array($entity->status, [0, 6])) {
+            return view('guests.delete_success');
+        }
+
+        // Regole di annullamento: entro 5 minuti dalla creazione OPPURE almeno 24h di preavviso
+        $withinGracePeriod = $entity->created_at->gt(Carbon::now()->subMinutes(5));
+        $dateSlot = Carbon::createFromFormat('d/m/Y H:i', $entity->date_slot);
+        $sufficientNotice  = $dateSlot->gt(Carbon::now()->addHours(24));
+
+        if (!$withinGracePeriod && !$sufficientNotice) {
+            return view('guests.cancel_denied', [
+                'reason' => 'too_late',
+                'phone'  => $this->getRestaurantPhone(),
+                'type'   => $type,
+            ]);
+        }
+
+        // Procede con l'annullamento
+        $adminPath = $type === 'or' ? 'orders' : 'reservations';
+        $link_id   = config('configurazione.APP_URL') . '/admin/' . $adminPath . '/' . $entity->id;
+
+        if ($type === 'or') {
+            $this->statusOrder(0, $entity);
+            $o_r = 'or';
+        } else {
+            $this->statusRes(0, $entity);
+            $o_r = 'res';
+        }
+
+        // Email di notifica al ristoratore
+        $this->sendCancellationEmailToAdmin($entity, $type);
+
+        // Messaggio WhatsApp al ristoratore
         $wa = Setting::where('name', 'wa')->first();
-        $property = json_decode($wa->property, 1);
-        $p = 0; 
-       
-
+        if ($wa) {
+            $property = json_decode($wa->property, 1);
+            $p = 0;
             foreach ($property['numbers'] as $number) {
-                $this->message_default($o_r, $p, $or_res, $number, $link_id );
-                $p ++; 
+                $this->message_default($o_r, $p, $entity, $number, $link_id);
+                $p++;
             }
-
+        }
 
         return view('guests.delete_success');
+    }
+
+    private function getRestaurantPhone(): string
+    {
+        $set = Setting::where('name', 'Contatti')->first();
+        if (!$set) return '';
+        $p_set = json_decode($set->property, true);
+        return $p_set['telefono'] ?? '';
+    }
+
+    private function sendCancellationEmailToAdmin($entity, string $type): void
+    {
+        $set = Setting::where('name', 'Contatti')->firstOrFail();
+        $p_set = json_decode($set->property, true);
+        $adv_s = Setting::where('name', 'advanced')->first();
+        $property_adv = json_decode($adv_s->property, 1);
+
+        if ($type === 'or') {
+            $bodymail = [
+                'type'               => 'or',
+                'to'                 => 'admin',
+                'title'              => 'Ordine annullato dal cliente',
+                'subtitle'           => '',
+                'order_id'           => $entity->id,
+                'name'               => $entity->name,
+                'surname'            => $entity->surname,
+                'email'              => $entity->email,
+                'date_slot'          => $entity->date_slot,
+                'message'            => $entity->message,
+                'phone'              => $entity->phone,
+                'admin_phone'        => $p_set['telefono'],
+                'comune'             => $entity->comune,
+                'address'            => $entity->address,
+                'address_n'          => $entity->address_n,
+                'status'             => 0,
+                'whatsapp_message_id' => null,
+                'cart'               => ['products' => [], 'menus' => []],
+                'total_price'        => $entity->tot_price,
+                'property_adv'       => $property_adv,
+            ];
+        } else {
+            $bodymail = [
+                'type'               => 'res',
+                'to'                 => 'admin',
+                'title'              => 'Prenotazione annullata dal cliente',
+                'subtitle'           => '',
+                'res_id'             => $entity->id,
+                'name'               => $entity->name,
+                'surname'            => $entity->surname,
+                'email'              => $entity->email,
+                'date_slot'          => $entity->date_slot,
+                'message'            => $entity->message,
+                'sala'               => $entity->sala,
+                'phone'              => $entity->phone,
+                'admin_phone'        => $p_set['telefono'],
+                'whatsapp_message_id' => null,
+                'n_person'           => $entity->n_person,
+                'status'             => 0,
+                'property_adv'       => $property_adv,
+            ];
+        }
+
+        $mail = new confermaOrdineAdmin($bodymail);
+        Mail::to(config('configurazione.mf'))->send($mail);
     }
     public function index(CustomerProfileSettingsService $customerProfileSettingsService) {
         $settings = Setting::all()->keyBy('name');
