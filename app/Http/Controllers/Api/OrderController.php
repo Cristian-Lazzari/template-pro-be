@@ -211,17 +211,20 @@ class OrderController extends Controller
             $total_price = 0;
             for ($i = 0; $i < count($cart['products']); ++$i) {
                 $product = Product::where('id', $cart['products'][$i]['id'])->first();
-                $total_price += $product->price * ($cart['products'][$i]['counter'] > 0 ? $cart['products'][$i]['counter'] : 1);
+                $quantity = $cart['products'][$i]['counter'] > 0 ? $cart['products'][$i]['counter'] : 1;
+                $total_price += $product->price * $quantity;
                 $cart['products'][$i]['price'] = $product->price;
        
-                for ($z = 0; $z < count($cart['products'][$i]['add']); $z++) {
-                    $ingredient = Ingredient::findByName($cart['products'][$i]['add'][$z]);
-                    $total_price += $ingredient->price * ($cart['products'][$i]['counter'] > 0 ? $cart['products'][$i]['counter'] : 1);
-                }
-                for ($z = 0; $z < count($cart['products'][$i]['option']); $z++) {
-                    $ingredient = Ingredient::findByName($cart['products'][$i]['option'][$z]);
-                    $total_price += $ingredient->price * ($cart['products'][$i]['counter'] > 0 ? $cart['products'][$i]['counter'] : 1);
-                }
+                $total_price += $this->modifierPriceTotal(
+                    $this->modifierNamesFromArray($cart['products'][$i]['add'] ?? []),
+                    $quantity,
+                    ['stage' => 'checkout_total', 'modifier_type' => 'add', 'product_id' => $product->id]
+                );
+                $total_price += $this->modifierPriceTotal(
+                    $this->modifierNamesFromArray($cart['products'][$i]['option'] ?? []),
+                    $quantity,
+                    ['stage' => 'checkout_total', 'modifier_type' => 'option', 'product_id' => $product->id]
+                );
             }
             foreach ($cart['menus'] as $m) {
                 $menu = Menu::where('id', $m['id'])->first();
@@ -309,9 +312,9 @@ class OrderController extends Controller
                 $item_order->order_id = $newOrder->id;
                 $item_order->product_id = $e['id'];
                 $item_order->quantity= $e['counter'] > 0 ? $e['counter'] : 1;
-                $item_order->remove = json_encode($e['remove']);
-                $item_order->add = json_encode($e['add']);
-                $item_order->option = json_encode($e['option']);
+                $item_order->remove = $this->encodeModifierArray($e['remove'] ?? []);
+                $item_order->add = $this->encodeModifierArray($e['add'] ?? []);
+                $item_order->option = $this->encodeModifierArray($e['option'] ?? []);
                 $item_order->save();
                 $dd[] = $item_order;
             }
@@ -414,20 +417,35 @@ class OrderController extends Controller
                     $order_mess .= "*```" . $product->name. "```*" . $productPromotionText;
 
                     // Gestisci le opzioni del prodotto
-                    if ($product->pivot->option !== '[]') {
-                        $options = json_decode($product->pivot->option);
+                    $options = $this->decodeModifierJsonArray($product->pivot->option ?? null, [
+                        'stage' => 'whatsapp_message',
+                        'modifier_type' => 'option',
+                        'order_id' => $newOrder->id,
+                        'product_id' => $product->id,
+                    ]);
+                    if ($options !== []) {
                         $info .= "\n ```Opzioni:``` " . implode(', ', $options);
                         $order_mess .= " ```Opzioni:``` " . implode(', ', $options);
                     }
                     // Gestisci gli ingredienti aggiunti
-                    if ($product->pivot->add !== '[]') {
-                        $addedIngredients = json_decode($product->pivot->add);
+                    $addedIngredients = $this->decodeModifierJsonArray($product->pivot->add ?? null, [
+                        'stage' => 'whatsapp_message',
+                        'modifier_type' => 'add',
+                        'order_id' => $newOrder->id,
+                        'product_id' => $product->id,
+                    ]);
+                    if ($addedIngredients !== []) {
                         $info .= "\n ```Aggiunte:``` " . implode(', ', $addedIngredients);
                         $order_mess .= " ```Aggiunte:``` " . implode(', ', $addedIngredients);
                     }
                     // Gestisci gli ingredienti rimossi
-                    if ($product->pivot->remove !== '[]') {
-                        $removedIngredients = json_decode($product->pivot->remove);
+                    $removedIngredients = $this->decodeModifierJsonArray($product->pivot->remove ?? null, [
+                        'stage' => 'whatsapp_message',
+                        'modifier_type' => 'remove',
+                        'order_id' => $newOrder->id,
+                        'product_id' => $product->id,
+                    ]);
+                    if ($removedIngredients !== []) {
                         $info .= "\n ```Rimossi:``` " . implode(', ', $removedIngredients);
                         $order_mess .= " ```Rimossi:``` " . implode(', ', $removedIngredients);
                     }
@@ -580,20 +598,27 @@ class OrderController extends Controller
                 //new menu
                 $product_r = [];
                 foreach ($newOrder->products as $p) {
-                    $arrO = $p->pivot->option !== '[]' ? json_decode($p->pivot->option, true) : [];
-                    $arrA = $p->pivot->add !== '[]' ? json_decode($p->pivot->add, true) : [];
-                    $r_option = [];
-                    $r_add = [];
-                    foreach ($arrO as $o) {
-                        $ingredient = Ingredient::findByName($o);
-                        $r_option[] = $ingredient;
-                    }
-                    foreach ($arrA as $o) {
-                        $ingredient = Ingredient::findByName($o);
-                        $r_add[] = $ingredient;
-                    }
-                    $p->setAttribute('r_option', $r_option);
-                    $p->setAttribute('r_add', $r_add);
+                    $arrO = $this->decodeModifierJsonArray($p->pivot->option ?? null, [
+                        'stage' => 'initial_order_mail_cart',
+                        'modifier_type' => 'option',
+                        'order_id' => $newOrder->id,
+                        'product_id' => $p->id,
+                    ]);
+                    $arrA = $this->decodeModifierJsonArray($p->pivot->add ?? null, [
+                        'stage' => 'initial_order_mail_cart',
+                        'modifier_type' => 'add',
+                        'order_id' => $newOrder->id,
+                        'product_id' => $p->id,
+                    ]);
+                    $arrR = $this->decodeModifierJsonArray($p->pivot->remove ?? null, [
+                        'stage' => 'initial_order_mail_cart',
+                        'modifier_type' => 'remove',
+                        'order_id' => $newOrder->id,
+                        'product_id' => $p->id,
+                    ]);
+                    $p->setAttribute('r_option', $this->modifierMailItems($arrO, 'option', $newOrder, $p));
+                    $p->setAttribute('r_add', $this->modifierMailItems($arrA, 'add', $newOrder, $p));
+                    $p->setAttribute('r_remove', $arrR);
                     $product_r[] = $p;
                 }
                 $cart_mail = [
@@ -605,16 +630,31 @@ class OrderController extends Controller
                 $delivery_cost = 0;
                 if($newOrder->comune){
                     foreach ($newOrder->products as $o) {
-                        $add = json_decode( $o->pivot->add , 1);
-                        $option = json_decode( $o->pivot->option , 1);
-                        foreach ($add as $a) {
-                            $ing = Ingredient::findByName($a);
-                            $cart_price += $ing->price * $o->pivot->quantity;
-                        }
-                        foreach ($option as $a) {
-                            $ing = Ingredient::findByName($a);
-                            $cart_price += $ing->price * $o->pivot->quantity;
-                        }
+                        $quantity = $o->pivot->quantity ?: 1;
+                        $add = $this->decodeModifierJsonArray($o->pivot->add ?? null, [
+                            'stage' => 'delivery_cart_price',
+                            'modifier_type' => 'add',
+                            'order_id' => $newOrder->id,
+                            'product_id' => $o->id,
+                        ]);
+                        $option = $this->decodeModifierJsonArray($o->pivot->option ?? null, [
+                            'stage' => 'delivery_cart_price',
+                            'modifier_type' => 'option',
+                            'order_id' => $newOrder->id,
+                            'product_id' => $o->id,
+                        ]);
+                        $cart_price += $this->modifierPriceTotal($add, $quantity, [
+                            'stage' => 'delivery_cart_price',
+                            'modifier_type' => 'add',
+                            'order_id' => $newOrder->id,
+                            'product_id' => $o->id,
+                        ]);
+                        $cart_price += $this->modifierPriceTotal($option, $quantity, [
+                            'stage' => 'delivery_cart_price',
+                            'modifier_type' => 'option',
+                            'order_id' => $newOrder->id,
+                            'product_id' => $o->id,
+                        ]);
                         $cart_price += $o->price * $o->pivot->quantity;
                     }
                     foreach ($newOrder->menus as $menu) {
@@ -664,7 +704,12 @@ class OrderController extends Controller
                     
                 ];
                 $mailAdmin = new confermaOrdineAdmin($bodymail);
-                Mail::to(config('configurazione.mf'))->send($mailAdmin);
+                try {
+                    Mail::to(config('configurazione.mf'))->send($mailAdmin);
+                } catch (Throwable $e) {
+                    $this->logInitialOrderMailFailure('admin', $newOrder, $cart, $e);
+                    throw $e;
+                }
                 
                 $bodymail['to'] = 'user';
                 $bodymail['whatsapp_message_id'] = $newOrder->whatsapp_message_id;
@@ -673,7 +718,12 @@ class OrderController extends Controller
 
 
                 $mail = new confermaOrdineAdmin($bodymail);
-                Mail::to($data['email'])->send($mail);
+                try {
+                    Mail::to($data['email'])->send($mail);
+                } catch (Throwable $e) {
+                    $this->logInitialOrderMailFailure('customer', $newOrder, $cart, $e);
+                    throw $e;
+                }
 
                 $mx = $this->save_message([
                     'wa_id'  => $newOrder->whatsapp_message_id,
@@ -711,7 +761,7 @@ class OrderController extends Controller
                 'success' => false,
                 'message' => $message,
             ]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $trace = $e->getTrace();
             $errorInfo = [
                 'success' => false,
@@ -734,6 +784,157 @@ class OrderController extends Controller
 
             return response()->json($errorInfo, 500);
         }
+    }
+
+    private function modifierNamesFromArray(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $names = [];
+
+        foreach ($value as $item) {
+            if (is_array($item)) {
+                $item = $item['name'] ?? null;
+            } elseif (is_object($item)) {
+                $item = $item->name ?? null;
+            }
+
+            $name = trim((string) $item);
+
+            if ($name !== '') {
+                $names[] = $name;
+            }
+        }
+
+        return array_values($names);
+    }
+
+    private function encodeModifierArray(mixed $value): string
+    {
+        return json_encode($this->modifierNamesFromArray($value), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    private function decodeModifierJsonArray(mixed $value, array $context = []): array
+    {
+        if (is_array($value)) {
+            return $this->modifierNamesFromArray($value);
+        }
+
+        if ($value === null) {
+            return [];
+        }
+
+        $raw = trim((string) $value);
+
+        if ($raw === '' || $raw === '[]') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+            Log::warning('(OrderController) JSON modificatori ordine non valido', array_merge($context, [
+                'json_error' => json_last_error_msg(),
+                'raw_preview' => strlen($raw) > 500 ? substr($raw, 0, 500) . '...' : $raw,
+            ]));
+
+            return [];
+        }
+
+        return $this->modifierNamesFromArray($decoded);
+    }
+
+    private function modifierPriceTotal(array $names, int $quantity, array $context = []): float
+    {
+        $total = 0.0;
+
+        foreach ($names as $name) {
+            $ingredient = $this->findModifierIngredient($name, $context);
+
+            if (! $ingredient) {
+                continue;
+            }
+
+            $total = Currency::roundAmount($total + (($ingredient->price ?? 0) * $quantity));
+        }
+
+        return $total;
+    }
+
+    private function modifierMailItems(array $names, string $modifierType, Order $order, Product $product): array
+    {
+        $items = [];
+
+        foreach ($names as $name) {
+            $ingredient = $this->findModifierIngredient($name, [
+                'stage' => 'initial_order_mail_items',
+                'modifier_type' => $modifierType,
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+            ]);
+
+            $items[] = $ingredient ?: (object) [
+                'name' => $name,
+                'price' => 0,
+                'missing' => true,
+            ];
+        }
+
+        return $items;
+    }
+
+    private function findModifierIngredient(string $name, array $context = []): ?Ingredient
+    {
+        $name = trim($name);
+
+        if ($name === '') {
+            return null;
+        }
+
+        $ingredient = Ingredient::findByName($name);
+
+        if (! $ingredient) {
+            Log::warning('(OrderController) Ingrediente/opzione ordine non trovato; continuo con prezzo 0', array_merge($context, [
+                'name' => $name,
+            ]));
+        }
+
+        return $ingredient;
+    }
+
+    private function logInitialOrderMailFailure(string $recipientType, Order $order, array $cart, Throwable $e): void
+    {
+        Log::error('(OrderController) Invio mail iniziale ordine fallito', [
+            'recipient_type' => $recipientType,
+            'order_id' => $order->id,
+            'customer_id' => $order->customer_id ?? null,
+            'restaurant_db' => config('configurazione.db'),
+            'restaurant_app' => config('configurazione.APP_NAME'),
+            'modifiers' => $this->cartModifierLogContext($cart),
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => array_slice($e->getTrace(), 0, 5),
+        ]);
+    }
+
+    private function cartModifierLogContext(array $cart): array
+    {
+        return collect($cart['products'] ?? [])
+            ->map(function ($product) {
+                return [
+                    'product_id' => $product['id'] ?? null,
+                    'add' => $this->modifierNamesFromArray($product['add'] ?? []),
+                    'remove' => $this->modifierNamesFromArray($product['remove'] ?? []),
+                    'option' => $this->modifierNamesFromArray($product['option'] ?? []),
+                    'quantity' => $product['counter'] ?? null,
+                ];
+            })
+            ->filter(fn ($product) => $product['add'] || $product['remove'] || $product['option'])
+            ->values()
+            ->all();
     }
 
     private function preferredCheckoutValue($incoming, $fallback)

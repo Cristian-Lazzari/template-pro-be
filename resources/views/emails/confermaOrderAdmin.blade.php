@@ -1,5 +1,6 @@
 @php
     use Carbon\Carbon;
+    use Illuminate\Support\Facades\Log;
 
     $dateSlot = $content_mail['date_slot'];
     if (strpos($dateSlot, ' ') !== false) {
@@ -40,6 +41,47 @@
 
     $appliedPromotions = $content_mail['promotions'] ?? [];
     $mailTo            = $content_mail['to'] ?? 'user';
+
+    $decodeMailModifierArray = function ($value, array $context = []) {
+        if (is_array($value)) {
+            return array_values(array_filter(array_map(fn ($item) => is_scalar($item) ? trim((string) $item) : '', $value), fn ($item) => $item !== ''));
+        }
+
+        if ($value === null) {
+            return [];
+        }
+
+        $raw = trim((string) $value);
+
+        if ($raw === '' || $raw === '[]') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+            Log::warning('(confermaOrderAdmin) JSON modificatori ordine non valido durante render mail', array_merge($context, [
+                'json_error' => json_last_error_msg(),
+                'raw_preview' => strlen($raw) > 500 ? substr($raw, 0, 500) . '...' : $raw,
+            ]));
+
+            return [];
+        }
+
+        return array_values(array_filter(array_map(fn ($item) => is_scalar($item) ? trim((string) $item) : '', $decoded), fn ($item) => $item !== ''));
+    };
+
+    $modifierItems = function ($value) {
+        if ($value instanceof \Illuminate\Support\Collection) {
+            return $value->filter()->values();
+        }
+
+        if (is_array($value)) {
+            return collect($value)->filter()->values();
+        }
+
+        return collect();
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="it">
@@ -267,7 +309,16 @@
 
                     <!-- ---- PRODOTTI ---- -->
                     @foreach ($content_mail['cart']['products'] as $i)
-                    @php $arrD = json_decode($i->pivot->remove); @endphp
+                    @php
+                        $rOption = $modifierItems($i->r_option ?? []);
+                        $rAdd = $modifierItems($i->r_add ?? []);
+                        $arrD = $i->r_remove ?? $decodeMailModifierArray($i->pivot->remove ?? null, [
+                            'order_id' => $content_mail['order_id'] ?? null,
+                            'product_id' => $i->id ?? null,
+                            'modifier_type' => 'remove',
+                        ]);
+                        $arrD = is_array($arrD) ? $arrD : [];
+                    @endphp
                     <tr>
                         <td style="padding:0 40px 10px;">
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
@@ -306,29 +357,33 @@
                                             </tr>
                                         </table>
 
-                                        @if (count($i->r_option) || count($i->r_add) || count($arrD))
+                                        @if ($rOption->isNotEmpty() || $rAdd->isNotEmpty() || count($arrD))
                                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
                                                style="margin-top:10px; border-top:1px solid #e5e7eb;">
                                             <tr>
                                                 <td style="padding-top:8px;">
 
-                                                    @if (count($i->r_option))
+                                                    @if ($rOption->isNotEmpty())
                                                         <p style="color:#6b7280; font-size:10px; text-transform:uppercase;
                                                                    letter-spacing:0.08em; font-weight:700; margin:0 0 4px;">
                                                             {{ __('admin.Opzioni') }}
                                                         </p>
-                                                        @foreach ($i->r_option as $a)
+                                                        @foreach ($rOption as $a)
+                                                        @php
+                                                            $modifierName = data_get($a, 'name');
+                                                            $modifierPrice = data_get($a, 'price', 0);
+                                                        @endphp
                                                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
                                                                style="margin-bottom:3px;">
                                                             <tr>
                                                                 <td>
-                                                                    <p style="color:#374151; font-size:13px; margin:0;">{{ $a->name }}</p>
+                                                                    <p style="color:#374151; font-size:13px; margin:0;">{{ $modifierName }}</p>
                                                                 </td>
-                                                                @if ($a->price)
+                                                                @if ($modifierPrice)
                                                                 <td align="right" style="white-space:nowrap; padding-left:8px;">
                                                                     <p style="color:#15803d; font-size:13px; font-weight:700;
                                                                                font-family:monospace; margin:0;">
-                                                                        +{{ \App\Support\Currency::formatCents($a->price) }}
+                                                                        +{{ \App\Support\Currency::formatCents($modifierPrice) }}
                                                                     </p>
                                                                 </td>
                                                                 @endif
@@ -337,23 +392,27 @@
                                                         @endforeach
                                                     @endif
 
-                                                    @if (count($i->r_add))
+                                                    @if ($rAdd->isNotEmpty())
                                                         <p style="color:#6b7280; font-size:10px; text-transform:uppercase;
-                                                                   letter-spacing:0.08em; font-weight:700; margin:{{ count($i->r_option) ? '10px' : '0' }} 0 4px;">
+                                                                   letter-spacing:0.08em; font-weight:700; margin:{{ $rOption->isNotEmpty() ? '10px' : '0' }} 0 4px;">
                                                             {{ __('admin.Ingredienti_extra') }}
                                                         </p>
-                                                        @foreach ($i->r_add as $a)
+                                                        @foreach ($rAdd as $a)
+                                                        @php
+                                                            $modifierName = data_get($a, 'name');
+                                                            $modifierPrice = data_get($a, 'price', 0);
+                                                        @endphp
                                                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
                                                                style="margin-bottom:3px;">
                                                             <tr>
                                                                 <td>
-                                                                    <p style="color:#374151; font-size:13px; margin:0;">+ {{ $a->name }}</p>
+                                                                    <p style="color:#374151; font-size:13px; margin:0;">+ {{ $modifierName }}</p>
                                                                 </td>
-                                                                @if ($a->price)
+                                                                @if ($modifierPrice)
                                                                 <td align="right" style="white-space:nowrap; padding-left:8px;">
                                                                     <p style="color:#15803d; font-size:13px; font-weight:700;
                                                                                font-family:monospace; margin:0;">
-                                                                        +{{ \App\Support\Currency::formatCents($a->price) }}
+                                                                        +{{ \App\Support\Currency::formatCents($modifierPrice) }}
                                                                     </p>
                                                                 </td>
                                                                 @endif
@@ -364,7 +423,7 @@
 
                                                     @if (count($arrD))
                                                         <p style="color:#6b7280; font-size:10px; text-transform:uppercase;
-                                                                   letter-spacing:0.08em; font-weight:700; margin:{{ (count($i->r_option) || count($i->r_add)) ? '10px' : '0' }} 0 4px;">
+                                                                   letter-spacing:0.08em; font-weight:700; margin:{{ ($rOption->isNotEmpty() || $rAdd->isNotEmpty()) ? '10px' : '0' }} 0 4px;">
                                                             {{ __('admin.Ingredienti_rimossi') }}
                                                         </p>
                                                         @foreach ($arrD as $a)
