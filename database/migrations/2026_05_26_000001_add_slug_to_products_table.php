@@ -12,7 +12,7 @@ return new class extends Migration
     {
         // Passo 1: colonna nullable per consentire il backfill
         Schema::table('products', function (Blueprint $table) {
-            $table->string('slug', 120)->nullable()->after('name');
+            $table->string('slug', 120)->nullable()->after('category_id');
         });
 
         // Passo 2: backfill — genera slug univoci per i prodotti esistenti
