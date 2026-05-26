@@ -11,12 +11,50 @@ use App\Models\PromotionTarget;
 use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
     use HasFactory;
 
     use HasTranslations;
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (Product $product): void {
+            if (empty($product->slug)) {
+                $product->slug = static::generateUniqueSlug($product->name);
+            }
+        });
+
+        static::updating(function (Product $product): void {
+            if ($product->isDirty('name') && empty($product->slug)) {
+                $product->slug = static::generateUniqueSlug($product->name, $product->id);
+            }
+        });
+    }
+
+    public static function generateUniqueSlug(string $name, ?int $excludeId = null): string
+    {
+        $base = Str::slug($name);
+        if ($base === '') {
+            $base = 'prodotto';
+        }
+
+        $slug    = $base;
+        $counter = 1;
+        while (
+            static::where('slug', $slug)
+                ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
+                ->exists()
+        ) {
+            $slug = $base . '-' . (++$counter);
+        }
+
+        return $slug;
+    }
 
     protected $casts = [
         'price' => 'float',

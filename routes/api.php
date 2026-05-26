@@ -13,11 +13,15 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\MarketingTrackingController;
+use App\Http\Controllers\Api\ProductPublicController;
 use App\Http\Controllers\Api\ReservationController;
 
 
 
 Route::get('setting',           [SettingController::class, 'index'])->name('api.setting.index');
+
+// Endpoint pubblico per pagina prodotto (Instagram Product Tagging / SEO)
+Route::get('products/public/{slug}', [ProductPublicController::class, 'show'])->name('api.products.public.show');
 
 
 Route::get('menus',             [ProductController::class, 'menuFissi'])->name('api.products.menuFissi');
