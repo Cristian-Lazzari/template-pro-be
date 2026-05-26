@@ -7,6 +7,15 @@
         <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-pencil-square"></i>
     </a>
 
+    @if($product->slug)
+    <a href="{{ rtrim(config('configurazione.domain'), '/') }}/prodotto/{{ $product->slug }}"
+       target="_blank"
+       class="edit"
+       title="Apri pagina prodotto">
+        <i style="vertical-align: sub; font-size: var(--fs-400)" class="bi bi-box-arrow-up-right"></i>
+    </a>
+    @endif
+
     <form action="{{ route('admin.products.status') }}" method="POST" class="js-product-status-form" data-status-action="visible">
         @csrf
         <input type="hidden" name="archive" value="0">
