@@ -13,6 +13,10 @@ return [
         'registration_completed' => 'Kundenprofil erfolgreich vervollstaendigt.',
         'consents_updated' => 'Datenschutzeinstellungen erfolgreich aktualisiert.',
         'logout_completed' => 'Erfolgreich abgemeldet.',
+        'order_cancelled' => 'Bestellung erfolgreich storniert.',
+        'reservation_cancelled' => 'Reservierung erfolgreich storniert.',
+        'cancellation_not_allowed' => 'Die Stornierung ist fuer dieses Datum oder diesen Status nicht verfuegbar.',
+        'cancellation_unavailable' => 'Die Stornierung konnte nicht abgeschlossen werden. Bitte kontaktiere das Restaurant.',
     ],
     'mail' => [
         'subject' => 'E-Mail-Bestaetigungscode',

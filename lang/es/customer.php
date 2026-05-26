@@ -13,6 +13,10 @@ return [
         'registration_completed' => 'Perfil de cliente completado correctamente.',
         'consents_updated' => 'Preferencias de privacidad actualizadas correctamente.',
         'logout_completed' => 'Sesion cerrada correctamente.',
+        'order_cancelled' => 'Pedido cancelado correctamente.',
+        'reservation_cancelled' => 'Reserva cancelada correctamente.',
+        'cancellation_not_allowed' => 'La cancelacion no esta disponible para esta fecha o estado.',
+        'cancellation_unavailable' => 'No he podido completar la cancelacion. Contacta con el restaurante.',
     ],
     'mail' => [
         'subject' => 'Codigo de confirmacion por email',

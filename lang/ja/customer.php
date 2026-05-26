@@ -13,6 +13,10 @@ return [
         'registration_completed' => '顧客プロフィールが正常に完了しました。',
         'consents_updated' => 'プライバシー設定を更新しました。',
         'logout_completed' => 'ログアウトしました。',
+        'order_cancelled' => '注文をキャンセルしました。',
+        'reservation_cancelled' => '予約をキャンセルしました。',
+        'cancellation_not_allowed' => 'この日時または状態ではキャンセルできません。',
+        'cancellation_unavailable' => 'キャンセルを完了できませんでした。店舗へお問い合わせください。',
     ],
     'mail' => [
         'subject' => 'メール確認コード',

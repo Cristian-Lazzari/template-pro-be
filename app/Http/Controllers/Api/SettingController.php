@@ -13,6 +13,7 @@ use App\Services\CustomerAuth\CustomerProfileSettingsService;
 use Illuminate\Http\Request;
 use App\Mail\confermaOrdineAdmin;
 use App\Support\Currency;
+use App\Services\CustomerCancellationService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -20,70 +21,49 @@ use Illuminate\Support\Facades\Mail;
 
 class SettingController extends Controller
 {
-    public function client_default(Request $request) {
+    public function client_default(Request $request, CustomerCancellationService $customerCancellationService) {
         if (!$request->hasValidSignature()) {
             return view('guests.cancel_denied', [
                 'reason' => 'link_invalid',
-                'phone'  => $this->getRestaurantPhone(),
+                'phone'  => $customerCancellationService->restaurantPhone(),
             ]);
         }
 
-        $type = $request->query('type'); // 'or' | 'res'
+        $type = $customerCancellationService->normalizeType($request->query('type')); // 'or' | 'res'
         $id   = (int) $request->query('id');
 
-        if ($type === 'or') {
-            $entity = Order::find($id);
-        } elseif ($type === 'res') {
-            $entity = Reservation::find($id);
-        } else {
+        if (!$type) {
             abort(400);
         }
+
+        $entity = $customerCancellationService->findEntity($type, $id);
 
         if (!$entity) {
             abort(404);
         }
 
-        if (in_array($entity->status, [0, 6])) {
+        $eligibility = $customerCancellationService->eligibility($entity, $type);
+
+        if ($eligibility['already_cancelled']) {
             return view('guests.delete_success');
         }
 
-        // Regole di annullamento: entro 5 minuti dalla creazione OPPURE almeno 24h di preavviso
-        $withinGracePeriod = $entity->created_at->gt(Carbon::now()->subMinutes(5));
-        $dateSlot = Carbon::createFromFormat('d/m/Y H:i', $entity->date_slot);
-        $sufficientNotice  = $dateSlot->gt(Carbon::now()->addHours(24));
-
-        if (!$withinGracePeriod && !$sufficientNotice) {
+        if (!$eligibility['allowed']) {
             return view('guests.cancel_denied', [
-                'reason' => 'too_late',
-                'phone'  => $this->getRestaurantPhone(),
+                'reason' => $eligibility['reason'] ?? 'too_late',
+                'phone'  => $customerCancellationService->restaurantPhone(),
                 'type'   => $type,
             ]);
         }
 
-        // Procede con l'annullamento
-        $adminPath = $type === 'or' ? 'orders' : 'reservations';
-        $link_id   = config('configurazione.APP_URL') . '/admin/' . $adminPath . '/' . $entity->id;
+        $result = $customerCancellationService->cancel($entity, $type);
 
-        if ($type === 'or') {
-            $this->statusOrder(0, $entity);
-            $o_r = 'or';
-        } else {
-            $this->statusRes(0, $entity);
-            $o_r = 'res';
-        }
-
-        // Email di notifica al ristoratore
-        $this->sendCancellationEmailToAdmin($entity, $type);
-
-        // Messaggio WhatsApp al ristoratore
-        $wa = Setting::where('name', 'wa')->first();
-        if ($wa) {
-            $property = json_decode($wa->property, 1);
-            $p = 0;
-            foreach ($property['numbers'] as $number) {
-                $this->message_default($o_r, $p, $entity, $number, $link_id);
-                $p++;
-            }
+        if (!($result['success'] ?? false)) {
+            return view('guests.cancel_denied', [
+                'reason' => $result['reason'] ?? 'not_available',
+                'phone'  => $customerCancellationService->restaurantPhone(),
+                'type'   => $type,
+            ]);
         }
 
         return view('guests.delete_success');

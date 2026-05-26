@@ -8,6 +8,7 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Reservation;
+use App\Services\CustomerCancellationService;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\EmailOtpService;
 use App\Services\CustomerAuth\CustomerProfileSettingsService;
@@ -26,6 +27,7 @@ class CustomerAuthController extends Controller
         private CustomerAccessService $customerAccessService,
         private CustomerProfileSettingsService $customerProfileSettingsService,
         private VerifiedCheckoutSessionService $verifiedCheckoutSessionService,
+        private CustomerCancellationService $customerCancellationService,
     ) {
     }
 
@@ -227,15 +229,78 @@ class CustomerAuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'summary' => [
-                'orders_count' => $orders->count(),
-                'reservations_count' => $reservations->count(),
-                'total_spent_cents' => (float) $customer->orders()
-                    ->whereNotIn('status', [0, 6])
-                    ->sum('tot_price'),
-            ],
+            'summary' => $this->historySummary($customer, $orders->count(), $reservations->count()),
             'orders' => $orders,
             'reservations' => $reservations,
+        ]);
+    }
+
+    public function cancelHistoryItem(Request $request, string $type, int $id)
+    {
+        $customer = $request->user();
+        if (!$customer instanceof Customer) {
+            abort(403);
+        }
+
+        $lang = $this->resolveLang($request);
+        app()->setLocale($lang);
+
+        $normalizedType = $this->customerCancellationService->normalizeType($type);
+
+        if (!$normalizedType) {
+            abort(404);
+        }
+
+        if ($normalizedType === CustomerCancellationService::TYPE_ORDER) {
+            $entity = $customer->orders()
+                ->with(['products', 'menus.products'])
+                ->find($id);
+        } else {
+            $entity = $customer->reservations()->find($id);
+        }
+
+        if (!$entity) {
+            abort(404);
+        }
+
+        $eligibility = $this->customerCancellationService->eligibility($entity, $normalizedType);
+
+        if (!($eligibility['allowed'] ?? false) && !($eligibility['already_cancelled'] ?? false)) {
+            return response()->json([
+                'success' => false,
+                'message' => $this->message($lang, 'messages.cancellation_not_allowed'),
+                'reason' => $eligibility['reason'] ?? 'not_allowed',
+            ], 422);
+        }
+
+        $result = $this->customerCancellationService->cancel($entity, $normalizedType);
+
+        if (!($result['success'] ?? false)) {
+            return response()->json([
+                'success' => false,
+                'message' => $this->message($lang, 'messages.cancellation_unavailable'),
+                'reason' => $result['reason'] ?? 'not_available',
+            ], 422);
+        }
+
+        $freshEntity = $normalizedType === CustomerCancellationService::TYPE_ORDER
+            ? Order::query()->with(['products', 'menus.products'])->findOrFail($entity->getKey())
+            : Reservation::query()->findOrFail($entity->getKey());
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->message(
+                $lang,
+                $normalizedType === CustomerCancellationService::TYPE_ORDER
+                    ? 'messages.order_cancelled'
+                    : 'messages.reservation_cancelled'
+            ),
+            'already_cancelled' => (bool) ($result['already_cancelled'] ?? false),
+            'released_promotions' => (int) ($result['released_promotions'] ?? 0),
+            'summary' => $this->historySummary($customer),
+            'item' => $normalizedType === CustomerCancellationService::TYPE_ORDER
+                ? $this->transformOrderHistory($freshEntity)
+                : $this->transformReservationHistory($freshEntity),
         ]);
     }
 
@@ -388,6 +453,8 @@ class CustomerAuthController extends Controller
 
     private function transformOrderHistory(Order $order): array
     {
+        $cancellation = $this->historyCancellationPayload($order, CustomerCancellationService::TYPE_ORDER);
+
         return [
             'id' => $order->id,
             'type' => 'order',
@@ -400,6 +467,9 @@ class CustomerAuthController extends Controller
             'delivery_address' => $this->formatDeliveryAddress($order),
             'message' => $order->message,
             'items' => $this->transformOrderItems($order),
+            'can_cancel' => $cancellation['can_cancel'],
+            'cancel_reason' => $cancellation['reason'],
+            'cancellation' => $cancellation,
             'created_at' => $order->created_at?->toISOString(),
         ];
     }
@@ -407,6 +477,7 @@ class CustomerAuthController extends Controller
     private function transformReservationHistory(Reservation $reservation): array
     {
         $guests = $this->parseGuests($reservation->n_person);
+        $cancellation = $this->historyCancellationPayload($reservation, CustomerCancellationService::TYPE_RESERVATION);
 
         return [
             'id' => $reservation->id,
@@ -418,7 +489,35 @@ class CustomerAuthController extends Controller
             'message' => $reservation->message,
             'guests' => $guests,
             'sala' => $reservation->sala,
+            'can_cancel' => $cancellation['can_cancel'],
+            'cancel_reason' => $cancellation['reason'],
+            'cancellation' => $cancellation,
             'created_at' => $reservation->created_at?->toISOString(),
+        ];
+    }
+
+    private function historySummary(Customer $customer, ?int $ordersCount = null, ?int $reservationsCount = null): array
+    {
+        return [
+            'orders_count' => $ordersCount ?? $customer->orders()->count(),
+            'reservations_count' => $reservationsCount ?? $customer->reservations()->count(),
+            'total_spent_cents' => (float) $customer->orders()
+                ->whereNotIn('status', [0, 6])
+                ->sum('tot_price'),
+        ];
+    }
+
+    private function historyCancellationPayload(Order|Reservation $entity, string $type): array
+    {
+        $eligibility = $this->customerCancellationService->eligibility($entity, $type);
+
+        return [
+            'can_cancel' => (bool) ($eligibility['allowed'] ?? false),
+            'reason' => $eligibility['reason'] ?? null,
+            'already_cancelled' => (bool) ($eligibility['already_cancelled'] ?? false),
+            'within_grace_period' => (bool) ($eligibility['within_grace_period'] ?? false),
+            'sufficient_notice' => (bool) ($eligibility['sufficient_notice'] ?? false),
+            'date_slot' => $eligibility['date_slot'] ?? null,
         ];
     }
 

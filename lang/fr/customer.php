@@ -13,6 +13,10 @@ return [
         'registration_completed' => 'Profil client complete avec succes.',
         'consents_updated' => 'Preferences de confidentialite mises a jour avec succes.',
         'logout_completed' => 'Deconnexion effectuee avec succes.',
+        'order_cancelled' => 'Commande annulee avec succes.',
+        'reservation_cancelled' => 'Reservation annulee avec succes.',
+        'cancellation_not_allowed' => 'L annulation n est pas disponible pour cette date ou ce statut.',
+        'cancellation_unavailable' => 'Je n ai pas pu finaliser l annulation. Contactez le restaurant.',
     ],
     'mail' => [
         'subject' => 'Code de confirmation email',

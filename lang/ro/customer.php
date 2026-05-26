@@ -13,6 +13,10 @@ return [
         'registration_completed' => 'Profilul clientului a fost completat cu succes.',
         'consents_updated' => 'Preferintele de confidentialitate au fost actualizate cu succes.',
         'logout_completed' => 'Deconectare efectuata cu succes.',
+        'order_cancelled' => 'Comanda a fost anulata cu succes.',
+        'reservation_cancelled' => 'Rezervarea a fost anulata cu succes.',
+        'cancellation_not_allowed' => 'Anularea nu este disponibila pentru aceasta data sau stare.',
+        'cancellation_unavailable' => 'Nu am putut finaliza anularea. Contacteaza restaurantul.',
     ],
     'mail' => [
         'subject' => 'Cod de confirmare email',

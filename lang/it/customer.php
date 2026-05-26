@@ -13,6 +13,10 @@ return [
         'registration_completed' => 'Profilo cliente completato con successo.',
         'consents_updated' => 'Preferenze privacy aggiornate con successo.',
         'logout_completed' => 'Logout effettuato con successo.',
+        'order_cancelled' => 'Ordine annullato correttamente.',
+        'reservation_cancelled' => 'Prenotazione annullata correttamente.',
+        'cancellation_not_allowed' => 'L\'annullamento non e disponibile per questa data o questo stato.',
+        'cancellation_unavailable' => 'Non sono riuscito a completare l\'annullamento. Contatta il locale.',
     ],
     'mail' => [
         'subject' => 'Codice di conferma email',

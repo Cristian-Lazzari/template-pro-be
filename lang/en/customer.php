@@ -13,6 +13,10 @@ return [
         'registration_completed' => 'Customer profile completed successfully.',
         'consents_updated' => 'Privacy preferences updated successfully.',
         'logout_completed' => 'Logout completed successfully.',
+        'order_cancelled' => 'Order cancelled successfully.',
+        'reservation_cancelled' => 'Booking cancelled successfully.',
+        'cancellation_not_allowed' => 'Cancellation is not available for this date or status.',
+        'cancellation_unavailable' => 'I could not complete the cancellation. Please contact the restaurant.',
     ],
     'mail' => [
         'subject' => 'Email confirmation code',
