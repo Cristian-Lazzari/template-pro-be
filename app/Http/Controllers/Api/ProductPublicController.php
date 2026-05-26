@@ -10,9 +10,10 @@ class ProductPublicController extends Controller
 {
     public function show(string $slug): JsonResponse
     {
+        // archived = eliminato definitivamente → 404
+        // visible=false = temporaneamente non ordinabile → restituiamo il prodotto con visible:false
         $product = Product::with(['category'])
             ->where('slug', $slug)
-            ->where('visible', true)
             ->where('archived', false)
             ->first();
 
@@ -20,8 +21,8 @@ class ProductPublicController extends Controller
             return response()->json(['error' => 'not_found'], 404);
         }
 
-        $apiBase  = rtrim(config('app.url'), '/');
-        $domain   = rtrim(config('configurazione.domain', $apiBase), '/');
+        $apiBase   = rtrim(config('app.url'), '/');
+        $domain    = rtrim(config('configurazione.domain', $apiBase), '/');
         $canonical = $domain . '/prodotto/' . $product->slug;
 
         $imageUrl = null;
@@ -40,7 +41,8 @@ class ProductPublicController extends Controller
             'description'   => $product->description ?? '',
             'price'         => round((float) $product->price, 2),
             'image_url'     => $imageUrl,
-            'availability'  => 'InStock',
+            'visible'       => (bool) $product->visible,
+            'availability'  => $product->visible ? 'InStock' : 'OutOfStock',
             'category'      => optional($product->category)->name ?? '',
             'canonical_url' => $canonical,
         ]);
