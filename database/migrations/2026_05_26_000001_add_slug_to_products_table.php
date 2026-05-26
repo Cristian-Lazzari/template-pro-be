@@ -16,9 +16,22 @@ return new class extends Migration
         });
 
         // Passo 2: backfill — genera slug univoci per i prodotti esistenti
+        //
+        // Il nome reale è in product_translations, non nella colonna products.name.
+        // Strategia di risoluzione del nome per ogni prodotto:
+        //   1. traduzione nella lingua di default di sistema (DEFAULT_LANG / 'it')
+        //   2. traduzione in 'en' (fallback del trait HasTranslations)
+        //   3. prima traduzione disponibile qualsiasi lingua
+        //   4. colonna products.name (legacy, prodotti pre-sistema traduzioni)
+        //   5. 'prodotto' (sicurezza assoluta)
+
+        $defaultLang = config('configurazione.default_lang') ?: env('DEFAULT_LANG') ?: 'it';
+
         $usedSlugs = [];
-        DB::table('products')->orderBy('id')->each(function ($product) use (&$usedSlugs) {
-            $base = Str::slug($product->name);
+
+        DB::table('products')->orderBy('id')->each(function ($product) use (&$usedSlugs, $defaultLang) {
+            $name = $this->resolveProductName($product->id, $defaultLang, $product->name ?? '');
+            $base = Str::slug($name);
             if ($base === '') {
                 $base = 'prodotto';
             }
@@ -45,5 +58,38 @@ return new class extends Migration
             $table->dropUnique(['slug']);
             $table->dropColumn('slug');
         });
+    }
+
+    private function resolveProductName(int $productId, string $defaultLang, string $legacyName): string
+    {
+        $translations = DB::table('product_translations')
+            ->where('product_id', $productId)
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->get(['lang', 'name'])
+            ->keyBy('lang');
+
+        // 1. lingua di default del sistema
+        if (isset($translations[$defaultLang])) {
+            return (string) $translations[$defaultLang]->name;
+        }
+
+        // 2. fallback 'en' (coerente con HasTranslations)
+        if (isset($translations['en'])) {
+            return (string) $translations['en']->name;
+        }
+
+        // 3. prima traduzione disponibile
+        if ($translations->isNotEmpty()) {
+            return (string) $translations->first()->name;
+        }
+
+        // 4. colonna legacy products.name (prodotti pre-sistema traduzioni)
+        if ($legacyName !== '') {
+            return $legacyName;
+        }
+
+        // 5. sicurezza assoluta
+        return 'prodotto';
     }
 };
