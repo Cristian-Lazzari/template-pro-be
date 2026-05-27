@@ -10,7 +10,6 @@ use App\Models\Reservation;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -59,6 +58,14 @@ class CustomerCancellationService
 
         if (! $this->isStatusCancellable($status, $type)) {
             return $this->eligibilityResult(false, 'status_not_cancellable');
+        }
+
+        if (
+            $type === self::TYPE_ORDER
+            && in_array($status, [3, 5], true)
+            && blank($entity->checkout_session_id)
+        ) {
+            return $this->eligibilityResult(false, 'refund_reference_missing');
         }
 
         $dateSlot = $this->parseDateSlot($entity->date_slot);
