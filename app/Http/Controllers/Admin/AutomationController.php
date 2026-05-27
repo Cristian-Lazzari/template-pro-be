@@ -8,8 +8,10 @@ use App\Http\Requests\Admin\UpdateAutomationRequest;
 use App\Models\Automation;
 use App\Models\Model as MailModel;
 use App\Models\Promotion;
+use App\Services\Marketing\Automation\AutomationTriggerEvaluator;
 use App\Services\Marketing\AutomationAudienceBuilder;
 use App\Services\Marketing\AutomationAssignmentService;
+use App\Services\Marketing\AutomationRunMarkerService;
 use App\Services\Marketing\MarketingReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -17,18 +19,10 @@ use Illuminate\Support\Facades\Schema;
 class AutomationController extends Controller
 {
     private const STATUS_TRANSLATION_KEYS = [
-        'draft' => 'status_draft',
-        'active' => 'status_active',
-        'paused' => 'status_paused',
+        'draft'    => 'status_draft',
+        'active'   => 'status_active',
+        'paused'   => 'status_paused',
         'archived' => 'status_archived',
-    ];
-
-    private const TRIGGER_TRANSLATION_KEYS = [
-        'order_inactive_30_days' => 'trigger_order_inactive_30_days',
-        'reservation_inactive_30_days' => 'trigger_reservation_inactive_30_days',
-        'birthday' => 'trigger_birthday',
-        'first_order_completed' => 'trigger_first_order_completed',
-        'abandoned_profile' => 'trigger_abandoned_profile',
     ];
 
     public function index()
@@ -38,10 +32,13 @@ class AutomationController extends Controller
             ->orderBy('updated_at', 'desc')
             ->simplePaginate(40);
 
+        $evaluator = app(AutomationTriggerEvaluator::class);
+
         return view('admin.Automations.index', [
-            'automations' => $automations,
-            'statuses' => $this->statusLabels(),
-            'triggers' => $this->triggerLabels(),
+            'automations'        => $automations,
+            'statuses'           => $this->statusLabels(),
+            'triggers'           => $this->triggerLabels($evaluator),
+            'triggerDefinitions' => $evaluator->definitions(),
         ]);
     }
 
@@ -65,6 +62,8 @@ class AutomationController extends Controller
 
         $automation->promotions()->sync($this->promotionIds($request));
 
+        $this->refreshAutomationRunMarker();
+
         return to_route('admin.automations.show', $automation)
             ->with('success', __('admin.marketing.automations.created_flash'));
     }
@@ -78,12 +77,15 @@ class AutomationController extends Controller
             ->latest('created_at')
             ->paginate(50);
 
+        $evaluator = app(AutomationTriggerEvaluator::class);
+
         return view('admin.Automations.show', [
-            'automation' => $automation,
-            'report' => $report,
+            'automation'         => $automation,
+            'report'             => $report,
             'customerPromotions' => $customerPromotions,
-            'statuses' => $this->statusLabels(),
-            'triggers' => $this->triggerLabels(),
+            'statuses'           => $this->statusLabels(),
+            'triggers'           => $this->triggerLabels($evaluator),
+            'triggerDefinitions' => $evaluator->definitions(),
         ]);
     }
 
@@ -104,6 +106,8 @@ class AutomationController extends Controller
         );
 
         $automation->promotions()->sync($this->promotionIds($request));
+
+        $this->refreshAutomationRunMarker();
 
         return to_route('admin.automations.show', $automation)
             ->with('success', __('admin.marketing.automations.updated_flash'));
@@ -156,11 +160,14 @@ class AutomationController extends Controller
 
     private function formOptions(): array
     {
+        $evaluator = app(AutomationTriggerEvaluator::class);
+
         return [
-            'statuses' => $this->statusLabels(),
-            'triggers' => $this->triggerLabels(),
-            'mailModels' => $this->mailModelOptions(),
-            'promotions' => Promotion::query()
+            'statuses'          => $this->statusLabels(),
+            'triggers'          => $this->triggerLabels($evaluator),
+            'triggerDefinitions' => $evaluator->definitions(),
+            'mailModels'        => $this->mailModelOptions(),
+            'promotions'        => Promotion::query()
                 ->where('status', '!=', 'archived')
                 ->orderBy('name')
                 ->get(),
@@ -178,12 +185,18 @@ class AutomationController extends Controller
         return $labels;
     }
 
-    private function triggerLabels(): array
+    /**
+     * Build a flat key→label map from the evaluator for backward-compatible use in views.
+     * Falls back to the trigger key itself if no lang entry exists.
+     */
+    private function triggerLabels(AutomationTriggerEvaluator $evaluator): array
     {
         $labels = [];
 
-        foreach (self::TRIGGER_TRANSLATION_KEYS as $trigger => $key) {
-            $labels[$trigger] = __("admin.marketing.automations.{$key}");
+        foreach ($evaluator->definitions() as $key => $definition) {
+            $langKey = "admin.marketing.automations.trigger_{$key}";
+            $translated = __($langKey);
+            $labels[$key] = $translated !== $langKey ? $translated : $definition['label'];
         }
 
         return $labels;
@@ -191,20 +204,15 @@ class AutomationController extends Controller
 
     private function automationData(Request $request, ?Automation $automation = null): array
     {
-        $data = $request->validated();
-        $metadata = is_array($automation?->metadata) ? $automation->metadata : [];
+        $data         = $request->validated();
         $formMetadata = $data['metadata'] ?? [];
 
-        foreach (['cooldown_days', 'enabled_from', 'enabled_until'] as $key) {
-            if (array_key_exists($key, $formMetadata)) {
-                $metadata[$key] = $key === 'cooldown_days' && $formMetadata[$key] !== null
-                    ? (int) $formMetadata[$key]
-                    : $formMetadata[$key];
-            }
+        if (array_key_exists('cooldown_days', $formMetadata) && $formMetadata['cooldown_days'] !== null) {
+            $formMetadata['cooldown_days'] = (int) $formMetadata['cooldown_days'];
         }
 
         unset($data['promotions'], $data['metadata']);
-        $data['metadata'] = $metadata;
+        $data['metadata'] = $formMetadata;
 
         $data['status'] = $this->statusFromSubmitAction($request);
         unset($data['submit_action']);
@@ -251,6 +259,17 @@ class AutomationController extends Controller
     {
         $automation->update(['status' => $status]);
 
+        $this->refreshAutomationRunMarker();
+
         return back()->with('success', $message);
+    }
+
+    private function refreshAutomationRunMarker(): void
+    {
+        try {
+            app(AutomationRunMarkerService::class)->refresh();
+        } catch (\Throwable) {
+            // Marker refresh is best-effort; never block the HTTP response.
+        }
     }
 }

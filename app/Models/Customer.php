@@ -33,10 +33,15 @@ class Customer extends Authenticatable
         'lifecycle_segment',
         'last_activity_at',
         'last_marketing_contact_at',
+        'last_order_at',
+        'last_booking_at',
+        'first_order_at',
+        'first_booking_at',
         'orders_count',
         'reservations_count',
         'interactions_count',
         'total_spent',
+        'average_order_value',
     ];
 
     protected $casts = [
@@ -53,11 +58,16 @@ class Customer extends Authenticatable
         'profile_answers' => 'array',
         'last_activity_at' => 'datetime',
         'last_marketing_contact_at' => 'datetime',
+        'last_order_at' => 'datetime',
+        'last_booking_at' => 'datetime',
+        'first_order_at' => 'datetime',
+        'first_booking_at' => 'datetime',
         'customer_score' => 'integer',
         'orders_count' => 'integer',
         'reservations_count' => 'integer',
         'interactions_count' => 'integer',
         'total_spent' => 'decimal:2',
+        'average_order_value' => 'decimal:2',
     ];
 
     public function orders()

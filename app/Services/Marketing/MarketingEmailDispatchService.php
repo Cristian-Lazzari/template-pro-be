@@ -99,7 +99,9 @@ class MarketingEmailDispatchService
     public function sendForAutomation(Automation $automation, int $limit = 100, bool $dryRun = true): array
     {
         $result = $this->baseBatchReport($dryRun ? 'dry_run' : 'write', 'automation_id', $automation->getKey());
-        $customerPromotions = $automation->customerPromotions()
+
+        // Prima ondata: nuove assegnazioni non ancora inviate.
+        $newCustomerPromotions = $automation->customerPromotions()
             ->with(['customer', 'promotion', 'campaign.model', 'automation.model'])
             ->whereNull('email_sent_at')
             ->whereNull('promo_used')
@@ -109,7 +111,24 @@ class MarketingEmailDispatchService
             ->limit(max(1, $limit))
             ->get();
 
-        return $this->sendBatch($customerPromotions, $result, $dryRun);
+        $result = $this->sendBatch($newCustomerPromotions, $result, $dryRun);
+
+        // Seconda ondata: reminder per promozioni ancora aperte dopo la scadenza del cooldown.
+        // Condizioni: prima email già inviata, flaggata da AutomationAssignmentService,
+        // reminder non ancora inviato, promozione non usata.
+        $reminderCustomerPromotions = $automation->customerPromotions()
+            ->with(['customer', 'promotion', 'campaign.model', 'automation.model'])
+            ->whereNotNull('email_sent_at')
+            ->whereNotNull('reminder_eligible_at')
+            ->whereNull('reminder_sent_at')
+            ->whereNull('promo_used')
+            ->whereHas('customer')
+            ->whereHas('promotion')
+            ->orderBy('reminder_eligible_at')
+            ->limit(max(1, $limit))
+            ->get();
+
+        return $this->sendReminderBatch($reminderCustomerPromotions, $result, $dryRun);
     }
 
     private function canSend(CustomerPromotion $customerPromotion): array
@@ -171,6 +190,157 @@ class MarketingEmailDispatchService
             'to' => $to,
             'already_sent' => false,
             'rendered' => $rendered,
+        ];
+    }
+
+    /**
+     * Invia la email di reminder a ogni CustomerPromotion candidata.
+     * Non crea nuove CustomerPromotion. Aggiorna reminder_sent_at, non email_sent_at.
+     */
+    private function sendReminderBatch($customerPromotions, array $result, bool $dryRun): array
+    {
+        $result['reminder_checked_count'] = $customerPromotions->count();
+
+        foreach ($customerPromotions as $customerPromotion) {
+            try {
+                $sendResult = $this->sendReminder($customerPromotion, $dryRun);
+
+                if ($sendResult['already_sent']) {
+                    continue;
+                }
+
+                if ($dryRun && $sendResult['can_send']) {
+                    $result['reminder_sent_count']++;
+                    continue;
+                }
+
+                if ($sendResult['sent'] ?? false) {
+                    $result['reminder_sent_count']++;
+                    continue;
+                }
+
+                $result['skipped_count']++;
+            } catch (Throwable $exception) {
+                $result['skipped_count']++;
+                $this->addError($result, $customerPromotion->getKey(), $exception);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Invia il singolo reminder email per una CustomerPromotion già inviata in precedenza.
+     * Non sovrascrive email_sent_at. Aggiorna reminder_sent_at se l'invio va a buon fine.
+     *
+     * Usa lo stesso template della prima email con il flag is_reminder=true nel payload
+     * (retrocompatibile: i template esistenti lo ignorano; i futuri possono usarlo per
+     * mostrare linguaggio tipo "Promemoria: la tua promozione è ancora attiva").
+     */
+    private function sendReminder(CustomerPromotion $customerPromotion, bool $dryRun = true): array
+    {
+        $mode   = $dryRun ? 'dry_run' : 'write';
+        $result = $this->baseSendReport($customerPromotion, $mode);
+
+        $readiness = $this->canSendReminder($customerPromotion);
+
+        $result['can_send']       = $readiness['can_send'];
+        $result['failure_reason'] = $readiness['failure_reason'];
+        $result['to']             = $readiness['to'];
+        $result['already_sent']   = $readiness['already_sent'] ?? false;
+
+        if (! $readiness['can_send']) {
+            return $result;
+        }
+
+        if ($dryRun) {
+            return $result;
+        }
+
+        try {
+            Mail::to($readiness['to'])->send(
+                new MarketingPromotionMail($readiness['rendered'])
+            );
+
+            // Aggiorna reminder_sent_at e last_marketing_contact_at sul cliente.
+            // NON chiama markSent() per non sovrascrivere email_sent_at.
+            $this->customerPromotionService->markReminderSent($customerPromotion, false);
+            $result['sent'] = true;
+
+            return $result;
+        } catch (Throwable $exception) {
+            report($exception);
+            $result['failure_reason'] = 'Reminder send failed.';
+
+            return $result;
+        }
+    }
+
+    /**
+     * Verifica se una CustomerPromotion può ricevere un reminder.
+     * Richiede consenso email marketing esplicito — uguale alla prima email.
+     */
+    private function canSendReminder(CustomerPromotion $customerPromotion): array
+    {
+        $customerPromotion->loadMissing([
+            'automation.model',
+            'customer',
+            'promotion',
+        ]);
+
+        if (! $customerPromotion->exists) {
+            return $this->sendFailure('Customer promotion must be persisted before sending.');
+        }
+
+        if ($customerPromotion->reminder_sent_at !== null) {
+            return $this->sendFailure('Reminder already sent.', null, true);
+        }
+
+        if ($customerPromotion->promo_used !== null) {
+            return $this->sendFailure('Promotion already used.');
+        }
+
+        if (! $customerPromotion->customer) {
+            return $this->sendFailure('Customer is missing.');
+        }
+
+        $to = trim((string) $customerPromotion->customer->email);
+
+        if (! filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            return $this->sendFailure('Customer email is missing or invalid.');
+        }
+
+        // Il reminder richiede sempre consenso email marketing esplicito,
+        // anche se la CustomerPromotion era stata creata prima che il cliente
+        // revocasse il consenso.
+        if (! $this->marketingConsentService->customerHasExplicitEmailMarketingConsent($customerPromotion->customer)) {
+            return $this->sendFailure('Customer email marketing consent is missing.', $to);
+        }
+
+        if (! $customerPromotion->promotion) {
+            return $this->sendFailure('Promotion is missing.', $to);
+        }
+
+        if (! filled($customerPromotion->tracking_token)) {
+            return $this->sendFailure('Tracking token is missing.', $to);
+        }
+
+        // Usa lo stesso template della prima email.
+        // Il flag is_reminder=true è aggiunto al payload per futura distinzione
+        // nel template (retrocompatibile: i template esistenti lo ignorano).
+        $rendered               = $this->renderSafely($customerPromotion);
+        $rendered['is_reminder'] = true;
+
+        if (! filled($rendered['subject']) || ! filled($rendered['body_html'])) {
+            return $this->sendFailure('Template could not be rendered.', $to);
+        }
+
+        return [
+            'can_send'       => true,
+            'failure_reason' => null,
+            'to'             => $to,
+            'already_sent'   => false,
+            'rendered'       => $rendered,
         ];
     }
 
@@ -248,15 +418,17 @@ class MarketingEmailDispatchService
     private function baseBatchReport(string $mode, string $contextKey, $contextId): array
     {
         return [
-            'mode' => $mode,
-            $contextKey => $contextId,
-            'checked_count' => 0,
-            'sent_count' => 0,
-            'already_sent_count' => 0,
-            'skipped_count' => 0,
-            'errors_count' => 0,
-            'failure_reason' => null,
-            'errors' => [],
+            'mode'                  => $mode,
+            $contextKey             => $contextId,
+            'checked_count'         => 0,
+            'sent_count'            => 0,
+            'already_sent_count'    => 0,
+            'reminder_checked_count' => 0,
+            'reminder_sent_count'   => 0,
+            'skipped_count'         => 0,
+            'errors_count'          => 0,
+            'failure_reason'        => null,
+            'errors'                => [],
         ];
     }
 

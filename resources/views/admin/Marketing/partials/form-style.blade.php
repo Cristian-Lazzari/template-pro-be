@@ -390,6 +390,104 @@
         user-select: none;
     }
 
+    .promo-wiz__bar {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 28px;
+    }
+
+    .promo-wiz__dot {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    .promo-wiz__dot-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(216, 221, 232, 0.2);
+        background: rgba(9, 3, 51, 0.5);
+        color: rgba(216, 221, 232, 0.55);
+        font-size: 13px;
+        font-weight: 700;
+        transition: border-color .2s, background .2s, color .2s;
+    }
+
+    .promo-wiz__dot-lbl {
+        color: rgba(216, 221, 232, 0.45);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0;
+        text-align: center;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .promo-wiz__dot.is-active .promo-wiz__dot-num {
+        border-color: rgba(14, 183, 146, 0.7);
+        background: rgba(14, 183, 146, 0.18);
+        color: rgba(142, 246, 219, 0.95);
+    }
+
+    .promo-wiz__dot.is-active .promo-wiz__dot-lbl {
+        color: rgba(142, 246, 219, 0.85);
+    }
+
+    .promo-wiz__dot.is-done .promo-wiz__dot-num {
+        border-color: rgba(14, 183, 146, 0.42);
+        background: rgba(14, 183, 146, 0.12);
+        color: rgba(142, 246, 219, 0.7);
+    }
+
+    .promo-wiz__dot.is-done .promo-wiz__dot-lbl {
+        color: rgba(142, 246, 219, 0.55);
+    }
+
+    .promo-wiz__line {
+        flex: 1;
+        height: 1.5px;
+        min-width: 18px;
+        background: rgba(216, 221, 232, 0.1);
+        margin: 0 10px;
+        margin-bottom: 22px;
+        transition: background .2s;
+    }
+
+    .promo-wiz__line.is-done {
+        background: rgba(14, 183, 146, 0.3);
+    }
+
+    .promo-wiz__panel {
+        animation: panelIn .22s ease;
+    }
+
+    .promo-wiz__panel[hidden],
+    .promo-reveal[hidden] {
+        display: none !important;
+    }
+
+    .promo-reveal {
+        animation: panelIn .18s ease;
+    }
+
+    .promo-wiz__panel .order-detail__section + .order-detail__section {
+        margin-top: 16px;
+    }
+
+    @keyframes panelIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 1120px) {
         .marketing-form-grid {
             grid-template-columns: 1fr;
@@ -418,6 +516,15 @@
         .marketing-form-actions .order-detail__contact {
             width: 100%;
             justify-content: center;
+        }
+
+        .promo-wiz__bar {
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .promo-wiz__dot-lbl {
+            white-space: normal;
         }
     }
 

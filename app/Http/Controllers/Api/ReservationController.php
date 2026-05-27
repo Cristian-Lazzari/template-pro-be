@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Services\Customers\CustomerStatsService;
 use App\Services\FailureAlertService;
 use App\Support\AvailabilityWeekSet;
 use App\Services\CustomerAuth\CustomerAccessService;
@@ -254,6 +255,22 @@ class ReservationController extends Controller
             ]);
 
             $newRes->loadMissing('customerPromotions.promotion');
+
+            // Aggiorna le statistiche denormalizzate del customer (reservations_count, last_booking_at, ecc.)
+            // subito dopo la creazione della prenotazione, prima di rispondere al client.
+            if ($authenticatedCustomer) {
+                try {
+                    app(CustomerStatsService::class)->refresh($authenticatedCustomer);
+                } catch (\Throwable $statsException) {
+                    // Non bloccare la prenotazione per un errore di stats: logga e continua.
+                    Log::error('(ReservationController) Aggiornamento stats customer fallito', [
+                        'customer_id'    => $authenticatedCustomer->getKey(),
+                        'reservation_id' => $newRes->id,
+                        'error'          => $statsException->getMessage(),
+                    ]);
+                }
+            }
+
             $promotionFormatter = app(PromotionNotificationFormatter::class);
             $reservationPromotionText = $promotionFormatter->whatsappTextForReservation($newRes);
 

@@ -13,6 +13,7 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Services\Customers\CustomerStatsService;
 use App\Services\FailureAlertService;
 use App\Services\CustomerAuth\CustomerAccessService;
 use App\Services\CustomerAuth\VerifiedCheckoutSessionService;
@@ -330,10 +331,23 @@ class OrderController extends Controller
 
             $this->markAppliedOrderPromotion($promotionEvaluation ?? null, $newOrder, $subtotalBeforePromotion);
             $newOrder->loadMissing('customerPromotions.promotion');
-            
 
-            
-            if($data['paying']){   
+            // Aggiorna le statistiche denormalizzate del customer (orders_count, total_spent, ecc.)
+            // subito dopo la creazione dell'ordine, prima di rispondere al client.
+            if ($authenticatedCustomer) {
+                try {
+                    app(CustomerStatsService::class)->refresh($authenticatedCustomer);
+                } catch (\Throwable $statsException) {
+                    // Non bloccare l'ordine per un errore di stats: logga e continua.
+                    Log::error('(OrderController) Aggiornamento stats customer fallito', [
+                        'customer_id' => $authenticatedCustomer->getKey(),
+                        'order_id'    => $newOrder->id,
+                        'error'       => $statsException->getMessage(),
+                    ]);
+                }
+            }
+
+            if($data['paying']){
                 $payment_controller = new PaymentController();
                 
                 $payment_url = $payment_controller->checkout($newOrder->products, $newOrder->id, $tot_delivery_cost, $newOrder->menus);

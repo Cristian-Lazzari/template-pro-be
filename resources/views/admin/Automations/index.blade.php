@@ -8,6 +8,93 @@
     </div>
 @endif
 
+@php
+    $triggers = $triggers ?? [];
+    $statuses = $statuses ?? [];
+    $triggerDefinitions = $triggerDefinitions ?? [];
+    $metadataOptionLabels = [
+        'threshold_type' => [
+            'total_spent' => __('admin.marketing.automations.option_total_spent'),
+            'orders_count' => __('admin.marketing.automations.option_orders_count'),
+            'bookings_count' => __('admin.marketing.automations.option_bookings_count'),
+        ],
+        'value_type' => [
+            'total_spent' => __('admin.marketing.automations.option_total_spent'),
+            'orders_count' => __('admin.marketing.automations.option_orders_count'),
+            'bookings_count' => __('admin.marketing.automations.option_bookings_count'),
+            'customer_score' => __('admin.marketing.automations.option_customer_score'),
+        ],
+        'anniversary_source' => [
+            'first_order' => __('admin.marketing.automations.option_first_order'),
+            'first_booking' => __('admin.marketing.automations.option_first_booking'),
+        ],
+    ];
+
+    $metadataFor = function ($automation): array {
+        $metadata = $automation->metadata ?? [];
+
+        if ($metadata instanceof \Illuminate\Support\Collection) {
+            return $metadata->all();
+        }
+
+        if (is_object($metadata)) {
+            return (array) $metadata;
+        }
+
+        return is_array($metadata) ? $metadata : [];
+    };
+
+    $triggerLabelFor = function (?string $trigger) use ($triggers, $triggerDefinitions): string {
+        if (! $trigger) {
+            return __('admin.marketing.automations.undefined_trigger');
+        }
+
+        $translationKey = 'admin.marketing.automations.trigger_' . $trigger;
+        $translatedLabel = __($translationKey);
+
+        return $triggers[$trigger]
+            ?? data_get($triggerDefinitions, $trigger . '.label')
+            ?? ($translatedLabel !== $translationKey ? $translatedLabel : $trigger);
+    };
+
+    $optionLabel = function (string $group, $value) use ($metadataOptionLabels): string {
+        return $metadataOptionLabels[$group][$value] ?? ($value ?: '-');
+    };
+
+    $valueOrDash = fn ($value) => $value !== null && $value !== '' ? $value : '-';
+
+    $triggerSummaryFor = function (?string $trigger, array $metadata) use ($optionLabel, $valueOrDash): string {
+        return match ($trigger) {
+            'no_interaction_since' => __('admin.marketing.automations.summary_no_interaction_since', ['days' => $valueOrDash(data_get($metadata, 'days'))]),
+            'no_order_since' => __('admin.marketing.automations.summary_no_order_since', ['days' => $valueOrDash(data_get($metadata, 'days'))]),
+            'no_booking_since' => __('admin.marketing.automations.summary_no_booking_since', ['days' => $valueOrDash(data_get($metadata, 'days'))]),
+            'birthday_before' => __('admin.marketing.automations.summary_birthday_before', ['days' => $valueOrDash(data_get($metadata, 'days_before'))]),
+            'first_order_completed' => __('admin.marketing.automations.summary_first_order_completed', ['days' => $valueOrDash(data_get($metadata, 'delay_days'))]),
+            'first_booking_completed' => __('admin.marketing.automations.summary_first_booking_completed', ['days' => $valueOrDash(data_get($metadata, 'delay_days'))]),
+            'orders_without_bookings' => __('admin.marketing.automations.summary_orders_without_bookings', ['orders' => $valueOrDash(data_get($metadata, 'min_orders'))]),
+            'bookings_without_orders' => __('admin.marketing.automations.summary_bookings_without_orders', ['bookings' => $valueOrDash(data_get($metadata, 'min_bookings'))]),
+            'customer_reaches_value' => __('admin.marketing.automations.summary_customer_reaches_value', [
+                'type' => $optionLabel('threshold_type', data_get($metadata, 'threshold_type')),
+                'value' => $valueOrDash(data_get($metadata, 'threshold_value')),
+            ]),
+            'valuable_customer_at_risk' => __('admin.marketing.automations.summary_valuable_customer_at_risk', [
+                'type' => $optionLabel('value_type', data_get($metadata, 'value_type')),
+                'value' => $valueOrDash(data_get($metadata, 'value_threshold')),
+                'days' => $valueOrDash(data_get($metadata, 'inactive_days')),
+            ]),
+            'customer_anniversary' => __('admin.marketing.automations.summary_customer_anniversary', [
+                'source' => $optionLabel('anniversary_source', data_get($metadata, 'anniversary_source')),
+                'days' => $valueOrDash(data_get($metadata, 'days_before')),
+            ]),
+            'high_average_order_value' => __('admin.marketing.automations.summary_high_average_order_value', [
+                'value' => $valueOrDash(data_get($metadata, 'average_order_value')),
+                'orders' => data_get($metadata, 'min_orders') ?: __('admin.marketing.automations.optional_orders'),
+            ]),
+            default => __('admin.marketing.automations.metadata_empty'),
+        };
+    };
+@endphp
+
 <div class="dash_page marketing-index-page">
     @include('admin.Marketing.partials.index-style')
 
@@ -52,88 +139,111 @@
         </div>
 
         @if ($automations->count() > 0)
-            <div class="marketing-index-list">
+            <div class="campaign-list-render">
                 @foreach ($automations as $automation)
-                    <article class="marketing-index-row">
-                        <div class="marketing-index-main">
-                            <div class="marketing-index-kicker">
-                                <i class="bi bi-lightning-charge-fill"></i>
-                                <span>{{ __('admin.marketing.automations.singular') }}</span>
-                                @include('admin.Marketing.partials.status-pill', [
-                                    'status' => $automation->status,
-                                    'label' => $statuses[$automation->status] ?? $automation->status,
-                                ])
-                            </div>
+                    @php
+                        $metadata = $metadataFor($automation);
+                        $normalizedStatus = $automation->status ?: 'draft';
+                        $statusLabel = $statuses[$normalizedStatus] ?? $normalizedStatus;
+                        $isDraft = $normalizedStatus === 'draft';
+                        $triggerLabel = $triggerLabelFor($automation->trigger);
+                        $triggerSummary = $triggerSummaryFor($automation->trigger, $metadata);
+                        $primaryPromotion = $automation->promotions->first();
+                        $promotionLabel = $primaryPromotion?->slug ?? $primaryPromotion?->name ?? __('admin.marketing.automations.no_promotion');
+                        $modelName = $automation->model?->name ?? '-';
+                        $activityLabel = $automation->last_run_at ? __('admin.marketing.automations.last_run') : __('admin.marketing.automations.updated_at');
+                        $activityValue = $automation->last_run_at?->format('d/m/Y H:i') ?? $automation->updated_at?->format('d/m/Y H:i') ?? '-';
+                        $cooldown = data_get($metadata, 'cooldown_days');
+                        $cooldownLabel = $cooldown !== null && $cooldown !== '' ? __('admin.marketing.automations.days_count', ['count' => $cooldown]) : __('admin.marketing.automations.no_cooldown');
+                        $totalActivation = (int) $automation->total_activation;
+                        $totalSent = (int) $automation->total_sent;
+                        $progressPercentage = $totalActivation > 0 ? min(100, (int) round(($totalSent / $totalActivation) * 100)) : 0;
+                    @endphp
 
-                            <h4 class="marketing-index-title">{{ $automation->name }}</h4>
-
-                            <div class="marketing-index-meta">
-                                <span class="marketing-index-chip">{{ $triggers[$automation->trigger] ?? ($automation->trigger ?: __('admin.marketing.automations.undefined_trigger')) }}</span>
-                                <span class="marketing-index-chip marketing-index-chip--accent">{{ __('admin.marketing.automations.promo_count', ['count' => $automation->promotions->count()]) }}</span>
-                            </div>
-                        </div>
-
-                        <div class="marketing-index-block">
-                            <p class="marketing-index-copy">{{ __('admin.marketing.automations.model') }}: {{ $automation->model?->name ?? '-' }}</p>
-                            <div class="marketing-index-meta marketing-index-extra">
-                                @forelse ($automation->promotions as $promotion)
-                                    <span>{{ $promotion->name }}</span>
-                                @empty
-                                    <span>{{ __('admin.marketing.automations.no_promotion') }}</span>
-                                @endforelse
-                            </div>
-                        </div>
-
-                        <div class="marketing-index-stats">
-                            <div class="marketing-index-stat-row">
-                                <span class="marketing-index-stat">
-                                    <strong>{{ $automation->total_activation }}</strong>
-                                    <span>{{ __('admin.marketing.automations.involved') }}</span>
-                                </span>
-                                <span class="marketing-index-stat">
-                                    <strong>{{ $automation->total_sent }}</strong>
-                                    <span>{{ __('admin.marketing.automations.sent') }}</span>
+                    <article class="campaign-list-row @if ($isDraft) campaign-list-row--draft @endif">
+                        <div class="campaign-list-identity">
+                            <div class="campaign-list-heading">
+                                <h4 title="{{ $automation->name }}">{{ $automation->name }}</h4>
+                                <span class="campaign-list-consent campaign-list-consent--explicit" title="{{ __('admin.common.email') }}">
+                                    {{ __('admin.marketing.automations.email_channel_short') }}
                                 </span>
                             </div>
-                            <div class="marketing-index-meta marketing-index-extra">
-                                <span>{{ __('admin.marketing.automations.cooldown') }}: {{ data_get($automation->metadata, 'cooldown_days') ?? '-' }}</span>
-                                <span>{{ __('admin.marketing.automations.last_run') }}: {{ $automation->last_run_at?->format('d/m/Y H:i') ?? '-' }}</span>
+
+                            <p title="{{ $triggerLabel }}">{{ $triggerLabel }}</p>
+                        </div>
+
+                        <div class="campaign-list-state">
+                            <strong class="campaign-list-status campaign-list-status--{{ $normalizedStatus }}" title="{{ $statusLabel }}">
+                                {{ $statusLabel }}
+                            </strong>
+                            <span title="{{ $activityLabel }}: {{ $activityValue }}">{{ $activityLabel }}: {{ $activityValue }}</span>
+                        </div>
+
+                        <div class="campaign-list-rule">
+                            <div>
+                                <span>{{ __('admin.marketing.automations.parameters') }}</span>
+                                <strong title="{{ $triggerSummary }}">{{ $triggerSummary }}</strong>
+                            </div>
+                            <div>
+                                <span>{{ __('admin.common.promo') }}</span>
+                                <strong class="campaign-list-promo" title="{{ $promotionLabel }}">{{ $promotionLabel }}</strong>
+                            </div>
+                            <div>
+                                <span>{{ __('admin.marketing.automations.model') }}</span>
+                                <strong title="{{ $modelName }}">{{ $modelName }}</strong>
+                            </div>
+                            <div>
+                                <span>{{ __('admin.marketing.automations.cooldown') }}</span>
+                                <strong title="{{ $cooldownLabel }}">{{ $cooldownLabel }}</strong>
                             </div>
                         </div>
 
-                        <div class="marketing-index-actions">
-                            <a class="order-detail__contact" href="{{ route('admin.automations.show', $automation) }}">
-                                <i class="bi bi-eye-fill"></i>
-                                <span>{{ __('admin.marketing.automations.open') }}</span>
+                        <div class="campaign-list-usage">
+                            @if (! $isDraft)
+                                <div
+                                    class="promotion-list-donut campaign-list-donut"
+                                    style="--promotion-usage: {{ $progressPercentage }}%;"
+                                    role="img"
+                                    aria-label="{{ $totalSent }}/{{ $totalActivation }} {{ __('admin.marketing.automations.sent') }}"
+                                    title="{{ $totalSent }}/{{ $totalActivation }} {{ __('admin.marketing.automations.sent') }}"
+                                >
+                                    <strong>{{ $progressPercentage }}%</strong>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="promotion-list-actions campaign-list-actions">
+                            <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.automations.show', $automation) }}">
+                                {{ __('admin.marketing.automations.open') }}
                             </a>
-                            <a class="order-detail__contact" href="{{ route('admin.automations.edit', $automation) }}">
-                                <i class="bi bi-pencil-square"></i>
-                                <span>{{ __('admin.common.edit') }}</span>
+
+                            <a class="promotion-list-action promotion-list-action--primary" href="{{ route('admin.automations.edit', $automation) }}">
+                                {{ __('admin.common.edit') }}
                             </a>
+
                             @if (in_array($automation->status, ['draft', 'paused'], true))
-                                <form class="marketing-index-secondary" action="{{ route('admin.automations.activate', $automation) }}" method="POST">
+                                <form action="{{ route('admin.automations.activate', $automation) }}" method="POST">
                                     @csrf
-                                    <button class="order-detail__contact" type="submit">
-                                        <i class="bi bi-check2-circle"></i>
-                                        <span>{{ __('admin.marketing.automations.activate') }}</span>
+                                    <button class="promotion-list-action promotion-list-action--primary" type="submit">
+                                        {{ __('admin.marketing.automations.activate') }}
                                     </button>
                                 </form>
                             @endif
+
                             @if ($automation->status === 'active')
-                                <form class="marketing-index-secondary" action="{{ route('admin.automations.pause', $automation) }}" method="POST">
+                                <form action="{{ route('admin.automations.pause', $automation) }}" method="POST">
                                     @csrf
-                                    <button class="order-detail__contact marketing-index-muted" type="submit">
-                                        <i class="bi bi-pause-circle"></i>
-                                        <span>{{ __('admin.marketing.automations.pause') }}</span>
+                                    <button class="promotion-list-action promotion-list-action--danger" type="submit">
+                                        {{ __('admin.marketing.automations.pause') }}
                                     </button>
                                 </form>
                             @endif
+
                             @if ($automation->status !== 'archived')
-                                <form class="marketing-index-secondary" action="{{ route('admin.automations.archive', $automation) }}" method="POST">
+                                <form action="{{ route('admin.automations.archive', $automation) }}" method="POST">
                                     @csrf
-                                    <button class="order-detail__contact marketing-index-danger" type="submit">
-                                        <i class="bi bi-archive-fill"></i>
-                                        <span>{{ __('admin.marketing.automations.archive') }}</span>
+                                    <button class="promotion-list-action promotion-list-action--danger" type="submit">
+                                        {{ __('admin.marketing.automations.archive') }}
                                     </button>
                                 </form>
                             @endif

@@ -4,7 +4,10 @@ namespace App\Services\Marketing;
 
 use App\Models\Automation;
 use App\Models\Customer;
+use App\Services\Marketing\Automation\AutomationTriggerEvaluator;
+use App\Services\Marketing\Automation\ProfilingConsentTriggerContract;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
@@ -12,34 +15,55 @@ class AutomationAudienceBuilder
 {
     private const MAX_CUSTOMERS_LIMIT = 500;
 
-    private const SUPPORTED_TRIGGERS = [
-        'order_inactive_30_days',
-        'reservation_inactive_30_days',
-        'birthday',
-        'first_order_completed',
-        'abandoned_profile',
-    ];
-
     private ?array $customerColumns = null;
 
-    public function __construct(private MarketingConsentService $marketingConsentService)
-    {
+    public function __construct(
+        private MarketingConsentService $marketingConsentService,
+        private AutomationTriggerEvaluator $triggerEvaluator
+    ) {
     }
 
     public function queryForAutomation(Automation $automation): Builder
     {
         $query = Customer::query();
 
-        $this->applyMarketingConsent($query);
+        // NON applichiamo qui il filtro email_marketing_consent_at.
+        // Questo builder costruisce l'audience per l'ASSEGNAZIONE della promozione,
+        // non per l'invio email. I due livelli sono separati:
+        //   • Promozione in account   → nessun filtro consenso email richiesto
+        //   • Invio email promozionale → consenso controllato in MarketingEmailDispatchService::canSend()
+        //
+        // Motivazione: un cliente senza consenso email può comunque ricevere la promozione
+        // nel proprio account (dashboard cliente), ma non riceverà l'email finché non
+        // fornisce il consenso.
 
-        match ($automation->trigger) {
-            'order_inactive_30_days' => $this->applyOrderInactiveTrigger($query),
-            'reservation_inactive_30_days' => $this->applyReservationInactiveTrigger($query),
-            'first_order_completed' => $this->applyFirstOrderCompletedTrigger($query),
-            'abandoned_profile' => $this->applyAbandonedProfileTrigger($query),
-            'birthday' => $this->applyBirthdayTrigger($query),
-            default => $this->applyEmptyResult($query),
-        };
+        $trigger = $automation->trigger;
+        $params  = is_array($automation->metadata) ? $automation->metadata : [];
+
+        if ($trigger === null || ! $this->triggerEvaluator->supports($trigger)) {
+            $this->applyEmptyResult($query);
+
+            return $query;
+        }
+
+        $triggerObj = $this->triggerEvaluator->get($trigger);
+        $failure    = $triggerObj->getFailureReason($params, $this->customerColumns());
+
+        if ($failure !== null) {
+            $this->applyEmptyResult($query);
+
+            return $query;
+        }
+
+        // Filtro profilazione: applicato solo per trigger che richiedono tracking_consent_at.
+        // Es. birthday_before usa la data di nascita a fini promozionali → richiede consenso.
+        // I trigger su dati transazionali (ordini, prenotazioni) non richiedono questo filtro
+        // perché la base giuridica è l'esecuzione del contratto.
+        if ($triggerObj instanceof ProfilingConsentTriggerContract && $triggerObj->requiresProfilingConsent()) {
+            $this->marketingConsentService->applyTrackingConsent($query);
+        }
+
+        $triggerObj->applyToQuery($query, $params);
 
         return $this->applyDefaultOrder($query);
     }
@@ -58,6 +82,10 @@ class AutomationAudienceBuilder
             ->get();
     }
 
+    /**
+     * Return null if the automation can be queried, or a human-readable reason why it cannot.
+     * Called by AutomationAssignmentService and AutomationController::previewAudience.
+     */
     public function getFailureReason(Automation $automation): ?string
     {
         if ($automation->status === 'archived') {
@@ -68,12 +96,21 @@ class AutomationAudienceBuilder
             return 'Trigger mancante.';
         }
 
-        if (! in_array($automation->trigger, self::SUPPORTED_TRIGGERS, true)) {
-            return 'Trigger non supportato per la preview audience.';
+        if (! $this->triggerEvaluator->supports($automation->trigger)) {
+            return "Trigger '{$automation->trigger}' non supportato.";
         }
 
-        if ($automation->trigger === 'birthday' && ! $this->hasBirthDateColumn()) {
-            return 'Trigger compleanno non disponibile: customers non ha un campo data nascita.';
+        $params  = is_array($automation->metadata) ? $automation->metadata : [];
+        $failure = $this->triggerEvaluator->getFailureReason($automation->trigger, $params);
+
+        if ($failure !== null) {
+            return $failure;
+        }
+
+        $windowFailure = $this->getActiveWindowFailureReason($params);
+
+        if ($windowFailure !== null) {
+            return $windowFailure;
         }
 
         if ($automation->promotions()->count() === 0) {
@@ -83,82 +120,33 @@ class AutomationAudienceBuilder
         return null;
     }
 
-    private function applyMarketingConsent(Builder $query): void
+    private function getActiveWindowFailureReason(array $metadata): ?string
     {
-        $this->marketingConsentService->applyEmailMarketingConsent($query);
-    }
+        $now = now()->startOfDay();
 
-    private function applyOrderInactiveTrigger(Builder $query): void
-    {
-        if (! $this->hasCustomerColumn('last_activity_at') || ! $this->hasCustomerColumn('orders_count')) {
-            $this->applyEmptyResult($query);
+        $from = data_get($metadata, 'enabled_from');
 
-            return;
-        }
-
-        $query
-            ->where('last_activity_at', '<', now()->subDays(30))
-            ->where('orders_count', '>', 0);
-    }
-
-    private function applyReservationInactiveTrigger(Builder $query): void
-    {
-        if (! $this->hasCustomerColumn('last_activity_at') || ! $this->hasCustomerColumn('reservations_count')) {
-            $this->applyEmptyResult($query);
-
-            return;
-        }
-
-        $query
-            ->where('last_activity_at', '<', now()->subDays(30))
-            ->where('reservations_count', '>', 0);
-    }
-
-    private function applyFirstOrderCompletedTrigger(Builder $query): void
-    {
-        if (! $this->hasCustomerColumn('orders_count')) {
-            $this->applyEmptyResult($query);
-
-            return;
-        }
-
-        $query->where('orders_count', 1);
-    }
-
-    private function applyAbandonedProfileTrigger(Builder $query): void
-    {
-        if (! $this->hasCustomerColumn('profiling_consent_at') && ! $this->hasCustomerColumn('lifecycle_segment')) {
-            $this->applyEmptyResult($query);
-
-            return;
-        }
-
-        $query->where(function (Builder $nested) {
-            if ($this->hasCustomerColumn('profiling_consent_at')) {
-                $nested->whereNull('profiling_consent_at');
+        if ($from) {
+            try {
+                if ($now->lt(Carbon::parse($from)->startOfDay())) {
+                    return 'Automazione non ancora attiva (enabled_from nel futuro).';
+                }
+            } catch (\Throwable) {
             }
-
-            if ($this->hasCustomerColumn('lifecycle_segment')) {
-                $nested->orWhere('lifecycle_segment', 'abandoned_profile');
-            }
-        });
-    }
-
-    private function applyBirthdayTrigger(Builder $query): void
-    {
-        $birthDateColumn = $this->birthDateColumn();
-
-        if ($birthDateColumn === null) {
-            $this->applyEmptyResult($query);
-
-            return;
         }
 
-        $today = now();
+        $until = data_get($metadata, 'enabled_until');
 
-        $query
-            ->whereMonth($birthDateColumn, $today->month)
-            ->whereDay($birthDateColumn, $today->day);
+        if ($until) {
+            try {
+                if ($now->gt(Carbon::parse($until)->startOfDay())) {
+                    return 'Automazione scaduta (enabled_until superato).';
+                }
+            } catch (\Throwable) {
+            }
+        }
+
+        return null;
     }
 
     private function applyDefaultOrder(Builder $query): Builder
@@ -175,22 +163,6 @@ class AutomationAudienceBuilder
     private function applyEmptyResult(Builder $query): void
     {
         $query->whereNull('id')->whereNotNull('id');
-    }
-
-    private function hasBirthDateColumn(): bool
-    {
-        return $this->birthDateColumn() !== null;
-    }
-
-    private function birthDateColumn(): ?string
-    {
-        foreach (['birth_date', 'birthday', 'date_of_birth', 'dob'] as $column) {
-            if ($this->hasCustomerColumn($column)) {
-                return $column;
-            }
-        }
-
-        return null;
     }
 
     private function hasCustomerColumn(string $column): bool

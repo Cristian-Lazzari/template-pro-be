@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Marketing\Automation\AutomationTriggerEvaluator;
 use App\Support\Currency;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
@@ -15,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(AutomationTriggerEvaluator::class);
     }
 
     /**

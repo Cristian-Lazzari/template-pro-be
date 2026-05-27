@@ -84,6 +84,36 @@ class CustomerPromotionService
         });
     }
 
+    /**
+     * Marca una CustomerPromotion come "reminder inviato".
+     * Aggiorna reminder_sent_at senza toccare email_sent_at (che registra la prima email).
+     * Idempotente: se reminder_sent_at è già valorizzato, restituisce il modello senza scrivere.
+     */
+    public function markReminderSent(CustomerPromotion $customerPromotion, bool $updateCustomerContact = true): CustomerPromotion
+    {
+        $this->ensurePersisted($customerPromotion, 'CustomerPromotion');
+
+        return DB::transaction(function () use ($customerPromotion, $updateCustomerContact) {
+            $customerPromotion = $this->lockCustomerPromotion($customerPromotion);
+
+            if ($customerPromotion->reminder_sent_at !== null) {
+                return $customerPromotion->refresh();
+            }
+
+            $now = now();
+            $customerPromotion->reminder_sent_at = $now;
+            $customerPromotion->save();
+
+            if ($updateCustomerContact) {
+                $customerPromotion->customer()->update([
+                    'last_marketing_contact_at' => $now,
+                ]);
+            }
+
+            return $customerPromotion->refresh();
+        });
+    }
+
     public function markSent(CustomerPromotion $customerPromotion, bool $updateCustomerContact = true): CustomerPromotion
     {
         $this->ensurePersisted($customerPromotion, 'CustomerPromotion');

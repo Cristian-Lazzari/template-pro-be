@@ -111,6 +111,24 @@ class MarketingConsentService
         return $customer?->tracking_consent_at !== null;
     }
 
+    /**
+     * Applica il filtro consenso profilazione/tracking alla query.
+     *
+     * Se la colonna tracking_consent_at esiste → WHERE tracking_consent_at IS NOT NULL.
+     * Se la colonna non esiste → fallback sicuro: nessun cliente supera il filtro
+     * (protegge i dati personali in assenza di struttura adeguata).
+     */
+    public function applyTrackingConsent(Builder $query): Builder
+    {
+        if ($this->hasCustomerColumn('tracking_consent_at')) {
+            return $query->whereNotNull($this->qualifyCustomerColumn($query, 'tracking_consent_at'));
+        }
+
+        // Colonna assente: fallback sicuro. Nessun cliente selezionabile
+        // per trigger che richiedono profilazione.
+        return $this->emptyQuery($query);
+    }
+
     private function qualifyCustomerColumn(Builder $query, string $column): string
     {
         return $query->getModel()->qualifyColumn($column);
