@@ -64,12 +64,49 @@
 
 
     @if (count($calendar))
-        @php 
-            $i = 0; 
-            $currentDay = date("d");
-            $currentMonth = date("m");
-            $currentYear = date("Y");
+        @php
+            // Stat giornaliere — estraggo i dati di oggi dal calendario
+            $todayDate      = date('Y-m-d');
+            $todayData      = null;
+            foreach ($calendar as $_m) {
+                foreach ($_m['days'] as $_d) {
+                    if ($_d['date'] === $todayDate) { $todayData = $_d; break 2; }
+                }
+            }
+            $maxTableSingle = (int) ($property_adv['max_table']   ?? 0);
+            $maxTable1      = (int) ($property_adv['max_table_1'] ?? 0);
+            $maxTable2      = (int) ($property_adv['max_table_2'] ?? 0);
+            $totalSeats     = ($double && ($maxTable1 + $maxTable2 > 0))
+                                ? ($maxTable1 + $maxTable2)
+                                : $maxTableSingle;
+            $i = 0;
+            $currentDay   = date('d');
+            $currentMonth = date('m');
+            $currentYear  = date('Y');
         @endphp
+
+        @if ($todayData)
+            <div class="dashboard-home__today-stats menu-dashboard__stat-grid">
+                <div class="menu-dashboard__stat-card">
+                    <span class="menu-dashboard__stat-label">Ordini oggi</span>
+                    <strong>{{ $todayData['n_order'] }}</strong>
+                    <small>{{ $todayData['n_order'] === 1 ? 'richiesta' : 'richieste' }} ricevute</small>
+                </div>
+                @if (in_array($pack, [2, 4]) && $totalSeats > 0)
+                    <div class="menu-dashboard__stat-card">
+                        <span class="menu-dashboard__stat-label">Coperti in sala</span>
+                        <strong>{{ $todayData['guests'] }}</strong>
+                        <small>su {{ $totalSeats }} disponibili</small>
+                    </div>
+                @endif
+                <div class="menu-dashboard__stat-card">
+                    <span class="menu-dashboard__stat-label">Incasso oggi</span>
+                    <strong>{{ \App\Support\Currency::formatCents($todayData['cash']) }}</strong>
+                    <small>da ordini confermati</small>
+                </div>
+            </div>
+        @endif
+
         <div id="calendar_1" class="carousel slide my_carousel dashboard-home__calendar mt-4">
             <div class="carousel-indicators">
                 @foreach ($calendar as $m)

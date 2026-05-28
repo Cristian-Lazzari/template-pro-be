@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             MarketingPromotionSeeder::class,
             MarketingCampaignsSeeder::class,
             MarketingBenvenutoSeeder::class,
+            AutomationsTestSeeder::class,
         ]);
     }
 }

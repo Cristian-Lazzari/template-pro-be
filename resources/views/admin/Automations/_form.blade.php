@@ -126,6 +126,7 @@
     $cooldownValue = old('metadata.cooldown_days', data_get($automation->metadata, 'cooldown_days'));
     $enabledFromValue = old('metadata.enabled_from', data_get($automation->metadata, 'enabled_from'));
     $enabledUntilValue = old('metadata.enabled_until', data_get($automation->metadata, 'enabled_until'));
+    $automationPermanent = ($enabledFromValue === null || $enabledFromValue === '') && ($enabledUntilValue === null || $enabledUntilValue === '');
     $primaryActionLabel = $method === 'POST'
         ? __('admin.marketing.automations.create_activate')
         : __('admin.marketing.automations.save_activate');
@@ -133,6 +134,12 @@
     $statusPreviewLabel = $automation->exists
         ? ($statuses[$automation->status] ?? $automation->status)
         : __('admin.marketing.automations.status_draft');
+    $wizardSteps = [
+        1 => __('admin.marketing.automations.step_identity'),
+        2 => __('admin.marketing.automations.step_parameters'),
+        3 => __('admin.marketing.automations.step_delivery'),
+    ];
+    $totalWizardSteps = count($wizardSteps);
 
     $triggerErrorFields = collect($triggerMetaFields[$selectedTrigger] ?? [])
         ->pluck('key')
@@ -147,9 +154,9 @@
     } elseif ($hasErrors && $errors->hasAny($sharedErrorFields)) {
         $initialStep = 3;
     } elseif ($hasErrors) {
-        $initialStep = 4;
+        $initialStep = $totalWizardSteps;
     } elseif ($automation->exists) {
-        $initialStep = 4;
+        $initialStep = $totalWizardSteps;
     } else {
         $initialStep = 1;
     }
@@ -194,14 +201,14 @@
     @endif
 
     <div class="promo-wiz__bar">
-        @foreach ([1 => __('admin.marketing.automations.step_identity'), 2 => __('admin.marketing.automations.step_parameters'), 3 => __('admin.marketing.automations.step_delivery'), 4 => __('admin.marketing.automations.step_summary')] as $stepNumber => $stepLabel)
+        @foreach ($wizardSteps as $stepNumber => $stepLabel)
             <div class="promo-wiz__dot {{ $initialStep === $stepNumber ? 'is-active' : ($initialStep > $stepNumber ? 'is-done' : '') }}" data-step-dot="{{ $stepNumber }}">
                 <span class="promo-wiz__dot-num">
                     @if ($initialStep > $stepNumber) <i class="bi bi-check-lg"></i> @else {{ $stepNumber }} @endif
                 </span>
                 <span class="promo-wiz__dot-lbl">{{ $stepLabel }}</span>
             </div>
-            @if ($stepNumber < 4)
+            @if ($stepNumber < $totalWizardSteps)
                 <div class="promo-wiz__line {{ $initialStep > $stepNumber ? 'is-done' : '' }}" data-step-line="{{ $stepNumber }}"></div>
             @endif
         @endforeach
@@ -430,7 +437,7 @@
                         </h3>
                     </div>
 
-                    <div class="split">
+                    <div style="display: grid; gap: 18px;">
                         <div>
                             <label class="label_c" for="model_id">
                                 <i class="bi bi-envelope-fill"></i>
@@ -452,7 +459,7 @@
                             @error('model_id') <p class="error">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
+                        <div style="grid-column: 1 / -1;">
                             <span class="label_c">
                                 <i class="bi bi-broadcast-pin"></i>
                                 {{ __('admin.marketing.automations.channel') }}
@@ -527,23 +534,48 @@
                                 {{ __('admin.marketing.automations.cooldown_help') }}
                             </p>
                         </div>
-                        <div>
+                        <div style="grid-column: 1 / -1;">
+                            <div class="model-type-picker" style="grid-template-columns: minmax(0, 1fr);">
+                                <label class="model-type-option">
+                                    <input
+                                        type="checkbox"
+                                        id="automation_permanent"
+                                        value="1"
+                                        data-automation-permanent
+                                        @checked($automationPermanent)
+                                    >
+                                    <div class="model-type-option__card">
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <span class="model-type-option__icon"><i class="bi bi-infinity"></i></span>
+                                            <span class="model-type-option__dot"></span>
+                                        </div>
+                                        <div class="model-type-option__label">
+                                            <strong>{{ __('admin.marketing.automations.permanent') }}</strong>
+                                            <small>{{ __('admin.marketing.automations.permanent_note') }}</small>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="metadata[enabled_from]" value="">
+                        <input type="hidden" name="metadata[enabled_until]" value="">
+                        <div data-automation-dates-panel @if ($automationPermanent) hidden @endif>
                             <label class="label_c" for="metadata_enabled_from">
                                 <i class="bi bi-calendar-plus"></i>
                                 {{ __('admin.marketing.automations.enabled_from') }}
                             </label>
                             <p>
-                                <input value="{{ $enabledFromValue }}" type="date" name="metadata[enabled_from]" id="metadata_enabled_from" data-enabled-from-input>
+                                <input value="{{ $enabledFromValue }}" type="date" name="metadata[enabled_from]" id="metadata_enabled_from" data-enabled-from-input @disabled($automationPermanent)>
                             </p>
                             @error('metadata.enabled_from') <p class="error">{{ $message }}</p> @enderror
                         </div>
-                        <div>
+                        <div data-automation-dates-panel @if ($automationPermanent) hidden @endif>
                             <label class="label_c" for="metadata_enabled_until">
                                 <i class="bi bi-calendar-x"></i>
                                 {{ __('admin.marketing.automations.enabled_until') }}
                             </label>
                             <p>
-                                <input value="{{ $enabledUntilValue }}" type="date" name="metadata[enabled_until]" id="metadata_enabled_until" data-enabled-until-input>
+                                <input value="{{ $enabledUntilValue }}" type="date" name="metadata[enabled_until]" id="metadata_enabled_until" data-enabled-until-input @disabled($automationPermanent)>
                             </p>
                             @error('metadata.enabled_until') <p class="error">{{ $message }}</p> @enderror
                         </div>
@@ -588,61 +620,6 @@
                 </section>
             </div>
 
-            <div class="promo-wiz__panel" data-wiz-panel="4" @if ($initialStep !== 4) hidden @endif>
-                <section class="order-detail__section">
-                    <div class="order-detail__section-head">
-                        <h3>
-                            <span class="order-detail__section-icon">
-                                <i class="bi bi-check2-square"></i>
-                            </span>
-                            {{ __('admin.marketing.automations.final_review') }}
-                        </h3>
-                    </div>
-
-                    <div class="marketing-detail__compact-grid">
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.name') }}</span>
-                            <strong data-final-name>{{ old('name', $automation->name) ?: __('admin.marketing.automations.to_choose') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.trigger') }}</span>
-                            <strong data-final-trigger>{{ $selectedTrigger ? ($triggerOptions[$selectedTrigger]['label'] ?? $selectedTrigger) : __('admin.marketing.automations.to_choose') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.parameters') }}</span>
-                            <strong data-final-parameters>{{ __('admin.marketing.automations.to_choose') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.promotions') }}</span>
-                            <strong data-final-promotion>{{ $previewPromotions->first()?->name ?? __('admin.marketing.automations.no_promotion') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.channel') }}</span>
-                            <strong>{{ __('admin.common.email') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.mail_model') }}</span>
-                            <strong data-final-model>{{ $previewMailModel?->name ?? __('admin.marketing.automations.to_choose') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.send_window') }}</span>
-                            <strong>{{ __('admin.marketing.automations.runner_window_short') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.cooldown') }}</span>
-                            <strong data-final-cooldown>{{ $cooldownValue !== null && $cooldownValue !== '' ? __('admin.marketing.automations.days_count', ['count' => $cooldownValue]) : __('admin.marketing.automations.no_cooldown') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.period') }}</span>
-                            <strong data-final-period>{{ __('admin.marketing.automations.always_active') }}</strong>
-                        </article>
-                        <article class="marketing-detail__fact">
-                            <span>{{ __('admin.marketing.automations.status') }}</span>
-                            <strong>{{ __('admin.marketing.automations.status_by_cta') }}</strong>
-                        </article>
-                    </div>
-                </section>
-            </div>
         </div>
 
         <aside class="marketing-form-sidebar automation-form-sidebar">
@@ -651,8 +628,8 @@
                     <i class="bi bi-chevron-left"></i>
                     <span>{{ __('admin.common.back') }}</span>
                 </button>
-                <span class="cpv2-nav-step" data-nav-step-indicator>{{ $initialStep }}/4</span>
-                <button type="button" class="cpv2-nav-btn cpv2-nav-btn--primary" data-wiz-next @if ($initialStep === 4) hidden @endif>
+                <span class="cpv2-nav-step" data-nav-step-indicator>{{ $initialStep }}/{{ $totalWizardSteps }}</span>
+                <button type="button" class="cpv2-nav-btn cpv2-nav-btn--primary" data-wiz-next @if ($initialStep === $totalWizardSteps) hidden @endif>
                     <span>{{ __('admin.common.next') }}</span>
                     <i class="bi bi-chevron-right"></i>
                 </button>
@@ -733,7 +710,7 @@
             <i class="bi bi-clock-history"></i>
             <span>{{ __('admin.marketing.automations.complete_later') }}</span>
         </button>
-        <button class="order-detail__contact marketing-form-action--primary" type="submit" name="submit_action" value="activate" data-wiz-submit @if ($initialStep !== 4) hidden @endif>
+        <button class="order-detail__contact marketing-form-action--primary" type="submit" name="submit_action" value="activate" data-wiz-submit @if ($initialStep !== $totalWizardSteps) hidden @endif>
             <i class="bi bi-check2-circle"></i>
             <span>{{ $primaryActionLabel }}</span>
         </button>
@@ -749,10 +726,6 @@
         'noModel' => __('admin.marketing.automations.to_choose'),
         'noCooldown' => __('admin.marketing.automations.no_cooldown'),
         'daysCount' => __('admin.marketing.automations.days_count', ['count' => '__COUNT__']),
-        'periodAlways' => __('admin.marketing.automations.always_active'),
-        'periodFrom' => __('admin.marketing.automations.period_from', ['date' => '__FROM__']),
-        'periodUntil' => __('admin.marketing.automations.period_until', ['date' => '__UNTIL__']),
-        'periodRange' => __('admin.marketing.automations.period_range', ['from' => '__FROM__', 'until' => '__UNTIL__']),
         'optionalOrders' => __('admin.marketing.automations.optional_orders'),
     ];
 @endphp
@@ -772,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
     let currentStep = {{ $initialStep }};
-    const totalSteps = 4;
+    const totalSteps = {{ $totalWizardSteps }};
     const nameInput = form.querySelector('[data-automation-name]');
     const triggerRadios = form.querySelectorAll('[data-trigger-radio]');
     const triggerPanels = form.querySelectorAll('[data-trigger-panel]');
@@ -780,8 +753,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const promotionInputs = form.querySelectorAll('[data-promotion-checkbox]');
     const mailModelSelect = form.querySelector('[data-mail-model-select]');
     const cooldownInput = form.querySelector('[data-cooldown-input]');
-    const enabledFromInput = form.querySelector('[data-enabled-from-input]');
-    const enabledUntilInput = form.querySelector('[data-enabled-until-input]');
+    const permanentInput = form.querySelector('[data-automation-permanent]');
+    const datesPanels = form.querySelectorAll('[data-automation-dates-panel]');
     const btnPrev = form.querySelectorAll('[data-wiz-prev]');
     const btnNext = form.querySelectorAll('[data-wiz-next]');
     const btnSubmit = form.querySelector('[data-wiz-submit]');
@@ -917,9 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const label = selected?.dataset.promotionLabel || copy.noPromotion;
         const preview = form.querySelector('[data-preview-promotion]');
-        const final = form.querySelector('[data-final-promotion]');
         if (preview) preview.textContent = label;
-        if (final) final.textContent = label;
 
         const hasPromotion = Boolean(selected);
         const icon = form.querySelector('[data-row-icon-promotion]');
@@ -927,23 +898,17 @@ document.addEventListener('DOMContentLoaded', () => {
         setRowDone('promotion', hasPromotion, true);
     };
 
-    const periodSummary = () => {
-        const from = enabledFromInput?.value || '';
-        const until = enabledUntilInput?.value || '';
-
-        if (from && until) {
-            return interpolate(copy.periodRange, {'__FROM__': from, '__UNTIL__': until});
-        }
-
-        if (from) {
-            return interpolate(copy.periodFrom, {'__FROM__': from});
-        }
-
-        if (until) {
-            return interpolate(copy.periodUntil, {'__UNTIL__': until});
-        }
-
-        return copy.periodAlways;
+    const syncPermanent = () => {
+        const permanent = permanentInput?.checked ?? false;
+        datesPanels.forEach((panel) => {
+            panel.hidden = permanent;
+            panel.querySelectorAll('input').forEach((input) => {
+                input.disabled = permanent;
+                if (permanent) {
+                    input.value = '';
+                }
+            });
+        });
     };
 
     const syncPreview = () => {
@@ -954,27 +919,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const previewName = form.querySelector('[data-preview-name]');
         const previewNameVal = form.querySelector('[data-preview-name-val]');
-        const finalName = form.querySelector('[data-final-name]');
         if (previewName) previewName.textContent = name || copy.namePlaceholder;
         if (previewNameVal) previewNameVal.textContent = name || copy.toChoose;
-        if (finalName) finalName.textContent = name || copy.toChoose;
         const nameIcon = form.querySelector('[data-row-icon-name]');
         if (nameIcon) nameIcon.className = name ? 'bi bi-check-lg' : 'bi bi-circle';
         setRowDone('name', Boolean(name));
 
         const triggerLabel = triggerDefinition?.label || copy.toChoose;
         const previewTrigger = form.querySelector('[data-preview-trigger]');
-        const finalTrigger = form.querySelector('[data-final-trigger]');
         if (previewTrigger) previewTrigger.textContent = triggerLabel;
-        if (finalTrigger) finalTrigger.textContent = triggerLabel;
         const triggerIcon = form.querySelector('[data-row-icon-trigger]');
         if (triggerIcon) triggerIcon.className = trigger ? 'bi bi-check-lg' : 'bi bi-circle';
         setRowDone('trigger', Boolean(trigger));
 
         const previewParameters = form.querySelector('[data-preview-parameters]');
-        const finalParameters = form.querySelector('[data-final-parameters]');
         if (previewParameters) previewParameters.textContent = parameterSummary;
-        if (finalParameters) finalParameters.textContent = parameterSummary;
         const parametersIcon = form.querySelector('[data-row-icon-parameters]');
         if (parametersIcon) parametersIcon.className = trigger ? 'bi bi-check-lg' : 'bi bi-circle';
         setRowDone('parameters', Boolean(trigger));
@@ -983,9 +942,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? (selectedOption(mailModelSelect)?.dataset.previewLabel || selectedOption(mailModelSelect)?.textContent?.trim() || copy.noModel)
             : copy.noModel;
         const previewModel = form.querySelector('[data-preview-model]');
-        const finalModel = form.querySelector('[data-final-model]');
         if (previewModel) previewModel.textContent = modelLabel;
-        if (finalModel) finalModel.textContent = modelLabel;
         const modelIcon = form.querySelector('[data-row-icon-model]');
         if (modelIcon) modelIcon.className = mailModelSelect?.value ? 'bi bi-check-lg' : 'bi bi-circle';
         setRowDone('model', Boolean(mailModelSelect?.value));
@@ -995,15 +952,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ? interpolate(copy.daysCount, {'__COUNT__': cooldownValue})
             : copy.noCooldown;
         const previewCooldown = form.querySelector('[data-preview-cooldown]');
-        const finalCooldown = form.querySelector('[data-final-cooldown]');
         if (previewCooldown) previewCooldown.textContent = cooldownLabel;
-        if (finalCooldown) finalCooldown.textContent = cooldownLabel;
         const cooldownIcon = form.querySelector('[data-row-icon-cooldown]');
         if (cooldownIcon) cooldownIcon.className = cooldownValue !== '' ? 'bi bi-check-lg' : 'bi bi-dash-lg';
         setRowDone('cooldown', cooldownValue !== '', true);
-
-        const finalPeriod = form.querySelector('[data-final-period]');
-        if (finalPeriod) finalPeriod.textContent = periodSummary();
 
         syncPromotions();
     };
@@ -1059,8 +1011,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
     mailModelSelect?.addEventListener('change', syncPreview);
     cooldownInput?.addEventListener('input', syncPreview);
-    enabledFromInput?.addEventListener('change', syncPreview);
-    enabledUntilInput?.addEventListener('change', syncPreview);
+    permanentInput?.addEventListener('change', syncPermanent);
 
     btnNext.forEach((btn) => btn.addEventListener('click', () => {
         if (currentStep >= totalSteps) return;
@@ -1089,6 +1040,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     syncTriggerPanels();
+    syncPermanent();
     syncPreview();
     renderStepBar(currentStep);
 });

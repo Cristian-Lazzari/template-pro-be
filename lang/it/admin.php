@@ -2561,6 +2561,8 @@ return array (
       'cooldown_help' => 'Se il cliente ha già questa promozione attiva, non verrà duplicata. Dopo questo periodo potrà ricevere un promemoria via email, se ha dato il consenso.',
       'enabled_from' => 'Abilitata da',
       'enabled_until' => 'Abilitata fino a',
+      'permanent' => 'Permanente',
+      'permanent_note' => 'Attiva finché non viene messa in pausa.',
       'summary' => 'Riepilogo',
       'status' => 'Stato',
       'to_choose' => 'Da scegliere',
