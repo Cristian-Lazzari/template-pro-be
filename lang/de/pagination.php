@@ -13,11 +13,11 @@ return [
     |
     */
 
-    'previous' => '&laquo; Precedente',
-    'next' => 'Successivo &raquo;',
+    'previous' => '&laquo; Zurück',
+    'next' => 'Weiter &raquo;',
 
-    'aria_label' => 'Navigazione pagine',
-    'showing'    => 'Risultati',
-    'of'         => 'di',
+    'aria_label' => 'Seitennavigation',
+    'showing'    => 'Ergebnisse',
+    'of'         => 'von',
 
 ];

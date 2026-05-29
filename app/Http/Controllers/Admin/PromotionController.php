@@ -81,7 +81,7 @@ class PromotionController extends Controller
                 fn ($query) => $query->where('status', '!=', 'archived')
             )
             ->orderBy('updated_at', 'desc')
-            ->simplePaginate(40);
+            ->paginate(40);
 
         return view('admin.Promotions.index', [
             'promotions' => $promotions,

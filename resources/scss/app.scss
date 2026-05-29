@@ -9196,3 +9196,173 @@ section{
     0%, 100% { filter: saturate(1); }
     50%       { filter: saturate(1.18) brightness(1.05); }
 }
+
+// ─── Admin Pager — componente paginazione backoffice ──────────────────────────
+//
+// Usato da: marketing-index-pager, mailer-pager, marketing-detail__pager,
+//           customer-page__pagination, d-flex.justify-content-center (Products/Posts)
+// Template: resources/views/vendor/pagination/bootstrap-5.blade.php
+// ──────────────────────────────────────────────────────────────────────────────
+
+.admin-pager {
+    @include flex-layout($direction: column, $align: center, $gap: 14px);
+    padding: 18px 0 4px;
+}
+
+.admin-pager__info {
+    margin: 0;
+    font-size: var(--fs-100);
+    color: rgba(216, 221, 232, 0.60);
+    letter-spacing: .01em;
+
+    strong {
+        color: rgba(216, 221, 232, 0.88);
+        font-weight: 700;
+    }
+}
+
+.admin-pager__controls {
+    @include flex-layout($align: center, $gap: 6px, $wrap: wrap);
+    justify-content: center;
+}
+
+.admin-pager__pages {
+    @include flex-layout($align: center, $gap: 4px, $wrap: wrap);
+    justify-content: center;
+}
+
+// ─── Bottone base ─────────────────────────────────────────────────────────────
+
+.admin-pager__btn {
+    @include flex-layout($display: inline-flex, $align: center, $justify: center);
+    @include interactive-transition();
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(216, 221, 232, 0.12);
+    background: rgba(216, 221, 232, 0.04);
+    color: rgba(216, 221, 232, 0.76);
+    font-size: var(--fs-200);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
+
+    i {
+        font-size: var(--fs-200);
+        line-height: 1;
+    }
+
+    &:hover {
+        @include hover-lift(
+            $background: rgba(216, 221, 232, 0.10),
+            $border-color: rgba(216, 221, 232, 0.20),
+            $color: var(--c3),
+            $shadow: 0 8px 20px rgba(0, 0, 0, 0.18),
+            $translate: -1px
+        );
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(14, 183, 146, 0.28);
+        border-color: rgba(14, 183, 146, 0.40);
+    }
+}
+
+// ─── Stato attivo (pagina corrente) ───────────────────────────────────────────
+
+.admin-pager__btn--active {
+    background:
+        radial-gradient(circle at top left, rgba(14, 183, 146, 0.18), transparent 30%),
+        linear-gradient(145deg, rgba(216, 221, 232, 0.96), rgba(216, 221, 232, 0.88));
+    color: var(--c1);
+    border-color: rgba(216, 221, 232, 0.30);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    cursor: default;
+    font-weight: 800;
+
+    &:hover {
+        transform: none;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+        background:
+            radial-gradient(circle at top left, rgba(14, 183, 146, 0.18), transparent 30%),
+            linear-gradient(145deg, rgba(216, 221, 232, 0.96), rgba(216, 221, 232, 0.88));
+        color: var(--c1);
+        border-color: rgba(216, 221, 232, 0.30);
+    }
+}
+
+// ─── Stato disabilitato (prev/next alle estremità) ────────────────────────────
+
+.admin-pager__btn--disabled {
+    background: rgba(216, 221, 232, 0.02);
+    color: rgba(216, 221, 232, 0.24);
+    border-color: rgba(216, 221, 232, 0.06);
+    cursor: not-allowed;
+    pointer-events: none;
+
+    &:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+// ─── Separatore "..." ─────────────────────────────────────────────────────────
+
+.admin-pager__btn--dots {
+    background: transparent;
+    border-color: transparent;
+    color: rgba(216, 221, 232, 0.38);
+    min-width: 24px;
+    padding: 0 4px;
+    cursor: default;
+    pointer-events: none;
+    letter-spacing: .05em;
+
+    &:hover {
+        transform: none;
+        box-shadow: none;
+        background: transparent;
+        border-color: transparent;
+    }
+}
+
+// ─── Numeri pagina — nascosti su mobile piccolo ───────────────────────────────
+
+@media (max-width: 420px) {
+    .admin-pager__pages {
+        display: none;
+    }
+}
+
+// ─── Override: wrapper contestuali già presenti nelle view ────────────────────
+// Normalizza i vari wrapper usati prima dell'introduzione del componente
+// senza modificare le view stesse.
+
+.marketing-index-pager,
+.mailer-pager,
+.marketing-detail__pager,
+.customer-page__pagination {
+    margin-top: 20px;
+
+    // Rimuove margin Bootstrap eventualmente iniettato dal nav interno
+    .admin-pager {
+        padding-top: 8px;
+    }
+}
+
+// Products e Posts usano d-flex/justify-content-center Bootstrap —
+// forziamo il corretto allineamento del nostro nav al suo interno.
+#productsPagination,
+#postsPagination {
+    margin-top: 16px;
+
+    .admin-pager {
+        width: 100%;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────

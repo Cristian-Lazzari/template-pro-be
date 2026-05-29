@@ -42,7 +42,7 @@ class CampaignController extends Controller
                     ->orWhere('status', '!=', 'archived');
             })
             ->orderBy('updated_at', 'desc')
-            ->simplePaginate(40);
+            ->paginate(40);
 
         return view('admin.Campaigns.index', [
             'campaigns' => $campaigns,
@@ -58,7 +58,7 @@ class CampaignController extends Controller
         $campaigns = $this->campaignListQuery()
             ->where('status', 'archived')
             ->orderBy('updated_at', 'desc')
-            ->simplePaginate(40);
+            ->paginate(40);
 
         return view('admin.Campaigns.index', [
             'campaigns' => $campaigns,

@@ -30,7 +30,7 @@ class AutomationController extends Controller
         $automations = Automation::query()
             ->with(['model', 'promotions'])
             ->orderBy('updated_at', 'desc')
-            ->simplePaginate(40);
+            ->paginate(40);
 
         $evaluator = app(AutomationTriggerEvaluator::class);
 

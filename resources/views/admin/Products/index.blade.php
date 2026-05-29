@@ -95,7 +95,7 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-center mt-3" id="productsPagination">
+    <div class="mt-3" id="productsPagination">
         {{ $products->links() }}
     </div>
 

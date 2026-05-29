@@ -138,7 +138,7 @@ class ProductController extends Controller
                 DB::raw("COALESCE(NULLIF(pt_locale.name, ''), pt_default.name) as display_name"),
                 DB::raw("COALESCE(NULLIF(ct_locale.name, ''), ct_default.name) as category_name"),
             ])
-            ->simplePaginate(60);
+            ->paginate(60);
 
         $categories = Category::query()
             ->leftJoin('category_translations as ct_locale', function ($join) use ($locale) {

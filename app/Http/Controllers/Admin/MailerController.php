@@ -48,7 +48,7 @@ class MailerController extends Controller
                 ->when($countRelations !== [], fn ($query) => $query->withCount($countRelations))
                 ->orderByDesc('updated_at')
                 ->orderByDesc('id')
-                ->simplePaginate(40)
+                ->paginate(40)
             : new LengthAwarePaginator(collect(), 0, 40);
 
         return view('admin.Mailer.index', compact('models'));

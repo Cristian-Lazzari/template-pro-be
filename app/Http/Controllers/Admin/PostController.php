@@ -94,7 +94,7 @@ class PostController extends Controller
             ->where('archived', false)
             ->orderBy('order', 'desc')
             ->select(['id', 'title', 'path', 'link', 'image', 'visible'])
-            ->simplePaginate(60);
+            ->paginate(60);
 
         $news = Post::where('archived', false)->where('path', 1)->orderBy('order', 'desc')->get(); 
         $story = Post::where('archived', false)->where('path', 2)->orderBy('order', 'desc')->get(); 
