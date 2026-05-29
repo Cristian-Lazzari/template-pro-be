@@ -36,9 +36,9 @@ class Product extends Model
         });
     }
 
-    public static function generateUniqueSlug(string $name, ?int $excludeId = null): string
+    public static function generateUniqueSlug(?string $name, ?int $excludeId = null): string
     {
-        $base = Str::slug($name);
+        $base = Str::slug($name ?? '');
         if ($base === '') {
             $base = 'prodotto';
         }
