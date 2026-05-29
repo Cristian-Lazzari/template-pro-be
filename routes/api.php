@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\MarketingTrackingController;
 use App\Http\Controllers\Api\ProductPublicController;
 use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\Api\PrivateReportController;
 
 
 
@@ -65,3 +66,8 @@ Route::prefix('auth')->name('api.auth.')->group(function () {
 
 
 Route::get('/checkout',         [PaymentController::class, 'checkout'])->name('api.payment.checkout');
+
+// API private per il backoffice centrale — protette da PRIVATE_REPORT_TOKEN
+Route::prefix('private')->middleware('private.report')->group(function () {
+    Route::get('report-summary', [PrivateReportController::class, 'summary'])->name('api.private.report-summary');
+});

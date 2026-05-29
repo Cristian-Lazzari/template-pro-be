@@ -22,7 +22,10 @@ return [
     
     'MSC_P'                 => env('MSC_P'),
     'default_lang'          => env('DEFAULT_LANG'),
-   
+
+    // Token per le API private del report (backoffice centrale)
+    'private_report_token'        => env('PRIVATE_REPORT_TOKEN'),
+    'private_report_revenue_unit' => env('PRIVATE_REPORT_REVENUE_UNIT', 'euros'),
 
     'allergens' => [
         1 => [
