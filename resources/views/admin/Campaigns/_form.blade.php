@@ -31,6 +31,7 @@
     ];
     $selectedCampaignTypeLabel = $campaignTypeOptions[$selectedCampaignType] ?? __('admin.marketing.campaigns.consent_explicit');
     $baseSegmentOptions = [
+        'all' => __('admin.marketing.campaigns.base_segment_all'),
         'reservations' => __('admin.marketing.campaigns.base_segment_reservations'),
         'orders' => __('admin.marketing.campaigns.base_segment_orders'),
         'both' => __('admin.marketing.campaigns.base_segment_both'),

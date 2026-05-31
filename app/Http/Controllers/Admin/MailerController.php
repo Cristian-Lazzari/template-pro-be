@@ -175,6 +175,7 @@ class MailerController extends Controller
         $bodyHtml = trim((string) ($data['body_html'] ?? ''));
         $body = trim((string) ($data['body'] ?? ''));
         $bodyText = trim((string) ($data['body_text'] ?? ''));
+        $hasPromotion = (bool) ($data['has_promotion'] ?? false);
 
         if ($bodyHtml === '' && $body !== '') {
             $bodyHtml = $body;
@@ -188,20 +189,24 @@ class MailerController extends Controller
             $bodyText = trim(html_entity_decode(strip_tags($bodyHtml), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         }
 
+        $bodyHtml = $this->normalizePromotionBlockMarkers($bodyHtml, $hasPromotion);
+        $body = $this->normalizePromotionBlockMarkers($body, $hasPromotion);
+        $bodyText = $this->normalizePromotionBlockMarkers($bodyText, $hasPromotion);
+
         $payload = [
             'name' => $data['name'],
-            'object' => trim((string) ($data['object'] ?? '')),
-            'heading' => trim((string) ($data['heading'] ?? '')),
+            'object' => $this->normalizePromotionBlockMarkers(trim((string) ($data['object'] ?? '')), false),
+            'heading' => $this->normalizePromotionBlockMarkers(trim((string) ($data['heading'] ?? '')), false),
             'body' => $body,
-            'ending' => trim((string) ($data['ending'] ?? '')),
-            'sender' => trim((string) ($data['sender'] ?? '')),
+            'ending' => $this->normalizePromotionBlockMarkers(trim((string) ($data['ending'] ?? '')), false),
+            'sender' => $this->normalizePromotionBlockMarkers(trim((string) ($data['sender'] ?? '')), false),
         ];
 
         $marketingPayload = [
             'type' => 'marketing',
             'channel' => 'email',
             'status' => $data['status'] ?? 'draft',
-            'has_promotion' => (bool) ($data['has_promotion'] ?? false),
+            'has_promotion' => $hasPromotion,
             'body_html' => $bodyHtml,
             'body_text' => $bodyText !== '' ? $bodyText : null,
             'variables' => $this->supportedVariables,
@@ -215,6 +220,25 @@ class MailerController extends Controller
         }
 
         return $payload;
+    }
+
+    private function normalizePromotionBlockMarkers(string $content, bool $allowOne): string
+    {
+        $seen = false;
+
+        return (string) preg_replace_callback(
+            '/@promotion\b|{{\s*promotion\s*}}/i',
+            function (array $matches) use (&$seen, $allowOne): string {
+                if (! $allowOne || $seen) {
+                    return '';
+                }
+
+                $seen = true;
+
+                return $matches[0];
+            },
+            $content
+        );
     }
 
     private function previewData(): array

@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Schema;
 class MarketingCustomerSegmentService
 {
     private const BASE_SEGMENT_OPTIONS = [
+        'all' => 'Tutti i clienti',
         'reservations' => 'Prenotazioni',
         'orders' => 'Ordini',
-        'both' => 'Prenotazioni e ordini',
+        'both' => 'Prenotazioni e ordini (entrambi)',
     ];
 
     private const SEGMENT_OPTIONS = [

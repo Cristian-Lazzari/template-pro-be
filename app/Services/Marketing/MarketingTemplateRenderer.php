@@ -21,25 +21,32 @@ class MarketingTemplateRenderer
 
         $template = $this->getTemplateFor($customerPromotion);
         $variables = $this->buildVariables($customerPromotion);
+        $hasPromotion = $template ? (bool) $template->has_promotion : false;
 
-        $variables['promotion'] = $this->buildPromotionBlock($variables);
+        $variables['promotion'] = $hasPromotion
+            ? $this->buildPromotionBlock($variables)
+            : '';
 
         $subject = $this->replaceVariables(
             $this->resolveSubject($template, $customerPromotion),
             $variables
         );
 
-        $bodyHtml = $this->replaceVariables(
+        $bodyHtmlTemplate = $this->normalizePromotionBlockMarkers(
             $this->resolveBodyHtml($template, $variables),
-            $variables
+            $hasPromotion
         );
 
+        $bodyHtml = $this->replaceVariables($bodyHtmlTemplate, $variables);
+
         $bodyText = $template && filled($template->body_text)
-            ? $this->replaceVariables((string) $template->body_text, $variables)
+            ? $this->replaceVariables(
+                $this->normalizePromotionBlockMarkers((string) $template->body_text, $hasPromotion),
+                $variables
+            )
             : $this->htmlToText($bodyHtml);
 
-        $hasPromotion = $template ? (bool) $template->has_promotion : false;
-        $ctaLabel     = $this->resolveCtaLabel($customerPromotion);
+        $ctaLabel     = $this->resolveCtaLabel($customerPromotion, $template);
 
         return [
             'subject' => $subject,
@@ -101,6 +108,7 @@ class MarketingTemplateRenderer
         $promotionRedirectUrl = $promotion
             ? $this->resolvePublicPromotionUrl($promotion)
             : $this->publicBaseUrl();
+        $promotionCtaLabel = $this->ctaLabelForPromotion($promotion);
         $trackingClickUrl = $this->trackingClickUrl($trackingToken, $promotionRedirectUrl);
         $promotionTypeDiscount = (string) ($promotion?->type_discount ?? '');
         $campaignName = (string) ($customerPromotion->campaign?->name ?? '');
@@ -122,7 +130,10 @@ class MarketingTemplateRenderer
             },
             'promotion_name' => (string) ($promotion?->name ?? ''),
             'promotion_slug' => (string) ($promotion?->slug ?? ''),
-            'promotion_cta' => $promotionRedirectUrl,
+            'promotion_cta' => $promotionCtaLabel,
+            'promotion_cta_label' => $promotionCtaLabel,
+            'promotion_url' => $promotionRedirectUrl,
+            'promotion_cta_url' => $promotionRedirectUrl,
             'promotion_discount' => $promotion?->discount !== null ? (string) $promotion->discount : '',
             'promotion_type_discount' => $promotionTypeDiscount,
             'promotion_expiring_at' => $promotion?->expiring_at
@@ -168,15 +179,40 @@ class MarketingTemplateRenderer
         );
     }
 
-    private function resolveCtaLabel(CustomerPromotion $customerPromotion): string
+    private function normalizePromotionBlockMarkers(string $content, bool $allowOne): string
     {
-        $caseUse = strtolower(trim((string) ($customerPromotion->promotion?->case_use ?? '')));
+        $seen = false;
 
-        return match ($caseUse) {
-            'take_away', 'delivery' => 'Ordina ora',
-            'table'                 => 'Prenota ora',
-            default                 => (string) __('admin.emails.marketing.discover_promotion'),
-        };
+        return (string) preg_replace_callback(
+            '/@promotion\b|{{\s*promotion\s*}}/i',
+            function (array $matches) use (&$seen, $allowOne): string {
+                if (! $allowOne || $seen) {
+                    return '';
+                }
+
+                $seen = true;
+
+                return $matches[0];
+            },
+            $content
+        );
+    }
+
+    private function resolveCtaLabel(CustomerPromotion $customerPromotion, ?Model $template = null): string
+    {
+        $promotionLabel = $this->configuredPromotionCtaLabel($customerPromotion->promotion);
+
+        if ($promotionLabel !== '') {
+            return $promotionLabel;
+        }
+
+        $templateLabel = trim((string) ($template?->cta_label ?? ''));
+
+        if ($templateLabel !== '') {
+            return $templateLabel;
+        }
+
+        return $this->defaultCtaLabelForCaseUse($customerPromotion->promotion?->case_use);
     }
 
     private function buildPromotionBlock(array $variables): string
@@ -343,6 +379,35 @@ class MarketingTemplateRenderer
         };
     }
 
+    private function ctaLabelForPromotion(?Promotion $promotion): string
+    {
+        $configuredLabel = $this->configuredPromotionCtaLabel($promotion);
+
+        return $configuredLabel !== ''
+            ? $configuredLabel
+            : $this->defaultCtaLabelForCaseUse($promotion?->case_use);
+    }
+
+    private function configuredPromotionCtaLabel(?Promotion $promotion): string
+    {
+        $cta = trim((string) ($promotion?->cta ?? ''));
+
+        if ($cta === '' || $this->looksLikeLink($cta)) {
+            return '';
+        }
+
+        return $cta;
+    }
+
+    private function defaultCtaLabelForCaseUse(?string $caseUse): string
+    {
+        return match (strtolower(trim((string) $caseUse))) {
+            'generic', 'take_away', 'delivery' => 'Ordina ora',
+            'table' => 'Prenota ora',
+            default => (string) __('admin.emails.marketing.discover_promotion'),
+        };
+    }
+
     private function targetName(?Promotion $promotion, string $targetType, array $fields): string
     {
         if (! $promotion) {
@@ -447,10 +512,17 @@ class MarketingTemplateRenderer
     private function resolvePublicPromotionUrl(Promotion $promotion): string
     {
         return match ($promotion->case_use) {
-            'take_away', 'delivery' => $this->publicUrl('/ordina'),
+            'generic', 'take_away', 'delivery' => $this->publicUrl('/ordina'),
             'table' => $this->publicUrl('/check-out'),
-            default => $this->safePublicRedirectUrl($promotion->cta),
+            default => $this->publicBaseUrl(),
         };
+    }
+
+    private function looksLikeLink(string $value): bool
+    {
+        return str_starts_with($value, '/')
+            || preg_match('#^[a-z][a-z0-9+.-]*://#i', $value) === 1
+            || str_contains($value, '\\');
     }
 
     private function safePublicRedirectUrl(?string $redirect): string

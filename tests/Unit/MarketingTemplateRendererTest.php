@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Campaign;
 use App\Models\Customer;
 use App\Models\CustomerPromotion;
+use App\Models\Model as MailModel;
 use App\Models\Promotion;
 use App\Services\Marketing\MarketingTemplateRenderer;
 use Illuminate\Support\Collection;
@@ -19,7 +20,7 @@ class MarketingTemplateRendererTest extends TestCase
         $promotion = new Promotion([
             'name' => 'Sconto tavolo',
             'slug' => 'sconto-tavolo',
-            'cta' => '/prenota',
+            'cta' => 'Prenota ora',
             'discount' => 10,
             'type_discount' => 'percentage',
             'case_use' => 'table',
@@ -53,7 +54,9 @@ class MarketingTemplateRendererTest extends TestCase
         $this->assertSame('+39 333 000 0000', $variables['customer_phone']);
         $this->assertSame('10%', $variables['promotion_discount_label']);
         $this->assertSame('%', $variables['promotion_type_discount_label']);
-        $this->assertSame('https://ristorante.test/check-out', $variables['promotion_cta']);
+        $this->assertSame('Prenota ora', $variables['promotion_cta']);
+        $this->assertSame('Prenota ora', $variables['promotion_cta_label']);
+        $this->assertSame('https://ristorante.test/check-out', $variables['promotion_url']);
         $this->assertSame('', $variables['promotion_expiring_at']);
         $this->assertSame('table', $variables['promotion_case_use']);
         $this->assertSame('3.00', $variables['promotion_minimum_pretest']);
@@ -65,42 +68,115 @@ class MarketingTemplateRendererTest extends TestCase
 
     public function test_take_away_promotion_redirects_to_order_path(): void
     {
-        $variables = $this->variablesForPromotionCaseUse('take_away', '/promo');
+        $variables = $this->variablesForPromotionCaseUse('take_away', 'Ordina subito');
 
-        $this->assertSame('https://ristorante.test/ordina', $variables['promotion_cta']);
+        $this->assertSame('Ordina subito', $variables['promotion_cta']);
+        $this->assertSame('https://ristorante.test/ordina', $variables['promotion_url']);
         $this->assertSame('https://ristorante.test/ordina', $this->queryRedirect($variables['tracking_click_url']));
     }
 
     public function test_delivery_promotion_redirects_to_order_path(): void
     {
-        $variables = $this->variablesForPromotionCaseUse('delivery', '/promo');
+        $variables = $this->variablesForPromotionCaseUse('delivery', null);
 
-        $this->assertSame('https://ristorante.test/ordina', $variables['promotion_cta']);
+        $this->assertSame('Ordina ora', $variables['promotion_cta']);
+        $this->assertSame('https://ristorante.test/ordina', $variables['promotion_url']);
         $this->assertSame('https://ristorante.test/ordina', $this->queryRedirect($variables['tracking_click_url']));
     }
 
     public function test_table_promotion_redirects_to_checkout_path(): void
     {
-        $variables = $this->variablesForPromotionCaseUse('table', '/prenota');
+        $variables = $this->variablesForPromotionCaseUse('table', 'Prenota il tuo tavolo');
 
-        $this->assertSame('https://ristorante.test/check-out', $variables['promotion_cta']);
+        $this->assertSame('Prenota il tuo tavolo', $variables['promotion_cta']);
+        $this->assertSame('https://ristorante.test/check-out', $variables['promotion_url']);
         $this->assertSame('https://ristorante.test/check-out', $this->queryRedirect($variables['tracking_click_url']));
     }
 
-    public function test_generic_promotion_uses_safe_relative_cta(): void
+    public function test_generic_promotion_redirects_to_order_path_and_uses_custom_cta_label(): void
     {
-        $variables = $this->variablesForPromotionCaseUse('generic', '/promo-speciale');
+        $variables = $this->variablesForPromotionCaseUse('generic', 'Approfittane ora');
 
-        $this->assertSame('https://ristorante.test/promo-speciale', $variables['promotion_cta']);
-        $this->assertSame('https://ristorante.test/promo-speciale', $this->queryRedirect($variables['tracking_click_url']));
+        $this->assertSame('Approfittane ora', $variables['promotion_cta']);
+        $this->assertSame('https://ristorante.test/ordina', $variables['promotion_url']);
+        $this->assertSame('https://ristorante.test/ordina', $this->queryRedirect($variables['tracking_click_url']));
     }
 
-    public function test_external_cta_is_ignored_for_tracking_redirect(): void
+    public function test_legacy_link_cta_is_ignored_as_button_text(): void
     {
         $variables = $this->variablesForPromotionCaseUse('generic', 'https://example.com/promo');
 
-        $this->assertSame('https://ristorante.test', $variables['promotion_cta']);
-        $this->assertSame('https://ristorante.test', $this->queryRedirect($variables['tracking_click_url']));
+        $this->assertSame('Ordina ora', $variables['promotion_cta']);
+        $this->assertSame('https://ristorante.test/ordina', $variables['promotion_url']);
+        $this->assertSame('https://ristorante.test/ordina', $this->queryRedirect($variables['tracking_click_url']));
+    }
+
+    public function test_render_uses_promotion_cta_as_button_label(): void
+    {
+        $this->configureDomains();
+
+        $template = new MailModel([
+            'has_promotion' => true,
+            'heading' => 'Promo per te',
+            'body_html' => '<p>Ciao @customer_first_name</p>',
+        ]);
+
+        $campaign = new Campaign([
+            'name' => 'Campagna CTA',
+            'model_id' => 9,
+        ]);
+        $campaign->setRelation('model', $template);
+
+        $promotion = new Promotion([
+            'name' => 'Promo test',
+            'slug' => 'promo-test',
+            'cta' => 'Ordina la tua cena',
+            'case_use' => 'take_away',
+        ]);
+        $promotion->setRelation('targets', new Collection());
+
+        $customer = new Customer([
+            'name' => 'Mario',
+            'email' => 'mario@example.com',
+        ]);
+
+        $customerPromotion = new CustomerPromotion([
+            'campaign_id' => 9,
+            'tracking_token' => 'token-test',
+        ]);
+        $customerPromotion->setRelation('customer', $customer);
+        $customerPromotion->setRelation('promotion', $promotion);
+        $customerPromotion->setRelation('campaign', $campaign);
+        $customerPromotion->setRelation('automation', null);
+
+        $rendered = app(MarketingTemplateRenderer::class)->render($customerPromotion);
+
+        $this->assertSame('Ordina la tua cena', $rendered['cta_label']);
+        $this->assertSame('https://ristorante.test/ordina', $this->queryRedirect($rendered['tracking_click_url']));
+    }
+
+    public function test_render_keeps_only_one_manual_promotion_block(): void
+    {
+        $rendered = $this->renderTemplate(new MailModel([
+            'has_promotion' => true,
+            'heading' => 'Promo per te',
+            'body_html' => '<p>Prima @promotion</p><p>Dopo @promotion</p>',
+        ]));
+
+        $this->assertSame(1, substr_count($rendered['body_html'], 'Promo duplicata'));
+    }
+
+    public function test_solo_message_template_does_not_render_promotion_block_variable(): void
+    {
+        $rendered = $this->renderTemplate(new MailModel([
+            'has_promotion' => false,
+            'heading' => 'Solo messaggio',
+            'body_html' => '<p>Ciao @customer_first_name, @promotion</p>',
+        ]));
+
+        $this->assertStringContainsString('Mario', $rendered['body_html']);
+        $this->assertStringNotContainsString('Promo duplicata', $rendered['body_html']);
+        $this->assertStringNotContainsString('@promotion', $rendered['body_html']);
     }
 
     public function test_marketing_mail_uses_public_storage_image_urls(): void
@@ -154,6 +230,44 @@ class MarketingTemplateRendererTest extends TestCase
         $customerPromotion->setRelation('automation', null);
 
         return app(MarketingTemplateRenderer::class)->buildVariables($customerPromotion);
+    }
+
+    private function renderTemplate(MailModel $template): array
+    {
+        $this->configureDomains();
+
+        $campaign = new Campaign([
+            'name' => 'Campagna promo',
+            'model_id' => 9,
+        ]);
+        $campaign->setRelation('model', $template);
+
+        $promotion = new Promotion([
+            'name' => 'Promo duplicata',
+            'slug' => 'promo-duplicata',
+            'cta' => 'Ordina ora',
+            'discount' => 20,
+            'type_discount' => 'percentage',
+            'case_use' => 'take_away',
+        ]);
+        $promotion->setRelation('targets', new Collection());
+
+        $customer = new Customer([
+            'name' => 'Mario',
+            'surname' => 'Rossi',
+            'email' => 'mario@example.com',
+        ]);
+
+        $customerPromotion = new CustomerPromotion([
+            'campaign_id' => 9,
+            'tracking_token' => 'token-test',
+        ]);
+        $customerPromotion->setRelation('customer', $customer);
+        $customerPromotion->setRelation('promotion', $promotion);
+        $customerPromotion->setRelation('campaign', $campaign);
+        $customerPromotion->setRelation('automation', null);
+
+        return app(MarketingTemplateRenderer::class)->render($customerPromotion);
     }
 
     private function configureDomains(): void

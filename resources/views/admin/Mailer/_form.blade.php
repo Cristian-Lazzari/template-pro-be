@@ -1,4 +1,5 @@
 @php
+    $errors          = $errors ?? new \Illuminate\Support\ViewErrorBag;
     $isEdit          = $model->exists;
     $bodyHtmlValue   = old('body_html', $model->body_html ?: $model->body);
     $endingValue     = old('ending', $model->ending);
@@ -188,6 +189,18 @@
         background: rgba(14, 183, 146, 0.14);
         border-color: rgba(14, 183, 146, 0.32);
         color: rgba(14, 183, 146, 0.98);
+    }
+
+    .mail-model-variable-chip.var-chip.is-disabled {
+        cursor: not-allowed;
+        opacity: .45;
+        filter: grayscale(.35);
+    }
+
+    .mail-model-variable-chip.var-chip.is-disabled:hover {
+        background: rgba(216, 221, 232, 0.06);
+        border-color: rgba(216, 221, 232, 0.14);
+        color: rgba(216, 221, 232, 0.88);
     }
 
     /* ── Preview panel ──────────────────────────────────────── */
@@ -699,6 +712,74 @@
         return vars.find(v => v.name === name) || null;
     }
 
+    function promotionMarkerPattern(flags = 'gi') {
+        return new RegExp('(?:@promotion\\b|\\{\\{\\s*promotion\\s*\\}\\})', flags);
+    }
+
+    function isPromotionVar(name) {
+        return name === 'promotion';
+    }
+
+    function isBodyEditor(editorEl) {
+        return editorEl?.dataset?.field === 'body_html';
+    }
+
+    function promotionBodyValue() {
+        return document.getElementById('body_html')?.value || '';
+    }
+
+    function hasManualPromotionBlock() {
+        return promotionMarkerPattern('i').test(promotionBodyValue());
+    }
+
+    function normalizePromotionMarkers(text, allowOne) {
+        let seen = false;
+
+        return String(text || '').replace(promotionMarkerPattern(), match => {
+            if (!allowOne || seen) return '';
+            seen = true;
+            return match;
+        });
+    }
+
+    function canInsertPromotionBlock(editorEl) {
+        return hasPromotionEnabled() && isBodyEditor(editorEl) && !hasManualPromotionBlock();
+    }
+
+    function setCaretAtEnd(el) {
+        if (!el) return;
+        el.focus();
+
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+
+        const sel = window.getSelection();
+        if (!sel) return;
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
+    function syncPromotionUi(hasPromo = hasPromotionEnabled()) {
+        const manualBlock   = hasManualPromotionBlock();
+        const promoBlock    = document.getElementById('preview-promotion-block');
+        const ctaPreview    = document.getElementById('preview-cta-wrap');
+        const promoVarGroup = document.getElementById('promotion-var-group');
+
+        if (promoBlock)    promoBlock.style.display    = hasPromo && !manualBlock ? '' : 'none';
+        if (ctaPreview)    ctaPreview.style.display    = hasPromo ? '' : 'none';
+        if (promoVarGroup) promoVarGroup.style.display = hasPromo ? '' : 'none';
+
+        document.querySelectorAll('.var-chip[data-var="promotion"]').forEach(chip => {
+            const disabled = !hasPromo || manualBlock;
+            chip.classList.toggle('is-disabled', disabled);
+            chip.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+            chip.title = disabled && manualBlock
+                ? 'Il blocco promozione è già presente nel modello'
+                : '';
+        });
+    }
+
     // ─── CHIP ─────────────────────────────────────────────────────
     function createChip(varDef) {
         const span = document.createElement('span');
@@ -790,26 +871,39 @@
         });
     }
 
-    function renderBodyForPreview(text) {
+    function hasPromotionEnabled() {
+        return document.querySelector('input[name="has_promotion"][type="radio"]:checked')?.value === '1';
+    }
+
+    function renderPreviewVariable(name, hasPromo, fallbackPrefix = '@', state = null) {
+        if (isPromotionVar(name)) {
+            if (!hasPromo || state?.promotionRendered) return '';
+            if (state) state.promotionRendered = true;
+            return PROMO_BLOCK_PLACEHOLDER;
+        }
+
+        const vd = findVar(name);
+        return '<span class="var-token">' + (vd ? vd.label : fallbackPrefix + name) + '</span>';
+    }
+
+    function renderBodyForPreview(text, hasPromo = hasPromotionEnabled()) {
         if (!text || !text.trim()) return '';
+        const state = { promotionRendered: false };
         if (/<[a-z]/i.test(text)) {
-            // corpo HTML — gestisce solo {{ legacy }}
-            return text.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, n) => {
-                const vd = findVar(n);
-                return '<span class="var-token">' + (vd ? vd.label : n) + '</span>';
-            });
+            // corpo HTML — gestisce {{ legacy }} e variabili @ inserite nell'editor
+            return text
+                .replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, n) => renderPreviewVariable(n, hasPromo, '', state))
+                .replace(/@([a-zA-Z0-9_]+)/g, (_, n) => renderPreviewVariable(n, hasPromo, '@', state));
         }
         // testo semplice con @var, @promotion e \n
         return escHtml(text)
-            .replace(/@([a-zA-Z0-9_]+)/g, (_, n) => {
-                if (n === 'promotion') return PROMO_BLOCK_PLACEHOLDER;
-                const vd = findVar(n);
-                return '<span class="var-token">' + (vd ? vd.label : '@' + n) + '</span>';
-            })
+            .replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, n) => renderPreviewVariable(n, hasPromo, '', state))
+            .replace(/@([a-zA-Z0-9_]+)/g, (_, n) => renderPreviewVariable(n, hasPromo, '@', state))
             .replace(/\n/g, '<br>');
     }
 
     function updatePreview() {
+        const hasPromo = hasPromotionEnabled();
         const appName = document.getElementById('preview-app-name')?.dataset.value || 'R';
         const obj  = (document.getElementById('object')?.value || '').trim();
         const hdg  = (document.getElementById('heading')?.value || '').trim();
@@ -824,6 +918,8 @@
         const pSnd     = document.getElementById('preview-sender');
         const pEndWrap = document.getElementById('preview-ending-wrap');
 
+        syncPromotionUi(hasPromo);
+
         if (pSubj) {
             if (obj) { pSubj.innerHTML = renderInlineVar(obj); pSubj.classList.remove('is-placeholder'); }
             else { pSubj.textContent = pSubj.dataset.placeholder || ''; pSubj.classList.add('is-placeholder'); }
@@ -833,7 +929,7 @@
             else { pHdg.textContent = pHdg.dataset.placeholder || ''; pHdg.classList.add('is-placeholder'); }
         }
         if (pBody) {
-            const rendered = renderBodyForPreview(body);
+            const rendered = renderBodyForPreview(body, hasPromo);
             pBody.innerHTML = rendered || '<span class="preview-placeholder">' + escHtml(pBody.dataset.placeholder || '') + '</span>';
         }
         if (pEnd && pEndWrap) {
@@ -850,28 +946,16 @@
 
     // ─── SELETTORE TIPO MODELLO ──────────────────────────────────
     (function () {
-        const radios        = document.querySelectorAll('input[name="has_promotion"][type="radio"]');
-        const promoBlock    = document.getElementById('preview-promotion-block');
-        const ctaPreview    = document.getElementById('preview-cta-wrap');
-        const promoVarGroup = document.getElementById('promotion-var-group');
-
-        function applyState(hasPromo) {
-            if (promoBlock)    promoBlock.style.display    = hasPromo ? '' : 'none';
-            if (ctaPreview)    ctaPreview.style.display    = hasPromo ? '' : 'none';
-            if (promoVarGroup) promoVarGroup.style.display = hasPromo ? '' : 'none';
-        }
-
-        radios.forEach(r => r.addEventListener('change', () => applyState(r.value === '1' && r.checked)));
-
-        // stato iniziale
-        const checked = document.getElementById('has_promotion_yes');
-        applyState(checked?.checked ?? false);
+        const radios = document.querySelectorAll('input[name="has_promotion"][type="radio"]');
+        radios.forEach(r => r.addEventListener('change', updatePreview));
+        syncPromotionUi();
     })();
 
     // ─── AUTOCOMPLETE UI ─────────────────────────────────────────
     function showAc(anchorEl, query, isEditor) {
         const filtered = vars.filter(v =>
-            !query || v.name.includes(query.toLowerCase()) || v.label.toLowerCase().includes(query.toLowerCase())
+            (!query || v.name.includes(query.toLowerCase()) || v.label.toLowerCase().includes(query.toLowerCase()))
+            && (!isPromotionVar(v.name) || canInsertPromotionBlock(anchorEl))
         );
         if (!filtered.length) { hideAc(); return; }
         acIdx = 0;
@@ -923,6 +1007,11 @@
 
     function insertVarInInput(el, query, varName) {
         if (!el) return;
+        if (isPromotionVar(varName)) {
+            hideAc();
+            return;
+        }
+
         const val = el.value;
         const pos = typeof el.selectionStart === 'number' ? el.selectionStart : val.length;
         const newBefore = val.substring(0, pos).replace(/@([a-zA-Z0-9_]*)$/, '@' + varName);
@@ -977,6 +1066,11 @@
         if (!editorEl) return;
         const vd = findVar(varName);
         if (!vd) return;
+        if (isPromotionVar(varName) && !canInsertPromotionBlock(editorEl)) {
+            hideAc();
+            return;
+        }
+
         const sel = window.getSelection();
         if (!sel || !sel.rangeCount) return;
         const range = sel.getRangeAt(0);
@@ -1012,6 +1106,8 @@
     }
 
     function insertChipAtCursor(editorEl, vd) {
+        if (isPromotionVar(vd.name) && !canInsertPromotionBlock(editorEl)) return;
+
         editorEl.focus();
         const sel = window.getSelection();
         if (!sel || !sel.rangeCount) {
@@ -1116,10 +1212,16 @@
             range.deleteContents();
             const frag  = document.createDocumentFragment();
             const parts = text.split(/(@[a-zA-Z0-9_]+)/g);
+            let pastedPromotionBlock = hasManualPromotionBlock();
+
             parts.forEach(part => {
                 const m = part.match(/^@([a-zA-Z0-9_]+)$/);
                 if (m) {
                     const vd = findVar(m[1]);
+                    if (vd && isPromotionVar(vd.name)) {
+                        if (!hasPromotionEnabled() || !isBodyEditor(editorEl) || pastedPromotionBlock) return;
+                        pastedPromotionBlock = true;
+                    }
                     if (vd) { frag.appendChild(createChip(vd)); return; }
                 }
                 part.split('\n').forEach((line, i) => {
@@ -1155,6 +1257,15 @@
             const vd = findVar(chip.dataset.var);
             if (!vd) return;
 
+            if (isPromotionVar(vd.name)) {
+                const bodyEditor = document.getElementById('editor_body_html');
+                if (!canInsertPromotionBlock(bodyEditor)) return;
+
+                if (lastFocusedEditor !== bodyEditor) setCaretAtEnd(bodyEditor);
+                insertChipAtCursor(bodyEditor, vd);
+                return;
+            }
+
             // Se c'è un editor focalizzato (o l'ultimo era un editor)
             if (lastFocusedEditor) {
                 insertChipAtCursor(lastFocusedEditor, vd);
@@ -1183,6 +1294,15 @@
     // Sync prima del submit
     document.querySelector('.mail-model-form').closest('form')?.addEventListener('submit', () => {
         document.querySelectorAll('.var-editor[data-field]').forEach(syncHidden);
+
+        const allowPromotion = hasPromotionEnabled();
+        const body = document.getElementById('body_html');
+        if (body) body.value = normalizePromotionMarkers(body.value, allowPromotion);
+
+        ['object', 'heading', 'ending', 'sender'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = normalizePromotionMarkers(el.value, false);
+        });
     });
 
     // Prima render

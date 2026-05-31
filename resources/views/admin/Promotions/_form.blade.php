@@ -1,4 +1,5 @@
 @php
+    $errors = $errors ?? new \Illuminate\Support\ViewErrorBag;
     $reusableValue = old('metadata.reusable', data_get($promotion->metadata, 'reusable', false));
     $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
     $scheduleValue = $previewPermanent ? '' : old('schedule_at', $promotion->schedule_at?->format('Y-m-d\TH:i'));
@@ -407,6 +408,44 @@
         line-height: 1.5;
     }
 
+    .promo-field-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .promo-field-label .label_c {
+        margin: 0;
+    }
+
+    .promo-help-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border: 1px solid rgba(216, 221, 232, 0.16);
+        border-radius: 50%;
+        background: rgba(216, 221, 232, 0.04);
+        color: rgba(216, 221, 232, 0.72);
+        transition: border-color .15s, background .15s, color .15s;
+    }
+
+    .promo-help-toggle:hover,
+    .promo-help-toggle[aria-expanded="true"] {
+        border-color: rgba(14, 183, 146, 0.4);
+        background: rgba(14, 183, 146, 0.1);
+        color: rgba(142, 246, 219, 0.95);
+    }
+
+    .promo-field-help {
+        margin: -2px 0 10px;
+        color: rgba(216, 221, 232, 0.64);
+        font-size: var(--fs-100);
+        line-height: 1.45;
+    }
+
     .promo-days {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
@@ -443,6 +482,7 @@
         font-weight: 700;
         text-align: center;
         transition: border-color .15s, background .15s;
+        white-space: nowrap;
     }
 
     .promo-day input:checked + span {
@@ -526,10 +566,24 @@
                             @error('name') <p class="error">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="label_c" for="cta">
-                                <i class="bi bi-cursor-fill"></i>
-                                {{ __('admin.marketing.promotions.cta') }}
-                            </label>
+                            <div class="promo-field-label">
+                                <label class="label_c" for="cta">
+                                    <i class="bi bi-cursor-fill"></i>
+                                    {{ __('admin.marketing.promotions.cta') }}
+                                </label>
+                                <button
+                                    type="button"
+                                    class="promo-help-toggle"
+                                    data-promo-help-toggle
+                                    aria-expanded="false"
+                                    aria-controls="promotion_cta_help"
+                                >
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <p id="promotion_cta_help" class="promo-field-help" hidden>
+                                {{ __('admin.marketing.promotions.cta_help') }}
+                            </p>
                             <p>
                                 <input
                                     type="text"
@@ -1209,14 +1263,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDraft  = form.querySelector('[data-wiz-draft]');
     const btnSubmit = form.querySelector('[data-wiz-submit]');
 
-    const setHidden = (target, hidden) => {
-        if (!target) return;
-        if (target instanceof NodeList || Array.isArray(target)) {
-            target.forEach((el) => { el.hidden = hidden; });
-        } else {
-            target.hidden = hidden;
-        }
-    };
+	    const setHidden = (target, hidden) => {
+	        if (!target) return;
+	        if (target instanceof NodeList || Array.isArray(target)) {
+	            target.forEach((el) => { el.hidden = hidden; });
+	        } else {
+	            target.hidden = hidden;
+	        }
+	    };
+
+	    form.querySelectorAll('[data-promo-help-toggle]').forEach((button) => {
+	        const help = document.getElementById(button.getAttribute('aria-controls'));
+	        if (!help) return;
+
+	        button.addEventListener('click', () => {
+	            const expanded = button.getAttribute('aria-expanded') === 'true';
+	            button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+	            help.hidden = expanded;
+	        });
+	    });
 
     // Disable/enable submitting inputs inside a container (prevents double-submit from hidden lists)
     const setInputsDisabled = (el, disabled) => {

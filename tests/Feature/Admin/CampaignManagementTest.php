@@ -85,6 +85,26 @@ class CampaignManagementTest extends TestCase
         ]);
     }
 
+    public function test_campaign_creation_with_explicit_email_marketing_accepts_all_base_segment(): void
+    {
+        $admin = User::factory()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.campaigns.store'), $this->campaignPayload([
+            'name' => 'Campagna tutti i clienti',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'all',
+        ]));
+
+        $response->assertRedirect(route('admin.campaigns.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('campaigns', [
+            'name' => 'Campagna tutti i clienti',
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'all',
+        ]);
+    }
+
     public function test_campaign_creation_with_profiling_forces_explicit_consent_and_accepts_advanced_segment(): void
     {
         $admin = User::factory()->create();
@@ -158,6 +178,10 @@ class CampaignManagementTest extends TestCase
             'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
             'segment' => 'both',
         ]));
+        $allAudience = $this->audienceIdsForCampaign($this->createCampaign([
+            'campaign_type' => Campaign::CAMPAIGN_TYPE_EXPLICIT_EMAIL_MARKETING,
+            'segment' => 'all',
+        ]));
 
         $this->assertContains($orderOnly->id, $ordersAudience);
         $this->assertContains($bothChannels->id, $ordersAudience);
@@ -173,6 +197,11 @@ class CampaignManagementTest extends TestCase
         $this->assertNotContains($orderOnly->id, $bothAudience);
         $this->assertNotContains($reservationOnly->id, $bothAudience);
         $this->assertNotContains($withoutActivity->id, $bothAudience);
+
+        $this->assertContains($orderOnly->id, $allAudience);
+        $this->assertContains($reservationOnly->id, $allAudience);
+        $this->assertContains($bothChannels->id, $allAudience);
+        $this->assertContains($withoutActivity->id, $allAudience);
     }
 
     public function test_profiling_campaign_audience_requires_profiling_consent_for_advanced_segments(): void

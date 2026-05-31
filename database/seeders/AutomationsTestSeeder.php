@@ -115,7 +115,7 @@ class AutomationsTestSeeder extends Seeder
             'type_discount'    => 'percentage',
             'discount'         => 10.00,
             'minimum_pretest'  => null,
-            'cta'              => '/asporto',
+            'cta'              => 'Ordina ora',
             'permanent'        => true,
             'total_activation' => 0,
             'total_sent'       => 0,

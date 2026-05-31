@@ -429,7 +429,7 @@ class MarketingConsentTest extends TestCase
             'name' => 'Promo test',
             'slug' => 'promo-' . $customer->id,
             'status' => 'active',
-            'cta' => '/promo',
+            'cta' => 'Scopri la promo',
             'permanent' => true,
         ]);
 

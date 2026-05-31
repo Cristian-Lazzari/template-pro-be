@@ -212,34 +212,32 @@ class CustomerOfferController extends Controller
     private function ctaPath(Promotion $promotion): string
     {
         return match ($promotion->case_use) {
-            'take_away', 'delivery' => '/ordina',
+            'generic', 'take_away', 'delivery' => '/ordina',
             'table' => '/check-out',
-            default => $this->safePromotionCtaPath($promotion->cta) ?: '/',
+            default => '/',
         };
     }
 
     private function ctaLabel(Promotion $promotion): string
     {
+        $configuredLabel = trim((string) $promotion->cta);
+
+        if ($configuredLabel !== '' && ! $this->looksLikeLink($configuredLabel)) {
+            return $configuredLabel;
+        }
+
         return match ($promotion->case_use) {
-            'take_away', 'delivery' => 'Ordina ora',
+            'generic', 'take_away', 'delivery' => 'Ordina ora',
             'table' => 'Prenota ora',
             default => 'Scopri',
         };
     }
 
-    private function safePromotionCtaPath(?string $cta): ?string
+    private function looksLikeLink(string $value): bool
     {
-        $cta = trim((string) $cta);
-
-        if ($cta === '' || ! str_starts_with($cta, '/') || str_starts_with($cta, '//')) {
-            return null;
-        }
-
-        if (preg_match('/[\r\n\t]/', $cta) === 1) {
-            return null;
-        }
-
-        return $cta;
+        return str_starts_with($value, '/')
+            || preg_match('#^[a-z][a-z0-9+.-]*://#i', $value) === 1
+            || str_contains($value, '\\');
     }
 
     private function primaryTargetPayload(array $targets): array
