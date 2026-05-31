@@ -2304,6 +2304,7 @@ return array (
       'draft_flash_long' => 'La campaña se ha guardado como borrador. Puedes completarla desde la lista de campañas.',
       'completed_only_view_or_archive' => 'Una campaña finalizada solo puede visualizarse o archivarse.',
       'completed_only_archive' => 'Una campaña finalizada solo puede archivarse.',
+      'campaign_not_editable' => 'Esta campaña no se puede modificar en su estado actual.',
       'confirmed_scheduled_flash' => 'Campaña confirmada. Las asignaciones han sido preparadas; el envío comenzará según lo programado.',
       'confirmed_unscheduled_flash' => 'Campaña confirmada. Las asignaciones están preparadas; programe el envío automático.',
       'paused_flash' => 'La campaña se ha pausado correctamente.',

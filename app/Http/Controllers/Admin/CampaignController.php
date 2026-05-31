@@ -23,6 +23,8 @@ use Illuminate\Validation\ValidationException;
 
 class CampaignController extends Controller
 {
+    private const EDITABLE_STATUSES = ['draft', 'paused'];
+
     private const STATUS_TRANSLATION_KEYS = [
         'draft' => 'status_draft',
         'scheduled' => 'status_scheduled',
@@ -92,9 +94,11 @@ class CampaignController extends Controller
         MarketingCustomerSegmentService $segmentService
     )
     {
-        $campaign = Campaign::query()->create(
-            $this->campaignData($request, $scheduleService, null, $segmentService)
-        );
+        $data = $this->campaignData($request, $scheduleService, null, $segmentService);
+
+        $this->ensureAudienceCanBeFinalized($request, $assignmentService, $data);
+
+        $campaign = Campaign::query()->create($data);
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
@@ -138,9 +142,10 @@ class CampaignController extends Controller
             'hasAssignments' => $hasAssignments,
             'canPreviewAudience' => $canPreviewAudience,
             'canPrepareAssignments' => $canPrepareAssignments,
+            'canEditCampaign' => $this->canEditCampaign($campaign),
             'canActivateCampaign' => in_array($normalizedStatus, ['draft', 'paused'], true),
             'canPauseCampaign' => in_array($normalizedStatus, ['scheduled', 'running'], true),
-            'canDraftCampaign' => in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true),
+            'canDraftCampaign' => $normalizedStatus === 'paused',
             'canArchiveCampaign' => in_array($normalizedStatus, ['draft', 'scheduled', 'running', 'paused', 'completed'], true),
             'canRestoreCampaign' => $normalizedStatus === 'archived',
             'canDestroyCampaign' => $normalizedStatus === 'archived' && ! $hasAssignments,
@@ -165,6 +170,11 @@ class CampaignController extends Controller
 
     public function edit(Campaign $campaign)
     {
+        if (! $this->canEditCampaign($campaign)) {
+            return to_route('admin.campaigns.show', $campaign)
+                ->withErrors(['status' => __('admin.marketing.campaigns.campaign_not_editable')]);
+        }
+
         $campaign->load(['model', 'promotions']);
 
         return view('admin.Campaigns.edit', array_merge(
@@ -181,15 +191,17 @@ class CampaignController extends Controller
         MarketingCustomerSegmentService $segmentService
     )
     {
-        if (in_array($campaign->status, ['completed', 'sent'], true)) {
+        if (! $this->canEditCampaign($campaign)) {
             return back()
-                ->withErrors(['status' => __('admin.marketing.campaigns.completed_only_view_or_archive')])
+                ->withErrors(['status' => __('admin.marketing.campaigns.campaign_not_editable')])
                 ->withInput();
         }
 
-        $campaign->update(
-            $this->campaignData($request, $scheduleService, $campaign, $segmentService)
-        );
+        $data = $this->campaignData($request, $scheduleService, $campaign, $segmentService);
+
+        $this->ensureAudienceCanBeFinalized($request, $assignmentService, $data, $campaign);
+
+        $campaign->update($data);
 
         $campaign->promotions()->sync($this->promotionIds($request));
 
@@ -202,13 +214,29 @@ class CampaignController extends Controller
         CampaignScheduleService $scheduleService
     )
     {
+        if (! in_array($this->normalizedStatus($campaign->status), ['draft', 'paused'], true)) {
+            return back()->withErrors([
+                'status' => __('admin.marketing.campaigns.campaign_not_editable'),
+            ]);
+        }
+
         if (in_array($campaign->status, ['completed', 'sent'], true)) {
             return back()->withErrors([
                 'status' => __('admin.marketing.campaigns.completed_only_archive'),
             ]);
         }
 
-        $campaign->update($this->scheduleExistingCampaignData($campaign, $scheduleService));
+        $data = $this->scheduleExistingCampaignData($campaign, $scheduleService);
+
+        if (! $campaign->customerPromotions()->exists()) {
+            $this->ensureCampaignAudienceIsNotEmpty(
+                $this->campaignPreviewModel($data, $campaign),
+                $campaign->promotions()->pluck('promotions.id')->all(),
+                $assignmentService
+            );
+        }
+
+        $campaign->update($data);
         $campaign->refresh();
 
         $result = $assignmentService->assign($campaign, 500, false);
@@ -293,6 +321,12 @@ class CampaignController extends Controller
 
     public function draft(Campaign $campaign)
     {
+        if ($this->normalizedStatus($campaign->status) !== 'paused') {
+            return back()->withErrors([
+                'status' => __('admin.marketing.campaigns.campaign_not_editable'),
+            ]);
+        }
+
         return $this->updateStatus($campaign, 'draft', __('admin.marketing.campaigns.draft_flash'));
     }
 
@@ -374,6 +408,64 @@ class CampaignController extends Controller
         $this->refreshMarketingRunMarker();
 
         return back()->with('campaign_assignment_result', $result);
+    }
+
+    private function canEditCampaign(Campaign $campaign): bool
+    {
+        return in_array($this->normalizedStatus($campaign->status), self::EDITABLE_STATUSES, true);
+    }
+
+    private function ensureAudienceCanBeFinalized(
+        Request $request,
+        CampaignAssignmentService $assignmentService,
+        array $data,
+        ?Campaign $campaign = null
+    ): void {
+        if ($request->input('submit_action') !== 'activate') {
+            return;
+        }
+
+        $this->ensureCampaignAudienceIsNotEmpty(
+            $this->campaignPreviewModel($data, $campaign),
+            $this->promotionIds($request),
+            $assignmentService
+        );
+    }
+
+    private function ensureCampaignAudienceIsNotEmpty(
+        Campaign $campaign,
+        array $promotionIds,
+        CampaignAssignmentService $assignmentService
+    ): void {
+        $result = $assignmentService->previewSelection($campaign, $promotionIds);
+
+        if ((int) ($result['matched_count'] ?? 0) > 0) {
+            return;
+        }
+
+        $field = ($result['failure_reason'] ?? null) === 'Campaign must have at least one promotion.'
+            ? 'promotions'
+            : 'segment';
+
+        throw ValidationException::withMessages([
+            $field => $this->audiencePreviewMessage($result)
+                ?: __('admin.marketing.campaigns.no_reachable_customers'),
+        ]);
+    }
+
+    private function campaignPreviewModel(array $data, ?Campaign $campaign = null): Campaign
+    {
+        $preview = new Campaign();
+
+        if ($campaign?->exists) {
+            $preview->forceFill($campaign->getAttributes());
+            $preview->setAttribute($campaign->getKeyName(), $campaign->getKey());
+            $preview->exists = true;
+        }
+
+        $preview->forceFill($data);
+
+        return $preview;
     }
 
     private function formOptions(?Campaign $campaign = null): array

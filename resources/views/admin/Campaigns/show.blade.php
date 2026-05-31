@@ -144,9 +144,10 @@
         ?? ($hasLinkedPromotions && $campaignPromotionCaseUses->intersect(['table', 'generic'])->isNotEmpty());
     $canPreviewAudience = $canPreviewAudience ?? ($normalizedStatus === 'draft' && ! $hasAssignments && $hasLinkedPromotions);
     $canPrepareAssignments = $canPrepareAssignments ?? $canPreviewAudience;
+    $canEditCampaign = $canEditCampaign ?? in_array($normalizedStatus, ['draft', 'paused'], true);
     $canActivateCampaign = $canActivateCampaign ?? in_array($normalizedStatus, ['draft', 'paused'], true);
     $canPauseCampaign = $canPauseCampaign ?? in_array($normalizedStatus, ['scheduled', 'running'], true);
-    $canDraftCampaign = $canDraftCampaign ?? in_array($normalizedStatus, ['scheduled', 'running', 'paused'], true);
+    $canDraftCampaign = $canDraftCampaign ?? $normalizedStatus === 'paused';
     $canArchiveCampaign = $canArchiveCampaign ?? in_array($normalizedStatus, ['draft', 'scheduled', 'running', 'paused', 'completed'], true);
     $canRestoreCampaign = $canRestoreCampaign ?? $normalizedStatus === 'archived';
     $canDestroyCampaign = $canDestroyCampaign ?? ($normalizedStatus === 'archived' && ! $hasAssignments);
@@ -479,7 +480,7 @@
                         <span>{{ $normalizedStatus === 'archived' ? __('admin.marketing.campaigns.archive_short') : __('admin.marketing.campaigns.list_short') }}</span>
                     </a>
 
-                    @if (! in_array($normalizedStatus, ['completed', 'archived'], true))
+                    @if ($canEditCampaign)
                         <a class="order-detail__contact" href="{{ route('admin.campaigns.edit', $campaign) }}">
                             <i class="bi bi-pencil-square"></i>
                             <span>{{ __('admin.common.edit') }}</span>

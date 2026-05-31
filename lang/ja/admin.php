@@ -2304,6 +2304,7 @@ return array (
       'draft_flash_long' => 'キャンペーンは下書きとして保存されました。キャンペーン一覧から続きを完成させることができます。',
       'completed_only_view_or_archive' => '完了したキャンペーンは、閲覧またはアーカイブすることのみ可能です。',
       'completed_only_archive' => '完了したキャンペーンはアーカイブすることしかできません。',
+      'campaign_not_editable' => 'このキャンペーンは現在のステータスでは編集できません。',
       'confirmed_scheduled_flash' => '作戦は確定しました。任務は準備済みです。予定通りに派遣を開始します。',
       'confirmed_unscheduled_flash' => 'キャンペーンが確定しました。タスクの準備が完了しました。自動送信を開始するスケジュールを設定してください。',
       'paused_flash' => 'キャンペーンは正常に一時停止されました。',

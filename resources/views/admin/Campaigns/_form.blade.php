@@ -319,6 +319,12 @@
         margin-top: 3px;
     }
 
+    .marketing-form-actions button:disabled {
+        cursor: not-allowed;
+        opacity: .48;
+        filter: grayscale(.2);
+    }
+
 </style>
 
 @if ($errors->any())
@@ -751,6 +757,7 @@
         'chosenWindow'                    => __('admin.marketing.campaigns.chosen_window'),
         'noPromotionSelected'             => __('admin.marketing.campaigns.no_promotion_selected'),
         'promotion'                       => __('admin.marketing.campaigns.promotion'),
+        'audienceRequired'                => __('admin.marketing.campaigns.no_reachable_customers'),
     ];
 @endphp
 <script>
@@ -819,6 +826,7 @@
         const totalSteps = 5;
         let audiencePreviewRequestId = 0;
         let audiencePreviewController = null;
+        let audienceAllowsSubmit = false;
 
         const selectedOption = (select) => select?.options[select.selectedIndex] || null;
         const numberFormatter = new Intl.NumberFormat('it-IT');
@@ -830,6 +838,17 @@
             } else {
                 target.hidden = hidden;
             }
+        };
+
+        const setSubmitAvailability = (allowed, message = '') => {
+            audienceAllowsSubmit = allowed;
+
+            if (!btnSubmit) {
+                return;
+            }
+
+            btnSubmit.disabled = !allowed;
+            btnSubmit.title = allowed ? '' : (message || copy.audienceRequired);
         };
 
         const formatDateTime = (value) => {
@@ -913,6 +932,8 @@
 
         const setAudiencePreviewState = (state, payload = {}) => {
             if (state === 'empty') {
+                setSubmitAvailability(false, copy.chooseSegmentStatus);
+
                 if (audienceCount) {
                     audienceCount.textContent = copy.estimatedAudienceSelectSegment;
                 }
@@ -930,6 +951,8 @@
             }
 
             if (state === 'loading') {
+                setSubmitAvailability(false, copy.estimatedAudienceCalculating);
+
                 if (audienceCount) {
                     audienceCount.textContent = copy.estimatedAudienceCalculating;
                 }
@@ -943,6 +966,8 @@
             }
 
             if (state === 'error') {
+                setSubmitAvailability(false, copy.audienceRetry);
+
                 if (audienceCount) {
                     audienceCount.textContent = copy.estimatedAudienceUnavailable;
                 }
@@ -957,6 +982,9 @@
 
             const matched = Number(payload.matched || 0);
             const available = Number(payload.available || 0);
+            const canFinalize = matched > 0 && payload.can_assign !== false;
+
+            setSubmitAvailability(canFinalize, payload.message || copy.audienceRequired);
 
             if (audienceCount) {
                 audienceCount.textContent = interpolate(copy.estimatedAudienceReady, {
@@ -1284,6 +1312,19 @@
             if (e.target?.type !== 'submit') {
                 e.preventDefault();
             }
+        });
+
+        form.addEventListener('submit', (e) => {
+            const submitter = e.submitter || document.activeElement;
+            const isFinalSubmit = submitter?.dataset?.wizSubmit !== undefined
+                || (submitter?.name === 'submit_action' && submitter?.value === 'activate');
+
+            if (!isFinalSubmit || audienceAllowsSubmit) {
+                return;
+            }
+
+            e.preventDefault();
+            setAudienceStatus(submitter?.title || copy.audienceRequired, 'error');
         });
 
         syncCampaignType(campaignTypeInput?.value || 'explicit_email_marketing');

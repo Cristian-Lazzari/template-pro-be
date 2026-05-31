@@ -2304,6 +2304,7 @@ return array (
       'draft_flash_long' => 'Campania a fost salvată ca schiță. O puteți finaliza din lista de campanii.',
       'completed_only_view_or_archive' => 'O campanie finalizată poate fi doar vizualizată sau arhivată.',
       'completed_only_archive' => 'O campanie finalizată poate fi doar arhivată.',
+      'campaign_not_editable' => 'Această campanie nu poate fi modificată în starea actuală.',
       'confirmed_scheduled_flash' => 'Campanie confirmată. Sarcinile au fost pregătite; expedierea va începe de la program.',
       'confirmed_unscheduled_flash' => 'Campanie confirmată. Temele au fost pregătite; setați un program pentru a începe trimiterea automată.',
       'paused_flash' => 'Campania a fost întreruptă cu succes.',

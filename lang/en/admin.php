@@ -2304,6 +2304,7 @@ return array (
       'draft_flash_long' => 'Campaign saved as a draft. You can complete it from the campaign list.',
       'completed_only_view_or_archive' => 'A completed campaign can only be viewed or archived.',
       'completed_only_archive' => 'A completed campaign can only be archived.',
+      'campaign_not_editable' => 'This campaign cannot be edited in its current status.',
       'confirmed_scheduled_flash' => 'Campaign confirmed. Assignments have been prepared; dispatch will begin from the schedule.',
       'confirmed_unscheduled_flash' => 'Campaign confirmed. Assignments have been prepared; set a schedule to start sending automatically.',
       'paused_flash' => 'Campaign paused successfully.',

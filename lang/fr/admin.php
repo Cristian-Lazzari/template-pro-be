@@ -2304,6 +2304,7 @@ return array (
       'draft_flash_long' => 'Campagne enregistrée comme brouillon. Vous pouvez la terminer depuis la liste des campagnes.',
       'completed_only_view_or_archive' => 'Une campagne terminée peut uniquement être consultée ou archivée.',
       'completed_only_archive' => 'Une campagne terminée ne peut être qu\'archivée.',
+      'campaign_not_editable' => 'Cette campagne ne peut pas être modifiée dans son état actuel.',
       'confirmed_scheduled_flash' => 'Campagne confirmée. Les affectations sont prêtes ; l’expédition débutera selon le calendrier prévu.',
       'confirmed_unscheduled_flash' => 'Campagne confirmée. Les affectations sont prêtes ; programmez l’envoi automatique.',
       'paused_flash' => 'Campagne suspendue avec succès.',

@@ -2427,6 +2427,7 @@ return array (
       'draft_flash_long' => 'Campagna salvata come bozza. Puoi completarla dalla lista campagne.',
       'completed_only_view_or_archive' => 'Una campagna completata puo essere solo consultata o archiviata.',
       'completed_only_archive' => 'Una campagna completata puo essere solo archiviata.',
+      'campaign_not_editable' => 'Questa campagna non puo essere modificata nello stato attuale.',
       'confirmed_scheduled_flash' => 'Campagna confermata. Le assegnazioni sono state preparate; l’invio partira dalla programmazione.',
       'confirmed_unscheduled_flash' => 'Campagna confermata. Le assegnazioni sono state preparate; imposta una programmazione per avviare l’invio automatico.',
       'paused_flash' => 'Campagna messa in pausa correttamente.',

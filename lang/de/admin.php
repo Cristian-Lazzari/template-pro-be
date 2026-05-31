@@ -2304,6 +2304,7 @@ return array (
       'draft_flash_long' => 'Die Kampagne wurde als Entwurf gespeichert. Sie können sie in der Kampagnenliste abschließen.',
       'completed_only_view_or_archive' => 'Eine abgeschlossene Kampagne kann nur noch angesehen oder archiviert werden.',
       'completed_only_archive' => 'Eine abgeschlossene Kampagne kann nur archiviert werden.',
+      'campaign_not_editable' => 'Diese Kampagne kann in ihrem aktuellen Status nicht bearbeitet werden.',
       'confirmed_scheduled_flash' => 'Kampagne bestätigt. Aufgabenverteilung erfolgt planmäßig; Einsatzbeginn gemäß Zeitplan.',
       'confirmed_unscheduled_flash' => 'Kampagne bestätigt. Aufgaben wurden vorbereitet; legen Sie einen Zeitplan für den automatischen Versand fest.',
       'paused_flash' => 'Kampagne erfolgreich pausiert.',
