@@ -23,6 +23,27 @@
 
     $appName    = config('configurazione.APP_NAME', config('app.name', 'R'));
     $logoLetter = mb_strtoupper(mb_substr($appName, 0, 1));
+
+    $mailerImageUrl = static function (?string $path): ?string {
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'public/storage/') || str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        return asset('public/storage/' . $path);
+    };
+
+    $imageOneUrl = $mailerImageUrl($model->img_1);
+    $imageTwoUrl = $mailerImageUrl($model->img_2);
 @endphp
 
 @include('admin.Marketing.partials.form-style')
@@ -76,6 +97,50 @@
         border: 1px solid rgba(216, 221, 232, 0.16);
         border-radius: 12px;
         color: var(--c3);
+    }
+
+    .mail-model-file-field {
+        display: grid;
+        gap: 8px;
+    }
+
+    .mail-model-file-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+    }
+
+    .mail-model-file-clear {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 34px;
+        padding: 7px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 141, 141, 0.22);
+        background: rgba(206, 59, 59, 0.1);
+        color: rgba(255, 210, 210, 0.95);
+        font: inherit;
+        font-size: var(--fs-100);
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .mail-model-file-clear:hover,
+    .mail-model-file-clear:focus-visible {
+        background: rgba(206, 59, 59, 0.18);
+        border-color: rgba(255, 141, 141, 0.36);
+        outline: none;
+    }
+
+    .mail-model-file-status {
+        color: rgba(216, 221, 232, 0.66);
+        font-size: var(--fs-100);
+        line-height: 1.35;
+        overflow-wrap: anywhere;
     }
 
     .mail-model-form input::placeholder {
@@ -235,6 +300,29 @@
     .mail-model-preview h4,
     .mail-model-preview p { overflow-wrap: anywhere; }
 
+    .mail-model-preview__image {
+        display: block;
+        max-width: 450px;
+        max-height: 260px;
+        height: auto;
+        margin: 20px auto;
+        border-radius: 10px;
+        object-fit: contain;
+        box-shadow: 0 10px 24px rgba(4, 0, 29, .12);
+    }
+
+    .mail-model-preview__image[hidden] {
+        display: none;
+    }
+
+    .mail-model-preview__image--top {
+        width: min(60%, 450px);
+    }
+
+    .mail-model-preview__image--bottom {
+        width: min(70%, 450px);
+    }
+
     .mail-model-preview__subject {
         margin: 0 0 12px;
         color: rgba(4, 0, 29, .68);
@@ -362,6 +450,14 @@
 
     @media (max-width: 1100px) {
         .mail-model-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+        .mail-model-preview__image,
+        .mail-model-preview__image--top,
+        .mail-model-preview__image--bottom {
+            width: 100%;
+        }
     }
 </style>
 
@@ -543,10 +639,33 @@
                             <x-icon name="image-fill" />
                             {{ __('admin.marketing.mailer.top_image') }}
                         </label>
-                        <p><input type="file" id="img_1" name="img_1"></p>
-                        @if ($model->img_1)
-                            <p class="menu-dashboard__copy">{{ __('admin.marketing.mailer.image_present', ['name' => basename($model->img_1)]) }}</p>
-                        @endif
+                        <div class="mail-model-file-field" data-image-upload>
+                            <input type="file"
+                                   id="img_1"
+                                   name="img_1"
+                                   accept="image/*"
+                                   data-image-input
+                                   data-preview-target="preview-img-1"
+                                   data-existing-src="{{ $imageOneUrl ?? '' }}">
+                            <div class="mail-model-file-actions">
+                                <button class="mail-model-file-clear"
+                                        type="button"
+                                        data-image-clear
+                                        hidden
+                                        aria-label="{{ __('admin.Rimuovi') }} {{ __('admin.marketing.mailer.top_image') }}"
+                                        title="{{ __('admin.Rimuovi') }} {{ __('admin.marketing.mailer.top_image') }}">
+                                    <x-icon name="x-circle-fill" />
+                                    <span>{{ __('admin.Rimuovi') }}</span>
+                                </button>
+                                <span class="mail-model-file-status"
+                                      data-image-status
+                                      data-default-text="{{ $model->img_1 ? __('admin.marketing.mailer.image_present', ['name' => basename($model->img_1)]) : '' }}">
+                                    @if ($model->img_1)
+                                        {{ __('admin.marketing.mailer.image_present', ['name' => basename($model->img_1)]) }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
                         @error('img_1') <p class="error">{{ $message }}</p> @enderror
                     </div>
 
@@ -555,10 +674,33 @@
                             <x-icon name="image-fill" />
                             {{ __('admin.marketing.mailer.bottom_image') }}
                         </label>
-                        <p><input type="file" id="img_2" name="img_2"></p>
-                        @if ($model->img_2)
-                            <p class="menu-dashboard__copy">{{ __('admin.marketing.mailer.image_present', ['name' => basename($model->img_2)]) }}</p>
-                        @endif
+                        <div class="mail-model-file-field" data-image-upload>
+                            <input type="file"
+                                   id="img_2"
+                                   name="img_2"
+                                   accept="image/*"
+                                   data-image-input
+                                   data-preview-target="preview-img-2"
+                                   data-existing-src="{{ $imageTwoUrl ?? '' }}">
+                            <div class="mail-model-file-actions">
+                                <button class="mail-model-file-clear"
+                                        type="button"
+                                        data-image-clear
+                                        hidden
+                                        aria-label="{{ __('admin.Rimuovi') }} {{ __('admin.marketing.mailer.bottom_image') }}"
+                                        title="{{ __('admin.Rimuovi') }} {{ __('admin.marketing.mailer.bottom_image') }}">
+                                    <x-icon name="x-circle-fill" />
+                                    <span>{{ __('admin.Rimuovi') }}</span>
+                                </button>
+                                <span class="mail-model-file-status"
+                                      data-image-status
+                                      data-default-text="{{ $model->img_2 ? __('admin.marketing.mailer.image_present', ['name' => basename($model->img_2)]) : '' }}">
+                                    @if ($model->img_2)
+                                        {{ __('admin.marketing.mailer.image_present', ['name' => basename($model->img_2)]) }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
                         @error('img_2') <p class="error">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -588,6 +730,12 @@
                         <h4 id="preview-heading"
                             data-placeholder="{{ __('admin.marketing.mailer.preview_heading') }}"></h4>
 
+                        <img class="mail-model-preview__image mail-model-preview__image--top"
+                             id="preview-img-1"
+                             @if ($imageOneUrl) src="{{ $imageOneUrl }}" @endif
+                             alt="{{ __('admin.marketing.mailer.top_image') }}"
+                             @unless ($imageOneUrl) hidden @endunless>
+
                         <div class="mail-model-preview__body"
                              id="preview-body"
                              data-placeholder="{{ __('admin.marketing.mailer.preview_body') }}"></div>
@@ -608,6 +756,12 @@
                                 Il testo verrà adattato al contesto: "Ordina ora" (asporto/delivery), "Prenota ora" (tavolo)
                             </p>
                         </div>
+
+                        <img class="mail-model-preview__image mail-model-preview__image--bottom"
+                             id="preview-img-2"
+                             @if ($imageTwoUrl) src="{{ $imageTwoUrl }}" @endif
+                             alt="{{ __('admin.marketing.mailer.bottom_image') }}"
+                             @unless ($imageTwoUrl) hidden @endunless>
 
                         <div id="preview-ending-wrap">
                             <p id="preview-ending"></p>
@@ -942,6 +1096,97 @@
     ['object', 'heading', 'sender'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updatePreview);
+    });
+
+    // ─── ANTEPRIMA IMMAGINI ──────────────────────────────────────
+    function clearPreviewObjectUrl(input) {
+        const objectUrl = input?.dataset?.previewObjectUrl;
+        if (!objectUrl) return;
+        URL.revokeObjectURL(objectUrl);
+        delete input.dataset.previewObjectUrl;
+        input.removeAttribute('data-preview-object-url');
+    }
+
+    function setPreviewImage(input, src) {
+        const preview = document.getElementById(input?.dataset?.previewTarget || '');
+        if (!preview) return;
+
+        if (src) {
+            preview.src = src;
+            preview.hidden = false;
+            return;
+        }
+
+        preview.removeAttribute('src');
+        preview.hidden = true;
+    }
+
+    function updateImageInput(input) {
+        if (!input) return;
+
+        const field = input.closest('[data-image-upload]');
+        const clearButton = field?.querySelector('[data-image-clear]');
+        const status = field?.querySelector('[data-image-status]');
+        const file = input.files && input.files.length ? input.files[0] : null;
+
+        clearPreviewObjectUrl(input);
+
+        if (file) {
+            const objectUrl = URL.createObjectURL(file);
+            input.dataset.previewObjectUrl = objectUrl;
+            setPreviewImage(input, objectUrl);
+
+            if (clearButton) clearButton.hidden = false;
+            if (status) status.textContent = file.name;
+            return;
+        }
+
+        setPreviewImage(input, input.dataset.existingSrc || '');
+        if (clearButton) clearButton.hidden = true;
+        if (status) status.textContent = status.dataset.defaultText || '';
+    }
+
+    function clearImageInput(input) {
+        if (!input) return;
+
+        clearPreviewObjectUrl(input);
+
+        try {
+            input.value = '';
+        } catch (error) {
+            // Some mobile browsers are conservative with file inputs; replacing the node is a reliable fallback.
+        }
+
+        if (input.files && input.files.length) {
+            const clone = input.cloneNode(true);
+            clone.removeAttribute('data-preview-object-url');
+            input.replaceWith(clone);
+            updateImageInput(clone);
+            return;
+        }
+
+        updateImageInput(input);
+    }
+
+    document.querySelectorAll('[data-image-input]').forEach(updateImageInput);
+
+    document.addEventListener('change', event => {
+        if (event.target?.matches?.('[data-image-input]')) {
+            updateImageInput(event.target);
+        }
+    });
+
+    document.addEventListener('click', event => {
+        const clearButton = event.target?.closest?.('[data-image-clear]');
+        if (!clearButton) return;
+
+        event.preventDefault();
+        const input = clearButton.closest('[data-image-upload]')?.querySelector('[data-image-input]');
+        clearImageInput(input);
+    });
+
+    window.addEventListener('beforeunload', () => {
+        document.querySelectorAll('[data-image-input]').forEach(clearPreviewObjectUrl);
     });
 
     // ─── SELETTORE TIPO MODELLO ──────────────────────────────────

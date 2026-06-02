@@ -144,6 +144,40 @@
         ],
         default => [],
     };
+    $caseUseLabels = [
+        'generic' => __('admin.marketing.campaigns.case_generic'),
+        'take_away' => __('admin.marketing.campaigns.case_takeaway'),
+        'delivery' => __('admin.marketing.campaigns.case_delivery'),
+        'table' => __('admin.marketing.campaigns.case_table'),
+        'gift' => __('admin.marketing.campaigns.case_gift'),
+    ];
+    $discountTypeLabels = [
+        'fixed' => __('admin.marketing.campaigns.discount_fixed'),
+        'percentage' => __('admin.marketing.campaigns.discount_percentage'),
+        'gift' => __('admin.marketing.campaigns.discount_gift'),
+    ];
+    $formatDiscount = function ($promotion) {
+        if (! $promotion) {
+            return '-';
+        }
+
+        if ($promotion->type_discount === 'gift') {
+            return __('admin.marketing.campaigns.discount_gift');
+        }
+
+        if ($promotion->discount === null) {
+            return '-';
+        }
+
+        $value = number_format((float) $promotion->discount, 2, ',', '.');
+        $value = str_ends_with($value, ',00') ? substr($value, 0, -3) : $value;
+
+        return match ($promotion->type_discount) {
+            'fixed' => $value . '€',
+            'percentage' => $value . '%',
+            default => $value,
+        };
+    };
 
     $triggerLabel = $triggerLabelFor($automation->trigger);
     $triggerSummary = $triggerSummaryFor($automation->trigger, $metadata);
@@ -349,21 +383,82 @@
                     </div>
 
                     @if ($promotionsCount > 0)
-                        <div class="marketing-detail__linked-grid">
+                        <div class="order-detail__items">
                             @foreach ($automation->promotions as $promotion)
-                                <article class="marketing-detail__linked-card">
-                                    <span>{{ __('admin.marketing.automations.promotion') }}</span>
-                                    <strong>{{ $promotion->name }}</strong>
-                                    <small>{{ $promotion->slug }}</small>
-                                    @include('admin.Marketing.partials.status-pill', [
-                                        'status' => $promotion->status,
-                                        'label' => $promotion->status,
-                                    ])
+                                @php
+                                    $targetLabels = $promotion->targets->map(function ($target) {
+                                        $resolvedTarget = null;
+
+                                        try {
+                                            $resolvedTarget = $target->target();
+                                        } catch (\Throwable) {
+                                            $resolvedTarget = null;
+                                        }
+
+                                        $name = $resolvedTarget?->name ?? $resolvedTarget?->title ?? null;
+
+                                        return [
+                                            'type' => $target->target_type,
+                                            'name' => $name ?: ($target->target_type === 'generic' ? __('admin.marketing.campaigns.case_generic') : '#' . $target->target_id),
+                                        ];
+                                    })->filter(fn ($target) => filled($target['name']))->values();
+                                @endphp
+
+                                <div class="promo-card">
+                                    <div class="promo-card__header">
+                                        <div class="promo-card__title">
+                                            <strong class="promo-card__name">{{ $promotion->name }}</strong>
+                                            @if ($promotion->type_discount)
+                                                <span class="promo-card__type-badge">{{ $discountTypeLabels[$promotion->type_discount] ?? $promotion->type_discount }}</span>
+                                            @endif
+                                        </div>
+                                        @include('admin.Marketing.partials.status-pill', [
+                                            'status' => $promotion->status,
+                                            'label' => $promotion->status,
+                                        ])
+                                    </div>
+
+                                    <div class="promo-card__breakdown">
+                                        <div class="promo-card__row">
+                                            <span>{{ __('admin.marketing.campaigns.discount') }}</span>
+                                            <strong>{{ $formatDiscount($promotion) }}</strong>
+                                        </div>
+                                        <div class="promo-card__row">
+                                            <span>{{ __('admin.marketing.campaigns.minimum') }}</span>
+                                            <span>{{ $promotion->minimum_pretest !== null ? number_format((float) $promotion->minimum_pretest, 2, ',', '.') : '-' }}</span>
+                                        </div>
+                                        <div class="promo-card__row">
+                                            <span>{{ __('admin.marketing.campaigns.expiration') }}</span>
+                                            <span>{{ $promotion->expiring_at?->format('d/m/Y') ?? __('admin.marketing.campaigns.without_expiration') }}</span>
+                                        </div>
+                                        @if ($promotion->case_use)
+                                            <div class="promo-card__row">
+                                                <span>{{ $caseUseLabels[$promotion->case_use] ?? $promotion->case_use }}</span>
+                                                <span>{{ $promotion->slug }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="promo-card__items">
+                                        <p class="promo-card__items-title">{{ __('admin.marketing.campaigns.target') }}</p>
+                                        <ul class="promo-card__items-list">
+                                            @forelse ($targetLabels as $target)
+                                                <li class="promo-card__items-entry">
+                                                    <span>{{ ucfirst($target['type']) }}: {{ $target['name'] }}</span>
+                                                </li>
+                                            @empty
+                                                <li class="promo-card__items-entry">
+                                                    <span>{{ __('admin.marketing.campaigns.generic_target') }}</span>
+                                                </li>
+                                            @endforelse
+                                        </ul>
+                                    </div>
+
                                     <a href="{{ route('admin.promotions.show', $promotion) }}" class="order-detail__contact">
                                         <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                        <span>{{ __('admin.marketing.automations.open') }}</span>
+                                        <span>{{ __('admin.marketing.campaigns.open_promotion') }}</span>
                                     </a>
-                                </article>
+                                </div>
                             @endforeach
                         </div>
                     @else
@@ -404,7 +499,7 @@
                             </form>
                         @endif
 
-                        @if (in_array($automation->status, ['active', 'paused'], true))
+                        @if ($automation->status === 'paused')
                             <form action="{{ route('admin.automations.draft', $automation) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--muted" type="submit">
@@ -415,22 +510,6 @@
                         @endif
 
                         @if ($automation->status !== 'archived')
-                            <form action="{{ route('admin.automations.preview-audience', $automation) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact" type="submit">
-                                    <i class="bi bi-people-fill"></i>
-                                    <span>{{ __('admin.marketing.automations.preview_audience') }}</span>
-                                </button>
-                            </form>
-
-                            <form action="{{ route('admin.automations.prepare-assignments', $automation) }}" method="POST">
-                                @csrf
-                                <button class="order-detail__contact marketing-detail__contact--danger" type="submit">
-                                    <i class="bi bi-person-plus-fill"></i>
-                                    <span>{{ __('admin.marketing.automations.prepare_assignments') }}</span>
-                                </button>
-                            </form>
-
                             <form action="{{ route('admin.automations.archive', $automation) }}" method="POST">
                                 @csrf
                                 <button class="order-detail__contact marketing-detail__contact--danger" type="submit">

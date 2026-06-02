@@ -26,6 +26,27 @@
     $object       = trim((string) ($model->object ?: ''));
     $sender       = trim((string) ($model->sender ?: $appName));
     $hasPromotion = (bool) ($model->has_promotion ?? false);
+
+    $mailerImageUrl = static function (?string $path): ?string {
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'public/storage/') || str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        return asset('public/storage/' . $path);
+    };
+
+    $imageOneUrl = $mailerImageUrl($model->img_1);
+    $imageTwoUrl = $mailerImageUrl($model->img_2);
 @endphp
 
 <style>
@@ -211,6 +232,25 @@
         font-style: italic;
     }
 
+    .mail-preview-image {
+        display: block;
+        max-width: 450px;
+        max-height: 280px;
+        height: auto;
+        margin: 22px auto;
+        border-radius: 10px;
+        object-fit: contain;
+        box-shadow: 0 10px 24px rgba(4, 0, 29, .12);
+    }
+
+    .mail-preview-image--top {
+        width: min(60%, 450px);
+    }
+
+    .mail-preview-image--bottom {
+        width: min(70%, 450px);
+    }
+
     .mail-preview-cta {
         display: inline-flex;
         margin: 0 auto 22px;
@@ -263,6 +303,14 @@
     @media (max-width: 1050px) {
         .mailer-show-grid {
             grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .mail-preview-image,
+        .mail-preview-image--top,
+        .mail-preview-image--bottom {
+            width: 100%;
         }
     }
 </style>
@@ -448,6 +496,12 @@
                         <h2 class="mail-preview-heading mail-preview-heading--placeholder">{{ __('admin.marketing.mailer.preview_heading') }}</h2>
                     @endif
 
+                    @if ($imageOneUrl)
+                        <img class="mail-preview-image mail-preview-image--top"
+                             src="{{ $imageOneUrl }}"
+                             alt="{{ __('admin.marketing.mailer.top_image') }}">
+                    @endif
+
                     @if ($bodyHtml !== '')
                         <div class="mail-preview-body">{!! $bodyHtml !!}</div>
                     @else
@@ -461,6 +515,12 @@
                             <p style="font-size:11px;color:rgba(4,0,29,.45);margin:5px 0 0;">Il blocco verrà popolato con i dati reali</p>
                         </div>
                         <span class="mail-preview-cta">{{ __('admin.emails.marketing.discover_promotion') }}</span>
+                    @endif
+
+                    @if ($imageTwoUrl)
+                        <img class="mail-preview-image mail-preview-image--bottom"
+                             src="{{ $imageTwoUrl }}"
+                             alt="{{ __('admin.marketing.mailer.bottom_image') }}">
                     @endif
 
                     @if ($ending !== '')

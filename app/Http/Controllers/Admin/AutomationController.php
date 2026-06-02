@@ -70,7 +70,7 @@ class AutomationController extends Controller
 
     public function show(Automation $automation, MarketingReportService $reportService)
     {
-        $automation->load(['model', 'promotions']);
+        $automation->load(['model', 'promotions.targets']);
         $report = $reportService->forAutomation($automation);
         $customerPromotions = $automation->customerPromotions()
             ->with(['customer', 'promotion'])
