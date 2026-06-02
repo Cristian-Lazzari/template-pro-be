@@ -230,7 +230,7 @@ class ReportSummaryService
             $orders         = $this->buildOrdersPayload($from, $to, $revenueUnit, $periodWarnings);
             $reservations   = $this->buildReservationsPayload($from, $to, $periodWarnings);
 
-            $result[$key] = [
+            $block = [
                 'from'                => $from->toDateString(),
                 'to'                  => $to->toDateString(),
                 'orders_total'        => $orders['total'],
@@ -242,9 +242,53 @@ class ReportSummaryService
                 'reservations_total'  => $reservations['total'],
                 'reservations_covers' => $reservations['total_covers'],
             ];
+
+            // Per il periodo all_time aggiungiamo il conteggio dei mesi con attività
+            // reale, in modo che il backoffice possa calcolare medie mensili sensate
+            // (es. 120 ordini in 3 mesi attivi = 40/mese, non 120/12 mesi).
+            if ($key === 'all_time') {
+                $block['orders_active_months']       = $this->countActiveMonths('orders',       $from, $to);
+                $block['reservations_active_months'] = $this->countActiveMonths('reservations', $from, $to);
+            }
+
+            $result[$key] = $block;
         }
 
         return $result;
+    }
+
+    /**
+     * Conta quanti mesi distinti hanno almeno un record nella tabella indicata.
+     * Usato per calcolare medie mensili basate sull'attività reale, non sul periodo totale.
+     */
+    private function countActiveMonths(string $table, Carbon $from, Carbon $to): int
+    {
+        if (! Schema::hasTable($table) || ! Schema::hasColumn($table, 'created_at')) {
+            return 0;
+        }
+
+        try {
+            $driver = DB::getDriverName();
+
+            if (in_array($driver, ['mysql', 'mariadb'], true)) {
+                $result = DB::table($table)
+                    ->whereBetween('created_at', [$from, $to])
+                    ->selectRaw("COUNT(DISTINCT DATE_FORMAT(created_at, '%Y-%m')) as active_months")
+                    ->first();
+
+                return (int) ($result->active_months ?? 0);
+            }
+
+            // Fallback SQLite (test env): raggruppa per strftime
+            $result = DB::table($table)
+                ->whereBetween('created_at', [$from, $to])
+                ->selectRaw("COUNT(DISTINCT strftime('%Y-%m', created_at)) as active_months")
+                ->first();
+
+            return (int) ($result->active_months ?? 0);
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     /**
