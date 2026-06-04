@@ -148,118 +148,138 @@ class SettingController extends Controller
     public function updateAll(Request $request)
     {
         $setting = Setting::all()->keyBy('name');
+        $inputOr = fn (string $key, $default = null) => $request->exists($key) ? $request->input($key) : $default;
 
-        $setting['Prenotazione Tavoli']->status = $request->tavoli_status;
+        $setting['Prenotazione Tavoli']->status = (int) $inputOr('tavoli_status', $setting['Prenotazione Tavoli']->status);
         $setting['Prenotazione Tavoli']->save();
-        
-        $setting['Promozione Tavoli']->status = $request->table_promo;
+
+        $promoProp = json_decode($setting['Promozione Tavoli']->property, true) ?: [];
+        $setting['Promozione Tavoli']->status = (int) $inputOr('table_promo', $setting['Promozione Tavoli']->status);
         $prop_promo = [
-            'title' => $request->promo_table_title,
-            'body' => $request->promo_table_body,
+            'title' => $inputOr('promo_table_title', $promoProp['title'] ?? ''),
+            'body' => $inputOr('promo_table_body', $promoProp['body'] ?? ''),
         ];
         $setting['Promozione Tavoli']->property = json_encode($prop_promo);
         $setting['Promozione Tavoli']->save();
 
         $adv_s = Setting::where('name', 'advanced')->first();
-        $property_adv = json_decode($adv_s->property, 1);  
-        
-        $setting['Prenotazione Asporti']->status = $request->asporto_status;
+        $property_adv = $adv_s ? (json_decode($adv_s->property, 1) ?: []) : [];
+
+        $asportoProp = json_decode($setting['Prenotazione Asporti']->property, true) ?: [];
+        $setting['Prenotazione Asporti']->status = (int) $inputOr('asporto_status', $setting['Prenotazione Asporti']->status);
         $prop_apsorto = [
-            'pay' => intval($request->asporto_pay),
-            'min_price' => Currency::parseInput($request->min_price_a),
+            'pay' => (int) $inputOr('asporto_pay', $asportoProp['pay'] ?? 0),
+            'min_price' => $request->exists('min_price_a')
+                ? Currency::parseInput($request->min_price_a)
+                : ($asportoProp['min_price'] ?? 0),
         ];
-        if ($property_adv['services'] > 2) {
-            $setting['Comuni per il domicilio']->property = json_encode($setting['Comuni per il domicilio']->property);
-            $setting['Possibilità di consegna a domicilio']->status = $request->domicilio_status;
+        if ((int) ($property_adv['services'] ?? 4) > 2) {
+            $domicilioProp = json_decode($setting['Possibilità di consegna a domicilio']->property, true) ?: [];
+            $setting['Possibilità di consegna a domicilio']->status = (int) $inputOr('domicilio_status', $setting['Possibilità di consegna a domicilio']->status);
             $prop_domicilio = [
-                'pay' => intval($request->domicilio_pay),
-                'min_price' => Currency::parseInput($request->min_price_d),
-                'delivery_cost' => Currency::parseInput($request->delivery_cost),
+                'pay' => (int) $inputOr('domicilio_pay', $domicilioProp['pay'] ?? 0),
+                'min_price' => $request->exists('min_price_d')
+                    ? Currency::parseInput($request->min_price_d)
+                    : ($domicilioProp['min_price'] ?? 0),
+                'delivery_cost' => $request->exists('delivery_cost')
+                    ? Currency::parseInput($request->delivery_cost)
+                    : ($domicilioProp['delivery_cost'] ?? 0),
             ];
             $setting['Possibilità di consegna a domicilio']->property = json_encode($prop_domicilio);
             $setting['Possibilità di consegna a domicilio']->save();
         }
         $setting['Prenotazione Asporti']->property = json_encode($prop_apsorto);
         $setting['Prenotazione Asporti']->save();
-        
-        
-        $setting['Periodo di Ferie']->status = $request->ferie_status;
+
+        $ferieProp = json_decode($setting['Periodo di Ferie']->property, true) ?: [];
+        $setting['Periodo di Ferie']->status = (int) $inputOr('ferie_status', $setting['Periodo di Ferie']->status);
         $propertyArray = [
-            'from' => $request->from,
-            'to' => $request->to,
+            'from' => $inputOr('from', $ferieProp['from'] ?? null),
+            'to' => $inputOr('to', $ferieProp['to'] ?? null),
         ];
         $setting['Periodo di Ferie']->property = json_encode($propertyArray);
         $setting['Periodo di Ferie']->save();
 
-        $old_prop = json_decode($setting['Lingua']->property, 1);
+        $old_prop = json_decode($setting['Lingua']->property, 1) ?: [];
+        $languages = $request->exists('languages')
+            ? (array) $request->input('languages')
+            : ($old_prop['languages'] ?? ['it']);
+
+        $languages = is_array($languages)
+            ? array_values(array_filter($languages, fn ($language) => is_string($language) && trim($language) !== ''))
+            : [];
+
+        if (empty($languages)) {
+            $languages = ['it'];
+        }
+
+        $defaultLang = $inputOr('defaultLang', $old_prop['default'] ?? null);
+
+        if (!is_string($defaultLang) || trim($defaultLang) === '') {
+            $defaultLang = $languages[0] ?? config('configurazione.default_lang') ?? config('app.locale') ?? 'it';
+        }
+
+        $defaultLang = trim((string) $defaultLang) ?: 'it';
 
         $propertyArray = [
-            'default' => $request->defaultLang,
-            'languages' => isset($request->languages) ? $request->languages : $old_prop['languages'],
+            'default' => $defaultLang,
+            'languages' => $languages,
         ];
         $setting['Lingua']->property = json_encode($propertyArray);
         $setting['Lingua']->save();
 
-        $currency = Currency::normalize($request->input('currency_code'));
-        $currencySetting = $setting['Valuta'] ?? Setting::query()->firstOrCreate(
-            ['name' => 'Valuta'],
-            [
-                'status' => 1,
-                'property' => json_encode(Currency::defaultDefinition()),
-            ]
-        );
-        $currencySetting->status = 1;
-        $currencySetting->property = json_encode($currency);
-        $currencySetting->save();
+        if ($request->exists('currency_code')) {
+            $currency = Currency::normalize($request->input('currency_code'));
+            $currencySetting = $setting['Valuta'] ?? Setting::query()->firstOrCreate(
+                ['name' => 'Valuta'],
+                [
+                    'status' => 1,
+                    'property' => json_encode(Currency::defaultDefinition()),
+                ]
+            );
+            $currencySetting->status = 1;
+            $currencySetting->property = json_encode($currency);
+            $currencySetting->save();
+        }
 
+        $oldOrari = json_decode($setting['Orari di attività']->property, true) ?: [];
 
         $giorni_attivita = [
-            'lunedì'    =>  $request->lunedì,
-            'martedì'   =>  $request->martedì,
-            'mercoledì' =>  $request->mercoledì,
-            'giovedì'   =>  $request->giovedì,
-            'venerdì'   =>  $request->venerdì,
-            'sabato'    =>  $request->sabato,
-            'domenica'  =>  $request->domenica,
+            'lunedì'    =>  $inputOr('lunedì', $oldOrari['lunedì'] ?? ''),
+            'martedì'   =>  $inputOr('martedì', $oldOrari['martedì'] ?? ''),
+            'mercoledì' =>  $inputOr('mercoledì', $oldOrari['mercoledì'] ?? ''),
+            'giovedì'   =>  $inputOr('giovedì', $oldOrari['giovedì'] ?? ''),
+            'venerdì'   =>  $inputOr('venerdì', $oldOrari['venerdì'] ?? ''),
+            'sabato'    =>  $inputOr('sabato', $oldOrari['sabato'] ?? ''),
+            'domenica'  =>  $inputOr('domenica', $oldOrari['domenica'] ?? ''),
         ];
         $setting['Orari di attività']->property = json_encode($giorni_attivita);
         $setting['Orari di attività']->save();
 
-        $oldPosition = json_decode($setting['Posizione']['property'], 1);
+        $oldPosition = json_decode($setting['Posizione']['property'], 1) ?: [];
+        $posizione = [
+            'foto_maps' =>  $oldPosition['foto_maps'] ?? '',
+            'link_maps' =>  $inputOr('link_maps', $oldPosition['link_maps'] ?? ''),
+            'indirizzo' =>  $inputOr('indirizzo', $oldPosition['indirizzo'] ?? ''),
+        ];
 
-        if(isset($oldPosition['foto_maps'])){
-            $posizione = [
-                'foto_maps' =>  $oldPosition['foto_maps'],
-                'link_maps' =>  $request->link_maps,
-                'indirizzo' =>  $request->indirizzo,
-            ];
-        
-            if (isset($request->foto_maps)) {
-                $imagePath = $request->file('foto_maps')->store('public/uploads');
-                $posizione['foto_maps'] = $imagePath;
-            }
-        }else{
-            $posizione = [
-                'foto_maps' =>  "",
-                'link_maps' =>  $request->link_maps,
-                'indirizzo' =>  $request->indirizzo,
-            ];
-            if (isset($request->foto_maps)) {
-                $imagePath = $request->file('foto_maps')->store('public/uploads');
-                $posizione['foto_maps'] = $imagePath;
-            }
+        if ($request->hasFile('foto_maps')) {
+            $imagePath = $request->file('foto_maps')->store('public/uploads');
+            $posizione['foto_maps'] = $imagePath;
         }
+
         $setting['Posizione']->property = json_encode($posizione);
         $setting['Posizione']->save();
 
+        $oldContatti = json_decode($setting['Contatti']->property, true) ?: [];
         $contatti = [
-            'telefono'  => $request->telefono,
-            'email'     => $request->email,
-            'instagram' => $request->instagram,
-            'facebook'  => $request->facebook,
-            'youtube'   => $request->youtube,
-            'tiktok'    => $request->tiktok,
-            'whatsapp'  => $request->whatsapp,
+            'telefono'  => $inputOr('telefono', $oldContatti['telefono'] ?? ''),
+            'email'     => $inputOr('email', $oldContatti['email'] ?? ''),
+            'instagram' => $inputOr('instagram', $oldContatti['instagram'] ?? ''),
+            'facebook'  => $inputOr('facebook', $oldContatti['facebook'] ?? ''),
+            'youtube'   => $inputOr('youtube', $oldContatti['youtube'] ?? ''),
+            'tiktok'    => $inputOr('tiktok', $oldContatti['tiktok'] ?? ''),
+            'whatsapp'  => $inputOr('whatsapp', $oldContatti['whatsapp'] ?? ''),
         ];
         $setting['Contatti']->property = json_encode($contatti);
         $setting['Contatti']->save();      

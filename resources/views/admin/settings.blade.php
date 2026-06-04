@@ -41,8 +41,6 @@ $promoState = $promoStatus === 1
     ? ['label' => __('admin.common.active_status'), 'tone' => 'active']
     : ['label' => __('admin.common.disabled'), 'tone' => 'off'];
 
-$defaultLang = strtoupper((string) config('configurazione.default_lang'));
-
 $menuFixState = match ((string) ($adv['menu_fix_set'] ?? '0')) {
     '0' => ['label' => __('admin.Menu_fisso'),   'tone' => 'neutral'],
     '1' => ['label' => __('admin.Tutti'),   'tone' => 'active'],
@@ -66,7 +64,12 @@ $asporto_p   = json_decode($setting['Prenotazione Asporti']['property'], 1);
 $domicilio_p = json_decode($setting['Possibilità di consegna a domicilio']['property'], 1);
 $ferieProp   = json_decode($setting['Periodo di Ferie']['property'], true);
 $promo_table = json_decode($setting['Promozione Tavoli']['property'], true);
-$languages   = json_decode($setting['Lingua']['property'], 1)['languages'];
+$languageSetting = json_decode($setting['Lingua']['property'], 1) ?: [];
+$languages = is_array($languageSetting['languages'] ?? null) ? $languageSetting['languages'] : ['it'];
+$languages = array_values(array_filter($languages, fn ($language) => is_string($language) && trim($language) !== ''));
+$languages = empty($languages) ? ['it'] : $languages;
+$activeLocale = $languageSetting['default'] ?? config('configurazione.default_lang') ?? app()->getLocale() ?? config('app.locale') ?? 'it';
+$activeLocale = is_string($activeLocale) && trim($activeLocale) !== '' ? trim($activeLocale) : ($languages[0] ?? 'it');
 $property_orari     = json_decode($setting['Orari di attività']['property'], true);
 $property_posizione = json_decode($setting['Posizione']['property'], true);
 $property_contatti  = json_decode($setting['Contatti']['property'], true);
@@ -873,7 +876,7 @@ $toneClass = fn(string $tone) => match($tone) {
                                 <div class="stt-lang-pills">
                                     @foreach ($languages as $l)
                                         <button type="button"
-                                            class="stt-lang-pill {{ config('configurazione.default_lang') == $l ? 'active' : '' }}"
+                                            class="stt-lang-pill {{ $activeLocale == $l ? 'active' : '' }}"
                                             data-stt-lang="{{ $l }}">{{ strtoupper($l) }}</button>
                                     @endforeach
                                 </div>
@@ -1095,11 +1098,11 @@ $toneClass = fn(string $tone) => match($tone) {
                                 <div class="loc-days-grid">
                                     @foreach ($days as $giorno => $index)
                                     @php
-                                    $label = \Carbon\Carbon::now()
-                                        ->locale(app()->getLocale())
+                                    $labelDate = \Carbon\Carbon::now()
                                         ->startOfWeek(\Carbon\Carbon::MONDAY)
-                                        ->addDays($index)
-                                        ->isoFormat('dddd');
+                                        ->addDays($index);
+                                    $labelDate->locale($activeLocale);
+                                    $label = $labelDate->isoFormat('dddd');
                                     @endphp
                                     <div class="loc-day-row">
                                         <label class="loc-day-lbl" for="{{ $giorno }}">{{ ucfirst($label) }}</label>
