@@ -77,6 +77,42 @@ class OrderPromotionCheckoutTest extends TestCase
             ->count());
     }
 
+    public function test_verified_checkout_can_apply_default_active_public_promotion_id(): void
+    {
+        $customer = $this->createCustomer('public-order-promo@example.com');
+        $categoryId = $this->createCategory();
+        $productId = $this->createProduct($categoryId, 20);
+        $promotion = $this->createPromotion([
+            'type_discount' => 'fixed',
+            'discount' => 5,
+            'default_active' => true,
+        ], [
+            ['type' => PromotionTarget::TYPE_PRODUCT, 'id' => $productId],
+        ]);
+        $slot = $this->availableSlot();
+
+        $response = $this->postJson('/api/orders', $this->orderPayload($customer, $slot, [
+            'promotion_id' => $promotion->id,
+            'cart' => $this->cart([
+                $this->cartProduct($productId),
+            ]),
+        ]));
+
+        $response->assertOk()->assertJson(['success' => true]);
+
+        $order = Order::query()->firstOrFail();
+        $customerPromotion = CustomerPromotion::query()->sole();
+
+        $this->assertEquals(15.0, $order->tot_price);
+        $this->assertSame($customer->id, $customerPromotion->customer_id);
+        $this->assertSame($promotion->id, $customerPromotion->promotion_id);
+        $this->assertSame($order->id, $customerPromotion->order_id);
+        $this->assertSame('used', $customerPromotion->status);
+        $this->assertNotNull($customerPromotion->promo_used);
+        $this->assertSame('default_active_promotion', $customerPromotion->metadata['source'] ?? null);
+        $this->assertSame('order_checkout', $customerPromotion->metadata['applied_from'] ?? null);
+    }
+
     public function test_reusable_order_customer_promotion_creates_fresh_available_assignment_after_use(): void
     {
         $customer = $this->createCustomer('reusable-order-promo@example.com');

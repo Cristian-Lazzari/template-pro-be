@@ -29,6 +29,7 @@ class PromotionManagementTest extends TestCase
             'minimum_pretest' => null,
             'cta' => null,
             'permanent' => '1',
+            'default_active' => '1',
             'metadata' => [
                 'reusable' => '0',
             ],
@@ -42,6 +43,7 @@ class PromotionManagementTest extends TestCase
             'name' => 'Promo da finire',
             'status' => 'draft',
         ]);
+        $this->assertTrue(Promotion::query()->where('name', 'Promo da finire')->firstOrFail()->default_active);
     }
 
     public function test_draft_promotion_can_be_deleted_with_connections(): void
@@ -111,11 +113,11 @@ class PromotionManagementTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('40%');
-        $response->assertSee('RIUTILIZZABILE');
-        $response->assertSee('Completa');
-        $response->assertSee('Elimina');
-        $response->assertSee('Apri');
-        $response->assertSee('Archivia');
+        $response->assertSee(__('admin.marketing.promotions.reusable_short'));
+        $response->assertSee(__('admin.marketing.promotions.complete'));
+        $response->assertSee(__('admin.common.delete'));
+        $response->assertSee(__('admin.Vedi'));
+        $response->assertSee(__('admin.marketing.promotions.archive'));
     }
 
     public function test_archived_promotions_have_a_dedicated_index(): void
@@ -140,10 +142,10 @@ class PromotionManagementTest extends TestCase
         $archivedResponse = $this->actingAs($admin)->get(route('admin.promotions.archived'));
 
         $archivedResponse->assertOk();
-        $archivedResponse->assertSee('Promozioni archiviate');
+        $archivedResponse->assertSee(__('admin.marketing.promotions.archived_title'));
         $archivedResponse->assertSee('Promo archiviata');
         $archivedResponse->assertDontSee('Promo operativa');
-        $archivedResponse->assertSee('Lista promozioni');
+        $archivedResponse->assertSee(__('admin.marketing.promotions.list'));
     }
 
     public function test_non_draft_promotion_cannot_be_deleted_directly(): void

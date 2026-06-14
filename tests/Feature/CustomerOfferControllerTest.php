@@ -151,6 +151,87 @@ class CustomerOfferControllerTest extends TestCase
         $this->assertSame($promotion->id, $response->json('used.0.promotion_id'));
     }
 
+    public function test_auth_offers_assigns_default_active_promotion_to_new_customer_without_orders(): void
+    {
+        $customer = $this->createCustomer('first-visit-offer@example.com');
+        $categoryId = $this->createCategory('Promo per tutti');
+        $productId = $this->createProduct($categoryId, 'Prodotto benvenuto', 12);
+        $promotion = $this->createPromotion([
+            'name' => 'Promo per tutti',
+            'type_discount' => 'percentage',
+            'discount' => 10,
+            'default_active' => true,
+        ]);
+
+        $this->createTarget($promotion, PromotionTarget::TYPE_PRODUCT, $productId);
+
+        $this->assertSame(0, $customer->orders()->count());
+        $this->assertSame(0, $customer->customerPromotions()->count());
+
+        $firstResponse = $this->getJson('/api/auth/offers', $this->authHeaders($customer))
+            ->assertOk()
+            ->assertJsonPath('available.0.name', 'Promo per tutti')
+            ->assertJsonPath('available.0.promotion_id', $promotion->id)
+            ->assertJsonPath('available.0.default_active', true)
+            ->assertJsonPath('available.0.status', 'available');
+
+        $customerPromotionId = $firstResponse->json('available.0.customer_promotion_id');
+        $customerPromotion = CustomerPromotion::query()->findOrFail($customerPromotionId);
+
+        $this->assertSame($customer->id, $customerPromotion->customer_id);
+        $this->assertSame($promotion->id, $customerPromotion->promotion_id);
+        $this->assertSame('default_active_promotion', $customerPromotion->metadata['source'] ?? null);
+
+        $secondResponse = $this->getJson('/api/auth/offers', $this->authHeaders($customer))
+            ->assertOk();
+
+        $this->assertSame([$customerPromotionId], array_column($secondResponse->json('available'), 'customer_promotion_id'));
+        $this->assertSame(1, $customer->customerPromotions()->where('promotion_id', $promotion->id)->count());
+    }
+
+    public function test_public_offers_returns_default_active_promotions_without_customer_assignment(): void
+    {
+        $categoryId = $this->createCategory('Promo pubbliche');
+        $productId = $this->createProduct($categoryId, 'Prodotto pubblico', 14, 'public/uploads/public-product.jpg');
+        $publicPromotion = $this->createPromotion([
+            'name' => 'Offerta pubblica',
+            'type_discount' => 'fixed',
+            'discount' => 4,
+            'case_use' => 'delivery',
+            'default_active' => true,
+        ]);
+        $privatePromotion = $this->createPromotion([
+            'name' => 'Offerta riservata',
+            'default_active' => false,
+        ]);
+        $expiredPublicPromotion = $this->createPromotion([
+            'name' => 'Offerta pubblica scaduta',
+            'default_active' => true,
+            'permanent' => false,
+            'expiring_at' => now()->subDay(),
+        ]);
+
+        $this->createTarget($publicPromotion, PromotionTarget::TYPE_PRODUCT, $productId);
+        $this->createTarget($privatePromotion, PromotionTarget::TYPE_PRODUCT, $productId);
+        $this->createTarget($expiredPublicPromotion, PromotionTarget::TYPE_PRODUCT, $productId);
+
+        $response = $this->getJson('/api/offers')
+            ->assertOk()
+            ->assertJsonPath('available.0.id', 'promotion-' . $publicPromotion->id)
+            ->assertJsonPath('available.0.customer_promotion_id', null)
+            ->assertJsonPath('available.0.promotion_id', $publicPromotion->id)
+            ->assertJsonPath('available.0.public_offer', true)
+            ->assertJsonPath('available.0.default_active', true)
+            ->assertJsonPath('available.0.status', 'available')
+            ->assertJsonPath('available.0.case_use', 'delivery')
+            ->assertJsonPath('available.0.target_image', 'public/uploads/public-product.jpg');
+
+        $this->assertSame(['Offerta pubblica'], array_column($response->json('available'), 'name'));
+        $this->assertSame([], $response->json('used'));
+        $this->assertSame([], $response->json('expired'));
+        $this->assertSame(0, CustomerPromotion::query()->count());
+    }
+
     private function authHeaders(Customer $customer): array
     {
         return [

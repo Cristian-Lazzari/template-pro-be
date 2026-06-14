@@ -21,6 +21,7 @@ return new class extends Migration
                 $table->decimal('minimum_pretest', 12, 2)->nullable();
                 $table->string('cta')->nullable();
                 $table->boolean('permanent')->default(false)->index();
+                $table->boolean('default_active')->default(false)->index();
                 $table->timestamp('schedule_at')->nullable()->index();
                 $table->timestamp('expiring_at')->nullable()->index();
                 $table->json('valid_weekdays')->nullable();

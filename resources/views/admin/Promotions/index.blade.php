@@ -69,6 +69,7 @@
                         $formatDecimal = static fn ($value) => number_format((float) $value, 2, ',', '.');
                         $isDraft = $promotion->status === 'draft';
                         $isReusable = data_get($promotion->metadata, 'reusable') === true;
+                        $isDefaultActive = (bool) $promotion->default_active;
                         $assignedCount = (int) ($promotion->assigned_customers_count ?? $promotion->total_activation ?? 0);
                         $usedCount = (int) ($promotion->used_customers_count ?? $promotion->total_used ?? 0);
                         $usageRate = $assignedCount > 0 ? min(100, round(($usedCount / $assignedCount) * 100)) : 0;
@@ -129,6 +130,9 @@
                                 <span class="promotion-list-slug" title="{{ $promotion->slug }}">{{ $promotion->slug }}</span>
                                 <span class="promotion-list-reuse @if (! $isReusable) promotion-list-reuse--off @endif">
                                     {{ $isReusable ? __('admin.marketing.promotions.reusable_short') : __('admin.marketing.promotions.not_reusable') }}
+                                </span>
+                                <span class="promotion-list-reuse @if (! $isDefaultActive) promotion-list-reuse--off @endif">
+                                    {{ $isDefaultActive ? __('admin.marketing.promotions.default_active_short') : __('admin.marketing.promotions.private_short') }}
                                 </span>
                             </div>
                         </div>

@@ -12,6 +12,7 @@ use App\Models\MenuOrder;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\Promotion;
 use App\Models\Setting;
 use App\Services\Customers\CustomerStatsService;
 use App\Services\FailureAlertService;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Throwable;
 
 class OrderController extends Controller
@@ -57,6 +59,7 @@ class OrderController extends Controller
         'tracking_enabled' => 'nullable|boolean',
         'news_letter' => 'nullable|boolean',
         'customer_promotion_id' => 'nullable|integer|exists:customer_promotion,id',
+        'promotion_id' => 'nullable|integer|exists:promotions,id',
     ];
 
     public function store(Request $request)
@@ -986,17 +989,23 @@ class OrderController extends Controller
             : null;
 
         if ($customerPromotionId === null) {
-            return [
-                'applicable' => false,
-                'reason' => 'no_promotion_requested',
-                'customer_promotion' => null,
-                'promotion' => null,
-                'discount_amount' => 0.0,
-                'subtotal' => 0.0,
-                'total' => 0.0,
-                'affected_items' => [],
-                'minimum_required' => null,
-            ];
+            $customerPromotion = $this->defaultActiveCustomerPromotion($customer, $data['promotion_id'] ?? null);
+
+            if (! $customerPromotion) {
+                return [
+                    'applicable' => false,
+                    'reason' => isset($data['promotion_id']) ? 'promotion_not_available' : 'no_promotion_requested',
+                    'customer_promotion' => null,
+                    'promotion' => null,
+                    'discount_amount' => 0.0,
+                    'subtotal' => 0.0,
+                    'total' => 0.0,
+                    'affected_items' => [],
+                    'minimum_required' => null,
+                ];
+            }
+
+            $customerPromotionId = $customerPromotion->getKey();
         }
 
         $cartForPromotion = array_merge($cart, [
@@ -1015,6 +1024,42 @@ class OrderController extends Controller
         }
 
         return $evaluation;
+    }
+
+    private function defaultActiveCustomerPromotion(Customer $customer, mixed $promotionId): ?CustomerPromotion
+    {
+        $promotionId = ($promotionId !== null && $promotionId !== '' && $promotionId !== 0)
+            ? (int) $promotionId
+            : null;
+
+        if (! $promotionId) {
+            return null;
+        }
+
+        $promotion = Promotion::query()
+            ->active()
+            ->whereKey($promotionId)
+            ->where('default_active', true)
+            ->first();
+
+        if (! $promotion || $promotion->schedule_at?->isFuture() || (! $promotion->isPermanent() && $promotion->expiring_at?->isPast())) {
+            return null;
+        }
+
+        try {
+            return $this->customerPromotionService->assignToCustomer($customer, $promotion, null, null, [
+                'source' => 'default_active_promotion',
+                'default_assigned_at' => now()->toISOString(),
+            ]);
+        } catch (InvalidArgumentException $exception) {
+            Log::warning('(OrderController) Promozione pubblica non assegnabile all\'ordine', [
+                'customer_id' => $customer->getKey(),
+                'promotion_id' => $promotion->getKey(),
+                'reason' => $exception->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     private function markAppliedOrderPromotion(?array $evaluation, Order $order, float $subtotalBeforePromotion): void

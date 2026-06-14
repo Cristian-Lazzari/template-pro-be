@@ -21,6 +21,7 @@ class Promotion extends Model
         'minimum_pretest',
         'cta',
         'permanent',
+        'default_active',
         'schedule_at',
         'expiring_at',
         'valid_weekdays',
@@ -36,6 +37,7 @@ class Promotion extends Model
         'discount' => 'decimal:2',
         'minimum_pretest' => 'decimal:2',
         'permanent' => 'boolean',
+        'default_active' => 'boolean',
         'schedule_at' => 'datetime',
         'expiring_at' => 'datetime',
         'valid_weekdays' => 'array',
@@ -149,6 +151,11 @@ class Promotion extends Model
     public function isPermanent(): bool
     {
         return (bool) $this->permanent;
+    }
+
+    public function isDefaultActive(): bool
+    {
+        return (bool) $this->default_active;
     }
 
     public function isReusable(): bool

@@ -47,19 +47,23 @@ return new class extends Migration
             Schema::hasColumn('orders', 'created_at')
         ) {
             DB::statement('
-                UPDATE customers c
-                INNER JOIN (
-                    SELECT
-                        customer_id,
-                        MIN(created_at) AS first_at,
-                        MAX(created_at) AS last_at
-                    FROM orders
-                    WHERE customer_id IS NOT NULL
-                    GROUP BY customer_id
-                ) o ON o.customer_id = c.id
+                UPDATE customers
                 SET
-                    c.first_order_at = COALESCE(c.first_order_at, o.first_at),
-                    c.last_order_at  = COALESCE(c.last_order_at,  o.last_at)
+                    first_order_at = COALESCE(first_order_at, (
+                        SELECT MIN(created_at)
+                        FROM orders
+                        WHERE orders.customer_id = customers.id
+                    )),
+                    last_order_at = COALESCE(last_order_at, (
+                        SELECT MAX(created_at)
+                        FROM orders
+                        WHERE orders.customer_id = customers.id
+                    ))
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM orders
+                    WHERE orders.customer_id = customers.id
+                )
             ');
         }
 
@@ -71,19 +75,23 @@ return new class extends Migration
             Schema::hasColumn('reservations', 'created_at')
         ) {
             DB::statement('
-                UPDATE customers c
-                INNER JOIN (
-                    SELECT
-                        customer_id,
-                        MIN(created_at) AS first_at,
-                        MAX(created_at) AS last_at
-                    FROM reservations
-                    WHERE customer_id IS NOT NULL
-                    GROUP BY customer_id
-                ) r ON r.customer_id = c.id
+                UPDATE customers
                 SET
-                    c.first_booking_at = COALESCE(c.first_booking_at, r.first_at),
-                    c.last_booking_at  = COALESCE(c.last_booking_at,  r.last_at)
+                    first_booking_at = COALESCE(first_booking_at, (
+                        SELECT MIN(created_at)
+                        FROM reservations
+                        WHERE reservations.customer_id = customers.id
+                    )),
+                    last_booking_at = COALESCE(last_booking_at, (
+                        SELECT MAX(created_at)
+                        FROM reservations
+                        WHERE reservations.customer_id = customers.id
+                    ))
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM reservations
+                    WHERE reservations.customer_id = customers.id
+                )
             ');
         }
 

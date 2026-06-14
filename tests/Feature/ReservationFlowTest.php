@@ -301,6 +301,46 @@ class ReservationFlowTest extends TestCase
         $this->assertSame(2, $customerPromotion->metadata['reservation_people'] ?? null);
     }
 
+    public function test_verified_checkout_can_apply_default_active_public_table_promotion_id(): void
+    {
+        Http::fake([
+            'https://graph.facebook.com/*' => Http::response([
+                'messages' => [
+                    ['id' => 'wamid.reservation.public.promo'],
+                ],
+            ], 200),
+        ]);
+
+        $customer = $this->createCustomer('reservation-public-promo@example.com');
+        $promotion = $this->createPromotion([
+            'case_use' => 'table',
+            'type_discount' => 'gift',
+            'default_active' => true,
+        ]);
+        $slot = Carbon::now()->addDays(12)->setTime(19, 0)->startOfMinute();
+        $this->configureReservationSlot($slot, [
+            'max_table' => 6,
+        ]);
+
+        $response = $this->postJson('/api/reservations', $this->reservationPayload($slot, [
+            'promotion_id' => $promotion->id,
+            'email' => $customer->email,
+        ]));
+
+        $response->assertOk()->assertJson(['success' => true]);
+
+        $reservation = Reservation::query()->sole();
+        $customerPromotion = CustomerPromotion::query()->sole();
+
+        $this->assertSame($customer->id, $customerPromotion->customer_id);
+        $this->assertSame($promotion->id, $customerPromotion->promotion_id);
+        $this->assertSame($reservation->id, $customerPromotion->reservation_id);
+        $this->assertSame('used', $customerPromotion->status);
+        $this->assertNotNull($customerPromotion->promo_used);
+        $this->assertSame('default_active_promotion', $customerPromotion->metadata['source'] ?? null);
+        $this->assertSame('reservation_checkout', $customerPromotion->metadata['applied_from'] ?? null);
+    }
+
     public function test_take_away_customer_promotion_does_not_block_reservation_and_is_not_used(): void
     {
         Http::fake([

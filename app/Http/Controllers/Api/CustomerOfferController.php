@@ -7,14 +7,51 @@ use App\Models\Customer;
 use App\Models\CustomerPromotion;
 use App\Models\Promotion;
 use App\Models\PromotionTarget;
+use App\Services\Marketing\CustomerPromotionService;
 use App\Services\Marketing\PromotionAvailabilityService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use InvalidArgumentException;
 
 class CustomerOfferController extends Controller
 {
+    public function publicIndex(Request $request)
+    {
+        $offers = [
+            'available' => [],
+            'used' => [],
+            'expired' => [],
+        ];
+
+        if (! Schema::hasColumn('promotions', 'default_active')) {
+            return response()->json([
+                'success' => true,
+                ...$offers,
+            ]);
+        }
+
+        Promotion::query()
+            ->with('targets')
+            ->active()
+            ->where('default_active', true)
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->each(function (Promotion $promotion) use (&$offers) {
+                if (! $this->isPublicPromotionAvailable($promotion)) {
+                    return;
+                }
+
+                $offers['available'][] = $this->publicOfferPayload($promotion);
+            });
+
+        return response()->json([
+            'success' => true,
+            ...$offers,
+        ]);
+    }
+
     public function index(Request $request)
     {
         $customer = $request->user();
@@ -22,6 +59,8 @@ class CustomerOfferController extends Controller
         if (! $customer instanceof Customer) {
             abort(403);
         }
+
+        $this->assignDefaultPromotions($customer);
 
         $offers = [
             'available' => [],
@@ -48,6 +87,24 @@ class CustomerOfferController extends Controller
         ]);
     }
 
+    private function publicOfferPayload(Promotion $promotion): array
+    {
+        $payload = $this->basePromotionPayload($promotion);
+        $promotionId = $promotion->getKey();
+
+        return array_merge($payload, [
+            'id' => 'promotion-' . $promotionId,
+            'customer_promotion_id' => null,
+            'promotion_id' => $promotionId,
+            'public_offer' => true,
+            'status' => 'available',
+            'assignment_status' => null,
+            'expires_at' => $promotion->expiring_at?->toISOString(),
+            'used_at' => null,
+            'redeemed_at' => null,
+        ]);
+    }
+
     private function offerPayload(CustomerPromotion $customerPromotion): array
     {
         $promotion = $customerPromotion->promotion;
@@ -55,6 +112,23 @@ class CustomerOfferController extends Controller
         $customerPromotionExpiresAt = $this->customerPromotionExpiresAt($customerPromotion);
         $expiresAt = $customerPromotionExpiresAt ?: $promotion->expiring_at;
         $status = $this->offerStatus($customerPromotion, $promotion, $usedAt, $customerPromotionExpiresAt);
+        $payload = $this->basePromotionPayload($promotion);
+
+        return array_merge($payload, [
+            'id' => $customerPromotion->getKey(),
+            'customer_promotion_id' => $customerPromotion->getKey(),
+            'promotion_id' => $promotion->getKey(),
+            'public_offer' => false,
+            'status' => $status,
+            'assignment_status' => $customerPromotion->status,
+            'expires_at' => $expiresAt?->toISOString(),
+            'used_at' => $usedAt?->toISOString(),
+            'redeemed_at' => $usedAt?->toISOString(),
+        ]);
+    }
+
+    private function basePromotionPayload(Promotion $promotion): array
+    {
         $targets = $this->targetsPayload($promotion);
         $target = $this->primaryTargetPayload($targets);
         $minimum = $promotion->minimum_pretest !== null ? (float) $promotion->minimum_pretest : null;
@@ -63,9 +137,6 @@ class CustomerOfferController extends Controller
         $availability = app(PromotionAvailabilityService::class)->payload($promotion);
 
         return [
-            'id' => $customerPromotion->getKey(),
-            'customer_promotion_id' => $customerPromotion->getKey(),
-            'promotion_id' => $promotion->getKey(),
             'name' => $promotion->name,
             'title' => $promotion->name,
             'description' => $this->promotionDescription($promotion),
@@ -81,15 +152,11 @@ class CustomerOfferController extends Controller
             'availability' => $availability,
             'is_available_now' => $availability['is_available_now'],
             'availability_unavailable_reason' => $availability['unavailable_reason'],
-            'status' => $status,
-            'assignment_status' => $customerPromotion->status,
             'starts_at' => $startsAt?->toISOString(),
             'schedule_at' => $startsAt?->toISOString(),
-            'expires_at' => $expiresAt?->toISOString(),
             'expiring_at' => $expiringAt?->toISOString(),
             'permanent' => (bool) $promotion->permanent,
-            'used_at' => $usedAt?->toISOString(),
-            'redeemed_at' => $usedAt?->toISOString(),
+            'default_active' => (bool) $promotion->default_active,
             'cta_path' => $this->ctaPath($promotion),
             'cta_label' => $this->ctaLabel($promotion),
             'image' => $target['target_image'],
@@ -105,6 +172,64 @@ class CustomerOfferController extends Controller
             'category_name' => $target['category_name'],
             'category_image' => $target['category_image'],
         ];
+    }
+
+    private function isPublicPromotionAvailable(Promotion $promotion): bool
+    {
+        if (! $promotion->isActive()) {
+            return false;
+        }
+
+        if ($promotion->schedule_at?->isFuture()) {
+            return false;
+        }
+
+        if (! $promotion->isPermanent() && $promotion->expiring_at?->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function assignDefaultPromotions(Customer $customer): void
+    {
+        if (! Schema::hasColumn('promotions', 'default_active')) {
+            return;
+        }
+
+        $service = app(CustomerPromotionService::class);
+
+        Promotion::query()
+            ->active()
+            ->where('default_active', true)
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->each(function (Promotion $promotion) use ($customer, $service) {
+                if ($this->hasOpenCustomerPromotion($customer, $promotion)) {
+                    return;
+                }
+
+                try {
+                    $service->assignToCustomer($customer, $promotion, null, null, [
+                        'source' => 'default_active_promotion',
+                        'default_assigned_at' => now()->toISOString(),
+                    ]);
+                } catch (InvalidArgumentException) {
+                    // Expired, scheduled, or already-used non-reusable promotions stay hidden.
+                }
+            });
+    }
+
+    private function hasOpenCustomerPromotion(Customer $customer, Promotion $promotion): bool
+    {
+        return $customer->customerPromotions()
+            ->where('promotion_id', $promotion->getKey())
+            ->whereNull('promo_used')
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', 'used');
+            })
+            ->exists();
     }
 
     private function offerStatus(

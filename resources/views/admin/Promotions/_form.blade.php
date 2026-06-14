@@ -2,6 +2,7 @@
     $errors = $errors ?? new \Illuminate\Support\ViewErrorBag;
     $reusableValue = old('metadata.reusable', data_get($promotion->metadata, 'reusable', false));
     $previewPermanent = filter_var(old('permanent', $promotion->permanent), FILTER_VALIDATE_BOOLEAN);
+    $previewDefaultActive = filter_var(old('default_active', $promotion->default_active), FILTER_VALIDATE_BOOLEAN);
     $scheduleValue = $previewPermanent ? '' : old('schedule_at', $promotion->schedule_at?->format('Y-m-d\TH:i'));
     $expiringValue = $previewPermanent ? '' : old('expiring_at', $promotion->expiring_at?->format('Y-m-d\TH:i'));
     $defaultWeekdays = array_keys($weekdayLabels ?? []);
@@ -86,7 +87,7 @@
 
     // Wizard step detection for server-side error recovery
     $hasErrors = $errors->any();
-    if ($hasErrors && $errors->hasAny(['name', 'description', 'cta', 'permanent', 'schedule_at', 'expiring_at', 'valid_weekdays', 'valid_weekdays.*', 'valid_from_time', 'valid_to_time', 'metadata.reusable'])) {
+    if ($hasErrors && $errors->hasAny(['name', 'description', 'cta', 'permanent', 'default_active', 'schedule_at', 'expiring_at', 'valid_weekdays', 'valid_weekdays.*', 'valid_from_time', 'valid_to_time', 'metadata.reusable'])) {
         $initialStep = 1;
     } elseif ($hasErrors && $errors->has('case_use')) {
         $initialStep = 2;
@@ -659,6 +660,27 @@
                             </label>
                             @error('metadata.reusable') <p class="error">{{ $message }}</p> @enderror
                         </div>
+                        {{-- Attiva per tutti --}}
+                        <div class="promo-toggle">
+                            <input type="hidden" name="default_active" value="0">
+                            <input
+                                class="promo-toggle__input"
+                                type="checkbox"
+                                name="default_active"
+                                id="default_active"
+                                value="1"
+                                data-default-active
+                                @checked($previewDefaultActive)
+                            >
+                            <label class="promo-toggle__card" for="default_active">
+                                <span class="promo-toggle__icon"><i class="bi bi-people-fill"></i></span>
+                                <span>
+                                    <strong>{{ __('admin.marketing.promotions.default_active_short') }}</strong>
+                                    <small>{{ __('admin.marketing.promotions.default_active_note') }}</small>
+                                </span>
+                            </label>
+                            @error('default_active') <p class="error">{{ $message }}</p> @enderror
+                        </div>
                     </div>
 
                     {{-- Date range --}}
@@ -1187,6 +1209,11 @@
                         <span class="cpv2-row-label">{{ __('admin.marketing.promotions.permanent') }}</span>
                         <span class="cpv2-row-val" data-preview-perm-val>{{ $previewPermanent ? __('admin.common.yes') : __('admin.common.no') }}</span>
                     </li>
+                    <li class="cpv2-row {{ $previewDefaultActive ? 'cpv2-row--done' : 'cpv2-row--empty' }}" data-preview-row="default">
+                        <span class="cpv2-row-icon"><i class="{{ $previewDefaultActive ? 'bi bi-check-lg' : 'bi bi-circle' }}" data-row-icon-default></i></span>
+                        <span class="cpv2-row-label">{{ __('admin.marketing.promotions.default_active_short') }}</span>
+                        <span class="cpv2-row-val" data-preview-default-val>{{ $previewDefaultActive ? __('admin.common.yes') : __('admin.common.no') }}</span>
+                    </li>
                 </ul>
             </div>
         </aside>
@@ -1311,6 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ── Permanent toggle ──────────────────────────── */
     const permanentInput = form.querySelector('[data-permanent]');
+    const defaultActiveInput = form.querySelector('[data-default-active]');
     const datesPanel     = form.querySelector('[data-dates-panel]');
 
     const syncPermanent = () => {
@@ -1323,16 +1351,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     permanentInput?.addEventListener('change', syncPermanent);
+    defaultActiveInput?.addEventListener('change', updatePreview);
 
     /* ── Preview update ───────────────────────────── */
-    const setRowDone = (rowAttr, done) => {
+    function setRowDone(rowAttr, done) {
         const row = form.querySelector(`[data-preview-row="${rowAttr}"]`);
         if (!row) return;
         row.classList.toggle('cpv2-row--done', done);
         row.classList.toggle('cpv2-row--empty', !done);
-    };
+    }
 
-    const updatePreview = () => {
+    function updatePreview() {
         const nameEl  = form.querySelector('#name');
         const nameVal = nameEl?.value.trim() || '';
 
@@ -1389,7 +1418,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const permIcon = form.querySelector('[data-row-icon-perm]');
         if (permIcon) permIcon.className = permOn ? 'bi bi-check-lg' : 'bi bi-circle';
         setRowDone('permanent', permOn);
-    };
+
+        // default active
+        const pDefaultV = form.querySelector('[data-preview-default-val]');
+        const defaultOn = defaultActiveInput?.checked ?? false;
+        if (pDefaultV) pDefaultV.textContent = defaultOn ? i18n.yes : i18n.no;
+        const defaultIcon = form.querySelector('[data-row-icon-default]');
+        if (defaultIcon) defaultIcon.className = defaultOn ? 'bi bi-check-lg' : 'bi bi-circle';
+        setRowDone('default', defaultOn);
+    }
 
     form.querySelector('#name')?.addEventListener('input', updatePreview);
 

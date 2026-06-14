@@ -28,6 +28,7 @@
         ? number_format((float) $promotion->minimum_pretest, 2, ',', '.')
         : '-';
     $isReusable = data_get($promotion->metadata, 'reusable') === true;
+    $isDefaultActive = (bool) $promotion->default_active;
 @endphp
 
 <div class="dash_page">
@@ -125,6 +126,10 @@
                         <article class="marketing-detail__fact">
                             <span>{{ __('admin.marketing.promotions.reusable') }}</span>
                             <strong>{{ $isReusable ? __('admin.common.yes') : __('admin.common.no') }}</strong>
+                        </article>
+                        <article class="marketing-detail__fact">
+                            <span>{{ __('admin.marketing.promotions.default_active') }}</span>
+                            <strong>{{ $isDefaultActive ? __('admin.common.yes') : __('admin.common.no') }}</strong>
                         </article>
                         <article class="marketing-detail__fact">
                             <span>{{ __('admin.marketing.promotions.created_at') }}</span>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\confermaOrdineAdmin;
 use App\Models\Customer;
 use App\Models\CustomerPromotion;
+use App\Models\Promotion;
 use App\Models\Reservation;
 use App\Models\Setting;
 use App\Services\Customers\CustomerStatsService;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 use Throwable;
 
 class ReservationController extends Controller
@@ -52,6 +54,7 @@ class ReservationController extends Controller
         'tracking_enabled' => 'nullable|boolean',
         'news_letter' => 'nullable|boolean',
         'customer_promotion_id' => 'nullable|integer|exists:customer_promotion,id',
+        'promotion_id' => 'nullable|integer|exists:promotions,id',
     ];
 
     public function store(Request $request)
@@ -503,14 +506,20 @@ class ReservationController extends Controller
             : null;
 
         if (! $customerPromotionId) {
-            return [
-                'applicable' => false,
-                'reason' => 'no_promotion_requested',
-                'customer_promotion' => null,
-                'promotion' => null,
-                'discount_amount' => 0.0,
-                'affected_items' => [],
-            ];
+            $customerPromotion = $this->defaultActiveCustomerPromotion($customer, $reservationData['promotion_id'] ?? null);
+
+            if (! $customerPromotion) {
+                return [
+                    'applicable' => false,
+                    'reason' => isset($reservationData['promotion_id']) ? 'promotion_not_available' : 'no_promotion_requested',
+                    'customer_promotion' => null,
+                    'promotion' => null,
+                    'discount_amount' => 0.0,
+                    'affected_items' => [],
+                ];
+            }
+
+            $customerPromotionId = $customerPromotion->getKey();
         }
 
         $evaluation = $this->reservationPromotionApplicationService->evaluate($customer, $customerPromotionId, $reservationData);
@@ -524,6 +533,42 @@ class ReservationController extends Controller
         }
 
         return $evaluation;
+    }
+
+    private function defaultActiveCustomerPromotion(Customer $customer, mixed $promotionId): ?CustomerPromotion
+    {
+        $promotionId = ($promotionId !== null && $promotionId !== '' && $promotionId !== 0)
+            ? (int) $promotionId
+            : null;
+
+        if (! $promotionId) {
+            return null;
+        }
+
+        $promotion = Promotion::query()
+            ->active()
+            ->whereKey($promotionId)
+            ->where('default_active', true)
+            ->first();
+
+        if (! $promotion || $promotion->schedule_at?->isFuture() || (! $promotion->isPermanent() && $promotion->expiring_at?->isPast())) {
+            return null;
+        }
+
+        try {
+            return $this->customerPromotionService->assignToCustomer($customer, $promotion, null, null, [
+                'source' => 'default_active_promotion',
+                'default_assigned_at' => now()->toISOString(),
+            ]);
+        } catch (InvalidArgumentException $exception) {
+            Log::warning('(ReservationController) Promozione pubblica non assegnabile alla prenotazione', [
+                'customer_id' => $customer->getKey(),
+                'promotion_id' => $promotion->getKey(),
+                'reason' => $exception->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     private function markAppliedReservationPromotion(?array $evaluation, Reservation $reservation, array $reservationMetadata): void

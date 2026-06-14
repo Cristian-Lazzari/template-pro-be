@@ -41,6 +41,7 @@ Route::get('postHome',          [PostController::class, 'postHome'])->name('api.
 
 Route::get('dates',             [DateController::class, 'index'])->name('api.dates.index');
 Route::get('getDays',           [DateController::class, 'getDays'])->name('api.dates.getDays');
+Route::get('offers',            [CustomerOfferController::class, 'publicIndex'])->name('api.offers.index');
 
 Route::get('client_default',    [SettingController::class, 'client_default'])->name('api.client_default'); // annullamento tramite mail
 Route::post('reservations',     [ReservationController::class, 'store'])->name('api.reservations.store');

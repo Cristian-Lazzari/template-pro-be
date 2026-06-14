@@ -24,6 +24,7 @@ class UpdatePromotionRequest extends FormRequest
             'minimum_pretest' => ['nullable', 'numeric', 'min:0'],
             'cta' => ['nullable', 'string', 'max:255'],
             'permanent' => ['boolean'],
+            'default_active' => ['boolean'],
             'schedule_at' => ['exclude_if:permanent,1', 'nullable', 'date'],
             'expiring_at' => [
                 'exclude_if:permanent,1',

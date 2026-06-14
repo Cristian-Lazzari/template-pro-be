@@ -99,6 +99,7 @@ class PromotionController extends Controller
         $promotion = new Promotion([
             'status' => 'draft',
             'permanent' => false,
+            'default_active' => false,
             'metadata' => ['reusable' => false],
         ]);
 
@@ -233,6 +234,7 @@ class PromotionController extends Controller
             ? $existingSlug
             : $this->uniqueSlug($data['name'], $promotion?->getKey());
         $data['permanent'] = $request->boolean('permanent');
+        $data['default_active'] = $request->boolean('default_active');
         if (($data['type_discount'] ?? null) === 'gift') {
             $data['discount'] = null;
         }
