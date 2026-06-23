@@ -42,7 +42,7 @@
                     <i class="bi bi-file-earmark-image"></i>
                     {{__('admin.Immagine')}}</label>
                 <p><input type="file" id="file-input" name="image" ></p>
-             
+
             </div>
             <div>
                 <label class="label_c" for="path">
@@ -58,7 +58,17 @@
             </div>        
         </div>
            @error('image') <p class="error">{{ $message }}</p> @enderror
-        <p class="desc"> 
+
+        <div class="w-100">
+            <label class="label_c" for="images-input">
+                <i class="bi bi-images"></i>
+                {{__('admin.posts.gallery_label')}}</label>
+            <p><input type="file" id="images-input" name="images[]" accept="image/*" multiple></p>
+            <small>{{ __('admin.posts.gallery_hint') }}</small>
+            @error('images.*') <p class="error">{{ $message }}</p> @enderror
+        </div>
+
+        <p class="desc">
             <label class="label_c" for="description">
                 <i class="bi bi-body-text"></i>
                 {{__('admin.Descrizione')}} 
@@ -84,12 +94,20 @@
             </div>
             <div>
                 <label class="label_c" for="link">
-                    <i class="bi bi-link-45deg"></i>                      
+                    <i class="bi bi-link-45deg"></i>
                     {{ __('admin.Link_IG_') }}</label>
                 <p><input value="{{ old('link') }}" type="text" name="link" id="link" placeholder="{{ __('admin.posts.link_placeholder') }}"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror
             </div>
-            
+
+            <div>
+                <label class="label_c" for="link_label">
+                    <i class="bi bi-tag"></i>
+                    {{ __('admin.posts.link_label_label') }}</label>
+                <p><input value="{{ old('link_label') }}" type="text" name="link_label" id="link_label" maxlength="60" placeholder="{{ __('admin.posts.link_label_placeholder') }}"></p>
+                @error('link_label') <p class="error">{{ $message }}</p> @enderror
+            </div>
+
         </div>
     </section>
     <p>* {{__('admin.Campi_facoltativi')}}</p>

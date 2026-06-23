@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
+use App\Models\PostImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -11,26 +12,32 @@ use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
 
-    
+
     private $validation = [
         'title'         => 'required|string|min:1|max:150|unique:posts,title',
         'hashtag'       => 'nullable|string',
         'link'          => 'nullable|string',
+        'link_label'    => 'nullable|string|max:60',
 
         'description'   => 'required',
         'path'          => 'required',
 
         'image'         => 'required|image|max:1024',
+        'images'        => 'nullable|array',
+        'images.*'      => 'image|max:1024',
     ];
     private $validation1 = [
         'title'         => 'required|string|min:1|max:150',
         'hashtag'       => 'nullable|string',
         'link'          => 'nullable|string',
+        'link_label'    => 'nullable|string|max:60',
 
         'description'   => 'required',
         'path'          => 'required',
-        
+
         'image'         => 'required|image|max:1024',
+        'images'        => 'nullable|array',
+        'images.*'      => 'image|max:1024',
     ];
 
 
@@ -195,10 +202,37 @@ class PostController extends Controller
         $post->path          = $data['path'];
         $post->order         = Post::max('order') + 1;
         $post->link          = $data['link'];
-        
+        $post->link_label    = $data['link_label'] ?? null;
+
         $post->save();
-      
+
+        $this->storeGalleryImages($request, $post);
+
         return to_route('admin.posts.index');
+    }
+
+    /**
+     * Salva le foto aggiuntive (galleria) caricate per un post.
+     */
+    private function storeGalleryImages(Request $request, Post $post)
+    {
+        if (!$request->hasFile('images')) {
+            return;
+        }
+
+        $order = (int) $post->images()->max('order');
+
+        foreach ($request->file('images') as $file) {
+            if (!$file) {
+                continue;
+            }
+
+            $order++;
+            $post->images()->create([
+                'image' => Storage::put('public/uploads', $file),
+                'order' => $order,
+            ]);
+        }
     }
     
     
@@ -210,8 +244,8 @@ class PostController extends Controller
     
     public function edit($id)
     {
-        $post = Post::where('id', $id)->firstOrFail();  
-        return view('admin.Posts.edit', compact( 'post'));        
+        $post = Post::with('images')->where('id', $id)->firstOrFail();
+        return view('admin.Posts.edit', compact( 'post'));
     }
     
     public function update(Request $request, $id)
@@ -231,15 +265,36 @@ class PostController extends Controller
         $post->description   = $data['description'];
         $post->path          = $data['path'];
         $post->link          = $data['link'];
+        $post->link_label    = $data['link_label'] ?? null;
         $post->promo      = isset($data['promo']) ? true : false;
-        
+
         $post->update();
-      
+
+        // Rimozione delle foto della galleria selezionate
+        if (!empty($data['delete_images'])) {
+            $toDelete = $post->images()->whereIn('id', (array) $data['delete_images'])->get();
+            foreach ($toDelete as $image) {
+                if ($image->image) {
+                    Storage::delete($image->image);
+                }
+                $image->delete();
+            }
+        }
+
+        // Aggiunta delle nuove foto caricate
+        $this->storeGalleryImages($request, $post);
+
         return to_route('admin.posts.index');;
     }
 
     public function destroy(Post $post)
     {
+        foreach ($post->images as $image) {
+            if ($image->image) {
+                Storage::delete($image->image);
+            }
+        }
+
         $post->delete();
         return to_route('admin.posts.index')->with('delete_success', $post);
     }

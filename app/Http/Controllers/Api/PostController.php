@@ -14,12 +14,12 @@ class PostController extends Controller
         $path = $request->query('path');
        // $path = intval($path);
 
-        $query = Post::where('visible', 1);
+        $query = Post::with('images')->where('visible', 1);
 
         if ($path !== null) {
             $query = $query->where('path', $path);
-        } 
-        
+        }
+
         $posts = $query->where('archived', 0)->orderBy('order', 'desc')->get();
         
         return response()->json([

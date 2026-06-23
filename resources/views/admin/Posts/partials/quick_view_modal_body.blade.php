@@ -60,6 +60,23 @@
             <i class="bi bi-link-45deg" style="font-size: var(--fs-400)"></i>
             {{__('admin.Link')}}
         </h4>
+        @if ($post->link_label)
+            <p><strong>{{ $post->link_label }}</strong></p>
+        @endif
         <a href="{{$post->link}}">{{$post->link}}</a>
+    </section>
+@endif
+
+@if ($post->images->count())
+    <section>
+        <h4>
+            <i class="bi bi-images" style="font-size: var(--fs-400)"></i>
+            {{__('admin.posts.gallery_label')}}
+        </h4>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+            @foreach ($post->images as $image)
+                <img src="{{ asset('public/storage/' . $image->image) }}" alt="" style="width:70px; height:70px; object-fit:cover; border-radius:6px;">
+            @endforeach
+        </div>
     </section>
 @endif

@@ -71,9 +71,34 @@
                     </select>
                 </p>
                 @error('path') <p class="error">{{ $message }}</p> @enderror
-            </div>       
+            </div>
         </div>
-        <p class="desc"> 
+
+        <div class="w-100">
+            <label class="label_c" for="images-input">
+                <i class="bi bi-images"></i>
+                {{__('admin.posts.gallery_label')}}</label>
+
+            @if ($post->images->count())
+                <div class="split" style="flex-wrap: wrap; gap: .75rem;">
+                    @foreach ($post->images as $image)
+                        <label style="display:flex; flex-direction:column; align-items:center; gap:.35rem; cursor:pointer;">
+                            <img src="{{ asset('public/storage/' . $image->image) }}" alt="" style="width:90px; height:90px; object-fit:cover; border-radius:8px;">
+                            <span style="font-size:.8rem;">
+                                <input type="checkbox" name="delete_images[]" value="{{ $image->id }}">
+                                {{ __('admin.posts.gallery_delete') }}
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            @endif
+
+            <p><input type="file" id="images-input" name="images[]" accept="image/*" multiple></p>
+            <small>{{ __('admin.posts.gallery_hint') }}</small>
+            @error('images.*') <p class="error">{{ $message }}</p> @enderror
+        </div>
+
+        <p class="desc">
             <label class="label_c" for="description">
                 <i class="bi bi-body-text"></i>
                 {{__('admin.Descrizione')}} 
@@ -100,7 +125,13 @@
                     <i class="bi bi-link-45deg"></i>{{ __('admin.Link_IG_') }}</label>
                 <p><input value="{{ old('link', $post->link) }}" type="text" name="link" id="link" placeholder="{{ __('admin.posts.link_placeholder') }}"></p>
                 @error('link') <p class="error">{{ $message }}</p> @enderror
-            </div>     
+            </div>
+            <div>
+                <label class="label_c" for="link_label">
+                    <i class="bi bi-tag"></i>{{ __('admin.posts.link_label_label') }}</label>
+                <p><input value="{{ old('link_label', $post->link_label) }}" type="text" name="link_label" id="link_label" maxlength="60" placeholder="{{ __('admin.posts.link_label_placeholder') }}"></p>
+                @error('link_label') <p class="error">{{ $message }}</p> @enderror
+            </div>
             </p>
         </div>
     </section>

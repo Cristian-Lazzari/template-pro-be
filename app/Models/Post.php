@@ -9,6 +9,11 @@ class Post extends Model
 {
     use HasFactory;
 
+    public function images()
+    {
+        return $this->hasMany(PostImage::class)->orderBy('order');
+    }
+
     public function promotionTargets()
     {
         return $this->hasMany(PromotionTarget::class, 'target_id')
