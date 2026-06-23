@@ -182,7 +182,9 @@ class PostController extends Controller
 
     public function create()
     {
-        return view('admin.Posts.create');
+        return view('admin.Posts.create', [
+            'post' => new Post(),
+        ]);
     }
 
     public function store(Request $request)
