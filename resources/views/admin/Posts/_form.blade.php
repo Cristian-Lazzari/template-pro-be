@@ -43,8 +43,8 @@
         top: 24px;
     }
 
-    /* Campi form – stile consistente col mail model */
-    .post-form-shell input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    /* Campi form */
+    .post-form-shell input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
     .post-form-shell select {
         opacity: 1;
         text-align: left;
@@ -67,26 +67,15 @@
         min-height: 160px;
     }
 
-    .post-form-shell input[type="file"] {
-        min-height: 44px;
-        height: auto;
-        padding: 10px;
-        cursor: pointer;
-        background: rgba(216, 221, 232, 0.06);
-        border: 1px solid rgba(216, 221, 232, 0.16);
-        border-radius: 12px;
-        color: var(--c3);
-    }
-
     .post-form-shell input::placeholder,
     .post-form-shell textarea::placeholder {
         color: rgba(216, 221, 232, 0.42);
     }
 
-    .post-form-shell input:focus,
+    .post-form-shell input:not([type="file"]):focus,
     .post-form-shell select:focus,
     .post-form-shell textarea:focus,
-    .post-form-shell input:hover,
+    .post-form-shell input:not([type="file"]):hover,
     .post-form-shell select:hover,
     .post-form-shell textarea:hover {
         opacity: 1;
@@ -95,8 +84,282 @@
         outline: none;
     }
 
-    /* Anteprima copertina */
-    .post-cover-preview {
+    /* ── Upload card copertina ─────────────────────────────────── */
+    .post-upload-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+    }
+
+    .post-upload-card--cover {
+        aspect-ratio: 16/9;
+        border: 2px dashed rgba(216, 221, 232, 0.2);
+        background: rgba(216, 221, 232, 0.03);
+    }
+
+    .post-upload-card--cover:hover {
+        border-color: rgba(14, 183, 146, 0.5);
+        background: rgba(14, 183, 146, 0.04);
+    }
+
+    .post-upload-card--cover:focus-visible {
+        outline: 2px solid rgba(14, 183, 146, 0.6);
+        outline-offset: 3px;
+    }
+
+    .post-upload-card__placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+        padding: 24px;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .post-upload-card__ico {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        border: 1px solid rgba(14, 183, 146, 0.22);
+        background: rgba(14, 183, 146, 0.09);
+        color: rgba(142, 246, 219, 0.82);
+        font-size: 24px;
+        margin-bottom: 4px;
+        transition: background .2s, border-color .2s;
+    }
+
+    .post-upload-card--cover:hover .post-upload-card__ico {
+        background: rgba(14, 183, 146, 0.15);
+        border-color: rgba(14, 183, 146, 0.38);
+    }
+
+    .post-upload-card__placeholder strong {
+        color: var(--c3);
+        font-size: var(--fs-300);
+        font-weight: 900;
+        line-height: 1.2;
+    }
+
+    .post-upload-card__placeholder small {
+        color: rgba(216, 221, 232, 0.48);
+        font-size: var(--fs-200);
+        font-weight: 700;
+    }
+
+    .post-upload-card__hint {
+        display: block;
+        color: rgba(216, 221, 232, 0.28);
+        font-size: var(--fs-100);
+        font-weight: 700;
+        margin-top: 2px;
+    }
+
+    .post-upload-card__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: opacity .2s;
+    }
+
+    .post-upload-card--cover:hover .post-upload-card__img {
+        opacity: .88;
+    }
+
+    .post-upload-card__remove {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(9, 3, 51, 0.72);
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background .15s;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 2;
+    }
+
+    .post-upload-card__remove:hover {
+        background: rgba(206, 59, 59, 0.88);
+    }
+
+    /* ── Gallery grid & cards ──────────────────────────────────── */
+    .post-gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: 10px;
+    }
+
+    #gallery-new-previews {
+        display: contents;
+    }
+
+    .post-gallery-card {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .post-gallery-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Foto esistenti */
+    .post-gallery-card--existing {
+        border: 1px solid rgba(216, 221, 232, 0.12);
+        cursor: default;
+    }
+
+    .post-gallery-card__del {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 7px;
+        opacity: 0;
+        background: linear-gradient(to top, rgba(9, 3, 51, 0.65) 0%, transparent 55%);
+        transition: opacity .18s;
+        cursor: pointer;
+    }
+
+    .post-gallery-card--existing:hover .post-gallery-card__del {
+        opacity: 1;
+    }
+
+    .post-gallery-card__del-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(9, 3, 51, 0.75);
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 13px;
+        transition: background .15s;
+    }
+
+    .post-gallery-card--existing:hover .post-gallery-card__del-icon {
+        background: rgba(200, 48, 48, 0.88);
+        color: #fff;
+    }
+
+    /* Stato marcato per eliminazione */
+    .post-gallery-card--existing.is-marked {
+        outline: 2.5px solid rgba(210, 50, 50, 0.75);
+        outline-offset: -2px;
+    }
+
+    .post-gallery-card--existing.is-marked::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(160, 20, 20, 0.32);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .post-gallery-card--existing.is-marked .post-gallery-card__del {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .post-gallery-card--existing.is-marked .post-gallery-card__del-icon {
+        background: rgba(200, 48, 48, 0.92);
+        color: #fff;
+    }
+
+    /* Foto nuove (preview JS) */
+    .post-gallery-card--new {
+        border: 1.5px solid rgba(14, 183, 146, 0.28);
+    }
+
+    .post-gallery-card--new::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(14, 183, 146, 0.06);
+        pointer-events: none;
+    }
+
+    /* Card aggiungi */
+    .post-gallery-card--add {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 2px dashed rgba(216, 221, 232, 0.18);
+        background: rgba(216, 221, 232, 0.03);
+        color: rgba(216, 221, 232, 0.4);
+        cursor: pointer;
+        transition: border-color .18s, background .18s, color .18s;
+        user-select: none;
+    }
+
+    .post-gallery-card--add:hover,
+    .post-gallery-card--add:focus-visible {
+        border-color: rgba(14, 183, 146, 0.45);
+        background: rgba(14, 183, 146, 0.05);
+        color: rgba(142, 246, 219, 0.82);
+        outline: none;
+    }
+
+    .post-gallery-add__ico {
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    .post-gallery-card--add small {
+        font-size: var(--fs-100);
+        font-weight: 800;
+    }
+
+    .post-gallery-badge {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: rgba(14, 183, 146, 0.9);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    /* Sidebar preview */
+    .post-preview-cover-img {
         width: 100%;
         aspect-ratio: 16/9;
         border-radius: 12px;
@@ -104,20 +367,20 @@
         display: block;
     }
 
-    .post-cover-placeholder {
+    .post-preview-cover-placeholder {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 100%;
         aspect-ratio: 16/9;
         border-radius: 12px;
-        border: 1px dashed rgba(216, 221, 232, 0.2);
-        color: rgba(216, 221, 232, 0.25);
-        font-size: 30px;
+        border: 1px dashed rgba(216, 221, 232, 0.18);
+        color: rgba(216, 221, 232, 0.22);
+        font-size: 28px;
     }
 
-    .post-cover-placeholder[hidden],
-    .post-cover-preview[hidden] { display: none !important; }
+    .post-preview-cover-img[hidden],
+    .post-preview-cover-placeholder[hidden] { display: none !important; }
 
     .post-preview-title {
         margin: 10px 0 6px;
@@ -149,43 +412,6 @@
         color: rgba(142, 246, 219, 0.92);
     }
 
-    /* Galleria foto in edit */
-    .post-gallery-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 4px;
-    }
-
-    .post-gallery-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .post-gallery-item img {
-        width: 84px;
-        height: 84px;
-        object-fit: cover;
-        border-radius: 10px;
-        border: 1px solid rgba(216, 221, 232, 0.14);
-        display: block;
-    }
-
-    .post-gallery-item label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: var(--fs-100);
-        color: rgba(216, 221, 232, 0.66);
-        cursor: pointer;
-    }
-
-    .post-gallery-item input[type="checkbox"]:checked + span {
-        color: rgba(255, 120, 120, 0.9);
-    }
-
     /* Promo star toggle */
     .post-promo-wrap {
         display: flex;
@@ -213,6 +439,7 @@
     .post-promo-wrap .post-promo-text {
         display: grid;
         gap: 2px;
+        flex: 1;
     }
 
     .post-promo-wrap .post-promo-text strong {
@@ -229,7 +456,7 @@
 
     .post-promo-star {
         flex-shrink: 0;
-        color: rgba(216, 221, 232, 0.3);
+        color: rgba(216, 221, 232, 0.28);
         transition: color .15s;
         font-size: 22px;
         line-height: 1;
@@ -242,6 +469,12 @@
     @media (max-width: 1100px) {
         .post-form-grid { grid-template-columns: 1fr; }
         .post-form-sidebar { position: static; }
+    }
+
+    @media (max-width: 600px) {
+        .post-gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        }
     }
 </style>
 
@@ -262,16 +495,14 @@
 
     <div class="post-form-grid">
 
-        {{-- ── Colonna principale: campi form ──────────────────────── --}}
+        {{-- ── Colonna principale ───────────────────────────────────── --}}
         <div class="post-form-main">
 
             {{-- Sezione: informazioni base --}}
             <section class="order-detail__section">
                 <div class="order-detail__section-head">
                     <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="card-text" />
-                        </span>
+                        <span class="order-detail__section-icon"><x-icon name="card-text" /></span>
                         {{ __('admin.marketing.mailer.model_info') }}
                     </h3>
                 </div>
@@ -343,9 +574,7 @@
             <section class="order-detail__section">
                 <div class="order-detail__section-head">
                     <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="body-text" />
-                        </span>
+                        <span class="order-detail__section-icon"><x-icon name="body-text" /></span>
                         {{ __('admin.Descrizione') }}
                     </h3>
                 </div>
@@ -388,70 +617,126 @@
                 </div>
             </section>
 
-            {{-- Sezione: media --}}
+            {{-- Sezione: immagini --}}
             <section class="order-detail__section">
                 <div class="order-detail__section-head">
                     <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="image-fill" />
-                        </span>
-                        {{ __('admin.Immagine') }}
+                        <span class="order-detail__section-icon"><x-icon name="images" /></span>
+                        Immagini
                     </h3>
                 </div>
 
+                {{-- Copertina --}}
                 <div>
-                    <label class="label_c" for="file-input">
-                        <x-icon name="file-earmark-image" />
+                    <p class="label_c">
+                        <x-icon name="image-fill" />
                         {{ __('admin.Immagine') }}
-                    </label>
-                    <p>
+                    </p>
+
+                    <div class="post-upload-card post-upload-card--cover"
+                         id="cover-card"
+                         role="button"
+                         tabindex="0"
+                         aria-label="Carica immagine copertina">
+
+                        <div class="post-upload-card__placeholder"
+                             id="cover-placeholder"
+                             @if ($coverUrl) hidden @endif>
+                            <span class="post-upload-card__ico"><x-icon name="image" /></span>
+                            <strong>Copertina post</strong>
+                            <small>Clicca o trascina qui</small>
+                            <span class="post-upload-card__hint">PNG · JPG · WEBP &nbsp;·&nbsp; max 1 MB</span>
+                        </div>
+
+                        <img class="post-upload-card__img"
+                             id="cover-img"
+                             @if ($coverUrl) src="{{ $coverUrl }}" @endif
+                             alt="Copertina"
+                             @unless ($coverUrl) hidden @endunless>
+
+                        <button class="post-upload-card__remove"
+                                id="cover-remove"
+                                type="button"
+                                @unless ($coverUrl) hidden @endunless
+                                aria-label="Rimuovi copertina">
+                            <x-icon name="x-circle-fill" />
+                        </button>
+
                         <input type="file"
                                id="file-input"
                                name="image"
                                accept="image/*"
-                               data-cover-input>
-                    </p>
-                    @error('image') <p class="error">{{ $message }}</p> @enderror
+                               hidden>
+                    </div>
+                    @error('image') <p class="error mt-1">{{ $message }}</p> @enderror
                 </div>
 
+                {{-- Galleria --}}
                 <div>
-                    <label class="label_c" for="images-input">
+                    <p class="label_c">
                         <x-icon name="images" />
                         {{ __('admin.posts.gallery_label') }}
-                    </label>
+                    </p>
 
-                    @if ($isEdit && $post->images->count())
-                        <div class="post-gallery-grid mb-2">
+                    <div class="post-gallery-grid" id="gallery-grid">
+
+                        {{-- Foto esistenti in modifica --}}
+                        @if ($isEdit && $post->images->count())
                             @foreach ($post->images as $img)
-                                <div class="post-gallery-item">
-                                    <img src="{{ asset('public/storage/' . $img->image) }}"
-                                         alt="">
-                                    <label>
+                                @php
+                                    $imgPath = ltrim($img->image, '/');
+                                    $imgUrl  = (str_starts_with($imgPath, 'public/storage/') || str_starts_with($imgPath, 'storage/'))
+                                        ? asset($imgPath)
+                                        : asset('public/storage/' . $imgPath);
+                                @endphp
+                                <div class="post-gallery-card post-gallery-card--existing"
+                                     data-id="{{ $img->id }}">
+                                    <img src="{{ $imgUrl }}" alt="">
+                                    <label class="post-gallery-card__del"
+                                           title="{{ __('admin.posts.gallery_delete') }}">
                                         <input type="checkbox"
                                                name="delete_images[]"
-                                               value="{{ $img->id }}">
-                                        <span>{{ __('admin.posts.gallery_delete') }}</span>
+                                               value="{{ $img->id }}"
+                                               class="post-gallery-del-cb"
+                                               hidden>
+                                        <span class="post-gallery-card__del-icon">
+                                            <x-icon name="trash3-fill" />
+                                        </span>
                                     </label>
                                 </div>
                             @endforeach
-                        </div>
-                    @endif
+                        @endif
 
-                    <p>
-                        <input type="file"
-                               id="images-input"
-                               name="images[]"
-                               accept="image/*"
-                               multiple>
-                    </p>
-                    <small class="menu-dashboard__copy">{{ __('admin.posts.gallery_hint') }}</small>
+                        {{-- Anteprime nuove foto (iniettate via JS) --}}
+                        <div id="gallery-new-previews"></div>
+
+                        {{-- Card aggiungi --}}
+                        <div class="post-gallery-card post-gallery-card--add"
+                             id="gallery-add-card"
+                             role="button"
+                             tabindex="0"
+                             aria-label="Aggiungi foto galleria">
+                            <span class="post-gallery-add__ico"><x-icon name="plus-lg" /></span>
+                            <small>Aggiungi</small>
+                            <span class="post-gallery-badge" id="gallery-badge" hidden></span>
+                            <input type="file"
+                                   id="images-input"
+                                   name="images[]"
+                                   accept="image/*"
+                                   multiple
+                                   hidden>
+                        </div>
+
+                    </div>
+
+                    <p class="menu-dashboard__copy mt-1">{{ __('admin.posts.gallery_hint') }}</p>
                     @error('images.*') <p class="error">{{ $message }}</p> @enderror
                 </div>
             </section>
 
         </div>
 
-        {{-- ── Colonna destra: sidebar ──────────────────────────────── --}}
+        {{-- ── Sidebar ──────────────────────────────────────────────── --}}
         <aside class="post-form-sidebar">
 
             {{-- Post in evidenza (solo in modifica) --}}
@@ -459,9 +744,7 @@
                 <section class="order-detail__section">
                     <div class="order-detail__section-head">
                         <h3>
-                            <span class="order-detail__section-icon">
-                                <x-icon name="star-fill" />
-                            </span>
+                            <span class="order-detail__section-icon"><x-icon name="star-fill" /></span>
                             {{ __('admin.Post_in_evidenza') }}
                         </h3>
                     </div>
@@ -489,20 +772,18 @@
             <section class="order-detail__section">
                 <div class="order-detail__section-head">
                     <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="eye-fill" />
-                        </span>
+                        <span class="order-detail__section-icon"><x-icon name="eye-fill" /></span>
                         Anteprima
                     </h3>
                 </div>
 
-                <img class="post-cover-preview"
+                <img class="post-preview-cover-img"
                      id="preview-cover"
                      @if ($coverUrl) src="{{ $coverUrl }}" @endif
                      alt="Anteprima copertina"
                      @unless ($coverUrl) hidden @endunless>
 
-                <div class="post-cover-placeholder"
+                <div class="post-preview-cover-placeholder"
                      id="preview-cover-placeholder"
                      @if ($coverUrl) hidden @endif>
                     <x-icon name="image" />
@@ -522,13 +803,10 @@
             <section class="order-detail__section">
                 <div class="order-detail__section-head">
                     <h3>
-                        <span class="order-detail__section-icon">
-                            <x-icon name="lightbulb-fill" />
-                        </span>
+                        <span class="order-detail__section-icon"><x-icon name="lightbulb-fill" /></span>
                         Suggerimenti
                     </h3>
                 </div>
-
                 <div class="marketing-form-preview__note">
                     <p>Campi segnati con * sono facoltativi. La descrizione supporta testo multiriga e verrà pubblicata nella pagina del sito.</p>
                 </div>
@@ -557,15 +835,174 @@
 
 <script>
 (function () {
+    let coverObjectUrl = null;
+    const galleryObjectUrls = [];
+
+    window.addEventListener('beforeunload', function () {
+        if (coverObjectUrl) URL.revokeObjectURL(coverObjectUrl);
+        galleryObjectUrls.forEach(function (u) { URL.revokeObjectURL(u); });
+    });
+
+    // ── Copertina ─────────────────────────────────────────────────
+    const coverCard        = document.getElementById('cover-card');
+    const coverInput       = document.getElementById('file-input');
+    const coverImg         = document.getElementById('cover-img');
+    const coverPlaceholder = document.getElementById('cover-placeholder');
+    const coverRemove      = document.getElementById('cover-remove');
+    const sidePreview      = document.getElementById('preview-cover');
+    const sidePlaceholder  = document.getElementById('preview-cover-placeholder');
+    const existingCover    = {!! json_encode($coverUrl) !!};
+
+    function showCover(src) {
+        coverImg.src = src;
+        coverImg.hidden = false;
+        coverPlaceholder.hidden = true;
+        coverRemove.hidden = false;
+        if (sidePreview)     { sidePreview.src = src; sidePreview.hidden = false; }
+        if (sidePlaceholder) { sidePlaceholder.hidden = true; }
+    }
+
+    function clearCover() {
+        if (existingCover) {
+            showCover(existingCover);
+        } else {
+            coverImg.removeAttribute('src');
+            coverImg.hidden = true;
+            coverPlaceholder.hidden = false;
+            coverRemove.hidden = true;
+            if (sidePreview)     { sidePreview.removeAttribute('src'); sidePreview.hidden = true; }
+            if (sidePlaceholder) { sidePlaceholder.hidden = false; }
+        }
+    }
+
+    function resetCoverInput() {
+        const clone = coverInput.cloneNode(true);
+        coverInput.parentNode.replaceChild(clone, coverInput);
+        clone.addEventListener('change', onCoverChange);
+    }
+
+    function onCoverChange() {
+        const file = this.files && this.files[0];
+        if (!file) return;
+        if (coverObjectUrl) URL.revokeObjectURL(coverObjectUrl);
+        coverObjectUrl = URL.createObjectURL(file);
+        showCover(coverObjectUrl);
+    }
+
+    if (coverCard && coverInput) {
+        coverInput.addEventListener('change', onCoverChange);
+
+        coverCard.addEventListener('click', function (e) {
+            if (!e.target.closest('#cover-remove')) {
+                document.getElementById('file-input')?.click();
+            }
+        });
+        coverCard.addEventListener('keydown', function (e) {
+            if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('#cover-remove')) {
+                e.preventDefault();
+                document.getElementById('file-input')?.click();
+            }
+        });
+
+        if (coverRemove) {
+            coverRemove.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (coverObjectUrl) { URL.revokeObjectURL(coverObjectUrl); coverObjectUrl = null; }
+                resetCoverInput();
+                clearCover();
+            });
+        }
+    }
+
+    // Drag & drop sulla cover card
+    if (coverCard) {
+        coverCard.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            this.style.borderColor = 'rgba(14,183,146,.6)';
+        });
+        coverCard.addEventListener('dragleave', function () {
+            this.style.borderColor = '';
+        });
+        coverCard.addEventListener('drop', function (e) {
+            e.preventDefault();
+            this.style.borderColor = '';
+            const file = e.dataTransfer?.files?.[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            const inp = document.getElementById('file-input');
+            if (inp) { inp.files = dt.files; inp.dispatchEvent(new Event('change')); }
+        });
+    }
+
+    // ── Galleria ─────────────────────────────────────────────────
+    const galleryAddCard     = document.getElementById('gallery-add-card');
+    const galleryInput       = document.getElementById('images-input');
+    const galleryNewPreviews = document.getElementById('gallery-new-previews');
+    const galleryBadge       = document.getElementById('gallery-badge');
+
+    function renderNewGalleryPreviews(files) {
+        galleryObjectUrls.forEach(function (u) { URL.revokeObjectURL(u); });
+        galleryObjectUrls.length = 0;
+        galleryNewPreviews.innerHTML = '';
+
+        Array.from(files).forEach(function (file) {
+            const url = URL.createObjectURL(file);
+            galleryObjectUrls.push(url);
+
+            const card = document.createElement('div');
+            card.className = 'post-gallery-card post-gallery-card--new';
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = file.name;
+            card.appendChild(img);
+            galleryNewPreviews.appendChild(card);
+        });
+
+        if (galleryBadge) {
+            if (files.length) {
+                galleryBadge.textContent = files.length;
+                galleryBadge.hidden = false;
+            } else {
+                galleryBadge.hidden = true;
+            }
+        }
+    }
+
+    if (galleryAddCard && galleryInput) {
+        galleryAddCard.addEventListener('click', function () {
+            galleryInput.click();
+        });
+        galleryAddCard.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); galleryInput.click(); }
+        });
+        galleryInput.addEventListener('change', function () {
+            renderNewGalleryPreviews(this.files || []);
+        });
+    }
+
+    // Esistenti: toggle marcatura eliminazione
+    document.querySelectorAll('.post-gallery-del-cb').forEach(function (cb) {
+        const card = cb.closest('.post-gallery-card--existing');
+        cb.addEventListener('change', function () {
+            card?.classList.toggle('is-marked', this.checked);
+        });
+        // click sull'icona cestino spunta/deseleziona il checkbox
+        const delLabel = cb.closest('.post-gallery-card__del');
+        if (delLabel) {
+            delLabel.addEventListener('click', function (e) {
+                e.preventDefault();
+                cb.checked = !cb.checked;
+                cb.dispatchEvent(new Event('change'));
+            });
+        }
+    });
+
+    // ── Sidebar: titolo + path ────────────────────────────────────
     const titleInput   = document.getElementById('title');
     const pathSelect   = document.getElementById('path');
-    const coverInput   = document.querySelector('[data-cover-input]');
-    const previewCover = document.getElementById('preview-cover');
-    const previewPlaceholder = document.getElementById('preview-cover-placeholder');
     const previewTitle = document.getElementById('preview-title');
     const previewBadge = document.getElementById('preview-path-badge');
-    const promoLabel   = document.getElementById('promo-toggle-label');
-    const promoInput   = document.getElementById('promo-input');
 
     const pathLabels = {
         '1': '{{ __('admin.News') }}',
@@ -591,39 +1028,9 @@
         });
     }
 
-    if (coverInput && previewCover && previewPlaceholder) {
-        let objectUrl = null;
-
-        coverInput.addEventListener('change', function () {
-            if (objectUrl) {
-                URL.revokeObjectURL(objectUrl);
-                objectUrl = null;
-            }
-            const file = this.files && this.files[0];
-            if (file) {
-                objectUrl = URL.createObjectURL(file);
-                previewCover.src = objectUrl;
-                previewCover.hidden = false;
-                previewPlaceholder.hidden = true;
-            } else {
-                const existing = {!! json_encode($coverUrl) !!};
-                if (existing) {
-                    previewCover.src = existing;
-                    previewCover.hidden = false;
-                    previewPlaceholder.hidden = true;
-                } else {
-                    previewCover.removeAttribute('src');
-                    previewCover.hidden = true;
-                    previewPlaceholder.hidden = false;
-                }
-            }
-        });
-
-        window.addEventListener('beforeunload', function () {
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-        });
-    }
-
+    // ── Promo toggle ─────────────────────────────────────────────
+    const promoLabel = document.getElementById('promo-toggle-label');
+    const promoInput = document.getElementById('promo-input');
     if (promoLabel && promoInput) {
         promoInput.addEventListener('change', function () {
             promoLabel.classList.toggle('is-active', this.checked);
