@@ -354,6 +354,7 @@
     .form-info-expand {
         margin-top: 6px;
         font-size: var(--fs-100, 12px);
+        max-width: 100%;
     }
 
     .form-info-expand summary {
@@ -363,14 +364,14 @@
         list-style: none;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
     }
 
     .form-info-expand summary::-webkit-details-marker { display: none; }
 
     .form-info-expand summary::before {
         content: '▸';
-        display: inline-block;
+        flex-shrink: 0;
         transition: transform .15s;
         font-size: 10px;
     }
@@ -386,23 +387,29 @@
         background: rgba(216, 221, 232, 0.04);
         border: 1px solid rgba(216, 221, 232, 0.1);
         color: rgba(216, 221, 232, 0.6);
-        line-height: 1.55;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
+        line-height: 1.6;
+        overflow: hidden;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
-    .form-info-expand__body p { margin: 0; }
+    .form-info-expand__body p {
+        margin: 0 0 6px;
+    }
+
+    .form-info-expand__body p:last-child { margin-bottom: 0; }
 
     .form-info-expand__body strong { color: rgba(216, 221, 232, 0.85); }
 
     .form-info-expand__body code {
+        display: inline;
         font-family: monospace;
-        font-size: 0.92em;
-        padding: 1px 5px;
+        font-size: 0.9em;
+        padding: 1px 4px;
         border-radius: 4px;
         background: rgba(14, 183, 146, 0.12);
         color: rgba(142, 246, 219, 0.9);
+        word-break: break-all;
     }
 
     /* Sidebar preview */
@@ -599,8 +606,8 @@
                         <details class="form-info-expand">
                             <summary>Come funziona il link?</summary>
                             <div class="form-info-expand__body">
-                                <p>Per un <strong>sito internet</strong> inserisci l'indirizzo completo, ad esempio: <code>https://www.esempio.it</code></p>
-                                <p>Per aprire direttamente il <strong>telefono</strong> con un numero preimpostato, scrivi <code>tel:</code> prima del numero, ad esempio: <code>tel:+39012345678</code></p>
+                                <p><strong>Sito internet</strong> — inserisci l'indirizzo completo:<br><code>https://www.esempio.it</code></p>
+                                <p><strong>Numero di telefono</strong> — scrivi <code>tel:</code> prima del numero:<br><code>tel:+39012345678</code></p>
                             </div>
                         </details>
                         @error('link') <p class="error">{{ $message }}</p> @enderror
@@ -721,6 +728,10 @@
                                name="image"
                                accept="image/*"
                                hidden>
+                        <input type="hidden"
+                               id="remove-image-flag"
+                               name="remove_image"
+                               value="0">
                     </div>
                     @error('image') <p class="error mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -909,17 +920,15 @@
         if (sidePlaceholder) { sidePlaceholder.hidden = true; }
     }
 
+    const removeImageFlag = document.getElementById('remove-image-flag');
+
     function clearCover() {
-        if (existingCover) {
-            showCover(existingCover);
-        } else {
-            coverImg.removeAttribute('src');
-            coverImg.hidden = true;
-            coverPlaceholder.hidden = false;
-            coverRemove.hidden = true;
-            if (sidePreview)     { sidePreview.removeAttribute('src'); sidePreview.hidden = true; }
-            if (sidePlaceholder) { sidePlaceholder.hidden = false; }
-        }
+        coverImg.removeAttribute('src');
+        coverImg.hidden = true;
+        coverPlaceholder.hidden = false;
+        coverRemove.hidden = true;
+        if (sidePreview)     { sidePreview.removeAttribute('src'); sidePreview.hidden = true; }
+        if (sidePlaceholder) { sidePlaceholder.hidden = false; }
     }
 
     function resetCoverInput() {
@@ -934,6 +943,7 @@
         if (coverObjectUrl) URL.revokeObjectURL(coverObjectUrl);
         coverObjectUrl = URL.createObjectURL(file);
         showCover(coverObjectUrl);
+        if (removeImageFlag) { removeImageFlag.value = '0'; }
     }
 
     if (coverCard && coverInput) {
@@ -957,6 +967,7 @@
                 if (coverObjectUrl) { URL.revokeObjectURL(coverObjectUrl); coverObjectUrl = null; }
                 resetCoverInput();
                 clearCover();
+                if (removeImageFlag) { removeImageFlag.value = '1'; }
             });
         }
     }

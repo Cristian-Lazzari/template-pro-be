@@ -36,6 +36,7 @@ class PostController extends Controller
         'path'          => 'required',
 
         'image'         => 'nullable|image|max:1024',
+        'remove_image'  => 'nullable|in:0,1',
         'images'        => 'nullable|array',
         'images.*'      => 'image|max:1024',
     ];
@@ -255,12 +256,17 @@ class PostController extends Controller
         $data = $request->all();
         $request->validate($this->validation1); 
         $post = Post::where('id', $id)->firstOrFail();
-        if (isset($data['image'])) {
+        if ($request->hasFile('image')) {
             $imagePath = Storage::put('public/uploads', $data['image']);
             if ($post->image) {
                 Storage::delete($post->image);
             }
             $post->image = $imagePath;
+        } elseif (($data['remove_image'] ?? '0') === '1') {
+            if ($post->image) {
+                Storage::delete($post->image);
+            }
+            $post->image = null;
         }
         $post->title         = $data['title'];
         $post->hashtag       = $data['hashtag'];
