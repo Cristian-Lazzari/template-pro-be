@@ -307,6 +307,16 @@
         pointer-events: none;
     }
 
+    .post-gallery-card--new:hover .post-gallery-card__del {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .post-gallery-card--new:hover .post-gallery-card__del-icon {
+        background: rgba(200, 48, 48, 0.88);
+        color: #fff;
+    }
+
     /* Card aggiungi */
     .post-gallery-card--add {
         display: flex;
@@ -340,22 +350,59 @@
         font-weight: 800;
     }
 
-    .post-gallery-badge {
-        position: absolute;
-        top: 6px;
-        right: 6px;
+    /* Info espandibile (es. campo link) */
+    .form-info-expand {
+        margin-top: 6px;
+        font-size: var(--fs-100, 12px);
+    }
+
+    .form-info-expand summary {
+        cursor: pointer;
+        color: rgba(216, 221, 232, 0.5);
+        user-select: none;
+        list-style: none;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        min-width: 20px;
-        height: 20px;
-        padding: 0 5px;
-        border-radius: 999px;
-        background: rgba(14, 183, 146, 0.9);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 900;
-        line-height: 1;
+        gap: 4px;
+    }
+
+    .form-info-expand summary::-webkit-details-marker { display: none; }
+
+    .form-info-expand summary::before {
+        content: '▸';
+        display: inline-block;
+        transition: transform .15s;
+        font-size: 10px;
+    }
+
+    .form-info-expand[open] summary::before {
+        transform: rotate(90deg);
+    }
+
+    .form-info-expand__body {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: rgba(216, 221, 232, 0.04);
+        border: 1px solid rgba(216, 221, 232, 0.1);
+        color: rgba(216, 221, 232, 0.6);
+        line-height: 1.55;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-info-expand__body p { margin: 0; }
+
+    .form-info-expand__body strong { color: rgba(216, 221, 232, 0.85); }
+
+    .form-info-expand__body code {
+        font-family: monospace;
+        font-size: 0.92em;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgba(14, 183, 146, 0.12);
+        color: rgba(142, 246, 219, 0.9);
     }
 
     /* Sidebar preview */
@@ -540,7 +587,7 @@
                     <div>
                         <label class="label_c" for="link">
                             <x-icon name="link-45deg" />
-                            {{ __('admin.Link_IG_') }}
+                            Link
                         </label>
                         <p>
                             <input type="text"
@@ -549,6 +596,13 @@
                                    value="{{ $linkValue }}"
                                    placeholder="{{ __('admin.posts.link_placeholder') }}">
                         </p>
+                        <details class="form-info-expand">
+                            <summary>Come funziona il link?</summary>
+                            <div class="form-info-expand__body">
+                                <p>Per un <strong>sito internet</strong> inserisci l'indirizzo completo, ad esempio: <code>https://www.esempio.it</code></p>
+                                <p>Per aprire direttamente il <strong>telefono</strong> con un numero preimpostato, scrivi <code>tel:</code> prima del numero, ad esempio: <code>tel:+39012345678</code></p>
+                            </div>
+                        </details>
                         @error('link') <p class="error">{{ $message }}</p> @enderror
                     </div>
 
@@ -718,13 +772,6 @@
                              aria-label="Aggiungi foto galleria">
                             <span class="post-gallery-add__ico"><x-icon name="plus-lg" /></span>
                             <small>Aggiungi</small>
-                            <span class="post-gallery-badge" id="gallery-badge" hidden></span>
-                            <input type="file"
-                                   id="images-input"
-                                   name="images[]"
-                                   accept="image/*"
-                                   multiple
-                                   hidden>
                         </div>
 
                     </div>
@@ -937,47 +984,61 @@
 
     // ── Galleria ─────────────────────────────────────────────────
     const galleryAddCard     = document.getElementById('gallery-add-card');
-    const galleryInput       = document.getElementById('images-input');
     const galleryNewPreviews = document.getElementById('gallery-new-previews');
-    const galleryBadge       = document.getElementById('gallery-badge');
 
-    function renderNewGalleryPreviews(files) {
-        galleryObjectUrls.forEach(function (u) { URL.revokeObjectURL(u); });
-        galleryObjectUrls.length = 0;
-        galleryNewPreviews.innerHTML = '';
+    var trashSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/></svg>';
 
-        Array.from(files).forEach(function (file) {
-            const url = URL.createObjectURL(file);
-            galleryObjectUrls.push(url);
+    function addNewGalleryItem(file) {
+        var objectUrl = URL.createObjectURL(file);
+        galleryObjectUrls.push(objectUrl);
 
-            const card = document.createElement('div');
-            card.className = 'post-gallery-card post-gallery-card--new';
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = file.name;
-            card.appendChild(img);
-            galleryNewPreviews.appendChild(card);
+        var card = document.createElement('div');
+        card.className = 'post-gallery-card post-gallery-card--new';
+
+        // Input nascosto con il file: viene inviato con il form
+        var formInput = document.createElement('input');
+        formInput.type = 'file';
+        formInput.name = 'images[]';
+        formInput.hidden = true;
+        var dt = new DataTransfer();
+        dt.items.add(file);
+        formInput.files = dt.files;
+        card.appendChild(formInput);
+
+        var img = document.createElement('img');
+        img.src = objectUrl;
+        img.alt = file.name;
+        card.appendChild(img);
+
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'post-gallery-card__del';
+        delBtn.setAttribute('aria-label', 'Rimuovi foto');
+        delBtn.innerHTML = '<span class="post-gallery-card__del-icon">' + trashSvg + '</span>';
+        card.appendChild(delBtn);
+
+        delBtn.addEventListener('click', function () {
+            var idx = galleryObjectUrls.indexOf(objectUrl);
+            if (idx !== -1) { URL.revokeObjectURL(objectUrl); galleryObjectUrls.splice(idx, 1); }
+            card.remove();
         });
 
-        if (galleryBadge) {
-            if (files.length) {
-                galleryBadge.textContent = files.length;
-                galleryBadge.hidden = false;
-            } else {
-                galleryBadge.hidden = true;
-            }
-        }
+        galleryNewPreviews.appendChild(card);
     }
 
-    if (galleryAddCard && galleryInput) {
+    if (galleryAddCard) {
         galleryAddCard.addEventListener('click', function () {
-            galleryInput.click();
+            var picker = document.createElement('input');
+            picker.type = 'file';
+            picker.accept = 'image/*';
+            picker.addEventListener('change', function () {
+                var file = this.files && this.files[0];
+                if (file) { addNewGalleryItem(file); }
+            });
+            picker.click();
         });
         galleryAddCard.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); galleryInput.click(); }
-        });
-        galleryInput.addEventListener('change', function () {
-            renderNewGalleryPreviews(this.files || []);
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); galleryAddCard.click(); }
         });
     }
 

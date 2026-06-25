@@ -35,7 +35,7 @@ class PostController extends Controller
         'description'   => 'required',
         'path'          => 'required',
 
-        'image'         => 'required|image|max:1024',
+        'image'         => 'nullable|image|max:1024',
         'images'        => 'nullable|array',
         'images.*'      => 'image|max:1024',
     ];
