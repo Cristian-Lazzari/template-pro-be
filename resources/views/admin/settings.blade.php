@@ -1043,6 +1043,16 @@ $toneClass = fn(string $tone) => match($tone) {
                                       placeholder="{{ __('admin.settings.promo_description_placeholder') }}">{{ $promo_table['body'] ?? '' }}</textarea>
                             <span class="stt-inline-err"></span>
                         </div>
+                        <div class="stt-field">
+                            <span class="stt-field-lbl">{{ __('admin.settings.promo_cta_label') }}</span>
+                            <select class="stt-input" data-stt-field="promo_table_cta">
+                                <option value="prenota" {{ ($promo_table['cta'] ?? 'prenota') === 'prenota' ? 'selected' : '' }}>{{ __('admin.settings.promo_cta_prenota') }}</option>
+                                <option value="ordina"  {{ ($promo_table['cta'] ?? '') === 'ordina'    ? 'selected' : '' }}>{{ __('admin.settings.promo_cta_ordina') }}</option>
+                                <option value="offerte" {{ ($promo_table['cta'] ?? '') === 'offerte'   ? 'selected' : '' }}>{{ __('admin.settings.promo_cta_offerte') }}</option>
+                                <option value="registrati" {{ ($promo_table['cta'] ?? '') === 'registrati' ? 'selected' : '' }}>{{ __('admin.settings.promo_cta_registrati') }}</option>
+                            </select>
+                            <span class="stt-inline-err"></span>
+                        </div>
                     </div>
 
                 </div>
@@ -1816,7 +1826,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         inp.addEventListener('blur', save);
-        if (inp.type === 'date') inp.addEventListener('change', save);
+        if (inp.type === 'date' || inp.tagName === 'SELECT') inp.addEventListener('change', save);
     });
 
     // ── Payment method buttons

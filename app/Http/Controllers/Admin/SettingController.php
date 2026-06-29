@@ -155,9 +155,12 @@ class SettingController extends Controller
 
         $promoProp = json_decode($setting['Promozione Tavoli']->property, true) ?: [];
         $setting['Promozione Tavoli']->status = (int) $inputOr('table_promo', $setting['Promozione Tavoli']->status);
+        $allowedCtas = ['prenota', 'ordina', 'offerte', 'registrati'];
+        $ctaInput = $inputOr('promo_table_cta', $promoProp['cta'] ?? 'prenota');
         $prop_promo = [
             'title' => $inputOr('promo_table_title', $promoProp['title'] ?? ''),
             'body' => $inputOr('promo_table_body', $promoProp['body'] ?? ''),
+            'cta' => in_array($ctaInput, $allowedCtas, true) ? $ctaInput : 'prenota',
         ];
         $setting['Promozione Tavoli']->property = json_encode($prop_promo);
         $setting['Promozione Tavoli']->save();
@@ -395,6 +398,14 @@ class SettingController extends Controller
             case 'promo_table_body':
                 $prop = json_decode($setting['Promozione Tavoli']->property, true);
                 $prop['body'] = $value;
+                $setting['Promozione Tavoli']->property = json_encode($prop);
+                $setting['Promozione Tavoli']->save();
+                break;
+
+            case 'promo_table_cta':
+                $allowed = ['prenota', 'ordina', 'offerte', 'registrati'];
+                $prop = json_decode($setting['Promozione Tavoli']->property, true);
+                $prop['cta'] = in_array($value, $allowed, true) ? $value : 'prenota';
                 $setting['Promozione Tavoli']->property = json_encode($prop);
                 $setting['Promozione Tavoli']->save();
                 break;
